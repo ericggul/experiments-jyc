@@ -14,6 +14,8 @@ import { techKeywordAt } from "../model/tech-keywords";
 import type { FishColourPaletteId, GoldfishScene, TargetLineShape } from "../rendering/goldfish-scene";
 import type { StoryInfluence } from "../model/types";
 import styles from "./story-tray.module.css";
+import { ApproachEvents } from "../model/approach-events";
+import { useApproachSound } from "../audio/use-approach-sound";
 
 const REFERENCE_STORY_SIZE = 93;
 const DEFAULT_ICON_SIZE = 50;
@@ -33,7 +35,7 @@ const DEFAULT_FISH_SCALE = 0.8;
 const DEFAULT_TRACE_SECONDS = 5;
 const TECH_IMAGE_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas-v1.png";
 const TECH_IMAGE_ATLAS_COLUMNS = 6;
-const SESSION_STORAGE_KEY = "goldfishes:0908:overlay-3:stories:v1";
+const SESSION_STORAGE_KEY = "goldfishes:0908:overlay-4:stories:v1";
 
 type GridSize = {
   columns: number;
@@ -281,6 +283,8 @@ function getInfluenceGeometry(
 }
 
 export function InstagramSocialStoryTray() {
+  const sound = useApproachSound();
+  const soundEngine = sound.engine;
   const gridRef = useRef<HTMLUListElement>(null);
   const ringCanvasRef = useRef<HTMLCanvasElement>(null);
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -434,6 +438,10 @@ export function InstagramSocialStoryTray() {
     let layoutKey = "";
     let targetSystem: typeof systemRef.current | undefined = systemRef.current;
     let elapsedSeconds = 0;
+    const approaches = new ApproachEvents();
+    const onApproach = (_fish: number, target: number, x: number, speed: number) => {
+      soundEngine.current?.play(target, x / Math.max(1, fishLayoutRef.current.width), speed);
+    };
     let tracesVisible = false;
     let renderedTraceDuration = traceDurationRef.current;
     let targetLinesVisible = false;
@@ -446,7 +454,7 @@ export function InstagramSocialStoryTray() {
       if (disposed || failed) return;
       failed = true;
       window.clearTimeout(timer);
-      console.error("Goldfishes 0908 overlay-3 renderer:", reason);
+      console.error("Goldfishes 0908 overlay-4 renderer:", reason);
     };
     const syncTargets = () => {
       if (!school || targetSystem === systemRef.current) return false;
@@ -459,6 +467,7 @@ export function InstagramSocialStoryTray() {
       const nextKey = `${layout.width}:${layout.height}:${layout.columns}:${layout.rows}:${layout.iconSize}:${layout.gap}`;
       if (nextKey === layoutKey) return false;
       layoutKey = nextKey;
+      approaches.reset();
       if (school) school.resize(layout); else school = new AttentionSchool(layout, fishCount, fishScale);
       schoolRef.current = school;
       targetSystem = undefined;
@@ -493,6 +502,7 @@ export function InstagramSocialStoryTray() {
         const delta = Math.min(1000 / 24, Math.max(0, started - previous));
         elapsedSeconds += delta / 1000;
         school.step(delta / 1000, now);
+        approaches.step(school.fish, school.relations, started / 1000, onApproach);
         scene.render(school.fish, elapsedSeconds, delta / 1000, showTracesRef.current, traceDurationRef.current, showTargetLinesRef.current, showApproachRingsRef.current, targetLineShapeRef.current, school.relations, fishPaletteIdRef.current);
       } else if (layoutChanged || targetsChanged || traceChanged || traceDurationChanged || targetLinesChanged || approachRingsChanged || targetLineShapeChanged || fishPaletteChanged) {
         scene.render(school.fish, elapsedSeconds, 0, showTracesRef.current, traceDurationRef.current, showTargetLinesRef.current, showApproachRingsRef.current, targetLineShapeRef.current, school.relations, fishPaletteIdRef.current);
@@ -523,7 +533,7 @@ export function InstagramSocialStoryTray() {
       scene?.dispose();
       if (schoolRef.current === school) schoolRef.current = null;
     };
-  }, [fishCount, fishScale]);
+  }, [fishCount, fishScale, soundEngine]);
 
   const gridStyle = {
     "--grid-columns": gridSize.columns,
@@ -687,6 +697,16 @@ export function InstagramSocialStoryTray() {
                 </div>
               </fieldset>
 
+              <fieldset className={styles.controlGroup}>
+                <legend className={styles.controlLegend}>sound</legend>
+                <button aria-pressed={sound.enabled} disabled={sound.busy} className={styles.optionButton} onClick={() => void sound.toggle()} type="button">sound {sound.enabled ? "on" : "off"}</button>
+                <label className={styles.sliderControl}>
+                  <span>volume</span>
+                  <input aria-label="Approach sound volume" type="range" min="0" max="70" step="1" value={sound.volume} onChange={event => sound.changeVolume(Number(event.currentTarget.value))} />
+                  <output>{sound.volume}%</output>
+                </label>
+                {sound.error ? <p role="status">{sound.error}</p> : null}
+              </fieldset>
               <fieldset className={styles.controlGroup}>
                 <legend className={styles.controlLegend}>field</legend>
                 <div className={styles.optionGrid}>

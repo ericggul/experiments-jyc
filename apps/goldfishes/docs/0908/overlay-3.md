@@ -9,6 +9,7 @@ Route: `/screen/0908/overlay-3` (alias `/0908/overlay-3`). A local `0908/overlay
 - `image` crops the local 6×6 no-text technology atlas in keyword order. `image mono` only desaturates/adjusts that image; the surface still controls ring colour.
 - The edge stays the parent’s plain edge. Directional edge controls and labels beneath bubbles are removed.
 - Right-side collapsible controls group surface, tech type, layout, fish school, story rings, and field options.
+- A bubble entering `new` scales from ×0.92 to ×1 over 0.30s; a leaving/empty bubble makes the inverse transition over 0.30s.
 
 ## Fish school
 
@@ -21,7 +22,7 @@ Route: `/screen/0908/overlay-3` (alias `/0908/overlay-3`). A local `0908/overlay
 
 - `traces`: a 12Hz typed ring buffer holding only the latest 1–10 seconds (default 5). Paths are batched and capped at 12,000 segments per frame.
 - `target lines`: one mouth-to-current-target line per fish, never candidate/all-cell links. `target curve` uses an explicit two-control-point cubic Bézier and enables target lines on first activation.
-- `approach rings`: rings-only mode. Story edges and target lines are hidden. Every fish inside its target’s outer 24px approach band has one closed circle centred on that keyword, with the fish on its circumference. It fades in over 0.20s on entry, stays while that geometric condition holds, and fades out over 0.30s only after departure; isolated rings are clearer while overlapping rings are attenuated. Ring states and opacity buckets are fixed typed arrays rendered at full resolution by GPU instances.
+- `approach rings`: adds a circle to each fish inside its target’s outer 24px approach band; its keyword is the centre and the fish sits on the circumference. Plain keyword edges remain visible. Target lines are hidden when rings are enabled. Each circle fades in over 0.20s on entry, stays while that geometric condition holds, and fades out over 0.30s only after departure; isolated rings are clearer while overlapping rings are attenuated. Ring states and opacity buckets are fixed typed arrays rendered at full resolution by GPU instances.
 - `backboard` and `approach rings` are enabled initially; all other field options remain off.
 - `origins +`: a visible, centred `+` glyph inside each bubble surface, below its keyword/image.
 

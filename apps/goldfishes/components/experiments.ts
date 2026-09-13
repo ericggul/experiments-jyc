@@ -147,6 +147,15 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/0908/overlay-3"),
   },
   {
+    key: "screen/0908/overlay-4",
+    legacyKeys: ["0908/overlay-4"],
+    area: "screen",
+    section: "dated",
+    date: "2026-09-13",
+    phrase: "Recorded underwater textures from goldfish approach events",
+    load: () => import("./screen/0908/overlay-4"),
+  },
+  {
     key: "screen/0908/overlay-2d",
     legacyKeys: ["0908/overlay-2d"],
     area: "screen",
