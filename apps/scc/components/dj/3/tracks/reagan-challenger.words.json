@@ -1,0 +1,4573 @@
+[
+  {
+    "id": "w-001",
+    "text": "Ladies",
+    "start": 2.32,
+    "end": 2.84,
+    "channel": "l"
+  },
+  {
+    "id": "w-002",
+    "text": "and",
+    "start": 2.84,
+    "end": 3.04,
+    "channel": "a"
+  },
+  {
+    "id": "w-003",
+    "text": "gentlemen",
+    "start": 3.04,
+    "end": 3.3,
+    "channel": "g"
+  },
+  {
+    "id": "w-004",
+    "text": "I'd",
+    "start": 3.78,
+    "end": 4.08,
+    "channel": "i"
+  },
+  {
+    "id": "w-005",
+    "text": "planned",
+    "start": 4.08,
+    "end": 4.32,
+    "channel": "p"
+  },
+  {
+    "id": "w-006",
+    "text": "to",
+    "start": 4.32,
+    "end": 4.5,
+    "channel": "t"
+  },
+  {
+    "id": "w-007",
+    "text": "speak",
+    "start": 4.5,
+    "end": 4.76,
+    "channel": "s"
+  },
+  {
+    "id": "w-008",
+    "text": "to",
+    "start": 4.76,
+    "end": 4.92,
+    "channel": "t"
+  },
+  {
+    "id": "w-009",
+    "text": "you",
+    "start": 4.92,
+    "end": 5.04,
+    "channel": "y"
+  },
+  {
+    "id": "w-010",
+    "text": "tonight",
+    "start": 5.04,
+    "end": 5.34,
+    "channel": "t"
+  },
+  {
+    "id": "w-011",
+    "text": "to",
+    "start": 5.34,
+    "end": 5.6,
+    "channel": "t"
+  },
+  {
+    "id": "w-012",
+    "text": "report",
+    "start": 5.6,
+    "end": 6.08,
+    "channel": "r"
+  },
+  {
+    "id": "w-013",
+    "text": "on",
+    "start": 6.08,
+    "end": 6.24,
+    "channel": "o"
+  },
+  {
+    "id": "w-014",
+    "text": "the",
+    "start": 6.24,
+    "end": 6.32,
+    "channel": "t"
+  },
+  {
+    "id": "w-015",
+    "text": "state",
+    "start": 6.32,
+    "end": 6.5,
+    "channel": "s"
+  },
+  {
+    "id": "w-016",
+    "text": "of",
+    "start": 6.5,
+    "end": 6.64,
+    "channel": "o"
+  },
+  {
+    "id": "w-017",
+    "text": "the",
+    "start": 6.64,
+    "end": 6.72,
+    "channel": "t"
+  },
+  {
+    "id": "w-018",
+    "text": "Union",
+    "start": 6.72,
+    "end": 7.02,
+    "channel": "u"
+  },
+  {
+    "id": "w-019",
+    "text": "but",
+    "start": 7.64,
+    "end": 8.16,
+    "channel": "b"
+  },
+  {
+    "id": "w-020",
+    "text": "the",
+    "start": 8.16,
+    "end": 8.24,
+    "channel": "t"
+  },
+  {
+    "id": "w-021",
+    "text": "events",
+    "start": 8.24,
+    "end": 8.54,
+    "channel": "e"
+  },
+  {
+    "id": "w-022",
+    "text": "of",
+    "start": 8.54,
+    "end": 8.7,
+    "channel": "o"
+  },
+  {
+    "id": "w-023",
+    "text": "earlier",
+    "start": 8.7,
+    "end": 8.92,
+    "channel": "e"
+  },
+  {
+    "id": "w-024",
+    "text": "today",
+    "start": 8.92,
+    "end": 9.24,
+    "channel": "t"
+  },
+  {
+    "id": "w-025",
+    "text": "have",
+    "start": 9.24,
+    "end": 9.6,
+    "channel": "h"
+  },
+  {
+    "id": "w-026",
+    "text": "led",
+    "start": 9.6,
+    "end": 10.18,
+    "channel": "l"
+  },
+  {
+    "id": "w-027",
+    "text": "me",
+    "start": 10.18,
+    "end": 10.32,
+    "channel": "m"
+  },
+  {
+    "id": "w-028",
+    "text": "to",
+    "start": 10.32,
+    "end": 10.42,
+    "channel": "t"
+  },
+  {
+    "id": "w-029",
+    "text": "change",
+    "start": 10.42,
+    "end": 10.7,
+    "channel": "c"
+  },
+  {
+    "id": "w-030",
+    "text": "those",
+    "start": 10.7,
+    "end": 10.94,
+    "channel": "t"
+  },
+  {
+    "id": "w-031",
+    "text": "plans",
+    "start": 10.94,
+    "end": 11.4,
+    "channel": "p"
+  },
+  {
+    "id": "w-032",
+    "text": "Today",
+    "start": 12.36,
+    "end": 12.88,
+    "channel": "t"
+  },
+  {
+    "id": "w-033",
+    "text": "is",
+    "start": 12.88,
+    "end": 13.32,
+    "channel": "i"
+  },
+  {
+    "id": "w-034",
+    "text": "a",
+    "start": 13.32,
+    "end": 13.42,
+    "channel": "a"
+  },
+  {
+    "id": "w-035",
+    "text": "day",
+    "start": 13.42,
+    "end": 13.58,
+    "channel": "d"
+  },
+  {
+    "id": "w-036",
+    "text": "for",
+    "start": 13.58,
+    "end": 13.8,
+    "channel": "f"
+  },
+  {
+    "id": "w-037",
+    "text": "mourning",
+    "start": 13.8,
+    "end": 14.12,
+    "channel": "m"
+  },
+  {
+    "id": "w-038",
+    "text": "and",
+    "start": 14.12,
+    "end": 14.54,
+    "channel": "a"
+  },
+  {
+    "id": "w-039",
+    "text": "remembering",
+    "start": 14.54,
+    "end": 15.0,
+    "channel": "r"
+  },
+  {
+    "id": "w-040",
+    "text": "Nancy",
+    "start": 16.0,
+    "end": 16.52,
+    "channel": "n"
+  },
+  {
+    "id": "w-041",
+    "text": "and",
+    "start": 16.52,
+    "end": 16.7,
+    "channel": "a"
+  },
+  {
+    "id": "w-042",
+    "text": "I",
+    "start": 16.7,
+    "end": 16.88,
+    "channel": "i"
+  },
+  {
+    "id": "w-043",
+    "text": "are",
+    "start": 16.88,
+    "end": 17.04,
+    "channel": "a"
+  },
+  {
+    "id": "w-044",
+    "text": "pained",
+    "start": 17.04,
+    "end": 17.4,
+    "channel": "p"
+  },
+  {
+    "id": "w-045",
+    "text": "to",
+    "start": 17.4,
+    "end": 17.56,
+    "channel": "t"
+  },
+  {
+    "id": "w-046",
+    "text": "the",
+    "start": 17.56,
+    "end": 17.66,
+    "channel": "t"
+  },
+  {
+    "id": "w-047",
+    "text": "core",
+    "start": 17.66,
+    "end": 17.92,
+    "channel": "c"
+  },
+  {
+    "id": "w-048",
+    "text": "by",
+    "start": 17.92,
+    "end": 18.06,
+    "channel": "b"
+  },
+  {
+    "id": "w-049",
+    "text": "the",
+    "start": 18.06,
+    "end": 18.18,
+    "channel": "t"
+  },
+  {
+    "id": "w-050",
+    "text": "tragedy",
+    "start": 18.18,
+    "end": 18.56,
+    "channel": "t"
+  },
+  {
+    "id": "w-051",
+    "text": "of",
+    "start": 18.56,
+    "end": 18.76,
+    "channel": "o"
+  },
+  {
+    "id": "w-052",
+    "text": "the",
+    "start": 18.76,
+    "end": 18.82,
+    "channel": "t"
+  },
+  {
+    "id": "w-053",
+    "text": "shuttle",
+    "start": 18.82,
+    "end": 19.06,
+    "channel": "s"
+  },
+  {
+    "id": "w-054",
+    "text": "Challenger",
+    "start": 19.06,
+    "end": 19.62,
+    "channel": "c"
+  },
+  {
+    "id": "w-055",
+    "text": "We",
+    "start": 20.02,
+    "end": 20.52,
+    "channel": "w"
+  },
+  {
+    "id": "w-056",
+    "text": "know",
+    "start": 20.52,
+    "end": 20.66,
+    "channel": "k"
+  },
+  {
+    "id": "w-057",
+    "text": "we",
+    "start": 20.66,
+    "end": 20.86,
+    "channel": "w"
+  },
+  {
+    "id": "w-058",
+    "text": "share",
+    "start": 20.86,
+    "end": 21.14,
+    "channel": "s"
+  },
+  {
+    "id": "w-059",
+    "text": "this",
+    "start": 21.14,
+    "end": 21.4,
+    "channel": "t"
+  },
+  {
+    "id": "w-060",
+    "text": "pain",
+    "start": 21.4,
+    "end": 21.7,
+    "channel": "p"
+  },
+  {
+    "id": "w-061",
+    "text": "with",
+    "start": 21.7,
+    "end": 21.92,
+    "channel": "w"
+  },
+  {
+    "id": "w-062",
+    "text": "all",
+    "start": 21.92,
+    "end": 22.42,
+    "channel": "a"
+  },
+  {
+    "id": "w-063",
+    "text": "of",
+    "start": 22.42,
+    "end": 22.54,
+    "channel": "o"
+  },
+  {
+    "id": "w-064",
+    "text": "the",
+    "start": 22.54,
+    "end": 22.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-065",
+    "text": "people",
+    "start": 22.62,
+    "end": 22.86,
+    "channel": "p"
+  },
+  {
+    "id": "w-066",
+    "text": "of",
+    "start": 22.86,
+    "end": 23.02,
+    "channel": "o"
+  },
+  {
+    "id": "w-067",
+    "text": "our",
+    "start": 23.02,
+    "end": 23.16,
+    "channel": "o"
+  },
+  {
+    "id": "w-068",
+    "text": "country",
+    "start": 23.16,
+    "end": 23.48,
+    "channel": "c"
+  },
+  {
+    "id": "w-069",
+    "text": "This",
+    "start": 24.0,
+    "end": 24.52,
+    "channel": "t"
+  },
+  {
+    "id": "w-070",
+    "text": "is",
+    "start": 24.52,
+    "end": 24.7,
+    "channel": "i"
+  },
+  {
+    "id": "w-071",
+    "text": "truly",
+    "start": 24.7,
+    "end": 25.02,
+    "channel": "t"
+  },
+  {
+    "id": "w-072",
+    "text": "a",
+    "start": 25.02,
+    "end": 25.46,
+    "channel": "a"
+  },
+  {
+    "id": "w-073",
+    "text": "national",
+    "start": 25.46,
+    "end": 25.86,
+    "channel": "n"
+  },
+  {
+    "id": "w-074",
+    "text": "loss",
+    "start": 25.86,
+    "end": 26.32,
+    "channel": "l"
+  },
+  {
+    "id": "w-075",
+    "text": "Nineteen",
+    "start": 27.56,
+    "end": 28.08,
+    "channel": "n"
+  },
+  {
+    "id": "w-076",
+    "text": "years",
+    "start": 28.08,
+    "end": 28.32,
+    "channel": "y"
+  },
+  {
+    "id": "w-077",
+    "text": "ago",
+    "start": 28.32,
+    "end": 28.68,
+    "channel": "a"
+  },
+  {
+    "id": "w-078",
+    "text": "almost",
+    "start": 28.84,
+    "end": 29.32,
+    "channel": "a"
+  },
+  {
+    "id": "w-079",
+    "text": "to",
+    "start": 29.32,
+    "end": 29.52,
+    "channel": "t"
+  },
+  {
+    "id": "w-080",
+    "text": "the",
+    "start": 29.52,
+    "end": 29.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-081",
+    "text": "day",
+    "start": 29.62,
+    "end": 29.86,
+    "channel": "d"
+  },
+  {
+    "id": "w-082",
+    "text": "we",
+    "start": 29.86,
+    "end": 30.36,
+    "channel": "w"
+  },
+  {
+    "id": "w-083",
+    "text": "lost",
+    "start": 30.36,
+    "end": 30.78,
+    "channel": "l"
+  },
+  {
+    "id": "w-084",
+    "text": "three",
+    "start": 30.78,
+    "end": 31.04,
+    "channel": "t"
+  },
+  {
+    "id": "w-085",
+    "text": "astronauts",
+    "start": 31.04,
+    "end": 31.52,
+    "channel": "a"
+  },
+  {
+    "id": "w-086",
+    "text": "in",
+    "start": 31.52,
+    "end": 31.78,
+    "channel": "i"
+  },
+  {
+    "id": "w-087",
+    "text": "a",
+    "start": 31.78,
+    "end": 31.88,
+    "channel": "a"
+  },
+  {
+    "id": "w-088",
+    "text": "terrible",
+    "start": 31.88,
+    "end": 32.18,
+    "channel": "t"
+  },
+  {
+    "id": "w-089",
+    "text": "accident",
+    "start": 32.18,
+    "end": 32.6,
+    "channel": "a"
+  },
+  {
+    "id": "w-090",
+    "text": "on",
+    "start": 32.6,
+    "end": 32.8,
+    "channel": "o"
+  },
+  {
+    "id": "w-091",
+    "text": "the",
+    "start": 32.8,
+    "end": 32.9,
+    "channel": "t"
+  },
+  {
+    "id": "w-092",
+    "text": "ground",
+    "start": 32.9,
+    "end": 33.18,
+    "channel": "g"
+  },
+  {
+    "id": "w-093",
+    "text": "But",
+    "start": 33.68,
+    "end": 34.32,
+    "channel": "b"
+  },
+  {
+    "id": "w-094",
+    "text": "we've",
+    "start": 34.32,
+    "end": 34.68,
+    "channel": "w"
+  },
+  {
+    "id": "w-095",
+    "text": "never",
+    "start": 34.68,
+    "end": 34.94,
+    "channel": "n"
+  },
+  {
+    "id": "w-096",
+    "text": "lost",
+    "start": 34.94,
+    "end": 35.24,
+    "channel": "l"
+  },
+  {
+    "id": "w-097",
+    "text": "an",
+    "start": 35.24,
+    "end": 35.44,
+    "channel": "a"
+  },
+  {
+    "id": "w-098",
+    "text": "astronaut",
+    "start": 35.44,
+    "end": 35.76,
+    "channel": "a"
+  },
+  {
+    "id": "w-099",
+    "text": "in",
+    "start": 35.76,
+    "end": 36.04,
+    "channel": "i"
+  },
+  {
+    "id": "w-100",
+    "text": "flight",
+    "start": 36.04,
+    "end": 36.32,
+    "channel": "f"
+  },
+  {
+    "id": "w-101",
+    "text": "we've",
+    "start": 36.78,
+    "end": 37.42,
+    "channel": "w"
+  },
+  {
+    "id": "w-102",
+    "text": "never",
+    "start": 37.42,
+    "end": 37.66,
+    "channel": "n"
+  },
+  {
+    "id": "w-103",
+    "text": "had",
+    "start": 37.66,
+    "end": 38.02,
+    "channel": "h"
+  },
+  {
+    "id": "w-104",
+    "text": "a",
+    "start": 38.02,
+    "end": 38.14,
+    "channel": "a"
+  },
+  {
+    "id": "w-105",
+    "text": "tragedy",
+    "start": 38.14,
+    "end": 38.5,
+    "channel": "t"
+  },
+  {
+    "id": "w-106",
+    "text": "like",
+    "start": 38.5,
+    "end": 38.78,
+    "channel": "l"
+  },
+  {
+    "id": "w-107",
+    "text": "this",
+    "start": 38.78,
+    "end": 39.12,
+    "channel": "t"
+  },
+  {
+    "id": "w-108",
+    "text": "And",
+    "start": 39.52,
+    "end": 40.16,
+    "channel": "a"
+  },
+  {
+    "id": "w-109",
+    "text": "perhaps",
+    "start": 40.16,
+    "end": 40.44,
+    "channel": "p"
+  },
+  {
+    "id": "w-110",
+    "text": "we've",
+    "start": 40.44,
+    "end": 40.74,
+    "channel": "w"
+  },
+  {
+    "id": "w-111",
+    "text": "forgotten",
+    "start": 40.74,
+    "end": 41.08,
+    "channel": "f"
+  },
+  {
+    "id": "w-112",
+    "text": "the",
+    "start": 41.08,
+    "end": 41.28,
+    "channel": "t"
+  },
+  {
+    "id": "w-113",
+    "text": "courage",
+    "start": 41.28,
+    "end": 41.6,
+    "channel": "c"
+  },
+  {
+    "id": "w-114",
+    "text": "it",
+    "start": 41.6,
+    "end": 41.82,
+    "channel": "i"
+  },
+  {
+    "id": "w-115",
+    "text": "took",
+    "start": 41.82,
+    "end": 41.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-116",
+    "text": "for",
+    "start": 41.98,
+    "end": 42.18,
+    "channel": "f"
+  },
+  {
+    "id": "w-117",
+    "text": "the",
+    "start": 42.18,
+    "end": 42.32,
+    "channel": "t"
+  },
+  {
+    "id": "w-118",
+    "text": "crew",
+    "start": 42.32,
+    "end": 42.74,
+    "channel": "c"
+  },
+  {
+    "id": "w-119",
+    "text": "of",
+    "start": 42.74,
+    "end": 42.9,
+    "channel": "o"
+  },
+  {
+    "id": "w-120",
+    "text": "the",
+    "start": 42.9,
+    "end": 42.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-121",
+    "text": "shuttle",
+    "start": 42.98,
+    "end": 43.28,
+    "channel": "s"
+  },
+  {
+    "id": "w-122",
+    "text": "But",
+    "start": 43.8,
+    "end": 44.4,
+    "channel": "b"
+  },
+  {
+    "id": "w-123",
+    "text": "they",
+    "start": 44.4,
+    "end": 44.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-124",
+    "text": "the",
+    "start": 44.8,
+    "end": 44.94,
+    "channel": "t"
+  },
+  {
+    "id": "w-125",
+    "text": "Challenger",
+    "start": 44.94,
+    "end": 45.6,
+    "channel": "c"
+  },
+  {
+    "id": "w-126",
+    "text": "Seven",
+    "start": 45.6,
+    "end": 45.9,
+    "channel": "s"
+  },
+  {
+    "id": "w-127",
+    "text": "were",
+    "start": 46.14,
+    "end": 46.36,
+    "channel": "w"
+  },
+  {
+    "id": "w-128",
+    "text": "aware",
+    "start": 46.36,
+    "end": 46.6,
+    "channel": "a"
+  },
+  {
+    "id": "w-129",
+    "text": "of",
+    "start": 46.6,
+    "end": 46.76,
+    "channel": "o"
+  },
+  {
+    "id": "w-130",
+    "text": "the",
+    "start": 46.76,
+    "end": 46.86,
+    "channel": "t"
+  },
+  {
+    "id": "w-131",
+    "text": "dangers",
+    "start": 46.86,
+    "end": 47.28,
+    "channel": "d"
+  },
+  {
+    "id": "w-132",
+    "text": "but",
+    "start": 47.28,
+    "end": 48.1,
+    "channel": "b"
+  },
+  {
+    "id": "w-133",
+    "text": "overcame",
+    "start": 48.1,
+    "end": 48.5,
+    "channel": "o"
+  },
+  {
+    "id": "w-134",
+    "text": "them",
+    "start": 48.5,
+    "end": 48.68,
+    "channel": "t"
+  },
+  {
+    "id": "w-135",
+    "text": "and",
+    "start": 48.68,
+    "end": 48.9,
+    "channel": "a"
+  },
+  {
+    "id": "w-136",
+    "text": "did",
+    "start": 48.9,
+    "end": 49.24,
+    "channel": "d"
+  },
+  {
+    "id": "w-137",
+    "text": "their",
+    "start": 49.24,
+    "end": 49.42,
+    "channel": "t"
+  },
+  {
+    "id": "w-138",
+    "text": "jobs",
+    "start": 49.42,
+    "end": 49.78,
+    "channel": "j"
+  },
+  {
+    "id": "w-139",
+    "text": "brilliantly",
+    "start": 49.78,
+    "end": 50.24,
+    "channel": "b"
+  },
+  {
+    "id": "w-140",
+    "text": "We",
+    "start": 50.78,
+    "end": 51.42,
+    "channel": "w"
+  },
+  {
+    "id": "w-141",
+    "text": "mourn",
+    "start": 51.42,
+    "end": 51.84,
+    "channel": "m"
+  },
+  {
+    "id": "w-142",
+    "text": "seven",
+    "start": 51.84,
+    "end": 52.32,
+    "channel": "s"
+  },
+  {
+    "id": "w-143",
+    "text": "heroes",
+    "start": 52.32,
+    "end": 52.88,
+    "channel": "h"
+  },
+  {
+    "id": "w-144",
+    "text": "Michael",
+    "start": 53.16,
+    "end": 53.62,
+    "channel": "m"
+  },
+  {
+    "id": "w-145",
+    "text": "Smith",
+    "start": 53.62,
+    "end": 53.98,
+    "channel": "s"
+  },
+  {
+    "id": "w-146",
+    "text": "Dick",
+    "start": 54.48,
+    "end": 55.02,
+    "channel": "d"
+  },
+  {
+    "id": "w-147",
+    "text": "Scobee",
+    "start": 55.02,
+    "end": 55.48,
+    "channel": "s"
+  },
+  {
+    "id": "w-148",
+    "text": "Judith",
+    "start": 56.14,
+    "end": 56.5,
+    "channel": "j"
+  },
+  {
+    "id": "w-149",
+    "text": "Resnik",
+    "start": 56.5,
+    "end": 57.08,
+    "channel": "r"
+  },
+  {
+    "id": "w-150",
+    "text": "Ronald",
+    "start": 57.08,
+    "end": 57.98,
+    "channel": "r"
+  },
+  {
+    "id": "w-151",
+    "text": "McNair",
+    "start": 57.98,
+    "end": 58.52,
+    "channel": "m"
+  },
+  {
+    "id": "w-152",
+    "text": "Ellison",
+    "start": 59.38,
+    "end": 59.98,
+    "channel": "e"
+  },
+  {
+    "id": "w-153",
+    "text": "Onizuka",
+    "start": 59.98,
+    "end": 60.58,
+    "channel": "o"
+  },
+  {
+    "id": "w-154",
+    "text": "Gregory",
+    "start": 61.2,
+    "end": 61.8,
+    "channel": "g"
+  },
+  {
+    "id": "w-155",
+    "text": "Jarvis",
+    "start": 61.8,
+    "end": 62.4,
+    "channel": "j"
+  },
+  {
+    "id": "w-156",
+    "text": "and",
+    "start": 62.4,
+    "end": 62.94,
+    "channel": "a"
+  },
+  {
+    "id": "w-157",
+    "text": "Christa",
+    "start": 62.94,
+    "end": 63.26,
+    "channel": "c"
+  },
+  {
+    "id": "w-158",
+    "text": "McAuliffe",
+    "start": 63.26,
+    "end": 63.76,
+    "channel": "m"
+  },
+  {
+    "id": "w-159",
+    "text": "We",
+    "start": 64.5,
+    "end": 65.1,
+    "channel": "w"
+  },
+  {
+    "id": "w-160",
+    "text": "mourn",
+    "start": 65.1,
+    "end": 65.44,
+    "channel": "m"
+  },
+  {
+    "id": "w-161",
+    "text": "their",
+    "start": 65.44,
+    "end": 65.58,
+    "channel": "t"
+  },
+  {
+    "id": "w-162",
+    "text": "loss",
+    "start": 65.58,
+    "end": 65.92,
+    "channel": "l"
+  },
+  {
+    "id": "w-163",
+    "text": "as",
+    "start": 65.92,
+    "end": 66.16,
+    "channel": "a"
+  },
+  {
+    "id": "w-164",
+    "text": "a",
+    "start": 66.16,
+    "end": 66.26,
+    "channel": "a"
+  },
+  {
+    "id": "w-165",
+    "text": "nation",
+    "start": 66.26,
+    "end": 66.56,
+    "channel": "n"
+  },
+  {
+    "id": "w-166",
+    "text": "together",
+    "start": 66.56,
+    "end": 66.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-167",
+    "text": "For",
+    "start": 67.8,
+    "end": 68.28,
+    "channel": "f"
+  },
+  {
+    "id": "w-168",
+    "text": "the",
+    "start": 68.28,
+    "end": 68.38,
+    "channel": "t"
+  },
+  {
+    "id": "w-169",
+    "text": "families",
+    "start": 68.38,
+    "end": 68.72,
+    "channel": "f"
+  },
+  {
+    "id": "w-170",
+    "text": "of",
+    "start": 68.72,
+    "end": 68.88,
+    "channel": "o"
+  },
+  {
+    "id": "w-171",
+    "text": "the",
+    "start": 68.88,
+    "end": 69.0,
+    "channel": "t"
+  },
+  {
+    "id": "w-172",
+    "text": "seven",
+    "start": 69.0,
+    "end": 69.3,
+    "channel": "s"
+  },
+  {
+    "id": "w-173",
+    "text": "we",
+    "start": 69.92,
+    "end": 70.52,
+    "channel": "w"
+  },
+  {
+    "id": "w-174",
+    "text": "cannot",
+    "start": 70.52,
+    "end": 70.8,
+    "channel": "c"
+  },
+  {
+    "id": "w-175",
+    "text": "bear",
+    "start": 70.8,
+    "end": 71.2,
+    "channel": "b"
+  },
+  {
+    "id": "w-176",
+    "text": "as",
+    "start": 71.2,
+    "end": 71.46,
+    "channel": "a"
+  },
+  {
+    "id": "w-177",
+    "text": "you",
+    "start": 71.46,
+    "end": 71.58,
+    "channel": "y"
+  },
+  {
+    "id": "w-178",
+    "text": "do",
+    "start": 71.58,
+    "end": 71.76,
+    "channel": "d"
+  },
+  {
+    "id": "w-179",
+    "text": "the",
+    "start": 71.76,
+    "end": 71.96,
+    "channel": "t"
+  },
+  {
+    "id": "w-180",
+    "text": "full",
+    "start": 71.96,
+    "end": 72.26,
+    "channel": "f"
+  },
+  {
+    "id": "w-181",
+    "text": "impact",
+    "start": 72.26,
+    "end": 72.84,
+    "channel": "i"
+  },
+  {
+    "id": "w-182",
+    "text": "of",
+    "start": 72.84,
+    "end": 73.1,
+    "channel": "o"
+  },
+  {
+    "id": "w-183",
+    "text": "this",
+    "start": 73.1,
+    "end": 73.24,
+    "channel": "t"
+  },
+  {
+    "id": "w-184",
+    "text": "tragedy",
+    "start": 73.24,
+    "end": 73.66,
+    "channel": "t"
+  },
+  {
+    "id": "w-185",
+    "text": "But",
+    "start": 74.36,
+    "end": 74.96,
+    "channel": "b"
+  },
+  {
+    "id": "w-186",
+    "text": "we",
+    "start": 74.96,
+    "end": 75.1,
+    "channel": "w"
+  },
+  {
+    "id": "w-187",
+    "text": "feel",
+    "start": 75.1,
+    "end": 75.38,
+    "channel": "f"
+  },
+  {
+    "id": "w-188",
+    "text": "the",
+    "start": 75.38,
+    "end": 75.52,
+    "channel": "t"
+  },
+  {
+    "id": "w-189",
+    "text": "loss",
+    "start": 75.52,
+    "end": 75.88,
+    "channel": "l"
+  },
+  {
+    "id": "w-190",
+    "text": "and",
+    "start": 75.88,
+    "end": 76.3,
+    "channel": "a"
+  },
+  {
+    "id": "w-191",
+    "text": "we're",
+    "start": 76.3,
+    "end": 76.46,
+    "channel": "w"
+  },
+  {
+    "id": "w-192",
+    "text": "thinking",
+    "start": 76.46,
+    "end": 76.68,
+    "channel": "t"
+  },
+  {
+    "id": "w-193",
+    "text": "about",
+    "start": 76.68,
+    "end": 76.98,
+    "channel": "a"
+  },
+  {
+    "id": "w-194",
+    "text": "you",
+    "start": 76.98,
+    "end": 77.26,
+    "channel": "y"
+  },
+  {
+    "id": "w-195",
+    "text": "so",
+    "start": 77.26,
+    "end": 77.66,
+    "channel": "s"
+  },
+  {
+    "id": "w-196",
+    "text": "very",
+    "start": 77.66,
+    "end": 77.9,
+    "channel": "v"
+  },
+  {
+    "id": "w-197",
+    "text": "much",
+    "start": 77.9,
+    "end": 78.24,
+    "channel": "m"
+  },
+  {
+    "id": "w-198",
+    "text": "Your",
+    "start": 79.0,
+    "end": 79.6,
+    "channel": "y"
+  },
+  {
+    "id": "w-199",
+    "text": "loved",
+    "start": 79.6,
+    "end": 79.82,
+    "channel": "l"
+  },
+  {
+    "id": "w-200",
+    "text": "ones",
+    "start": 79.82,
+    "end": 80.04,
+    "channel": "o"
+  },
+  {
+    "id": "w-201",
+    "text": "were",
+    "start": 80.04,
+    "end": 80.24,
+    "channel": "w"
+  },
+  {
+    "id": "w-202",
+    "text": "daring",
+    "start": 80.24,
+    "end": 80.62,
+    "channel": "d"
+  },
+  {
+    "id": "w-203",
+    "text": "and",
+    "start": 80.62,
+    "end": 80.84,
+    "channel": "a"
+  },
+  {
+    "id": "w-204",
+    "text": "brave",
+    "start": 80.84,
+    "end": 81.12,
+    "channel": "b"
+  },
+  {
+    "id": "w-205",
+    "text": "and",
+    "start": 81.94,
+    "end": 82.54,
+    "channel": "a"
+  },
+  {
+    "id": "w-206",
+    "text": "they",
+    "start": 82.54,
+    "end": 82.64,
+    "channel": "t"
+  },
+  {
+    "id": "w-207",
+    "text": "had",
+    "start": 82.64,
+    "end": 82.78,
+    "channel": "h"
+  },
+  {
+    "id": "w-208",
+    "text": "that",
+    "start": 82.78,
+    "end": 82.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-209",
+    "text": "special",
+    "start": 82.98,
+    "end": 83.48,
+    "channel": "s"
+  },
+  {
+    "id": "w-210",
+    "text": "grace",
+    "start": 83.48,
+    "end": 83.92,
+    "channel": "g"
+  },
+  {
+    "id": "w-211",
+    "text": "that",
+    "start": 83.92,
+    "end": 84.42,
+    "channel": "t"
+  },
+  {
+    "id": "w-212",
+    "text": "special",
+    "start": 84.42,
+    "end": 84.82,
+    "channel": "s"
+  },
+  {
+    "id": "w-213",
+    "text": "spirit",
+    "start": 84.82,
+    "end": 85.22,
+    "channel": "s"
+  },
+  {
+    "id": "w-214",
+    "text": "that",
+    "start": 85.22,
+    "end": 85.42,
+    "channel": "t"
+  },
+  {
+    "id": "w-215",
+    "text": "says",
+    "start": 85.42,
+    "end": 85.72,
+    "channel": "s"
+  },
+  {
+    "id": "w-216",
+    "text": "Give",
+    "start": 85.72,
+    "end": 85.94,
+    "channel": "g"
+  },
+  {
+    "id": "w-217",
+    "text": "me",
+    "start": 85.94,
+    "end": 86.06,
+    "channel": "m"
+  },
+  {
+    "id": "w-218",
+    "text": "a",
+    "start": 86.06,
+    "end": 86.18,
+    "channel": "a"
+  },
+  {
+    "id": "w-219",
+    "text": "challenge",
+    "start": 86.18,
+    "end": 86.58,
+    "channel": "c"
+  },
+  {
+    "id": "w-220",
+    "text": "and",
+    "start": 86.58,
+    "end": 87.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-221",
+    "text": "I'll",
+    "start": 87.34,
+    "end": 87.5,
+    "channel": "i"
+  },
+  {
+    "id": "w-222",
+    "text": "meet",
+    "start": 87.5,
+    "end": 87.68,
+    "channel": "m"
+  },
+  {
+    "id": "w-223",
+    "text": "it",
+    "start": 87.68,
+    "end": 87.78,
+    "channel": "i"
+  },
+  {
+    "id": "w-224",
+    "text": "with",
+    "start": 87.78,
+    "end": 87.94,
+    "channel": "w"
+  },
+  {
+    "id": "w-225",
+    "text": "joy",
+    "start": 87.94,
+    "end": 88.22,
+    "channel": "j"
+  },
+  {
+    "id": "w-226",
+    "text": "They",
+    "start": 88.94,
+    "end": 89.5,
+    "channel": "t"
+  },
+  {
+    "id": "w-227",
+    "text": "had",
+    "start": 89.5,
+    "end": 89.64,
+    "channel": "h"
+  },
+  {
+    "id": "w-228",
+    "text": "a",
+    "start": 89.64,
+    "end": 89.74,
+    "channel": "a"
+  },
+  {
+    "id": "w-229",
+    "text": "hunger",
+    "start": 89.74,
+    "end": 89.96,
+    "channel": "h"
+  },
+  {
+    "id": "w-230",
+    "text": "to",
+    "start": 89.96,
+    "end": 90.14,
+    "channel": "t"
+  },
+  {
+    "id": "w-231",
+    "text": "explore",
+    "start": 90.14,
+    "end": 90.54,
+    "channel": "e"
+  },
+  {
+    "id": "w-232",
+    "text": "the",
+    "start": 90.54,
+    "end": 90.72,
+    "channel": "t"
+  },
+  {
+    "id": "w-233",
+    "text": "universe",
+    "start": 90.72,
+    "end": 91.02,
+    "channel": "u"
+  },
+  {
+    "id": "w-234",
+    "text": "and",
+    "start": 91.02,
+    "end": 91.3,
+    "channel": "a"
+  },
+  {
+    "id": "w-235",
+    "text": "discover",
+    "start": 91.3,
+    "end": 91.7,
+    "channel": "d"
+  },
+  {
+    "id": "w-236",
+    "text": "its",
+    "start": 91.7,
+    "end": 91.9,
+    "channel": "i"
+  },
+  {
+    "id": "w-237",
+    "text": "truths",
+    "start": 91.9,
+    "end": 92.24,
+    "channel": "t"
+  },
+  {
+    "id": "w-238",
+    "text": "They",
+    "start": 92.84,
+    "end": 93.4,
+    "channel": "t"
+  },
+  {
+    "id": "w-239",
+    "text": "wished",
+    "start": 93.4,
+    "end": 93.58,
+    "channel": "w"
+  },
+  {
+    "id": "w-240",
+    "text": "to",
+    "start": 93.58,
+    "end": 93.74,
+    "channel": "t"
+  },
+  {
+    "id": "w-241",
+    "text": "serve",
+    "start": 93.74,
+    "end": 94.12,
+    "channel": "s"
+  },
+  {
+    "id": "w-242",
+    "text": "and",
+    "start": 94.12,
+    "end": 94.46,
+    "channel": "a"
+  },
+  {
+    "id": "w-243",
+    "text": "they",
+    "start": 94.46,
+    "end": 94.64,
+    "channel": "t"
+  },
+  {
+    "id": "w-244",
+    "text": "did",
+    "start": 94.64,
+    "end": 94.9,
+    "channel": "d"
+  },
+  {
+    "id": "w-245",
+    "text": "They",
+    "start": 95.32,
+    "end": 95.82,
+    "channel": "t"
+  },
+  {
+    "id": "w-246",
+    "text": "served",
+    "start": 95.82,
+    "end": 96.14,
+    "channel": "s"
+  },
+  {
+    "id": "w-247",
+    "text": "all",
+    "start": 96.14,
+    "end": 96.36,
+    "channel": "a"
+  },
+  {
+    "id": "w-248",
+    "text": "of",
+    "start": 96.36,
+    "end": 96.54,
+    "channel": "o"
+  },
+  {
+    "id": "w-249",
+    "text": "us",
+    "start": 96.54,
+    "end": 96.76,
+    "channel": "u"
+  },
+  {
+    "id": "w-250",
+    "text": "We've",
+    "start": 97.44,
+    "end": 98.0,
+    "channel": "w"
+  },
+  {
+    "id": "w-251",
+    "text": "grown",
+    "start": 98.0,
+    "end": 98.18,
+    "channel": "g"
+  },
+  {
+    "id": "w-252",
+    "text": "used",
+    "start": 98.18,
+    "end": 98.44,
+    "channel": "u"
+  },
+  {
+    "id": "w-253",
+    "text": "to",
+    "start": 98.44,
+    "end": 98.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-254",
+    "text": "wonders",
+    "start": 98.62,
+    "end": 98.98,
+    "channel": "w"
+  },
+  {
+    "id": "w-255",
+    "text": "in",
+    "start": 98.98,
+    "end": 99.2,
+    "channel": "i"
+  },
+  {
+    "id": "w-256",
+    "text": "this",
+    "start": 99.2,
+    "end": 99.38,
+    "channel": "t"
+  },
+  {
+    "id": "w-257",
+    "text": "century",
+    "start": 99.38,
+    "end": 99.72,
+    "channel": "c"
+  },
+  {
+    "id": "w-258",
+    "text": "It's",
+    "start": 100.08,
+    "end": 100.58,
+    "channel": "i"
+  },
+  {
+    "id": "w-259",
+    "text": "hard",
+    "start": 100.58,
+    "end": 100.78,
+    "channel": "h"
+  },
+  {
+    "id": "w-260",
+    "text": "to",
+    "start": 100.78,
+    "end": 100.94,
+    "channel": "t"
+  },
+  {
+    "id": "w-261",
+    "text": "dazzle",
+    "start": 100.94,
+    "end": 101.32,
+    "channel": "d"
+  },
+  {
+    "id": "w-262",
+    "text": "us",
+    "start": 101.32,
+    "end": 101.54,
+    "channel": "u"
+  },
+  {
+    "id": "w-263",
+    "text": "But",
+    "start": 101.98,
+    "end": 102.44,
+    "channel": "b"
+  },
+  {
+    "id": "w-264",
+    "text": "for",
+    "start": 102.44,
+    "end": 102.58,
+    "channel": "f"
+  },
+  {
+    "id": "w-265",
+    "text": "twenty-five",
+    "start": 102.58,
+    "end": 102.92,
+    "channel": "t"
+  },
+  {
+    "id": "w-266",
+    "text": "years",
+    "start": 102.92,
+    "end": 103.42,
+    "channel": "y"
+  },
+  {
+    "id": "w-267",
+    "text": "the",
+    "start": 103.6,
+    "end": 103.64,
+    "channel": "t"
+  },
+  {
+    "id": "w-268",
+    "text": "United",
+    "start": 103.64,
+    "end": 103.92,
+    "channel": "u"
+  },
+  {
+    "id": "w-269",
+    "text": "States",
+    "start": 103.92,
+    "end": 104.24,
+    "channel": "s"
+  },
+  {
+    "id": "w-270",
+    "text": "space",
+    "start": 104.24,
+    "end": 104.5,
+    "channel": "s"
+  },
+  {
+    "id": "w-271",
+    "text": "program",
+    "start": 104.5,
+    "end": 104.98,
+    "channel": "p"
+  },
+  {
+    "id": "w-272",
+    "text": "has",
+    "start": 104.98,
+    "end": 105.28,
+    "channel": "h"
+  },
+  {
+    "id": "w-273",
+    "text": "been",
+    "start": 105.28,
+    "end": 105.4,
+    "channel": "b"
+  },
+  {
+    "id": "w-274",
+    "text": "doing",
+    "start": 105.4,
+    "end": 105.62,
+    "channel": "d"
+  },
+  {
+    "id": "w-275",
+    "text": "just",
+    "start": 105.62,
+    "end": 106.0,
+    "channel": "j"
+  },
+  {
+    "id": "w-276",
+    "text": "that",
+    "start": 106.0,
+    "end": 106.28,
+    "channel": "t"
+  },
+  {
+    "id": "w-277",
+    "text": "We've",
+    "start": 106.88,
+    "end": 107.44,
+    "channel": "w"
+  },
+  {
+    "id": "w-278",
+    "text": "grown",
+    "start": 107.44,
+    "end": 107.6,
+    "channel": "g"
+  },
+  {
+    "id": "w-279",
+    "text": "used",
+    "start": 107.6,
+    "end": 107.88,
+    "channel": "u"
+  },
+  {
+    "id": "w-280",
+    "text": "to",
+    "start": 107.88,
+    "end": 108.06,
+    "channel": "t"
+  },
+  {
+    "id": "w-281",
+    "text": "the",
+    "start": 108.06,
+    "end": 108.2,
+    "channel": "t"
+  },
+  {
+    "id": "w-282",
+    "text": "idea",
+    "start": 108.2,
+    "end": 108.5,
+    "channel": "i"
+  },
+  {
+    "id": "w-283",
+    "text": "of",
+    "start": 108.5,
+    "end": 108.7,
+    "channel": "o"
+  },
+  {
+    "id": "w-284",
+    "text": "space",
+    "start": 108.7,
+    "end": 109.12,
+    "channel": "s"
+  },
+  {
+    "id": "w-285",
+    "text": "and",
+    "start": 109.12,
+    "end": 109.52,
+    "channel": "a"
+  },
+  {
+    "id": "w-286",
+    "text": "perhaps",
+    "start": 109.52,
+    "end": 110.16,
+    "channel": "p"
+  },
+  {
+    "id": "w-287",
+    "text": "we",
+    "start": 110.16,
+    "end": 110.42,
+    "channel": "w"
+  },
+  {
+    "id": "w-288",
+    "text": "forget",
+    "start": 110.42,
+    "end": 110.74,
+    "channel": "f"
+  },
+  {
+    "id": "w-289",
+    "text": "that",
+    "start": 110.74,
+    "end": 110.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-290",
+    "text": "we've",
+    "start": 110.98,
+    "end": 111.4,
+    "channel": "w"
+  },
+  {
+    "id": "w-291",
+    "text": "only",
+    "start": 111.4,
+    "end": 111.58,
+    "channel": "o"
+  },
+  {
+    "id": "w-292",
+    "text": "just",
+    "start": 111.58,
+    "end": 111.82,
+    "channel": "j"
+  },
+  {
+    "id": "w-293",
+    "text": "begun",
+    "start": 111.82,
+    "end": 112.2,
+    "channel": "b"
+  },
+  {
+    "id": "w-294",
+    "text": "We're",
+    "start": 112.58,
+    "end": 113.14,
+    "channel": "w"
+  },
+  {
+    "id": "w-295",
+    "text": "still",
+    "start": 113.14,
+    "end": 113.32,
+    "channel": "s"
+  },
+  {
+    "id": "w-296",
+    "text": "pioneers",
+    "start": 113.32,
+    "end": 113.9,
+    "channel": "p"
+  },
+  {
+    "id": "w-297",
+    "text": "They",
+    "start": 114.74,
+    "end": 115.26,
+    "channel": "t"
+  },
+  {
+    "id": "w-298",
+    "text": "the",
+    "start": 115.5,
+    "end": 115.66,
+    "channel": "t"
+  },
+  {
+    "id": "w-299",
+    "text": "members",
+    "start": 115.66,
+    "end": 116.18,
+    "channel": "m"
+  },
+  {
+    "id": "w-300",
+    "text": "of",
+    "start": 116.18,
+    "end": 116.34,
+    "channel": "o"
+  },
+  {
+    "id": "w-301",
+    "text": "the",
+    "start": 116.34,
+    "end": 116.44,
+    "channel": "t"
+  },
+  {
+    "id": "w-302",
+    "text": "Challenger",
+    "start": 116.44,
+    "end": 116.88,
+    "channel": "c"
+  },
+  {
+    "id": "w-303",
+    "text": "crew",
+    "start": 116.88,
+    "end": 117.18,
+    "channel": "c"
+  },
+  {
+    "id": "w-304",
+    "text": "were",
+    "start": 117.44,
+    "end": 117.68,
+    "channel": "w"
+  },
+  {
+    "id": "w-305",
+    "text": "pioneers",
+    "start": 117.68,
+    "end": 118.16,
+    "channel": "p"
+  },
+  {
+    "id": "w-306",
+    "text": "And",
+    "start": 119.08,
+    "end": 119.6,
+    "channel": "a"
+  },
+  {
+    "id": "w-307",
+    "text": "I",
+    "start": 119.6,
+    "end": 119.72,
+    "channel": "i"
+  },
+  {
+    "id": "w-308",
+    "text": "want",
+    "start": 119.72,
+    "end": 119.82,
+    "channel": "w"
+  },
+  {
+    "id": "w-309",
+    "text": "to",
+    "start": 119.82,
+    "end": 119.92,
+    "channel": "t"
+  },
+  {
+    "id": "w-310",
+    "text": "say",
+    "start": 119.92,
+    "end": 120.1,
+    "channel": "s"
+  },
+  {
+    "id": "w-311",
+    "text": "something",
+    "start": 120.1,
+    "end": 120.42,
+    "channel": "s"
+  },
+  {
+    "id": "w-312",
+    "text": "to",
+    "start": 120.42,
+    "end": 120.58,
+    "channel": "t"
+  },
+  {
+    "id": "w-313",
+    "text": "the",
+    "start": 120.58,
+    "end": 120.68,
+    "channel": "t"
+  },
+  {
+    "id": "w-314",
+    "text": "schoolchildren",
+    "start": 120.68,
+    "end": 121.28,
+    "channel": "s"
+  },
+  {
+    "id": "w-315",
+    "text": "of",
+    "start": 121.28,
+    "end": 121.46,
+    "channel": "o"
+  },
+  {
+    "id": "w-316",
+    "text": "America",
+    "start": 121.46,
+    "end": 121.8,
+    "channel": "a"
+  },
+  {
+    "id": "w-317",
+    "text": "who",
+    "start": 121.8,
+    "end": 122.02,
+    "channel": "w"
+  },
+  {
+    "id": "w-318",
+    "text": "were",
+    "start": 122.02,
+    "end": 122.16,
+    "channel": "w"
+  },
+  {
+    "id": "w-319",
+    "text": "watching",
+    "start": 122.16,
+    "end": 122.52,
+    "channel": "w"
+  },
+  {
+    "id": "w-320",
+    "text": "the",
+    "start": 122.52,
+    "end": 122.7,
+    "channel": "t"
+  },
+  {
+    "id": "w-321",
+    "text": "live",
+    "start": 122.7,
+    "end": 122.96,
+    "channel": "l"
+  },
+  {
+    "id": "w-322",
+    "text": "coverage",
+    "start": 122.96,
+    "end": 123.36,
+    "channel": "c"
+  },
+  {
+    "id": "w-323",
+    "text": "of",
+    "start": 123.36,
+    "end": 123.54,
+    "channel": "o"
+  },
+  {
+    "id": "w-324",
+    "text": "the",
+    "start": 123.54,
+    "end": 123.68,
+    "channel": "t"
+  },
+  {
+    "id": "w-325",
+    "text": "shuttle's",
+    "start": 123.68,
+    "end": 124.26,
+    "channel": "s"
+  },
+  {
+    "id": "w-326",
+    "text": "takeoff",
+    "start": 124.26,
+    "end": 124.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-327",
+    "text": "I",
+    "start": 125.38,
+    "end": 125.82,
+    "channel": "i"
+  },
+  {
+    "id": "w-328",
+    "text": "know",
+    "start": 125.82,
+    "end": 125.94,
+    "channel": "k"
+  },
+  {
+    "id": "w-329",
+    "text": "it",
+    "start": 125.94,
+    "end": 126.08,
+    "channel": "i"
+  },
+  {
+    "id": "w-330",
+    "text": "is",
+    "start": 126.08,
+    "end": 126.14,
+    "channel": "i"
+  },
+  {
+    "id": "w-331",
+    "text": "hard",
+    "start": 126.14,
+    "end": 126.32,
+    "channel": "h"
+  },
+  {
+    "id": "w-332",
+    "text": "to",
+    "start": 126.32,
+    "end": 126.44,
+    "channel": "t"
+  },
+  {
+    "id": "w-333",
+    "text": "understand",
+    "start": 126.44,
+    "end": 126.98,
+    "channel": "u"
+  },
+  {
+    "id": "w-334",
+    "text": "but",
+    "start": 127.26,
+    "end": 127.36,
+    "channel": "b"
+  },
+  {
+    "id": "w-335",
+    "text": "sometimes",
+    "start": 127.36,
+    "end": 127.82,
+    "channel": "s"
+  },
+  {
+    "id": "w-336",
+    "text": "painful",
+    "start": 127.82,
+    "end": 128.48,
+    "channel": "p"
+  },
+  {
+    "id": "w-337",
+    "text": "things",
+    "start": 128.48,
+    "end": 128.76,
+    "channel": "t"
+  },
+  {
+    "id": "w-338",
+    "text": "like",
+    "start": 128.76,
+    "end": 128.98,
+    "channel": "l"
+  },
+  {
+    "id": "w-339",
+    "text": "this",
+    "start": 128.98,
+    "end": 129.18,
+    "channel": "t"
+  },
+  {
+    "id": "w-340",
+    "text": "happen",
+    "start": 129.18,
+    "end": 129.48,
+    "channel": "h"
+  },
+  {
+    "id": "w-341",
+    "text": "It's",
+    "start": 130.08,
+    "end": 130.6,
+    "channel": "i"
+  },
+  {
+    "id": "w-342",
+    "text": "all",
+    "start": 130.6,
+    "end": 130.76,
+    "channel": "a"
+  },
+  {
+    "id": "w-343",
+    "text": "part",
+    "start": 130.76,
+    "end": 130.98,
+    "channel": "p"
+  },
+  {
+    "id": "w-344",
+    "text": "of",
+    "start": 130.98,
+    "end": 131.1,
+    "channel": "o"
+  },
+  {
+    "id": "w-345",
+    "text": "the",
+    "start": 131.1,
+    "end": 131.2,
+    "channel": "t"
+  },
+  {
+    "id": "w-346",
+    "text": "process",
+    "start": 131.2,
+    "end": 131.58,
+    "channel": "p"
+  },
+  {
+    "id": "w-347",
+    "text": "of",
+    "start": 131.58,
+    "end": 131.82,
+    "channel": "o"
+  },
+  {
+    "id": "w-348",
+    "text": "exploration",
+    "start": 131.82,
+    "end": 132.34,
+    "channel": "e"
+  },
+  {
+    "id": "w-349",
+    "text": "and",
+    "start": 132.34,
+    "end": 132.66,
+    "channel": "a"
+  },
+  {
+    "id": "w-350",
+    "text": "discovery",
+    "start": 132.66,
+    "end": 133.06,
+    "channel": "d"
+  },
+  {
+    "id": "w-351",
+    "text": "It's",
+    "start": 134.0,
+    "end": 134.52,
+    "channel": "i"
+  },
+  {
+    "id": "w-352",
+    "text": "all",
+    "start": 134.52,
+    "end": 134.68,
+    "channel": "a"
+  },
+  {
+    "id": "w-353",
+    "text": "part",
+    "start": 134.68,
+    "end": 134.9,
+    "channel": "p"
+  },
+  {
+    "id": "w-354",
+    "text": "of",
+    "start": 134.9,
+    "end": 135.12,
+    "channel": "o"
+  },
+  {
+    "id": "w-355",
+    "text": "taking",
+    "start": 135.12,
+    "end": 135.92,
+    "channel": "t"
+  },
+  {
+    "id": "w-356",
+    "text": "a",
+    "start": 135.92,
+    "end": 136.08,
+    "channel": "a"
+  },
+  {
+    "id": "w-357",
+    "text": "chance",
+    "start": 136.08,
+    "end": 136.46,
+    "channel": "c"
+  },
+  {
+    "id": "w-358",
+    "text": "and",
+    "start": 136.46,
+    "end": 136.62,
+    "channel": "a"
+  },
+  {
+    "id": "w-359",
+    "text": "expanding",
+    "start": 136.62,
+    "end": 137.1,
+    "channel": "e"
+  },
+  {
+    "id": "w-360",
+    "text": "man's",
+    "start": 137.1,
+    "end": 137.5,
+    "channel": "m"
+  },
+  {
+    "id": "w-361",
+    "text": "horizons",
+    "start": 137.5,
+    "end": 138.02,
+    "channel": "h"
+  },
+  {
+    "id": "w-362",
+    "text": "The",
+    "start": 138.86,
+    "end": 139.38,
+    "channel": "t"
+  },
+  {
+    "id": "w-363",
+    "text": "future",
+    "start": 139.38,
+    "end": 139.7,
+    "channel": "f"
+  },
+  {
+    "id": "w-364",
+    "text": "doesn't",
+    "start": 139.7,
+    "end": 140.32,
+    "channel": "d"
+  },
+  {
+    "id": "w-365",
+    "text": "belong",
+    "start": 140.32,
+    "end": 140.6,
+    "channel": "b"
+  },
+  {
+    "id": "w-366",
+    "text": "to",
+    "start": 140.6,
+    "end": 140.78,
+    "channel": "t"
+  },
+  {
+    "id": "w-367",
+    "text": "the",
+    "start": 140.78,
+    "end": 140.88,
+    "channel": "t"
+  },
+  {
+    "id": "w-368",
+    "text": "fainthearted",
+    "start": 140.88,
+    "end": 141.34,
+    "channel": "f"
+  },
+  {
+    "id": "w-369",
+    "text": "it",
+    "start": 142.02,
+    "end": 142.54,
+    "channel": "i"
+  },
+  {
+    "id": "w-370",
+    "text": "belongs",
+    "start": 142.54,
+    "end": 142.84,
+    "channel": "b"
+  },
+  {
+    "id": "w-371",
+    "text": "to",
+    "start": 142.84,
+    "end": 143.0,
+    "channel": "t"
+  },
+  {
+    "id": "w-372",
+    "text": "the",
+    "start": 143.0,
+    "end": 143.1,
+    "channel": "t"
+  },
+  {
+    "id": "w-373",
+    "text": "brave",
+    "start": 143.1,
+    "end": 143.48,
+    "channel": "b"
+  },
+  {
+    "id": "w-374",
+    "text": "The",
+    "start": 144.1,
+    "end": 144.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-375",
+    "text": "Challenger",
+    "start": 144.62,
+    "end": 145.06,
+    "channel": "c"
+  },
+  {
+    "id": "w-376",
+    "text": "crew",
+    "start": 145.06,
+    "end": 145.34,
+    "channel": "c"
+  },
+  {
+    "id": "w-377",
+    "text": "was",
+    "start": 145.34,
+    "end": 145.56,
+    "channel": "w"
+  },
+  {
+    "id": "w-378",
+    "text": "pulling",
+    "start": 145.56,
+    "end": 145.84,
+    "channel": "p"
+  },
+  {
+    "id": "w-379",
+    "text": "us",
+    "start": 145.84,
+    "end": 146.04,
+    "channel": "u"
+  },
+  {
+    "id": "w-380",
+    "text": "into",
+    "start": 146.04,
+    "end": 146.2,
+    "channel": "i"
+  },
+  {
+    "id": "w-381",
+    "text": "the",
+    "start": 146.2,
+    "end": 146.32,
+    "channel": "t"
+  },
+  {
+    "id": "w-382",
+    "text": "future",
+    "start": 146.32,
+    "end": 146.66,
+    "channel": "f"
+  },
+  {
+    "id": "w-383",
+    "text": "and",
+    "start": 146.88,
+    "end": 147.72,
+    "channel": "a"
+  },
+  {
+    "id": "w-384",
+    "text": "we'll",
+    "start": 147.72,
+    "end": 147.96,
+    "channel": "w"
+  },
+  {
+    "id": "w-385",
+    "text": "continue",
+    "start": 147.96,
+    "end": 148.34,
+    "channel": "c"
+  },
+  {
+    "id": "w-386",
+    "text": "to",
+    "start": 148.34,
+    "end": 148.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-387",
+    "text": "follow",
+    "start": 148.98,
+    "end": 149.26,
+    "channel": "f"
+  },
+  {
+    "id": "w-388",
+    "text": "them",
+    "start": 149.26,
+    "end": 149.46,
+    "channel": "t"
+  },
+  {
+    "id": "w-389",
+    "text": "I've",
+    "start": 150.72,
+    "end": 151.24,
+    "channel": "i"
+  },
+  {
+    "id": "w-390",
+    "text": "always",
+    "start": 151.24,
+    "end": 151.46,
+    "channel": "a"
+  },
+  {
+    "id": "w-391",
+    "text": "had",
+    "start": 151.46,
+    "end": 151.64,
+    "channel": "h"
+  },
+  {
+    "id": "w-392",
+    "text": "great",
+    "start": 151.64,
+    "end": 151.88,
+    "channel": "g"
+  },
+  {
+    "id": "w-393",
+    "text": "faith",
+    "start": 151.88,
+    "end": 152.2,
+    "channel": "f"
+  },
+  {
+    "id": "w-394",
+    "text": "in",
+    "start": 152.2,
+    "end": 152.56,
+    "channel": "i"
+  },
+  {
+    "id": "w-395",
+    "text": "and",
+    "start": 152.56,
+    "end": 152.76,
+    "channel": "a"
+  },
+  {
+    "id": "w-396",
+    "text": "respect",
+    "start": 152.76,
+    "end": 153.22,
+    "channel": "r"
+  },
+  {
+    "id": "w-397",
+    "text": "for",
+    "start": 153.22,
+    "end": 153.48,
+    "channel": "f"
+  },
+  {
+    "id": "w-398",
+    "text": "our",
+    "start": 153.48,
+    "end": 153.66,
+    "channel": "o"
+  },
+  {
+    "id": "w-399",
+    "text": "space",
+    "start": 153.66,
+    "end": 153.96,
+    "channel": "s"
+  },
+  {
+    "id": "w-400",
+    "text": "program",
+    "start": 153.96,
+    "end": 154.36,
+    "channel": "p"
+  },
+  {
+    "id": "w-401",
+    "text": "and",
+    "start": 154.72,
+    "end": 155.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-402",
+    "text": "what",
+    "start": 155.34,
+    "end": 155.5,
+    "channel": "w"
+  },
+  {
+    "id": "w-403",
+    "text": "happened",
+    "start": 155.5,
+    "end": 155.8,
+    "channel": "h"
+  },
+  {
+    "id": "w-404",
+    "text": "today",
+    "start": 155.8,
+    "end": 156.08,
+    "channel": "t"
+  },
+  {
+    "id": "w-405",
+    "text": "does",
+    "start": 156.08,
+    "end": 156.36,
+    "channel": "d"
+  },
+  {
+    "id": "w-406",
+    "text": "nothing",
+    "start": 156.36,
+    "end": 156.64,
+    "channel": "n"
+  },
+  {
+    "id": "w-407",
+    "text": "to",
+    "start": 156.64,
+    "end": 156.78,
+    "channel": "t"
+  },
+  {
+    "id": "w-408",
+    "text": "diminish",
+    "start": 156.78,
+    "end": 157.06,
+    "channel": "d"
+  },
+  {
+    "id": "w-409",
+    "text": "it",
+    "start": 157.06,
+    "end": 157.3,
+    "channel": "i"
+  },
+  {
+    "id": "w-410",
+    "text": "We",
+    "start": 158.02,
+    "end": 158.54,
+    "channel": "w"
+  },
+  {
+    "id": "w-411",
+    "text": "don't",
+    "start": 158.54,
+    "end": 158.72,
+    "channel": "d"
+  },
+  {
+    "id": "w-412",
+    "text": "hide",
+    "start": 158.72,
+    "end": 159.0,
+    "channel": "h"
+  },
+  {
+    "id": "w-413",
+    "text": "our",
+    "start": 159.0,
+    "end": 159.2,
+    "channel": "o"
+  },
+  {
+    "id": "w-414",
+    "text": "space",
+    "start": 159.2,
+    "end": 159.5,
+    "channel": "s"
+  },
+  {
+    "id": "w-415",
+    "text": "program",
+    "start": 159.5,
+    "end": 159.94,
+    "channel": "p"
+  },
+  {
+    "id": "w-416",
+    "text": "We",
+    "start": 160.18,
+    "end": 160.36,
+    "channel": "w"
+  },
+  {
+    "id": "w-417",
+    "text": "don't",
+    "start": 160.36,
+    "end": 160.56,
+    "channel": "d"
+  },
+  {
+    "id": "w-418",
+    "text": "keep",
+    "start": 160.56,
+    "end": 160.76,
+    "channel": "k"
+  },
+  {
+    "id": "w-419",
+    "text": "secrets",
+    "start": 160.76,
+    "end": 161.3,
+    "channel": "s"
+  },
+  {
+    "id": "w-420",
+    "text": "and",
+    "start": 161.3,
+    "end": 161.52,
+    "channel": "a"
+  },
+  {
+    "id": "w-421",
+    "text": "cover",
+    "start": 161.52,
+    "end": 161.76,
+    "channel": "c"
+  },
+  {
+    "id": "w-422",
+    "text": "things",
+    "start": 161.76,
+    "end": 161.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-423",
+    "text": "up",
+    "start": 161.98,
+    "end": 162.22,
+    "channel": "u"
+  },
+  {
+    "id": "w-424",
+    "text": "We",
+    "start": 162.66,
+    "end": 163.18,
+    "channel": "w"
+  },
+  {
+    "id": "w-425",
+    "text": "do",
+    "start": 163.18,
+    "end": 163.3,
+    "channel": "d"
+  },
+  {
+    "id": "w-426",
+    "text": "it",
+    "start": 163.3,
+    "end": 163.44,
+    "channel": "i"
+  },
+  {
+    "id": "w-427",
+    "text": "all",
+    "start": 163.44,
+    "end": 163.7,
+    "channel": "a"
+  },
+  {
+    "id": "w-428",
+    "text": "up",
+    "start": 163.7,
+    "end": 164.1,
+    "channel": "u"
+  },
+  {
+    "id": "w-429",
+    "text": "front",
+    "start": 164.1,
+    "end": 164.3,
+    "channel": "f"
+  },
+  {
+    "id": "w-430",
+    "text": "and",
+    "start": 164.3,
+    "end": 164.56,
+    "channel": "a"
+  },
+  {
+    "id": "w-431",
+    "text": "in",
+    "start": 164.56,
+    "end": 164.72,
+    "channel": "i"
+  },
+  {
+    "id": "w-432",
+    "text": "public",
+    "start": 164.72,
+    "end": 165.02,
+    "channel": "p"
+  },
+  {
+    "id": "w-433",
+    "text": "That's",
+    "start": 165.64,
+    "end": 166.16,
+    "channel": "t"
+  },
+  {
+    "id": "w-434",
+    "text": "the",
+    "start": 166.16,
+    "end": 166.26,
+    "channel": "t"
+  },
+  {
+    "id": "w-435",
+    "text": "way",
+    "start": 166.26,
+    "end": 166.4,
+    "channel": "w"
+  },
+  {
+    "id": "w-436",
+    "text": "freedom",
+    "start": 166.4,
+    "end": 166.74,
+    "channel": "f"
+  },
+  {
+    "id": "w-437",
+    "text": "is",
+    "start": 166.74,
+    "end": 167.12,
+    "channel": "i"
+  },
+  {
+    "id": "w-438",
+    "text": "and",
+    "start": 167.16,
+    "end": 167.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-439",
+    "text": "we",
+    "start": 167.34,
+    "end": 167.6,
+    "channel": "w"
+  },
+  {
+    "id": "w-440",
+    "text": "wouldn't",
+    "start": 167.6,
+    "end": 167.86,
+    "channel": "w"
+  },
+  {
+    "id": "w-441",
+    "text": "change",
+    "start": 167.86,
+    "end": 168.08,
+    "channel": "c"
+  },
+  {
+    "id": "w-442",
+    "text": "it",
+    "start": 168.08,
+    "end": 168.26,
+    "channel": "i"
+  },
+  {
+    "id": "w-443",
+    "text": "for",
+    "start": 168.26,
+    "end": 168.4,
+    "channel": "f"
+  },
+  {
+    "id": "w-444",
+    "text": "a",
+    "start": 168.4,
+    "end": 168.54,
+    "channel": "a"
+  },
+  {
+    "id": "w-445",
+    "text": "minute",
+    "start": 168.54,
+    "end": 168.7,
+    "channel": "m"
+  },
+  {
+    "id": "w-446",
+    "text": "We'll",
+    "start": 169.58,
+    "end": 170.1,
+    "channel": "w"
+  },
+  {
+    "id": "w-447",
+    "text": "continue",
+    "start": 170.1,
+    "end": 170.5,
+    "channel": "c"
+  },
+  {
+    "id": "w-448",
+    "text": "our",
+    "start": 170.5,
+    "end": 170.76,
+    "channel": "o"
+  },
+  {
+    "id": "w-449",
+    "text": "quest",
+    "start": 170.76,
+    "end": 171.12,
+    "channel": "q"
+  },
+  {
+    "id": "w-450",
+    "text": "in",
+    "start": 171.12,
+    "end": 171.24,
+    "channel": "i"
+  },
+  {
+    "id": "w-451",
+    "text": "space",
+    "start": 171.24,
+    "end": 171.62,
+    "channel": "s"
+  },
+  {
+    "id": "w-452",
+    "text": "There",
+    "start": 171.62,
+    "end": 172.48,
+    "channel": "t"
+  },
+  {
+    "id": "w-453",
+    "text": "will",
+    "start": 172.48,
+    "end": 172.6,
+    "channel": "w"
+  },
+  {
+    "id": "w-454",
+    "text": "be",
+    "start": 172.6,
+    "end": 172.72,
+    "channel": "b"
+  },
+  {
+    "id": "w-455",
+    "text": "more",
+    "start": 172.72,
+    "end": 172.94,
+    "channel": "m"
+  },
+  {
+    "id": "w-456",
+    "text": "shuttle",
+    "start": 172.94,
+    "end": 173.24,
+    "channel": "s"
+  },
+  {
+    "id": "w-457",
+    "text": "flights",
+    "start": 173.24,
+    "end": 173.62,
+    "channel": "f"
+  },
+  {
+    "id": "w-458",
+    "text": "and",
+    "start": 173.62,
+    "end": 174.06,
+    "channel": "a"
+  },
+  {
+    "id": "w-459",
+    "text": "more",
+    "start": 174.06,
+    "end": 174.26,
+    "channel": "m"
+  },
+  {
+    "id": "w-460",
+    "text": "shuttle",
+    "start": 174.26,
+    "end": 174.56,
+    "channel": "s"
+  },
+  {
+    "id": "w-461",
+    "text": "crews",
+    "start": 174.56,
+    "end": 175.0,
+    "channel": "c"
+  },
+  {
+    "id": "w-462",
+    "text": "and",
+    "start": 175.24,
+    "end": 175.7,
+    "channel": "a"
+  },
+  {
+    "id": "w-463",
+    "text": "yes",
+    "start": 175.7,
+    "end": 175.9,
+    "channel": "y"
+  },
+  {
+    "id": "w-464",
+    "text": "more",
+    "start": 176.06,
+    "end": 176.18,
+    "channel": "m"
+  },
+  {
+    "id": "w-465",
+    "text": "volunteers",
+    "start": 176.18,
+    "end": 176.76,
+    "channel": "v"
+  },
+  {
+    "id": "w-466",
+    "text": "more",
+    "start": 177.12,
+    "end": 177.26,
+    "channel": "m"
+  },
+  {
+    "id": "w-467",
+    "text": "civilians",
+    "start": 177.26,
+    "end": 177.76,
+    "channel": "c"
+  },
+  {
+    "id": "w-468",
+    "text": "more",
+    "start": 178.38,
+    "end": 178.54,
+    "channel": "m"
+  },
+  {
+    "id": "w-469",
+    "text": "teachers",
+    "start": 178.54,
+    "end": 178.98,
+    "channel": "t"
+  },
+  {
+    "id": "w-470",
+    "text": "in",
+    "start": 178.98,
+    "end": 179.3,
+    "channel": "i"
+  },
+  {
+    "id": "w-471",
+    "text": "space",
+    "start": 179.3,
+    "end": 179.72,
+    "channel": "s"
+  },
+  {
+    "id": "w-472",
+    "text": "Nothing",
+    "start": 180.42,
+    "end": 180.98,
+    "channel": "n"
+  },
+  {
+    "id": "w-473",
+    "text": "ends",
+    "start": 180.98,
+    "end": 181.28,
+    "channel": "e"
+  },
+  {
+    "id": "w-474",
+    "text": "here",
+    "start": 181.28,
+    "end": 181.54,
+    "channel": "h"
+  },
+  {
+    "id": "w-475",
+    "text": "our",
+    "start": 181.74,
+    "end": 182.26,
+    "channel": "o"
+  },
+  {
+    "id": "w-476",
+    "text": "hopes",
+    "start": 182.26,
+    "end": 182.58,
+    "channel": "h"
+  },
+  {
+    "id": "w-477",
+    "text": "and",
+    "start": 182.58,
+    "end": 182.78,
+    "channel": "a"
+  },
+  {
+    "id": "w-478",
+    "text": "our",
+    "start": 182.78,
+    "end": 182.92,
+    "channel": "o"
+  },
+  {
+    "id": "w-479",
+    "text": "journeys",
+    "start": 182.92,
+    "end": 183.26,
+    "channel": "j"
+  },
+  {
+    "id": "w-480",
+    "text": "continue",
+    "start": 183.26,
+    "end": 183.7,
+    "channel": "c"
+  },
+  {
+    "id": "w-481",
+    "text": "I",
+    "start": 184.78,
+    "end": 185.34,
+    "channel": "i"
+  },
+  {
+    "id": "w-482",
+    "text": "want",
+    "start": 185.34,
+    "end": 185.46,
+    "channel": "w"
+  },
+  {
+    "id": "w-483",
+    "text": "to",
+    "start": 185.46,
+    "end": 185.54,
+    "channel": "t"
+  },
+  {
+    "id": "w-484",
+    "text": "add",
+    "start": 185.54,
+    "end": 185.74,
+    "channel": "a"
+  },
+  {
+    "id": "w-485",
+    "text": "that",
+    "start": 185.74,
+    "end": 185.9,
+    "channel": "t"
+  },
+  {
+    "id": "w-486",
+    "text": "I",
+    "start": 185.9,
+    "end": 186.78,
+    "channel": "i"
+  },
+  {
+    "id": "w-487",
+    "text": "wish",
+    "start": 186.78,
+    "end": 186.98,
+    "channel": "w"
+  },
+  {
+    "id": "w-488",
+    "text": "I",
+    "start": 186.98,
+    "end": 187.12,
+    "channel": "i"
+  },
+  {
+    "id": "w-489",
+    "text": "could",
+    "start": 187.12,
+    "end": 187.26,
+    "channel": "c"
+  },
+  {
+    "id": "w-490",
+    "text": "talk",
+    "start": 187.26,
+    "end": 187.5,
+    "channel": "t"
+  },
+  {
+    "id": "w-491",
+    "text": "to",
+    "start": 187.5,
+    "end": 187.64,
+    "channel": "t"
+  },
+  {
+    "id": "w-492",
+    "text": "every",
+    "start": 187.64,
+    "end": 187.88,
+    "channel": "e"
+  },
+  {
+    "id": "w-493",
+    "text": "man",
+    "start": 187.88,
+    "end": 188.16,
+    "channel": "m"
+  },
+  {
+    "id": "w-494",
+    "text": "and",
+    "start": 188.16,
+    "end": 188.32,
+    "channel": "a"
+  },
+  {
+    "id": "w-495",
+    "text": "woman",
+    "start": 188.32,
+    "end": 188.54,
+    "channel": "w"
+  },
+  {
+    "id": "w-496",
+    "text": "who",
+    "start": 188.54,
+    "end": 188.68,
+    "channel": "w"
+  },
+  {
+    "id": "w-497",
+    "text": "works",
+    "start": 188.68,
+    "end": 188.94,
+    "channel": "w"
+  },
+  {
+    "id": "w-498",
+    "text": "for",
+    "start": 188.94,
+    "end": 189.08,
+    "channel": "f"
+  },
+  {
+    "id": "w-499",
+    "text": "NASA",
+    "start": 189.08,
+    "end": 189.44,
+    "channel": "n"
+  },
+  {
+    "id": "w-500",
+    "text": "or",
+    "start": 189.44,
+    "end": 190.08,
+    "channel": "o"
+  },
+  {
+    "id": "w-501",
+    "text": "who",
+    "start": 190.08,
+    "end": 190.26,
+    "channel": "w"
+  },
+  {
+    "id": "w-502",
+    "text": "worked",
+    "start": 190.26,
+    "end": 190.52,
+    "channel": "w"
+  },
+  {
+    "id": "w-503",
+    "text": "on",
+    "start": 190.52,
+    "end": 190.7,
+    "channel": "o"
+  },
+  {
+    "id": "w-504",
+    "text": "this",
+    "start": 190.7,
+    "end": 190.9,
+    "channel": "t"
+  },
+  {
+    "id": "w-505",
+    "text": "mission",
+    "start": 190.9,
+    "end": 191.24,
+    "channel": "m"
+  },
+  {
+    "id": "w-506",
+    "text": "and",
+    "start": 191.82,
+    "end": 192.02,
+    "channel": "a"
+  },
+  {
+    "id": "w-507",
+    "text": "tell",
+    "start": 192.02,
+    "end": 192.38,
+    "channel": "t"
+  },
+  {
+    "id": "w-508",
+    "text": "them",
+    "start": 192.38,
+    "end": 192.7,
+    "channel": "t"
+  },
+  {
+    "id": "w-509",
+    "text": "Your",
+    "start": 193.54,
+    "end": 193.78,
+    "channel": "y"
+  },
+  {
+    "id": "w-510",
+    "text": "dedication",
+    "start": 193.78,
+    "end": 194.3,
+    "channel": "d"
+  },
+  {
+    "id": "w-511",
+    "text": "and",
+    "start": 194.3,
+    "end": 194.62,
+    "channel": "a"
+  },
+  {
+    "id": "w-512",
+    "text": "professionalism",
+    "start": 194.62,
+    "end": 195.44,
+    "channel": "p"
+  },
+  {
+    "id": "w-513",
+    "text": "have",
+    "start": 195.44,
+    "end": 195.78,
+    "channel": "h"
+  },
+  {
+    "id": "w-514",
+    "text": "moved",
+    "start": 195.78,
+    "end": 196.1,
+    "channel": "m"
+  },
+  {
+    "id": "w-515",
+    "text": "and",
+    "start": 196.1,
+    "end": 196.32,
+    "channel": "a"
+  },
+  {
+    "id": "w-516",
+    "text": "impressed",
+    "start": 196.32,
+    "end": 196.68,
+    "channel": "i"
+  },
+  {
+    "id": "w-517",
+    "text": "us",
+    "start": 196.68,
+    "end": 196.88,
+    "channel": "u"
+  },
+  {
+    "id": "w-518",
+    "text": "for",
+    "start": 196.88,
+    "end": 197.02,
+    "channel": "f"
+  },
+  {
+    "id": "w-519",
+    "text": "decades",
+    "start": 197.02,
+    "end": 197.48,
+    "channel": "d"
+  },
+  {
+    "id": "w-520",
+    "text": "And",
+    "start": 198.04,
+    "end": 198.54,
+    "channel": "a"
+  },
+  {
+    "id": "w-521",
+    "text": "we",
+    "start": 198.54,
+    "end": 198.7,
+    "channel": "w"
+  },
+  {
+    "id": "w-522",
+    "text": "know",
+    "start": 198.7,
+    "end": 199.0,
+    "channel": "k"
+  },
+  {
+    "id": "w-523",
+    "text": "of",
+    "start": 199.0,
+    "end": 199.6,
+    "channel": "o"
+  },
+  {
+    "id": "w-524",
+    "text": "your",
+    "start": 199.6,
+    "end": 199.74,
+    "channel": "y"
+  },
+  {
+    "id": "w-525",
+    "text": "anguish",
+    "start": 199.74,
+    "end": 200.22,
+    "channel": "a"
+  },
+  {
+    "id": "w-526",
+    "text": "We",
+    "start": 200.4,
+    "end": 200.96,
+    "channel": "w"
+  },
+  {
+    "id": "w-527",
+    "text": "share",
+    "start": 200.96,
+    "end": 201.24,
+    "channel": "s"
+  },
+  {
+    "id": "w-528",
+    "text": "it",
+    "start": 201.24,
+    "end": 201.44,
+    "channel": "i"
+  },
+  {
+    "id": "w-529",
+    "text": "There's",
+    "start": 202.6,
+    "end": 203.2,
+    "channel": "t"
+  },
+  {
+    "id": "w-530",
+    "text": "a",
+    "start": 203.2,
+    "end": 203.42,
+    "channel": "a"
+  },
+  {
+    "id": "w-531",
+    "text": "coincidence",
+    "start": 203.42,
+    "end": 204.22,
+    "channel": "c"
+  },
+  {
+    "id": "w-532",
+    "text": "today",
+    "start": 204.22,
+    "end": 204.74,
+    "channel": "t"
+  },
+  {
+    "id": "w-533",
+    "text": "On",
+    "start": 205.48,
+    "end": 205.56,
+    "channel": "o"
+  },
+  {
+    "id": "w-534",
+    "text": "this",
+    "start": 205.56,
+    "end": 205.74,
+    "channel": "t"
+  },
+  {
+    "id": "w-535",
+    "text": "day",
+    "start": 205.74,
+    "end": 205.9,
+    "channel": "d"
+  },
+  {
+    "id": "w-536",
+    "text": "three",
+    "start": 205.9,
+    "end": 206.12,
+    "channel": "t"
+  },
+  {
+    "id": "w-537",
+    "text": "hundred",
+    "start": 206.12,
+    "end": 206.38,
+    "channel": "h"
+  },
+  {
+    "id": "w-538",
+    "text": "and",
+    "start": 206.38,
+    "end": 206.66,
+    "channel": "a"
+  },
+  {
+    "id": "w-539",
+    "text": "ninety",
+    "start": 206.66,
+    "end": 206.72,
+    "channel": "n"
+  },
+  {
+    "id": "w-540",
+    "text": "years",
+    "start": 206.72,
+    "end": 207.06,
+    "channel": "y"
+  },
+  {
+    "id": "w-541",
+    "text": "ago",
+    "start": 207.06,
+    "end": 207.38,
+    "channel": "a"
+  },
+  {
+    "id": "w-542",
+    "text": "the",
+    "start": 207.54,
+    "end": 207.58,
+    "channel": "t"
+  },
+  {
+    "id": "w-543",
+    "text": "great",
+    "start": 207.58,
+    "end": 207.8,
+    "channel": "g"
+  },
+  {
+    "id": "w-544",
+    "text": "explorer",
+    "start": 207.8,
+    "end": 208.28,
+    "channel": "e"
+  },
+  {
+    "id": "w-545",
+    "text": "Sir",
+    "start": 208.28,
+    "end": 208.52,
+    "channel": "s"
+  },
+  {
+    "id": "w-546",
+    "text": "Francis",
+    "start": 208.52,
+    "end": 208.9,
+    "channel": "f"
+  },
+  {
+    "id": "w-547",
+    "text": "Drake",
+    "start": 208.9,
+    "end": 209.3,
+    "channel": "d"
+  },
+  {
+    "id": "w-548",
+    "text": "died",
+    "start": 209.3,
+    "end": 210.46,
+    "channel": "d"
+  },
+  {
+    "id": "w-549",
+    "text": "aboard",
+    "start": 210.46,
+    "end": 210.82,
+    "channel": "a"
+  },
+  {
+    "id": "w-550",
+    "text": "ship",
+    "start": 210.82,
+    "end": 211.12,
+    "channel": "s"
+  },
+  {
+    "id": "w-551",
+    "text": "off",
+    "start": 211.12,
+    "end": 211.36,
+    "channel": "o"
+  },
+  {
+    "id": "w-552",
+    "text": "the",
+    "start": 211.36,
+    "end": 211.5,
+    "channel": "t"
+  },
+  {
+    "id": "w-553",
+    "text": "coast",
+    "start": 211.5,
+    "end": 211.76,
+    "channel": "c"
+  },
+  {
+    "id": "w-554",
+    "text": "of",
+    "start": 211.76,
+    "end": 211.9,
+    "channel": "o"
+  },
+  {
+    "id": "w-555",
+    "text": "Panama",
+    "start": 211.9,
+    "end": 212.22,
+    "channel": "p"
+  },
+  {
+    "id": "w-556",
+    "text": "In",
+    "start": 213.0,
+    "end": 213.48,
+    "channel": "i"
+  },
+  {
+    "id": "w-557",
+    "text": "his",
+    "start": 213.48,
+    "end": 213.62,
+    "channel": "h"
+  },
+  {
+    "id": "w-558",
+    "text": "lifetime",
+    "start": 213.62,
+    "end": 214.08,
+    "channel": "l"
+  },
+  {
+    "id": "w-559",
+    "text": "the",
+    "start": 214.32,
+    "end": 214.36,
+    "channel": "t"
+  },
+  {
+    "id": "w-560",
+    "text": "great",
+    "start": 214.36,
+    "end": 214.56,
+    "channel": "g"
+  },
+  {
+    "id": "w-561",
+    "text": "frontiers",
+    "start": 214.56,
+    "end": 215.16,
+    "channel": "f"
+  },
+  {
+    "id": "w-562",
+    "text": "were",
+    "start": 215.16,
+    "end": 215.36,
+    "channel": "w"
+  },
+  {
+    "id": "w-563",
+    "text": "the",
+    "start": 215.36,
+    "end": 215.48,
+    "channel": "t"
+  },
+  {
+    "id": "w-564",
+    "text": "oceans",
+    "start": 215.48,
+    "end": 215.86,
+    "channel": "o"
+  },
+  {
+    "id": "w-565",
+    "text": "and",
+    "start": 215.92,
+    "end": 216.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-566",
+    "text": "an",
+    "start": 216.34,
+    "end": 216.58,
+    "channel": "a"
+  },
+  {
+    "id": "w-567",
+    "text": "historian",
+    "start": 216.58,
+    "end": 217.16,
+    "channel": "h"
+  },
+  {
+    "id": "w-568",
+    "text": "later",
+    "start": 217.16,
+    "end": 217.48,
+    "channel": "l"
+  },
+  {
+    "id": "w-569",
+    "text": "said",
+    "start": 217.48,
+    "end": 217.86,
+    "channel": "s"
+  },
+  {
+    "id": "w-570",
+    "text": "He",
+    "start": 217.86,
+    "end": 218.62,
+    "channel": "h"
+  },
+  {
+    "id": "w-571",
+    "text": "lived",
+    "start": 218.62,
+    "end": 218.92,
+    "channel": "l"
+  },
+  {
+    "id": "w-572",
+    "text": "by",
+    "start": 218.92,
+    "end": 219.12,
+    "channel": "b"
+  },
+  {
+    "id": "w-573",
+    "text": "the",
+    "start": 219.12,
+    "end": 219.28,
+    "channel": "t"
+  },
+  {
+    "id": "w-574",
+    "text": "sea",
+    "start": 219.28,
+    "end": 219.62,
+    "channel": "s"
+  },
+  {
+    "id": "w-575",
+    "text": "died",
+    "start": 219.92,
+    "end": 220.22,
+    "channel": "d"
+  },
+  {
+    "id": "w-576",
+    "text": "on",
+    "start": 220.22,
+    "end": 220.44,
+    "channel": "o"
+  },
+  {
+    "id": "w-577",
+    "text": "it",
+    "start": 220.44,
+    "end": 220.6,
+    "channel": "i"
+  },
+  {
+    "id": "w-578",
+    "text": "and",
+    "start": 220.74,
+    "end": 221.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-579",
+    "text": "was",
+    "start": 221.34,
+    "end": 221.56,
+    "channel": "w"
+  },
+  {
+    "id": "w-580",
+    "text": "buried",
+    "start": 221.56,
+    "end": 221.9,
+    "channel": "b"
+  },
+  {
+    "id": "w-581",
+    "text": "in",
+    "start": 221.9,
+    "end": 222.1,
+    "channel": "i"
+  },
+  {
+    "id": "w-582",
+    "text": "it",
+    "start": 222.1,
+    "end": 222.26,
+    "channel": "i"
+  },
+  {
+    "id": "w-583",
+    "text": "Well",
+    "start": 223.14,
+    "end": 223.66,
+    "channel": "w"
+  },
+  {
+    "id": "w-584",
+    "text": "today",
+    "start": 223.8,
+    "end": 224.04,
+    "channel": "t"
+  },
+  {
+    "id": "w-585",
+    "text": "we",
+    "start": 224.34,
+    "end": 225.14,
+    "channel": "w"
+  },
+  {
+    "id": "w-586",
+    "text": "can",
+    "start": 225.14,
+    "end": 225.3,
+    "channel": "c"
+  },
+  {
+    "id": "w-587",
+    "text": "say",
+    "start": 225.3,
+    "end": 225.54,
+    "channel": "s"
+  },
+  {
+    "id": "w-588",
+    "text": "of",
+    "start": 225.54,
+    "end": 225.68,
+    "channel": "o"
+  },
+  {
+    "id": "w-589",
+    "text": "the",
+    "start": 225.68,
+    "end": 225.78,
+    "channel": "t"
+  },
+  {
+    "id": "w-590",
+    "text": "Challenger",
+    "start": 225.78,
+    "end": 226.26,
+    "channel": "c"
+  },
+  {
+    "id": "w-591",
+    "text": "crew",
+    "start": 226.26,
+    "end": 226.58,
+    "channel": "c"
+  },
+  {
+    "id": "w-592",
+    "text": "Their",
+    "start": 226.92,
+    "end": 227.62,
+    "channel": "t"
+  },
+  {
+    "id": "w-593",
+    "text": "dedication",
+    "start": 227.62,
+    "end": 228.06,
+    "channel": "d"
+  },
+  {
+    "id": "w-594",
+    "text": "was",
+    "start": 228.06,
+    "end": 228.84,
+    "channel": "w"
+  },
+  {
+    "id": "w-595",
+    "text": "like",
+    "start": 228.94,
+    "end": 229.2,
+    "channel": "l"
+  },
+  {
+    "id": "w-596",
+    "text": "Drake's",
+    "start": 229.2,
+    "end": 229.66,
+    "channel": "d"
+  },
+  {
+    "id": "w-597",
+    "text": "complete",
+    "start": 229.9,
+    "end": 230.32,
+    "channel": "c"
+  },
+  {
+    "id": "w-598",
+    "text": "The",
+    "start": 231.12,
+    "end": 231.64,
+    "channel": "t"
+  },
+  {
+    "id": "w-599",
+    "text": "crew",
+    "start": 231.64,
+    "end": 231.84,
+    "channel": "c"
+  },
+  {
+    "id": "w-600",
+    "text": "of",
+    "start": 231.84,
+    "end": 231.98,
+    "channel": "o"
+  },
+  {
+    "id": "w-601",
+    "text": "the",
+    "start": 231.98,
+    "end": 232.04,
+    "channel": "t"
+  },
+  {
+    "id": "w-602",
+    "text": "space",
+    "start": 232.04,
+    "end": 232.26,
+    "channel": "s"
+  },
+  {
+    "id": "w-603",
+    "text": "shuttle",
+    "start": 232.26,
+    "end": 232.64,
+    "channel": "s"
+  },
+  {
+    "id": "w-604",
+    "text": "Challenger",
+    "start": 232.64,
+    "end": 233.2,
+    "channel": "c"
+  },
+  {
+    "id": "w-605",
+    "text": "honored",
+    "start": 233.2,
+    "end": 233.76,
+    "channel": "h"
+  },
+  {
+    "id": "w-606",
+    "text": "us",
+    "start": 233.76,
+    "end": 233.96,
+    "channel": "u"
+  },
+  {
+    "id": "w-607",
+    "text": "by",
+    "start": 233.96,
+    "end": 234.1,
+    "channel": "b"
+  },
+  {
+    "id": "w-608",
+    "text": "the",
+    "start": 234.1,
+    "end": 234.2,
+    "channel": "t"
+  },
+  {
+    "id": "w-609",
+    "text": "manner",
+    "start": 234.2,
+    "end": 234.46,
+    "channel": "m"
+  },
+  {
+    "id": "w-610",
+    "text": "in",
+    "start": 234.46,
+    "end": 234.64,
+    "channel": "i"
+  },
+  {
+    "id": "w-611",
+    "text": "which",
+    "start": 234.64,
+    "end": 234.8,
+    "channel": "w"
+  },
+  {
+    "id": "w-612",
+    "text": "they",
+    "start": 234.8,
+    "end": 234.96,
+    "channel": "t"
+  },
+  {
+    "id": "w-613",
+    "text": "lived",
+    "start": 234.96,
+    "end": 235.18,
+    "channel": "l"
+  },
+  {
+    "id": "w-614",
+    "text": "their",
+    "start": 235.18,
+    "end": 235.36,
+    "channel": "t"
+  },
+  {
+    "id": "w-615",
+    "text": "lives",
+    "start": 235.36,
+    "end": 235.78,
+    "channel": "l"
+  },
+  {
+    "id": "w-616",
+    "text": "We",
+    "start": 236.38,
+    "end": 236.9,
+    "channel": "w"
+  },
+  {
+    "id": "w-617",
+    "text": "will",
+    "start": 236.9,
+    "end": 237.02,
+    "channel": "w"
+  },
+  {
+    "id": "w-618",
+    "text": "never",
+    "start": 237.02,
+    "end": 237.2,
+    "channel": "n"
+  },
+  {
+    "id": "w-619",
+    "text": "forget",
+    "start": 237.2,
+    "end": 237.56,
+    "channel": "f"
+  },
+  {
+    "id": "w-620",
+    "text": "them",
+    "start": 237.56,
+    "end": 237.8,
+    "channel": "t"
+  },
+  {
+    "id": "w-621",
+    "text": "nor",
+    "start": 238.02,
+    "end": 238.64,
+    "channel": "n"
+  },
+  {
+    "id": "w-622",
+    "text": "the",
+    "start": 238.64,
+    "end": 238.82,
+    "channel": "t"
+  },
+  {
+    "id": "w-623",
+    "text": "last",
+    "start": 238.82,
+    "end": 239.1,
+    "channel": "l"
+  },
+  {
+    "id": "w-624",
+    "text": "time",
+    "start": 239.1,
+    "end": 239.32,
+    "channel": "t"
+  },
+  {
+    "id": "w-625",
+    "text": "we",
+    "start": 239.32,
+    "end": 239.52,
+    "channel": "w"
+  },
+  {
+    "id": "w-626",
+    "text": "saw",
+    "start": 239.52,
+    "end": 239.76,
+    "channel": "s"
+  },
+  {
+    "id": "w-627",
+    "text": "them",
+    "start": 239.76,
+    "end": 240.0,
+    "channel": "t"
+  },
+  {
+    "id": "w-628",
+    "text": "this",
+    "start": 240.0,
+    "end": 240.48,
+    "channel": "t"
+  },
+  {
+    "id": "w-629",
+    "text": "morning",
+    "start": 240.48,
+    "end": 240.8,
+    "channel": "m"
+  },
+  {
+    "id": "w-630",
+    "text": "as",
+    "start": 241.08,
+    "end": 241.8,
+    "channel": "a"
+  },
+  {
+    "id": "w-631",
+    "text": "they",
+    "start": 241.8,
+    "end": 241.9,
+    "channel": "t"
+  },
+  {
+    "id": "w-632",
+    "text": "prepared",
+    "start": 241.9,
+    "end": 242.32,
+    "channel": "p"
+  },
+  {
+    "id": "w-633",
+    "text": "for",
+    "start": 242.32,
+    "end": 242.54,
+    "channel": "f"
+  },
+  {
+    "id": "w-634",
+    "text": "their",
+    "start": 242.54,
+    "end": 242.72,
+    "channel": "t"
+  },
+  {
+    "id": "w-635",
+    "text": "journey",
+    "start": 242.72,
+    "end": 243.04,
+    "channel": "j"
+  },
+  {
+    "id": "w-636",
+    "text": "and",
+    "start": 243.04,
+    "end": 243.34,
+    "channel": "a"
+  },
+  {
+    "id": "w-637",
+    "text": "waved",
+    "start": 243.34,
+    "end": 243.86,
+    "channel": "w"
+  },
+  {
+    "id": "w-638",
+    "text": "goodbye",
+    "start": 243.86,
+    "end": 244.26,
+    "channel": "g"
+  },
+  {
+    "id": "w-639",
+    "text": "and",
+    "start": 244.26,
+    "end": 245.5,
+    "channel": "a"
+  },
+  {
+    "id": "w-640",
+    "text": "slipped",
+    "start": 245.5,
+    "end": 246.36,
+    "channel": "s"
+  },
+  {
+    "id": "w-641",
+    "text": "the",
+    "start": 246.36,
+    "end": 246.7,
+    "channel": "t"
+  },
+  {
+    "id": "w-642",
+    "text": "surly",
+    "start": 246.7,
+    "end": 247.0,
+    "channel": "s"
+  },
+  {
+    "id": "w-643",
+    "text": "bonds",
+    "start": 247.0,
+    "end": 247.3,
+    "channel": "b"
+  },
+  {
+    "id": "w-644",
+    "text": "of",
+    "start": 247.3,
+    "end": 247.52,
+    "channel": "o"
+  },
+  {
+    "id": "w-645",
+    "text": "earth",
+    "start": 247.52,
+    "end": 247.76,
+    "channel": "e"
+  },
+  {
+    "id": "w-646",
+    "text": "to",
+    "start": 247.76,
+    "end": 249.02,
+    "channel": "t"
+  },
+  {
+    "id": "w-647",
+    "text": "touch",
+    "start": 249.02,
+    "end": 249.26,
+    "channel": "t"
+  },
+  {
+    "id": "w-648",
+    "text": "the",
+    "start": 249.26,
+    "end": 249.42,
+    "channel": "t"
+  },
+  {
+    "id": "w-649",
+    "text": "face",
+    "start": 249.42,
+    "end": 249.68,
+    "channel": "f"
+  },
+  {
+    "id": "w-650",
+    "text": "of",
+    "start": 249.68,
+    "end": 249.84,
+    "channel": "o"
+  },
+  {
+    "id": "w-651",
+    "text": "God",
+    "start": 249.84,
+    "end": 250.18,
+    "channel": "g"
+  },
+  {
+    "id": "w-652",
+    "text": "Thank",
+    "start": 251.54,
+    "end": 252.1,
+    "channel": "t"
+  },
+  {
+    "id": "w-653",
+    "text": "you",
+    "start": 252.1,
+    "end": 252.32,
+    "channel": "y"
+  }
+]

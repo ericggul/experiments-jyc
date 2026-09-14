@@ -1,5 +1,25 @@
 export const djExperiments = [
-  { slug: "1", label: "dj/1", screenIds: ["1", "2", "3", "4"] },
+  {
+    slug: "1",
+    label: "dj/1",
+    screenIds: ["1", "2", "3", "4"],
+    hasWholeScreen: true,
+    hasSingleScreen: false,
+  },
+  {
+    slug: "2",
+    label: "dj/2",
+    screenIds: [],
+    hasWholeScreen: false,
+    hasSingleScreen: true,
+  },
+  {
+    slug: "3",
+    label: "dj/3",
+    screenIds: [],
+    hasWholeScreen: false,
+    hasSingleScreen: true,
+  },
 ] as const;
 
 export type DjExperimentSlug = (typeof djExperiments)[number]["slug"];
@@ -26,10 +46,12 @@ export function isDjExperimentScreenRoute(
   experimentSlug: DjExperimentSlug,
   value: string,
 ): value is DjScreenRoute {
-  const screenIds = getDjExperimentScreenIds(experimentSlug);
+  const experiment = djExperiments.find(
+    (candidate) => candidate.slug === experimentSlug,
+  );
 
   return (
-    value === "whole" ||
-    Boolean(screenIds?.some((screenId) => screenId === value))
+    (value === "whole" && experiment?.hasWholeScreen === true) ||
+    Boolean(experiment?.screenIds.some((screenId) => screenId === value))
   );
 }

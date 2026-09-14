@@ -1,5 +1,10 @@
 export const experimentCatalog = [
   {
+    href: "/camera-monolith",
+    label: "camera-monolith",
+    description: "Mobile camera frames accumulated as a shared temporal image monolith.",
+  },
+  {
     href: "/chess",
     label: "chess",
     description: "A minimal 2D chess simulation with automatic and local two-player play.",
@@ -49,7 +54,7 @@ export const experimentCatalog = [
   {
     href: "/dj",
     label: "dj",
-    description: "K4 graph controller routed to four socket screens.",
+    description: "Graph signals and word-timed audio or video distributed across socket screens.",
   },
   {
     href: "/network-system",

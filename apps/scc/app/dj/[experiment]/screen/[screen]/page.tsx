@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import DjScreen, { DjScreenExperience } from "@/components/dj/1/screen";
+import DjOneScreen, {
+  DjScreenExperience as DjOneScreenExperience,
+} from "@/components/dj/1/screen";
 import {
   djExperiments,
   getDjExperimentScreenIds,
@@ -13,7 +15,10 @@ import {
 
 export function generateStaticParams() {
   return djExperiments.flatMap((experiment) =>
-    [...experiment.screenIds, "whole"].map((screen) => ({
+    [
+      ...experiment.screenIds,
+      ...(experiment.hasWholeScreen ? (["whole"] as const) : []),
+    ].map((screen) => ({
       experiment: experiment.slug,
       screen,
     })),
@@ -65,9 +70,10 @@ function getWholeComponent(
   _experiment: DjExperimentSlug,
   screenIds: readonly DjScreenId[],
 ) {
-  return <DjScreenExperience screenIds={screenIds} />;
+  return <DjOneScreenExperience screenIds={screenIds} />;
 }
 
-function getScreenComponent(_experiment: DjExperimentSlug, screenId: DjScreenId) {
-  return <DjScreen screenId={screenId} />;
+function getScreenComponent(experiment: DjExperimentSlug, screenId: DjScreenId) {
+  if (experiment !== "1") notFound();
+  return <DjOneScreen screenId={screenId} />;
 }

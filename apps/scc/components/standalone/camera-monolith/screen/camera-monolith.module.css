@@ -1,0 +1,75 @@
+.page {
+  --paper: #f4f4f1;
+  --ink: #11110f;
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.page[data-theme="dark"] {
+  --paper: #0d0e0d;
+  --ink: #eceee8;
+}
+
+.backgroundCanvas,
+.threeCanvas,
+.interactionCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.backgroundCanvas,
+.threeCanvas {
+  pointer-events: none;
+}
+
+.source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.threeCanvas {
+  z-index: 1;
+}
+
+.interactionCanvas {
+  z-index: 2;
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-user-drag: none;
+}
+
+.interactionCanvas:focus-visible {
+  outline: none;
+}
+
+.parameterPanel {
+  position: absolute;
+  z-index: 3;
+  top: 0.75rem;
+  right: 0.75rem;
+  max-height: calc(100svh - 1.5rem);
+  overflow-y: auto;
+  border: 2px solid var(--ink);
+  outline: 2px solid var(--paper);
+  background: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactionCanvas {
+    cursor: default;
+  }
+}

@@ -1,5 +1,7 @@
 # SCC experiment records
 
+- [camera-monolith](experiments/standalone/camera-monolith/README.md): mobile camera frames accumulated FIFO into the `0806/duration` temporal monolith.
+
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 
 - [aerodynamics/1–2](experiments/standalone/aerodynamics/README.md): interactive 3D ABC Euler flow with moving arrows or raised-middle-finger hands.

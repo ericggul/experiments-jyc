@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import DjController from "@/components/dj/1/controller";
+import DjOneController from "@/components/dj/1/controller";
+import DjTwoController from "@/components/dj/2/controller";
+import { DjThreeController } from "@/components/dj/3";
 import {
   djExperiments,
   isDjExperimentSlug,
@@ -34,5 +36,7 @@ export default async function DjControllerPage({
     notFound();
   }
 
-  return <DjController />;
+  if (experiment === "2") return <DjTwoController />;
+  if (experiment === "3") return <DjThreeController />;
+  return <DjOneController />;
 }

@@ -8,37 +8,52 @@ export const metadata: Metadata = {
 
 export default function DjPage() {
   return (
-    <main className="min-h-screen bg-[#050505] p-4 text-[#f7f4ec]">
+    <main className="min-h-screen bg-black p-4 text-white">
       <h1 className="mb-6 text-[clamp(48px,12vw,120px)] font-black leading-none">
         dj
       </h1>
-      <nav className="grid border-t border-[#f7f4ec]">
+      <nav className="grid gap-2">
         {djExperiments.map((experiment) => (
           <Link
             key={`controller-${experiment.slug}`}
             href={`/dj/${experiment.slug}/controller`}
-            className="border-b border-[#f7f4ec] py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-[#f7f4ec] hover:text-[#050505]"
+            className="py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-white hover:text-black"
           >
             {experiment.slug}/controller
           </Link>
         ))}
         {djExperiments.flatMap((experiment) => [
+          ...(experiment.hasSingleScreen
+            ? [
+                <Link
+                  key={`screen-${experiment.slug}`}
+                  href={`/dj/${experiment.slug}/screen`}
+                  className="py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-white hover:text-black"
+                >
+                  {experiment.slug}/screen
+                </Link>,
+              ]
+            : []),
           ...experiment.screenIds.map((screenId) => (
             <Link
               key={`screen-${experiment.slug}-${screenId}`}
               href={`/dj/${experiment.slug}/screen/${screenId}`}
-              className="border-b border-[#f7f4ec] py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-[#f7f4ec] hover:text-[#050505]"
+              className="py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-white hover:text-black"
             >
               {experiment.slug}/screen/{screenId}
             </Link>
           )),
-          <Link
-            key={`screen-${experiment.slug}-whole`}
-            href={`/dj/${experiment.slug}/screen/whole`}
-            className="border-b border-[#f7f4ec] py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-[#f7f4ec] hover:text-[#050505]"
-          >
-            {experiment.slug}/screen/whole
-          </Link>,
+          ...(experiment.hasWholeScreen
+            ? [
+                <Link
+                  key={`screen-${experiment.slug}-whole`}
+                  href={`/dj/${experiment.slug}/screen/whole`}
+                  className="py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-white hover:text-black"
+                >
+                  {experiment.slug}/screen/whole
+                </Link>,
+              ]
+            : []),
         ])}
       </nav>
     </main>
