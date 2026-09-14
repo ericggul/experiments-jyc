@@ -1,6 +1,12 @@
 # Overlay-4 — recorded underwater approach sound
 
-Experimental: `/screen/0908/overlay-4`, alias `/0908/overlay-4`. Independent overlay-3 copy; visual defaults, fish behavior and separate session key remain. **Field-recording trial rejected by user; sound defaults OFF.** Code and audio assets retained; manual activation remains available. No further redesign requested.
+Experimental: `/screen/0908/overlay-4`, alias `/0908/overlay-4`. Independent overlay-3 copy; visual defaults, fish behavior and separate session key remain. **Field-recording trial rejected by user; sound defaults OFF.** Code and audio assets retained; manual activation remains available.
+
+## Bubble-scale trial — 2026-09-13
+
+Each story appearance receives one deterministic scale in the inclusive 0.5–1.5 range (mean 1.0, so the former 50px default remains the average). Its `new`, `viewing`, and `leaving` durations use the same multiplier. The grid slots, surface treatment, story propagation, and goldfish force coefficients remain fixed. The school now reads each bubble's rendered radius for approach, contact, target rings, and obstacle resolution, so a fish is kept clear of the actual circle edge while longer-lived, larger bubbles remain available to attract it.
+
+The surface controls also include `hieroglyphs`, with right-side `default` / `tech` selection. Default preserves the Egyptian-hieroglyph sequence used by LinkedIn/4. Tech contains 36 original SVG compositions using profile figures, seated/kneeling poses, hands and subordinate technology signs. These are invented contemporary signs, not historical translations. The rejected modern icon paths were replaced; generated raster trials are not used. SVG ink bounds determine horizontal and vertical centering at every bubble size. Visual review covered the 36-sign SVG contact sheet; stylistic acceptance remains with the user.
 
 ## Current direction and source
 

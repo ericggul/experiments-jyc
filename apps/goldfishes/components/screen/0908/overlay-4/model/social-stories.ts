@@ -17,6 +17,8 @@ const INITIAL_NEW_SHARE = 0.54;
 const MAXIMUM_NEW_SHARE = 0.74;
 const TRANSMISSIONS_PER_STORY = 2;
 const MAX_PROPAGATIONS_PER_STEP_SHARE = 0.045;
+export const MINIMUM_BUBBLE_SCALE = 0.5;
+export const MAXIMUM_BUBBLE_SCALE = 1.5;
 
 const LOCAL_OFFSETS = [
   [-1, -1], [0, -1], [1, -1],
@@ -32,6 +34,12 @@ function nextRandom(seed: number) {
 function unit(seed: number) {
   const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return value - Math.floor(value);
+}
+
+/** Stable for one appearance, including a session restored from storage. */
+export function bubbleScaleForOccurrence(index: number, appearedAt: number) {
+  const occurrenceSeed = (index + 1) * 977 + Math.round(appearedAt) * 0.017;
+  return MINIMUM_BUBBLE_SCALE + unit(occurrenceSeed) * (MAXIMUM_BUBBLE_SCALE - MINIMUM_BUBBLE_SCALE);
 }
 
 function indexAt(column: number, row: number, columns: number) {
@@ -58,17 +66,19 @@ function nextTransmissionAt(now: number, seed: number): { time: number; seed: nu
   };
 }
 
-function newStoryState(now: number, seed: number): { state: StoryCellState; seed: number } {
+function newStoryState(now: number, index: number, seed: number): { state: StoryCellState; seed: number } {
   const viewRandom = nextRandom(seed);
   const poissonDelay = -Math.log(Math.max(0.00001, 1 - viewRandom.value)) / VIEW_EVENT_RATE;
   const viewDelay = Math.round(Math.min(10000, Math.max(1400, poissonDelay * 1000)));
   const transmission = firstTransmissionAt(now, viewRandom.seed);
+  const bubbleScale = bubbleScaleForOccurrence(index, now);
 
   return {
     seed: transmission.seed,
     state: {
       status: "new",
-      viewAt: now + viewDelay,
+      bubbleScale,
+      viewAt: now + viewDelay * bubbleScale,
       viewingUntil: null,
       leavingUntil: null,
       availableAt: now,
@@ -79,14 +89,16 @@ function newStoryState(now: number, seed: number): { state: StoryCellState; seed
   };
 }
 
-function propagatedStoryState(now: number, seed: number): { state: StoryCellState; seed: number } {
+function propagatedStoryState(now: number, index: number, seed: number): { state: StoryCellState; seed: number } {
   const transmission = firstTransmissionAt(now, seed);
+  const bubbleScale = bubbleScaleForOccurrence(index, now);
 
   return {
     seed: transmission.seed,
     state: {
       status: "new",
-      viewAt: now + INFLUENCE_LIFETIME,
+      bubbleScale,
+      viewAt: now + INFLUENCE_LIFETIME * bubbleScale,
       viewingUntil: null,
       leavingUntil: null,
       availableAt: now,
@@ -97,11 +109,12 @@ function propagatedStoryState(now: number, seed: number): { state: StoryCellStat
   };
 }
 
-function viewingStoryState(now: number): StoryCellState {
+function viewingStoryState(now: number, bubbleScale: number): StoryCellState {
   return {
     status: "viewing",
+    bubbleScale,
     viewAt: null,
-    viewingUntil: now + VIEWING_TRANSITION_MILLISECONDS,
+    viewingUntil: now + VIEWING_TRANSITION_MILLISECONDS * bubbleScale,
     leavingUntil: null,
     availableAt: now,
     transmitAt: null,
@@ -110,12 +123,13 @@ function viewingStoryState(now: number): StoryCellState {
   };
 }
 
-function leavingStoryState(now: number): StoryCellState {
+function leavingStoryState(now: number, bubbleScale: number): StoryCellState {
   return {
     status: "leaving",
+    bubbleScale,
     viewAt: null,
     viewingUntil: null,
-    leavingUntil: now + LEAVING_TRANSITION_MILLISECONDS,
+    leavingUntil: now + LEAVING_TRANSITION_MILLISECONDS * bubbleScale,
     availableAt: now,
     transmitAt: null,
     transmissionsRemaining: 0,
@@ -126,6 +140,7 @@ function leavingStoryState(now: number): StoryCellState {
 function emptyStoryState(availableAt = 0): StoryCellState {
   return {
     status: "empty",
+    bubbleScale: 1,
     viewAt: null,
     viewingUntil: null,
     leavingUntil: null,
@@ -231,7 +246,7 @@ export function createSocialStorySystem(
     const random = nextRandom(randomSeed);
     randomSeed = random.seed;
     if (random.value < INITIAL_NEW_SHARE) {
-      const next = newStoryState(now, randomSeed);
+      const next = newStoryState(now, index, randomSeed);
       randomSeed = next.seed;
       states.push(next.state);
     } else {
@@ -252,7 +267,7 @@ export function createSocialStorySystem(
   while (initialNewStories < minimumNewStories) {
     const target = chooseInitialEmptyCell();
     if (target === null) break;
-    const next = newStoryState(now, randomSeed);
+    const next = newStoryState(now, target, randomSeed);
     randomSeed = next.seed;
     states[target] = next.state;
     initialNewStories += 1;
@@ -297,7 +312,7 @@ export function maintainSocialStoryActivity(
     const choice = nextRandom(randomSeed);
     randomSeed = choice.seed;
     if (choice.value >= probability) continue;
-    const next = newStoryState(now, randomSeed);
+    const next = newStoryState(now, index, randomSeed);
     randomSeed = next.seed;
     states[index] = next.state;
     if (++arrivals >= desired - active) break;
@@ -347,13 +362,13 @@ export function stepSocialStorySystem(
     const crowd = contact / Math.max(0.001, elapsed);
     const extension = (Math.min(crowd, 3) * 0.55 - Math.max(0, crowd - 3) * 0.8) * elapsed * 1000;
     const current = state.status === "new" && state.viewAt !== null
-      ? { ...state, viewAt: Math.min(state.availableAt + 12000, state.viewAt + extension) }
+      ? { ...state, viewAt: Math.min(state.availableAt + 12000 * state.bubbleScale, state.viewAt + extension) }
       : state;
     if (current.status === "new" && current.viewAt !== null && current.viewAt <= now) {
-      return viewingStoryState(now);
+      return viewingStoryState(now, current.bubbleScale);
     }
     if (current.status === "viewing" && current.viewingUntil !== null && current.viewingUntil <= now) {
-      return leavingStoryState(now);
+      return leavingStoryState(now, current.bubbleScale);
     }
     if (current.status === "leaving" && current.leavingUntil !== null && current.leavingUntil <= now) {
       return emptyStoryState(now + EMPTY_COOLDOWN_MILLISECONDS);
@@ -414,7 +429,7 @@ export function stepSocialStorySystem(
 
     const selected = chooseTie(availableTies, randomSeed);
     randomSeed = selected.seed;
-    const propagated = propagatedStoryState(now, randomSeed);
+    const propagated = propagatedStoryState(now, selected.tie.target, randomSeed);
     randomSeed = propagated.seed;
     nextStates[selected.tie.target] = propagated.state;
     newCount += 1;

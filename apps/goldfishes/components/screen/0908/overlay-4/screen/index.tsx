@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   createSocialStorySystem,
   maintainSocialStoryActivity,
@@ -16,6 +16,7 @@ import type { StoryInfluence } from "../model/types";
 import styles from "./story-tray.module.css";
 import { ApproachEvents } from "../model/approach-events";
 import { useApproachSound } from "../audio/use-approach-sound";
+import { TechHieroglyph } from "./tech-hieroglyph";
 
 const REFERENCE_STORY_SIZE = 93;
 const DEFAULT_ICON_SIZE = 50;
@@ -47,7 +48,7 @@ type StageSize = {
   height: number;
 };
 
-type StorySurface = "empty" | "white" | "face" | "numbers" | "colour" | "techMono" | "tech";
+type StorySurface = "empty" | "white" | "face" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
 type TechTypeface = "mono" | "ui" | "image" | "imageMono";
 
 type StoryRingPalette = Readonly<{
@@ -86,6 +87,7 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "white", value: "white" },
   { label: "face", value: "face" },
   { label: "numbers", value: "numbers" },
+  { label: "hieroglyphs", value: "hieroglyphs" },
   { label: "colour", value: "colour" },
   { label: "tech mono", value: "techMono" },
   { label: "tech", value: "tech" },
@@ -109,6 +111,7 @@ const politicianLean = [
   -0.15, 0.65, 0.85, 0, -0.35, -0.45, -0.9, 0.55, -0.85, 0.25,
 ] as const;
 const numberGlyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
+const egyptianHieroglyphs = Array.from("𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟");
 
 function politicianTint(index: number) {
   const lean = politicianLean[index % politicianLean.length]!;
@@ -203,7 +206,7 @@ function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: numbe
     const image = techImageStyle(index);
     return typeface === "imageMono" ? { ...image, filter: "grayscale(1) contrast(1.08) brightness(0.88)" } : image;
   }
-  if (surface === "empty" || surface === "numbers" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
+  if (surface === "empty" || surface === "numbers" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
   if (surface === "face") {
     const tint = politicianTint(index);
     return { backgroundImage: `linear-gradient(${tint}, ${tint}), url("${humanFaceImages[index % humanFaceImages.length]}")`, backgroundBlendMode: "color, normal", backgroundSize: "cover" };
@@ -224,6 +227,33 @@ function TechMark({ term, typeface }: { term: string; typeface: TechTypeface }) 
 
 function NumberMark({ glyph }: { glyph: string }) {
   return <svg aria-hidden="true" className={styles.numberMark} viewBox="0 0 100 100"><text dominantBaseline="central" textAnchor="middle" x="50" y="50">{glyph}</text></svg>;
+}
+
+function HieroglyphMark({ glyph }: { glyph: string }) {
+  const textRef = useRef<SVGTextElement>(null);
+
+  useLayoutEffect(() => {
+    let disposed = false;
+    const centerGlyph = () => {
+      if (disposed) return;
+      const text = textRef.current;
+      if (!text) return;
+      try {
+        const bounds = text.getBBox();
+        text.setAttribute("transform", `translate(${50 - bounds.x - bounds.width / 2} ${50 - bounds.y - bounds.height / 2})`);
+      } catch {
+        // A detached SVG may reject getBBox during a rapid surface change.
+      } finally {
+        text.style.opacity = "1";
+      }
+    };
+
+    centerGlyph();
+    void document.fonts.ready.then(centerGlyph);
+    return () => { disposed = true; };
+  }, [glyph]);
+
+  return <svg aria-hidden="true" className={styles.hieroglyphMark} preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"><text ref={textRef} textAnchor="middle" x="0" y="0">{glyph}</text></svg>;
 }
 
 function storyCenter(
@@ -250,6 +280,8 @@ function getInfluenceGeometry(
   grid: GridSize,
   storySize: number,
   storyGap: number,
+  sourceScale: number,
+  targetScale: number,
 ): InfluenceGeometry | null {
   const source = storyCenter(influence.source, stage, grid, storySize, storyGap);
   const target = storyCenter(influence.target, stage, grid, storySize, storyGap);
@@ -260,11 +292,12 @@ function getInfluenceGeometry(
 
   const unitX = deltaX / distance;
   const unitY = deltaY / distance;
-  const edgeOffset = Math.min(storySize * 0.48, distance * 0.28);
-  const startX = source.x + unitX * edgeOffset;
-  const startY = source.y + unitY * edgeOffset;
-  const endX = target.x - unitX * edgeOffset;
-  const endY = target.y - unitY * edgeOffset;
+  const sourceEdgeOffset = Math.min(storySize * sourceScale * 0.48, distance * 0.28);
+  const targetEdgeOffset = Math.min(storySize * targetScale * 0.48, distance * 0.28);
+  const startX = source.x + unitX * sourceEdgeOffset;
+  const startY = source.y + unitY * sourceEdgeOffset;
+  const endX = target.x - unitX * targetEdgeOffset;
+  const endY = target.y - unitY * targetEdgeOffset;
   const bendDirection = (influence.source * 17 + influence.target * 13) % 2 === 0 ? 1 : -1;
   const bend = Math.min(18, distance * 0.16) * bendDirection;
   const controlX = (startX + endX) / 2 - unitY * bend;
@@ -294,6 +327,7 @@ export function InstagramSocialStoryTray() {
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [testSurface, setTestSurface] = useState<StorySurface>("techMono");
   const [techTypeface, setTechTypeface] = useState<TechTypeface>("image");
+  const [hieroglyphSet, setHieroglyphSet] = useState<"default" | "tech">("default");
   const [iconSize, setIconSize] = useState(DEFAULT_ICON_SIZE);
   const [storyGap, setStoryGap] = useState(DEFAULT_STORY_GAP);
   const [showTraces, setShowTraces] = useState(false);
@@ -545,13 +579,22 @@ export function InstagramSocialStoryTray() {
     "--story-ring-gradient": selectedRingPalette.gradient,
   } as CSSProperties;
   const influenceGeometry = useMemo(() => system.influences.map((influence) => (
-    getInfluenceGeometry(influence, stageSize, gridSize, iconSize, storyGap)
+    getInfluenceGeometry(
+      influence,
+      stageSize,
+      gridSize,
+      iconSize,
+      storyGap,
+      system.states[influence.source]?.bubbleScale ?? 1,
+      system.states[influence.target]?.bubbleScale ?? 1,
+    )
   )).filter((influence): influence is InfluenceGeometry => influence !== null), [
     gridSize,
     iconSize,
     stageSize,
     storyGap,
     system.influences,
+    system.states,
   ]);
   return (
     <main aria-label="Instagram stories influenced by nearby stories" className={styles.screen}
@@ -592,18 +635,25 @@ export function InstagramSocialStoryTray() {
             const isNew = storyState?.status === "new";
             const isViewing = storyState?.status === "viewing";
             const isLeaving = storyState?.status === "leaving";
+            const bubbleScale = storyState?.bubbleScale ?? 1;
+            const storyStyle = {
+              "--bubble-scale": bubbleScale,
+              "--bubble-transition-duration": `${300 * bubbleScale}ms`,
+              "--bubble-viewing-duration": `${760 * bubbleScale}ms`,
+            } as CSSProperties;
 
             return (
               <li className={styles.gridItem} key={story.id}>
-                <span className={`${styles.story} ${isEmpty ? styles.storyEmpty : isLeaving ? styles.storyLeaving : isNew ? styles.storyEntering : ""}`}>
+                <span className={`${styles.story} ${isEmpty ? styles.storyEmpty : isLeaving ? styles.storyLeaving : isNew ? styles.storyEntering : ""}`} style={storyStyle}>
                   <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : styles.storyRingPlain}`} style={testSurface === "tech" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
                     <span
                       aria-hidden="true"
-                      className={`${styles.logoSurface} ${testSurface === "numbers" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
+                      className={`${styles.logoSurface} ${testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
                       style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface)}
                     >
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
                       {testSurface === "numbers" ? <NumberMark glyph={numberGlyphs[story.index % numberGlyphs.length]!} /> : null}
+                      {testSurface === "hieroglyphs" ? hieroglyphSet === "tech" ? <TechHieroglyph term={techKeyword.abbreviation} /> : <HieroglyphMark glyph={egyptianHieroglyphs[story.index % egyptianHieroglyphs.length]!} /> : null}
                       {testSurface === "techMono" || testSurface === "tech" ? techTypeface === "image" || techTypeface === "imageMono" ? null : <TechMark term={techKeyword.abbreviation} typeface={techTypeface} /> : null}
                     </span>
                   </span>
@@ -631,6 +681,17 @@ export function InstagramSocialStoryTray() {
                   ))}
                 </div>
               </fieldset>
+
+              {testSurface === "hieroglyphs" ? (
+                <fieldset className={styles.controlGroup}>
+                  <legend className={styles.controlLegend}>hieroglyphs</legend>
+                  <div className={styles.optionGrid}>
+                    {(["default", "tech"] as const).map((set) => (
+                      <button aria-pressed={hieroglyphSet === set} className={styles.optionButton} key={set} onClick={() => setHieroglyphSet(set)} type="button">{set}</button>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
 
               {testSurface === "techMono" || testSurface === "tech" ? (
                 <fieldset className={styles.controlGroup}>

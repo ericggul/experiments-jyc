@@ -1,0 +1,64 @@
+.panel {
+  color: #191919;
+  font-family: inherit;
+  margin: 0;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+}
+
+.panel button { cursor: pointer; font: inherit; }
+.panel button:focus-visible { outline: 3px solid rgba(10, 102, 194, .35); outline-offset: 1px; }
+
+.filters, .list { background: #fff; border: 1px solid #e0dfdc; border-radius: 8px; }
+.filters { align-items: center; display: flex; gap: 8px; height: 56px; padding: 0 12px; }
+.filters button { background: #fff; border: 1px solid #777; border-radius: 16px; color: #444; font-size: 14px; font-weight: 600; height: 32px; padding: 0 13px; white-space: nowrap; }
+.filters button:hover { background: #f3f2ef; }
+.filters .activeFilter { background: #32765a; border-color: #32765a; color: #fff; }
+
+.list { margin-top: 10px; overflow: visible; }
+.notification { align-items: flex-start; display: flex; min-height: 88px; position: relative; }
+.notification + .notification { border-top: 1px solid #e9e7e4; }
+.notification.unread { background: #dce6f8; }
+.notificationButton { align-items: flex-start; background: transparent; border: 0; color: inherit; display: flex; flex: 1; gap: 8px; min-width: 0; padding: 16px 8px 16px 24px; text-align: left; }
+.notificationButton:hover { background: rgba(255,255,255,.25); }
+.avatar { align-items: center; background: #d5dce5; border-radius: 50%; color: #fff; display: flex; flex: 0 0 48px; font-size: 20px; font-weight: 600; height: 48px; justify-content: center; object-fit: cover; overflow: hidden; width: 48px; }
+.avatarfrancisco { background: #806052; }
+.avatarseunghoon { background: #355d75; }
+.avatarshin { background: #7d937a; }
+.avatarschool { background: #285887; font-size: 15px; }
+.copy { display: grid; gap: 3px; min-width: 0; padding-top: 1px; }
+.copy > span { -webkit-box-orient: vertical; -webkit-line-clamp: 3; display: -webkit-box; font-size: 14px; line-height: 20px; overflow: hidden; }
+.copy strong { font-weight: 600; }
+.copy small { color: #666; font-size: 12px; line-height: 16px; }
+.unreadDot { background: #0a66c2; border-radius: 50%; height: 8px; left: 8px; position: absolute; top: 36px; width: 8px; }
+.actions { align-items: center; display: grid; flex: 0 0 48px; gap: 4px; justify-items: center; padding: 14px 8px 0 0; }
+.actions time { color: #666; font-size: 12px; line-height: 16px; }
+.moreButton { align-items: center; background: transparent; border: 0; border-radius: 50%; color: #666; display: flex; height: 28px; justify-content: center; padding: 0; width: 28px; }
+.moreButton:hover { background: rgba(0, 0, 0, .08); }
+.moreButton svg { fill: currentColor; height: 20px; width: 20px; }
+
+.menu { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.24); overflow: hidden; position: absolute; right: 12px; top: 72px; width: 256px; z-index: 2; }
+.menu button { align-items: center; background: #fff; border: 0; color: #191919; display: flex; font-size: 14px; gap: 13px; min-height: 48px; padding: 10px 16px; text-align: left; width: 100%; }
+.menu button:hover { background: #f3f2ef; }
+.menu button > svg:first-child, .lessIcon { color: #555; flex: 0 0 20px; height: 20px; width: 20px; }
+.menu svg { stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.menu button > svg:last-child { height: 18px; margin-left: auto; width: 18px; }
+.lessIcon { font-size: 22px; line-height: 18px; text-align: center; }
+.preferences { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.24); display: grid; gap: 4px; padding: 16px; position: absolute; right: 12px; top: 72px; width: 256px; z-index: 2; }
+.preferences > strong { font-size: 15px; }
+.preferences > span { color: #666; font-size: 13px; }
+.preferences button { align-items: center; background: transparent; border: 0; color: #555; display: flex; font-size: 13px; gap: 8px; justify-self: start; margin-top: 6px; padding: 0; }
+.preferences button i { background: #777; border-radius: 10px; height: 20px; position: relative; transition: background .15s ease; width: 36px; }
+.preferences button i::after { background: #fff; border-radius: 50%; content: ""; height: 16px; left: 2px; position: absolute; top: 2px; transition: transform .15s ease; width: 16px; }
+.preferences .toggleOn i { background: #0a66c2; }
+.preferences .toggleOn i::after { transform: translateX(16px); }
+.empty { color: #666; font-size: 14px; padding: 28px 24px; text-align: center; }
+.toast { align-items: center; background: #333; border-radius: 5px; bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.22); color: #fff; display: flex; font-size: 14px; gap: 20px; left: 50%; max-width: calc(100vw - 32px); padding: 12px 16px; position: fixed; transform: translateX(-50%); z-index: 4; }
+.toast button { background: transparent; border: 0; color: #70b5f9; font-weight: 600; padding: 0; }
+
+@media (max-width: 600px) {
+  .panel { margin: 8px auto 20px; max-width: 100%; width: 100%; }
+  .filters, .list { border-left: 0; border-radius: 0; border-right: 0; }
+  .filters { overflow-x: auto; }
+  .notificationButton { padding-left: 22px; }
+}

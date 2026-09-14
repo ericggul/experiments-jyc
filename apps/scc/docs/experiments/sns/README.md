@@ -15,6 +15,12 @@ Routes:
 - `/sns/youtube/5`
 - `/sns/youtube/6`
 - `/sns/linkedin/1`
+- `/sns/linkedin/2`
+- `/sns/linkedin/3`
+- `/sns/linkedin/5`
+- `/sns/linkedin/4`
+- `/sns/linkedin/6`
+- `/sns/linkedin/6-test`
 
 Files:
 
@@ -74,6 +80,12 @@ The larger service reconstructions have variant-specific contracts:
 - [YouTube 5](./youtube/5.md)
 - [YouTube 6](./youtube/6.md)
 - [LinkedIn 1](./linkedin/1.md)
+- [LinkedIn 2](./linkedin/2.md)
+- [LinkedIn 3](./linkedin/3.md)
+- [LinkedIn 5](./linkedin/5.md)
+- [LinkedIn 4](./linkedin/4.md)
+- [LinkedIn 6](./linkedin/6.md)
+- [LinkedIn 6 test](./linkedin/6-test.md)
 
 The icon system must communicate these cycles without visible explanatory
 text. At the rendered 28-pixel size, prefer established universal pictograms

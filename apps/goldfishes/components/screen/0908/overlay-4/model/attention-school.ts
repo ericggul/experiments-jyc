@@ -1,3 +1,4 @@
+import { MAXIMUM_BUBBLE_SCALE } from "./social-stories";
 import type { SocialStorySystem } from "./types";
 
 export type FieldLayout = {
@@ -32,7 +33,7 @@ export type CellRelations = Readonly<{
   weights: Float32Array;
   scoreMax: Float32Array;
 }>;
-type Target = { index: number; x: number; y: number; born: number; strength: number };
+type Target = { index: number; x: number; y: number; radius: number; born: number; strength: number };
 const MAX_FISH_COUNT = 1000;
 // Screen-space bounds of the 1.0× rendered glyph, measured from the root.
 // The tail is deliberately much longer than the mouth.
@@ -126,7 +127,7 @@ export class AttentionSchool {
    */
   private exclusionRadius(fish: Fish, target: Target, distance: number) {
     if (distance < 0.001) {
-      return this.layout.iconSize / 2 + this.tailReach + this.sideReach + FISH_EDGE_GAP;
+      return target.radius + this.tailReach + this.sideReach + FISH_EDGE_GAP;
     }
     const inwardX = (target.x - fish.x) / distance;
     const inwardY = (target.y - fish.y) / distance;
@@ -135,14 +136,14 @@ export class AttentionSchool {
     const alignment = Math.max(-1, Math.min(1, forwardX * inwardX + forwardY * inwardY));
     const longitudinalReach = alignment >= 0 ? this.mouthReach : this.tailReach;
     const lateralShare = Math.sqrt(Math.max(0, 1 - alignment * alignment));
-    return this.layout.iconSize / 2
+    return target.radius
       + longitudinalReach * Math.abs(alignment)
       + this.sideReach * lateralShare
       + FISH_EDGE_GAP;
   }
 
   private resolveObstacles(fish: Fish) {
-    const searchRadius = this.layout.iconSize / 2 + this.tailReach + this.sideReach + FISH_EDGE_GAP;
+    const searchRadius = this.layout.iconSize * MAXIMUM_BUBBLE_SCALE / 2 + this.tailReach + this.sideReach + FISH_EDGE_GAP;
     for (let pass = 0; pass < 24; pass++) {
       let overlap = false;
       for (const target of this.nearbyTargets(fish.x, fish.y, searchRadius)) {
@@ -247,13 +248,14 @@ export class AttentionSchool {
       const center = storyCenter(index, this.layout);
       this.relationState.centers[index * 2] = center.x;
       this.relationState.centers[index * 2 + 1] = center.y;
-      this.relationState.radii[index] = system.states[index]!.status === "empty" ? 0 : this.layout.iconSize / 2;
+      const state = system.states[index]!;
+      this.relationState.radii[index] = state.status === "empty" ? 0 : this.layout.iconSize * state.bubbleScale / 2;
     }
     this.targets.clear();
     this.mechanismRecords.length = 0;
     system.states.forEach((state, index) => {
       if (state.status === "empty") return;
-      this.targets.set(index, { index, ...storyCenter(index, this.layout), born: state.availableAt,
+      this.targets.set(index, { index, ...storyCenter(index, this.layout), radius: this.layout.iconSize * state.bubbleScale / 2, born: state.availableAt,
         strength: state.status === "new" ? 1 : state.status === "viewing" ? 0.28 : 0.07 });
     });
     // Newly appearing circles must not enclose a fish even before its next step.
@@ -264,7 +266,7 @@ export class AttentionSchool {
     const dt = Math.min(1 / 24, Math.max(0, seconds));
     this.relationState.flags.set(this.candidateFlags);
     this.relationState.weights.set(this.candidateScores);
-    const { width, height, iconSize } = this.layout;
+    const { width, height } = this.layout;
     // Synchronous read phase: no fish sees deposits from a later/earlier iteration.
     const decay = Math.exp(-dt / 8);
     for (let i = 0; i < this.density.length; i++) {
@@ -281,7 +283,7 @@ export class AttentionSchool {
     mechanisms.length = 0;
     for (const fish of this.fish) {
       const target = this.targets.get(fish.target);
-      if (target && Math.hypot(target.x - fish.x, target.y - fish.y) < iconSize / 2 + TARGET_CAPTURE_PADDING) {
+      if (target && Math.hypot(target.x - fish.x, target.y - fish.y) < target.radius + TARGET_CAPTURE_PADDING) {
         this.occupancy.set(target.index, (this.occupancy.get(target.index) ?? 0) + 1);
       }
     }
@@ -342,7 +344,7 @@ export class AttentionSchool {
         const distance = Math.max(0.1, Math.hypot(dx, dy));
         const familiarity = this.remembered(fish.id, target.index, now);
         // A target-facing fish reaches the ring with its mouth, not its root.
-        const radius = iconSize / 2 + this.mouthReach + FISH_EDGE_GAP;
+        const radius = target.radius + this.mouthReach + FISH_EDGE_GAP;
         const radial = Math.max(-32, Math.min(TARGET_APPROACH_SPEED, (distance - radius) * 1.25));
         targetInwardX = -dx / distance;
         targetInwardY = -dy / distance;
@@ -353,7 +355,7 @@ export class AttentionSchool {
         ax += (desiredX - fish.vx) * captureStrength;
         ay += (desiredY - fish.vy) * captureStrength;
         desiredFacing = Math.atan2(target.y - fish.y, target.x - fish.x);
-        const contact = distance < iconSize / 2 + TARGET_CAPTURE_PADDING;
+        const contact = distance < target.radius + TARGET_CAPTURE_PADDING;
         this.markRelation(fish, target.index, contact ? 12 : 4);
         this.relationState.weights[fish.id * this.relationState.cellCount + target.index] = contact ? 1 : Math.min(1, Math.abs(radial) / 95);
         let record = this.mechanismPool[i];
@@ -364,7 +366,7 @@ export class AttentionSchool {
         }
         record.targetIndex = target.index;
         record.targetX = target.x; record.targetY = target.y;
-        record.targetRadius = iconSize / 2;
+        record.targetRadius = target.radius;
         record.signedRadial = radial; record.contact = contact;
         mechanisms.push(record);
         if (contact) {

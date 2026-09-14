@@ -48,6 +48,12 @@ export const snsExperiments = [
   { key: "youtube/4", category: "youtube", slug: "4", label: "sns/youtube/4" },
   { key: "youtube/5", category: "youtube", slug: "5", label: "sns/youtube/5" },
   { key: "youtube/6", category: "youtube", slug: "6", label: "sns/youtube/6" },
+  { key: "linkedin/2", category: "linkedin", slug: "2", label: "sns/linkedin/2" },
+  { key: "linkedin/3", category: "linkedin", slug: "3", label: "sns/linkedin/3" },
+  { key: "linkedin/4", category: "linkedin", slug: "4", label: "sns/linkedin/4" },
+  { key: "linkedin/5", category: "linkedin", slug: "5", label: "sns/linkedin/5" },
+  { key: "linkedin/6", category: "linkedin", slug: "6", label: "sns/linkedin/6" },
+  { key: "linkedin/6-test", category: "linkedin", slug: "6-test", label: "sns/linkedin/6-test" },
   { key: "linkedin/1", category: "linkedin", slug: "1", label: "sns/linkedin/1" },
 ] as const;
 

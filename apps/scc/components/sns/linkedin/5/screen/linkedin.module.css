@@ -1,0 +1,473 @@
+.linkedinShell {
+  --blue: #0a66c2;
+  --ink: #191919;
+  --muted: #666666;
+  --quiet: #8c8c8c;
+  --line: #e0dfdc;
+  --canvas: #f4f2ee;
+  --card: #ffffff;
+  --radius: 8px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  min-height: 100dvh;
+  padding: 52px 0 72px;
+}
+
+.linkedinShell button,
+.linkedinShell input,
+.linkedinShell textarea { font: inherit; }
+.linkedinShell button { color: inherit; cursor: pointer; }
+.linkedinShell button:focus-visible,
+.linkedinShell input:focus-visible,
+.linkedinShell textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 34%, transparent); outline-offset: 1px; }
+
+.topBar { background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .09); height: 52px; left: 0; position: fixed; right: 0; top: 0; z-index: 30; }
+.topInner { align-items: stretch; display: flex; height: 52px; margin: 0 auto; max-width: 1128px; }
+.brandButton { align-items: center; background: transparent; border: 0; display: flex; margin-right: 8px; padding: 0; }
+.mark { align-items: flex-end; color: #0a66c2; display: inline-flex; font-size: 19px; font-weight: 700; height: 34px; letter-spacing: -.85px; line-height: 1; }
+.mark i { align-items: center; background: #0a66c2; border-radius: 3px; color: #fff; display: inline-flex; font-family: Arial, sans-serif; font-size: 22px; font-style: normal; font-weight: 800; height: 25px; justify-content: center; letter-spacing: -1.8px; line-height: 25px; margin-left: 2px; order: 2; padding: 0 2px 1px 0; width: 25px; }
+.mark b { align-items: center; display: inline-flex; font-weight: 700; height: 25px; }
+.searchBox { align-items: center; align-self: center; background: #edf3f8; border-radius: 4px; color: #38434f; display: flex; height: 34px; margin-right: auto; padding: 0 10px; width: 280px; }
+.searchBox svg { height: 18px; margin-right: 7px; stroke-width: 2; width: 18px; }
+.searchBox input { background: transparent; border: 0; color: #222; font-size: 14px; min-width: 0; outline: 0; padding: 0; width: 100%; }
+.searchBox input::placeholder { color: #38434f; opacity: 1; }
+.primaryNav { display: flex; height: 100%; }
+.primaryNav > button { align-items: center; background: transparent; border: 0; color: #666; display: flex; flex-direction: column; font-size: 12px; justify-content: center; min-width: 72px; padding: 0 6px; position: relative; }
+.primaryNav > button:hover { color: #191919; }
+.primaryNav > button.activeNav { color: #191919; }
+.primaryNav > button.activeNav::after { background: #191919; bottom: 0; content: ""; height: 2px; left: 0; position: absolute; right: 0; }
+.navIcon { height: 23px; position: relative; width: 24px; }
+.navIcon svg { height: 22px; width: 22px; }
+.navIcon i { align-items: center; background: #c20f0f; border: 2px solid #fff; border-radius: 50%; color: #fff; display: flex; font-size: 9px; font-style: normal; height: 16px; justify-content: center; line-height: 1; position: absolute; right: -2px; top: -3px; width: 16px; }
+.meMenu { border-left: 1px solid #ebebeb !important; margin-left: 7px; min-width: 65px !important; }
+.meMenu .avatar { border: 1px solid #e6e6e6; height: 24px; width: 24px; }
+.meMenu span,
+.businessMenu span:last-child { align-items: center; display: flex; gap: 1px; white-space: nowrap; }
+.meMenu span svg,
+.businessMenu span:last-child svg { height: 11px; width: 11px; }
+.businessMenu { min-width: 86px !important; }
+.gridGlyph { font-size: 12px; letter-spacing: 1px; line-height: 7px; transform: rotate(45deg); }
+.premiumLink { color: #915907 !important; line-height: 14px; min-width: 96px !important; text-align: center; text-decoration: underline; }
+.mobileProfile,
+.mobileMessage { display: none; }
+
+.pageGrid { display: grid; gap: 24px; grid-template-columns: 225px minmax(0, 555px) 300px; margin: 20px auto 0; max-width: 1128px; }
+.leftRail, .rightRail, .feed { min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+
+.profileCard { position: sticky; top: 72px; }
+.profileCover { background: linear-gradient(125deg, #a9c7dc 0%, #d7d4c7 45%, #798d9b 100%); height: 56px; }
+.viewerAvatar { background: #fff; border: 2px solid #fff; height: 72px; left: 50%; position: absolute; top: 20px; transform: translateX(-50%); width: 72px; }
+.profileIdentity { background: transparent; border: 0; display: grid; gap: 4px; padding: 42px 14px 15px; text-align: center; width: 100%; }
+.profileIdentity strong { font-size: 16px; line-height: 20px; }
+.profileIdentity span { color: #666; font-size: 12px; line-height: 16px; }
+.profileMetric { align-items: center; background: transparent; border: 0; border-top: 1px solid #ebebeb; display: flex; font-size: 12px; font-weight: 600; justify-content: space-between; padding: 9px 12px 0; text-align: left; width: 100%; }
+.profileMetric + .profileMetric { border-top: 0; padding: 5px 12px 10px; }
+.profileMetric span { color: #666; }
+.profileMetric b { color: var(--blue); font-size: 12px; }
+.premiumRow { background: transparent; border: 0; border-top: 1px solid #ebebeb; display: grid; font-size: 12px; gap: 4px; padding: 11px 12px; text-align: left; width: 100%; }
+.premiumRow span { color: #666; }
+.premiumRow b { font-weight: 600; }
+.premiumRow i { background: #e7a33e; display: inline-block; height: 11px; margin-right: 3px; vertical-align: -1px; width: 11px; }
+.savedRow { background: transparent; border: 0; border-top: 1px solid #ebebeb; font-size: 12px; font-weight: 600; padding: 12px; text-align: left; width: 100%; }
+.recentCard { display: grid; gap: 7px; margin-top: 8px; padding: 13px 12px; position: sticky; top: 369px; }
+.recentCard button { background: transparent; border: 0; color: #666; font-size: 12px; font-weight: 600; overflow: hidden; padding: 0; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.recentCard button:first-child { color: #191919; font-weight: 500; margin-bottom: 4px; }
+.recentCard .groupTitle { color: var(--blue); margin-top: 9px; }
+
+.composer { padding: 12px 12px 5px; }
+.composer > div { display: flex; gap: 8px; }
+.avatar { border-radius: 50%; display: block; flex: 0 0 auto; height: 48px; object-fit: cover; width: 48px; }
+.composer > div > button { background: #fff; border: 1px solid #aaa; border-radius: 24px; color: #666; flex: 1; font-size: 14px; font-weight: 600; padding: 0 16px; text-align: left; }
+.composer > div > button:hover { background: #f3f3f3; }
+.composer nav { display: flex; justify-content: space-around; margin-top: 8px; }
+.composer nav button { align-items: center; background: transparent; border: 0; border-radius: 4px; color: #666; display: flex; font-size: 14px; font-weight: 600; gap: 8px; padding: 9px 10px; }
+.composer nav button:hover { background: #f3f3f3; }
+.composer nav button svg { color: #378fe9; height: 21px; width: 21px; }
+.composer nav button:nth-child(2) svg { color: #c37d16; }
+.composer nav button:nth-child(3) svg { color: #e16745; }
+.sortRow { align-items: center; display: flex; height: 37px; }
+.sortRow i { background: #dedede; flex: 1; height: 1px; }
+.sortRow button { align-items: center; background: transparent; border: 0; color: #666; display: flex; font-size: 12px; gap: 3px; padding-left: 10px; }
+.sortRow b { color: #191919; }
+.sortRow svg { height: 14px; width: 14px; }
+
+.postCard { margin-bottom: 8px; }
+.contextRow { align-items: center; background: transparent; border: 0; color: #666; display: flex; font-size: 12px; gap: 5px; padding: 9px 12px 3px; width: 100%; }
+.contextRow svg { height: 15px; width: 15px; }
+.contextRow svg:last-child { margin-left: auto; }
+.postHeader { align-items: flex-start; display: flex; gap: 8px; padding: 12px 12px 5px; }
+.contextRow + .postHeader { padding-top: 6px; }
+.postHeader .avatar { height: 48px; width: 48px; }
+.authorMeta { background: transparent; border: 0; display: grid; gap: 1px; min-width: 0; padding: 0; text-align: left; }
+.authorMeta strong { font-size: 14px; line-height: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.authorMeta strong span { color: #666; font-weight: 400; }
+.authorMeta > span { color: #666; font-size: 12px; line-height: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.authorMeta i { font-size: 9px; font-style: normal; }
+.moreButton { background: transparent; border: 0; border-radius: 50%; color: #666; margin-left: auto; padding: 4px; }
+.moreButton:hover { background: #f3f3f3; }
+.moreButton svg { height: 22px; width: 22px; }
+.postBody { font-size: 14px; line-height: 20px; margin: 3px 12px 0; overflow: hidden; white-space: pre-line; }
+.postMedia { background: #e2e5e4; height: 0; margin-top: 2px; padding-top: 56%; position: relative; }
+.postMedia img { object-fit: cover; }
+.linkPreview { background: #f3f2ef; border: 0; border-top: 1px solid #e0dfdc; display: block; min-height: 82px; padding: 12px; text-align: left; width: 100%; }
+.linkPreview div { display: grid; gap: 3px; }
+.linkPreview strong { font-size: 14px; font-weight: 500; }
+.linkPreview span { color: #666; font-size: 12px; }
+.linkPreview small { color: #666; font-size: 11px; margin-top: 3px; text-transform: uppercase; }
+.engagement { align-items: center; border-bottom: 1px solid #ebebeb; color: #666; display: flex; font-size: 12px; justify-content: space-between; min-height: 32px; padding: 4px 12px; }
+.engagement > span { align-items: center; display: flex; }
+.engagement button { background: transparent; border: 0; color: #666; font-size: 12px; padding: 0; }
+.engagement i { font-size: 9px; font-style: normal; }
+.reactionDots { display: inline-flex; margin-right: 3px; }
+.reactionDots i, .reactionDots b, .reactionDots em { align-items: center; border: 1px solid #fff; border-radius: 50%; color: #fff; display: inline-flex; font-size: 6px; font-style: normal; font-weight: 400; height: 15px; justify-content: center; margin-right: -3px; width: 15px; }
+.reactionDots i { background: #378fe9; }
+.reactionDots b { background: #7d9d4e; }
+.reactionDots em { background: #df704d; font-size: 8px; }
+.postActions { display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px 4px; }
+.postActions button { align-items: center; background: transparent; border: 0; border-radius: 4px; color: #666; display: flex; font-size: 13px; font-weight: 600; gap: 6px; justify-content: center; min-height: 40px; padding: 0 3px; }
+.postActions button:hover { background: #f3f3f3; }
+.postActions button svg { height: 20px; width: 20px; }
+.postActions .liked { color: var(--blue); }
+.emptyFeed { display: grid; gap: 4px; padding: 22px; text-align: center; }
+.emptyFeed span { color: #666; font-size: 14px; }
+
+.newsCard { padding: 12px 12px 10px; }
+.newsCard header, .suggestionsCard header { align-items: center; display: flex; justify-content: space-between; }
+.newsCard h2, .suggestionsCard h2 { font-size: 16px; line-height: 20px; margin: 0; }
+.newsCard header button { background: transparent; border: 1px solid #777; border-radius: 50%; color: #555; font-family: Georgia, serif; font-size: 10px; font-weight: 700; height: 14px; padding: 0; width: 14px; }
+.newsCard > p { color: #666; font-size: 12px; margin: 3px 0 7px; }
+.newsCard ol { counter-reset: news; display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.newsCard li { counter-increment: news; display: flex; gap: 7px; }
+.newsCard li::before { color: #666; content: counter(news); font-size: 12px; padding-top: 1px; }
+.newsCard li button { background: transparent; border: 0; display: grid; gap: 2px; padding: 0; text-align: left; }
+.newsCard li strong { font-size: 13px; font-weight: 600; line-height: 16px; }
+.newsCard li span { color: #666; font-size: 11px; }
+.showMoreNews { align-items: center; background: transparent; border: 0; border-radius: 4px; color: #666; display: flex; font-size: 12px; font-weight: 600; gap: 3px; margin-top: 12px; padding: 5px; }
+.showMoreNews:hover { background: #f3f3f3; }
+.showMoreNews svg { height: 14px; width: 14px; }
+.suggestionsCard { margin-top: 8px; padding: 12px; }
+.suggestionsCard header > button { background: transparent; border: 0; color: #666; padding: 0; }
+.suggestionsCard header svg { height: 20px; width: 20px; }
+.suggestionsCard article { display: flex; gap: 8px; margin-top: 14px; }
+.suggestionsCard article .avatar { height: 48px; width: 48px; }
+.suggestionsCard article > div { display: grid; gap: 2px; min-width: 0; }
+.suggestionsCard article strong { font-size: 13px; line-height: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggestionsCard article span { color: #666; display: -webkit-box; font-size: 11px; line-height: 14px; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.suggestionsCard article small { color: #666; font-size: 11px; }
+.suggestionsCard article button { align-items: center; background: #fff; border: 1px solid #666; border-radius: 16px; color: #555; display: flex; font-size: 12px; font-weight: 600; gap: 3px; margin-top: 4px; padding: 4px 10px; width: max-content; }
+.suggestionsCard article button:hover { background: #f3f3f3; }
+.suggestionsCard article button svg { height: 14px; width: 14px; }
+.puzzleCard { display: grid; gap: 4px; margin-top: 8px; padding: 12px; }
+.puzzleCard > span { color: #666; font-size: 12px; }
+.puzzleCard > strong { font-size: 14px; font-weight: 500; line-height: 18px; }
+.puzzleCard div { display: flex; gap: 5px; margin-top: 7px; }
+.puzzleCard button { background: #f4f2ee; border: 0; border-radius: 4px; font-size: 11px; font-weight: 600; padding: 7px 8px; }
+
+.messageDock { background: #fff; border: 1px solid #d0ceca; border-bottom: 0; border-radius: 8px 8px 0 0; bottom: 0; box-shadow: 0 0 0 1px rgba(0, 0, 0, .02), 0 -2px 8px rgba(0, 0, 0, .11); position: fixed; right: max(18px, calc((100vw - 1128px) / 2)); width: 288px; z-index: 25; }
+.messageDock > header { align-items: center; display: flex; height: 48px; justify-content: space-between; padding: 0 8px; }
+.messageDock > header > button { align-items: center; background: transparent; border: 0; display: flex; font-size: 14px; font-weight: 600; gap: 7px; padding: 5px; }
+.messageDock > header > button svg { height: 20px; width: 20px; }
+.messageDock > header > button b { align-items: center; background: #c20f0f; border-radius: 8px; color: #fff; display: flex; font-size: 10px; height: 16px; justify-content: center; width: 16px; }
+.messageDock > header > span { align-items: center; display: flex; }
+.messageDock > header > span button { background: transparent; border: 0; color: #555; padding: 5px; }
+.messageDock > header > span svg { height: 18px; width: 18px; }
+.messageDockOpen { width: 330px; }
+.messageBody { border-top: 1px solid #ebebeb; height: 376px; overflow: hidden; }
+.messageThread { align-items: center; background: transparent; border: 0; display: flex; gap: 9px; padding: 10px 12px; text-align: left; width: 100%; }
+.messageThread:hover { background: #f5f5f5; }
+.messageThread .avatar { height: 40px; width: 40px; }
+.messageThread > span { display: grid; gap: 2px; min-width: 0; }
+.messageThread strong { font-size: 13px; }
+.messageThread em { color: #666; font-size: 12px; font-style: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.messageThread small { align-self: flex-start; color: #666; font-size: 10px; margin-left: auto; }
+.backToInbox { background: transparent; border: 0; color: #555; font-size: 12px; font-weight: 600; padding: 10px 12px; }
+.chatPerson { align-items: center; border-bottom: 1px solid #ebebeb; display: grid; grid-template-columns: 40px 1fr; padding: 0 12px 9px; }
+.chatPerson .avatar { grid-row: span 2; height: 36px; margin-right: 8px; width: 36px; }
+.chatPerson strong { font-size: 13px; }
+.chatPerson span { color: #666; font-size: 11px; }
+.chatBubbles { display: grid; gap: 8px; min-height: 195px; padding: 12px; }
+.chatBubbles p { background: #eef3f8; border-radius: 10px 10px 10px 2px; font-size: 12px; line-height: 16px; margin: 0; padding: 8px; width: 76%; }
+.chatBubbles p:last-child { background: #e9e9e9; justify-self: end; }
+.messageBody form { align-items: center; border-top: 1px solid #ebebeb; display: flex; gap: 6px; padding: 8px; }
+.messageBody form input { border: 1px solid #999; border-radius: 16px; font-size: 12px; min-width: 0; padding: 7px 10px; width: 100%; }
+.messageBody form button { background: transparent; border: 0; color: var(--blue); padding: 4px; }
+.messageBody form svg { height: 19px; width: 19px; }
+
+.mobileNav { display: none; }
+.dialogScrim { align-items: flex-start; background: rgba(0, 0, 0, .52); display: flex; inset: 0; justify-content: center; padding-top: 70px; position: fixed; z-index: 50; }
+.postDialog { background: #fff; border-radius: 9px; box-shadow: 0 4px 16px rgba(0, 0, 0, .28); overflow: hidden; width: min(552px, calc(100vw - 32px)); }
+.postDialog > header { align-items: center; border-bottom: 1px solid #e7e7e7; display: flex; height: 53px; padding: 0 12px; }
+.postDialog > header strong { font-size: 16px; }
+.postDialog > header button { background: transparent; border: 0; border-radius: 50%; font-size: 31px; font-weight: 200; height: 38px; line-height: 30px; margin-right: 8px; padding: 0; width: 38px; }
+.dialogIdentity { align-items: center; display: flex; gap: 8px; padding: 14px 18px 4px; }
+.dialogIdentity .avatar { height: 48px; width: 48px; }
+.dialogIdentity > span { display: grid; gap: 3px; }
+.dialogIdentity b { font-size: 14px; }
+.dialogIdentity button { align-items: center; background: #fff; border: 1px solid #777; border-radius: 14px; display: flex; font-size: 12px; font-weight: 600; gap: 2px; padding: 3px 7px; }
+.dialogIdentity svg { height: 12px; width: 12px; }
+.postDialog textarea { border: 0; font-size: 16px; height: 210px; outline: 0; padding: 18px; resize: none; width: 100%; }
+.postDialog footer { align-items: center; border-top: 1px solid #e7e7e7; display: flex; justify-content: space-between; padding: 9px 12px; }
+.postDialog footer span { display: flex; gap: 3px; }
+.postDialog footer span button { background: transparent; border: 0; border-radius: 4px; color: #666; padding: 6px; }
+.postDialog footer span svg { height: 21px; width: 21px; }
+.postDialog footer > button { background: var(--blue); border: 0; border-radius: 16px; color: #fff; font-size: 14px; font-weight: 600; padding: 7px 16px; }
+.postDialog footer > button:disabled { background: #e5e5e5; color: #999; cursor: default; }
+.toast { background: #303030; border-radius: 4px; bottom: 24px; color: #fff; font-size: 14px; left: 50%; padding: 13px 18px; position: fixed; transform: translateX(-50%); z-index: 60; }
+
+.jobsShell { background: var(--canvas); min-height: calc(100dvh - 52px); }
+.jobsSearchHeader { background: #fff; border-bottom: 1px solid #deddda; }
+.jobsSearchFields { display: flex; gap: 8px; margin: 0 auto; max-width: 1128px; padding: 12px 0 8px; }
+.jobsSearchFields label { align-items: center; background: #fff; border: 1px solid #8d8d8d; border-radius: 4px; display: flex; height: 40px; padding: 0 10px; width: 404px; }
+.jobsSearchFields label:nth-child(2) { width: 288px; }
+.jobsSearchFields label svg { color: #555; height: 20px; margin-right: 8px; width: 20px; }
+.jobsSearchFields input { border: 0; font-size: 14px; min-width: 0; outline: 0; width: 100%; }
+.jobsSearchFields > button { background: var(--blue); border: 0; border-radius: 20px; color: #fff; font-size: 14px; font-weight: 600; padding: 0 22px; }
+.jobFilterRail { display: flex; gap: 7px; margin: 0 auto; max-width: 1128px; overflow: auto; padding: 0 0 12px; scrollbar-width: none; }
+.jobFilterRail button { align-items: center; background: #fff; border: 1px solid #777; border-radius: 18px; display: flex; flex: 0 0 auto; font-size: 13px; font-weight: 600; gap: 3px; height: 33px; padding: 0 12px; }
+.jobFilterRail button:hover { background: #f3f3f3; }
+.jobFilterRail button svg { height: 14px; width: 14px; }
+.jobFilterRail .selectedJobFilter { background: #d9eaf7; border-color: #0a66c2; color: #084d92; }
+.jobFilterRail .allFilters { border-color: #0a66c2; color: #0a66c2; }
+.jobsWorkspace { display: grid; gap: 12px; grid-template-columns: 226px 382px minmax(0, 496px); margin: 18px auto 0; max-width: 1128px; }
+.jobsSideRail { display: grid; align-content: start; gap: 8px; }
+.jobsRailCard { background: #fff; border: 1px solid var(--line); border-radius: 8px; display: grid; overflow: hidden; padding: 8px; }
+.jobsRailCard h2 { font-size: 16px; margin: 4px 8px 7px; }
+.jobsRailCard > strong { font-size: 13px; margin: 5px 8px 7px; }
+.jobsRailCard button { align-items: center; background: transparent; border: 0; border-radius: 4px; color: #555; display: flex; font-size: 13px; font-weight: 600; gap: 10px; min-height: 38px; padding: 0 9px; text-align: left; }
+.jobsRailCard button:hover { background: #f3f3f3; }
+.jobsRailCard button svg { height: 19px; width: 19px; }
+.jobsRailCard .jobsRailActive { background: #e8f3fb; color: #0a66c2; }
+.jobsResults, .jobDetail { background: #fff; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.jobsResults { display: grid; grid-template-rows: auto auto minmax(0, 1fr); height: calc(100dvh - 167px); min-height: 590px; overflow: hidden; }
+.jobsResults > header { align-items: center; display: flex; justify-content: space-between; padding: 18px 16px 9px; }
+.jobsResults h1 { font-size: 20px; line-height: 25px; margin: 0; }
+.jobsResults header p { color: #666; font-size: 12px; margin: 2px 0 0; }
+.jobAlert { align-items: center; color: #555; display: flex; font-size: 12px; font-weight: 600; gap: 6px; }
+.jobAlert input { height: 1px; opacity: 0; position: absolute; width: 1px; }
+.jobAlert i { background: #747474; border-radius: 9px; height: 18px; position: relative; transition: background .15s ease; width: 32px; }
+.jobAlert i::after { background: #fff; border-radius: 50%; content: ""; height: 14px; left: 2px; position: absolute; top: 2px; transition: transform .15s ease; width: 14px; }
+.jobAlert input:checked + i { background: #0a66c2; }
+.jobAlert input:checked + i::after { transform: translateX(14px); }
+.jobSort { align-items: center; border-bottom: 1px solid #e7e7e7; color: #666; display: flex; font-size: 12px; justify-content: space-between; padding: 7px 16px 10px; }
+.jobSort button { align-items: center; background: transparent; border: 0; color: #555; display: flex; font-size: 12px; gap: 2px; padding: 2px 0; }
+.jobSort button svg { height: 13px; width: 13px; }
+.jobList { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.jobListItem { align-items: flex-start; background: #fff; border: 0; border-bottom: 1px solid #e7e7e7; display: flex; gap: 10px; min-height: 116px; padding: 14px 14px 13px 16px; position: relative; text-align: left; width: 100%; }
+.jobListItem:hover { background: #f8f8f8; }
+.jobListItem.selectedJob { background: #edf6fc; }
+.jobListItem.selectedJob::before { background: #0a66c2; bottom: 0; content: ""; left: 0; position: absolute; top: 0; width: 3px; }
+.companyMark { align-items: center; background: #353535; border-radius: 5px; color: #fff; display: flex; flex: 0 0 auto; font-size: 22px; font-weight: 700; height: 48px; justify-content: center; letter-spacing: -.06em; width: 48px; }
+.figmaMark { background: linear-gradient(135deg, #f24e1e 0 25%, #ff7262 25% 50%, #a259ff 50% 75%, #1abcfe 75%); }
+.stripeMark { background: #635bff; font-style: italic; }
+.jobListCopy { display: grid; gap: 2px; min-width: 0; padding-right: 2px; }
+.jobListCopy strong { color: #0a66c2; font-size: 14px; line-height: 18px; }
+.jobListCopy b { font-size: 13px; font-weight: 500; line-height: 16px; }
+.jobListCopy em, .jobListCopy small { color: #666; font-size: 12px; font-style: normal; line-height: 15px; }
+.savedMark { color: #0a66c2; height: 19px; margin-left: auto; width: 19px; }
+.loadingJobs { color: #666; font-size: 12px; padding: 16px; text-align: center; }
+.emptyJobs { align-content: center; color: #666; display: grid; gap: 4px; min-height: 180px; padding: 30px; text-align: center; }
+.emptyJobs strong { color: #222; font-size: 15px; }
+.emptyJobs span { font-size: 13px; }
+.jobDetail { align-self: start; max-height: calc(100dvh - 167px); min-height: 590px; overflow: auto; padding: 22px 24px 30px; position: sticky; top: 70px; }
+.mobileJobBack { display: none; }
+.jobDetailHero { align-items: flex-start; display: flex; gap: 13px; }
+.jobDetailHero .companyMark { height: 56px; width: 56px; }
+.jobDetailHero h1 { font-size: 24px; letter-spacing: -.2px; line-height: 29px; margin: -3px 0 5px; }
+.jobDetailHero strong { font-size: 15px; font-weight: 500; }
+.jobDetailHero p, .jobDetailHero small { color: #666; font-size: 13px; line-height: 18px; margin: 3px 0 0; }
+.jobDetailActions { display: flex; gap: 8px; margin: 20px 0 25px; }
+.jobDetailActions a { align-items: center; background: #0a66c2; border: 0; border-radius: 20px; color: #fff; display: flex; font-size: 15px; font-weight: 600; height: 40px; justify-content: center; padding: 0 24px; }
+.jobDetailActions a:hover { background: #004182; }
+.jobDetailActions button { align-items: center; background: #fff; border: 1px solid #0a66c2; border-radius: 50%; color: #0a66c2; display: flex; height: 40px; justify-content: center; width: 40px; }
+.jobDetailActions button svg { height: 20px; width: 20px; }
+.jobDetailActions .detailSaved { background: #e8f3fb; }
+.aboutJob h2, .jobDetails h2 { font-size: 18px; margin: 0 0 10px; }
+.aboutJob p { font-size: 14px; line-height: 20px; margin: 0 0 13px; }
+.jobDetails { border-top: 1px solid #e4e4e4; margin-top: 24px; padding-top: 22px; }
+.jobDetails > div { align-items: flex-start; display: flex; gap: 10px; margin-top: 14px; }
+.jobDetails svg { color: #555; flex: 0 0 auto; height: 20px; width: 20px; }
+.jobDetails span { display: grid; gap: 1px; }
+.jobDetails small { color: #666; font-size: 12px; }
+.jobDetails b { font-size: 13px; font-weight: 500; line-height: 17px; }
+.companyDetail { align-items: center; border-top: 1px solid #e4e4e4; display: flex; gap: 10px; margin-top: 25px; padding-top: 20px; }
+.companyDetail .companyMark { height: 42px; width: 42px; }
+.companyDetail h2 { font-size: 15px; margin: 0; }
+.companyDetail p { color: #666; font-size: 12px; margin: 2px 0; }
+.companyDetail a { color: #0a66c2; font-size: 13px; font-weight: 600; }
+
+/* Jobs search is intentionally a compact results/detail workspace, matching
+   the task of scanning a role and acting on it without a third navigation rail. */
+.jobsSearchHeader { position: relative; }
+.jobsWorkspace { gap: 0; grid-template-columns: minmax(360px, 420px) minmax(0, 1fr); margin-top: 16px; max-width: 1180px; }
+.jobsResults, .jobDetail { border-color: #d9d9d9; }
+.jobsResults { border-radius: 8px 0 0 8px; grid-template-rows: auto auto minmax(0, 1fr); height: calc(100dvh - 171px); }
+.jobDetail { border-left: 0; border-radius: 0 8px 8px 0; max-height: calc(100dvh - 171px); padding: 26px 30px 34px; top: 68px; }
+.jobFilterMenu { background: #fff; border: 1px solid #c9c9c9; border-radius: 8px; box-shadow: 0 8px 18px rgba(0, 0, 0, .18); display: grid; gap: 2px; left: 50%; max-height: min(470px, calc(100dvh - 160px)); overflow: auto; padding: 10px; position: absolute; top: 98px; transform: translateX(-50%); width: 330px; z-index: 40; }
+.jobFilterMenu > strong { font-size: 15px; margin: 3px 5px 7px; }
+.filterMenuHeading { align-items: center; display: flex; justify-content: space-between; margin: 3px 5px 7px; }
+.filterMenuHeading strong { font-size: 15px; }
+.filterMenuHeading button { background: transparent; border: 0; color: var(--blue); font-size: 13px; font-weight: 600; padding: 3px; }
+.filterMenuLabel { color: #555; font-size: 13px; font-weight: 600; margin: 7px 5px 4px; }
+.filterChoice { align-items: center; background: #fff; border: 0; border-radius: 4px; display: flex; font-size: 14px; justify-content: space-between; min-height: 37px; padding: 0 8px; text-align: left; }
+.filterChoice:hover { background: #f3f3f3; }
+.filterChoiceActive { background: #e8f3fb; color: #004182; font-weight: 600; }
+.companyChoices { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.companyChoices .filterChoice { font-size: 13px; }
+.jobListItem { gap: 12px; min-height: 142px; padding: 15px 16px; }
+.companyMark { background: var(--company-tone); border-radius: 4px; font-size: 17px; height: 42px; letter-spacing: 0; width: 42px; }
+.companyMarkLarge { font-size: 24px; height: 58px; width: 58px; }
+.jobListCopy { gap: 3px; padding-right: 5px; }
+.jobListCopy strong { line-height: 19px; }
+.jobListCopy b { color: #363636; }
+.jobListDescription { -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: #666; display: -webkit-box; font-size: 12px; line-height: 16px; margin-top: 2px; overflow: hidden; }
+.arrivingJob { animation: job-arrival var(--job-arrival-duration, 50ms) ease-out; }
+@keyframes job-arrival { from { background: #edf6fc; transform: translateY(-4px); } to { background: #fff; transform: translateY(0); } }
+.jobStreamControls { bottom: 20px; color: #191919; font-size: 12px; position: fixed; right: 20px; width: max-content; z-index: 55; }
+.jobStreamControls[open] { background: #fff; border: 1px solid #bababa; border-radius: 5px; min-width: 286px; padding: 10px 12px 12px; }
+.jobStreamControls summary { cursor: pointer; list-style: none; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; }
+.jobStreamControls summary::-webkit-details-marker { display: none; }
+.jobStreamControls summary:hover { text-decoration-color: currentColor; }
+.jobStreamControls summary::before { content: "+ "; }
+.jobStreamControls[open] summary::before { content: "− "; }
+.jobStreamControls summary output { color: #555; font-variant-numeric: tabular-nums; margin-left: 5px; }
+.jobStreamControlBody { align-items: center; border-top: 1px solid #dedede; display: grid; gap: 9px 12px; grid-template-columns: minmax(135px, 1fr) max-content; margin-top: 9px; padding-top: 10px; }
+.jobStreamSpeed { display: grid; gap: 4px; }
+.jobStreamSpeed span { color: #555; font-size: 11px; }
+.jobStreamSpeed input { appearance: none; background: transparent; cursor: ew-resize; height: 14px; margin: 0; width: 100%; }
+.jobStreamSpeed input::-webkit-slider-runnable-track { background: #777; height: 1px; }
+.jobStreamSpeed input::-webkit-slider-thumb { appearance: none; background: #fff; border: 1px solid #191919; border-radius: 50%; height: 9px; margin-top: -4px; width: 9px; }
+.jobStreamSpeed input::-moz-range-track { background: #777; height: 1px; }
+.jobStreamSpeed input::-moz-range-thumb { background: #fff; border: 1px solid #191919; border-radius: 50%; height: 9px; width: 9px; }
+.jobStreamCount { color: #555; font-size: 11px; font-variant-numeric: tabular-nums; }
+.jobStreamControlBody button { background: transparent; border: 1px solid #555; border-radius: 14px; font-size: 11px; grid-column: 2; grid-row: 1 / span 2; min-width: 50px; padding: 5px 9px; }
+.jobDetailHero { gap: 15px; }
+.jobDetailHero h1 { font-size: 25px; line-height: 31px; }
+.jobDetailActions { margin: 22px 0 28px; }
+.jobDetailActions a { padding: 0 21px; }
+.aboutJob p { color: #303030; line-height: 21px; white-space: pre-line; }
+.aboutJob p + p { margin-top: 14px; }
+.jobDetails { margin-top: 26px; }
+.jobSource { color: #666; font-size: 12px; line-height: 17px; margin: 24px 0 0; }
+.emptyJobs button { background: transparent; border: 1px solid #0a66c2; border-radius: 18px; color: #0a66c2; font-size: 13px; font-weight: 600; justify-self: center; margin-top: 7px; padding: 7px 13px; }
+
+@media (max-width: 1190px) {
+  .topInner, .pageGrid { margin-left: 16px; margin-right: 16px; }
+  .pageGrid { grid-template-columns: 225px minmax(0, 555px) minmax(260px, 300px); }
+  .primaryNav > button { min-width: 62px; }
+  .premiumLink { display: none !important; }
+  .messageDock { right: 18px; }
+}
+
+@media (max-width: 1120px) {
+  .pageGrid { grid-template-columns: 225px minmax(0, 555px); justify-content: center; }
+  .rightRail { display: none; }
+  .jobsSearchFields, .jobFilterRail, .jobsWorkspace { margin-left: 16px; margin-right: 16px; }
+  .jobsWorkspace { grid-template-columns: minmax(360px, 410px) minmax(0, 1fr); }
+}
+
+@media (max-width: 960px) {
+  .jobsWorkspace { grid-template-columns: minmax(340px, 390px) minmax(0, 1fr); }
+  .jobsSideRail { display: none; }
+}
+
+@media (max-width: 1000px) {
+  .primaryNav > button { min-width: 56px; }
+  .businessMenu { display: none !important; }
+}
+
+@media (max-width: 850px) {
+  .pageGrid { grid-template-columns: minmax(0, 555px); }
+  .leftRail { display: none; }
+}
+
+@media (max-width: 760px) {
+  .linkedinShell { background: #fff; padding: 56px 0 58px; }
+  .topBar { height: 56px; }
+  .topInner { align-items: center; height: 56px; margin: 0; padding: 0 9px; }
+  .brandButton { display: none; }
+  .mobileProfile, .mobileMessage { align-items: center; background: transparent; border: 0; display: flex; flex: 0 0 40px; height: 40px; justify-content: center; padding: 0; }
+  .mobileProfile .avatar { height: 33px; width: 33px; }
+  .mobileMessage { color: #444; margin-left: 5px; }
+  .mobileMessage svg { height: 24px; width: 24px; }
+  .searchBox { background: #eef3f8; height: 36px; margin: 0; width: auto; flex: 1; }
+  .searchBox input { font-size: 15px; }
+  .primaryNav { display: none; }
+  .pageGrid { display: block; margin: 0; }
+  .leftRail, .rightRail { display: none; }
+  .feed { width: 100%; }
+  .card { border-left: 0; border-radius: 0; border-right: 0; }
+  .composer { border-top: 0; padding: 10px 12px 4px; }
+  .composer > div .avatar { height: 42px; width: 42px; }
+  .composer nav { justify-content: space-between; }
+  .composer nav button { font-size: 13px; gap: 6px; padding: 9px 8px; }
+  .sortRow { height: 33px; padding: 0 12px; }
+  .sortRow button { padding-left: 8px; }
+  .postCard { border-top: 7px solid #f3f2ef; margin: 0; }
+  .postHeader { padding-left: 12px; padding-right: 12px; }
+  .postBody { font-size: 14px; }
+  .postActions { padding: 3px 0; }
+  .postActions button { font-size: 0; min-height: 43px; }
+  .postActions button svg { height: 22px; width: 22px; }
+  .postActions button span { display: none; }
+  .messageDock { display: none; }
+  .mobileNav { align-items: stretch; background: #fff; border-top: 1px solid #ddd; bottom: 0; display: flex; height: 58px; justify-content: space-around; left: 0; position: fixed; right: 0; z-index: 35; }
+  .mobileNav > button { background: transparent; border: 0; color: #666; display: grid; font-size: 10px; justify-items: center; padding: 5px 10px 2px; position: relative; }
+  .mobileNav > button span { position: relative; }
+  .mobileNav > button svg { height: 24px; width: 24px; }
+  .mobileNav > button small { font-size: 10px; line-height: 13px; }
+  .mobileNav .activeMobileNav { color: #191919; }
+  .mobileNav .activeMobileNav::before { background: #191919; border-radius: 3px; content: ""; height: 2px; left: 12px; position: absolute; right: 12px; top: 0; }
+  .mobileNav > button i { background: #c20f0f; border: 1px solid #fff; border-radius: 50%; height: 8px; position: absolute; right: -3px; top: -1px; width: 8px; }
+  .mobileNav .mobileCreate { align-items: center; color: #191919; display: flex; padding-top: 1px; }
+  .mobileCreate svg { height: 31px !important; width: 31px !important; }
+  .dialogScrim { align-items: flex-end; padding: 0; }
+  .postDialog { border-radius: 12px 12px 0 0; width: 100%; }
+  .postDialog textarea { height: 195px; }
+  .toast { bottom: 72px; }
+  .jobsShell { min-height: calc(100dvh - 56px); }
+  .jobsSearchHeader { border-bottom: 0; }
+  .jobsSearchFields { display: grid; gap: 7px; margin: 0; padding: 9px 12px 7px; }
+  .jobsSearchFields label, .jobsSearchFields label:nth-child(2) { height: 38px; width: 100%; }
+  .jobsSearchFields > button { display: none; }
+  .jobFilterRail { gap: 6px; margin: 0; padding: 0 12px 10px; }
+  .jobFilterRail button { font-size: 12px; height: 31px; }
+  .jobsWorkspace { display: block; margin: 0; }
+  .jobsSideRail { display: none; }
+  .jobsResults { border-left: 0; border-radius: 0; border-right: 0; height: auto; min-height: 0; }
+  .jobsResults > header { padding: 15px 14px 8px; }
+  .jobsResults h1 { font-size: 18px; }
+  .jobSort { padding-left: 14px; padding-right: 14px; }
+  .jobList { max-height: none; overflow: visible; }
+  .jobListItem { min-height: 108px; padding-left: 14px; }
+  .jobDetail { display: none; }
+  .mobileJobDetailOpen .jobDetail { background: #fff; border: 0; border-radius: 0; bottom: 0; display: block; left: 0; max-height: none; min-height: 0; overflow: auto; padding: 18px 18px 80px; position: fixed; right: 0; top: 56px; z-index: 48; }
+  .mobileJobBack { align-items: center; background: transparent; border: 0; color: #333; display: flex; font-size: 35px; height: 36px; justify-content: center; line-height: 20px; margin: -6px 0 12px -7px; padding: 0; width: 36px; }
+  .jobDetailHero h1 { font-size: 22px; line-height: 27px; }
+  .jobDetailHero .companyMark { height: 50px; width: 50px; }
+  .jobDetailActions { margin: 18px 0 22px; }
+}
+
+@media (max-width: 375px) {
+  .composer nav button { font-size: 12px; gap: 4px; padding-left: 4px; padding-right: 4px; }
+  .composer nav button svg { height: 19px; width: 19px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .linkedinShell *, .linkedinShell *::before, .linkedinShell *::after { scroll-behavior: auto !important; transition: none !important; } }
+
+@media (max-width: 760px) {
+  .jobsWorkspace { margin: 0; }
+  .jobsResults { border-bottom: 0; border-radius: 0; height: auto; }
+  .jobListItem { min-height: 135px; padding: 14px; }
+  .jobFilterMenu { left: 12px; max-height: calc(100dvh - 190px); top: 133px; transform: none; width: min(330px, calc(100vw - 24px)); }
+  .mobileJobDetailOpen .jobDetail { border: 0; padding: 18px 18px 86px; top: 56px; }
+  .mobileJobDetailOpen .jobDetailHero h1 { font-size: 22px; line-height: 27px; }
+  .mobileJobDetailOpen .companyMarkLarge { height: 50px; width: 50px; }
+  .jobListDescription { -webkit-line-clamp: 1; }
+  .jobStreamControls { bottom: 70px; right: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrivingJob { animation: none; }
+}
