@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 export type NavigationExperiment = {
   key: string;
-  area: "screen" | "pc";
+  area: "screen" | "pc" | "desktop" | "maximalist-collage";
   section: "default" | "2d" | "dated";
   date: string | null;
   phrase: string;
@@ -93,7 +93,7 @@ export default function GoldfishesNavigation({
 }: {
   experiments: NavigationExperiment[];
   archiveKey?: string;
-  scope?: "screen" | "pc";
+  scope?: "screen" | "pc" | "desktop" | "maximalist-collage";
 }) {
   const [query, setQuery] = useState("");
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -244,6 +244,12 @@ export default function GoldfishesNavigation({
             className="hover:text-white focus-visible:text-white focus-visible:outline-none"
           >
             desktop
+          </Link>
+          <Link
+            href="/maximalist-collage"
+            className="hover:text-white focus-visible:text-white focus-visible:outline-none"
+          >
+            maximalist-collage
           </Link>
           <span>{filteredExperiments.length} experiments</span>
           <span className="hidden lg:inline">J/K move · Enter open · Esc clear</span>

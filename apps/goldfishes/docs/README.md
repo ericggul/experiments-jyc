@@ -1,6 +1,8 @@
 # Goldfishes archive
 
-Local macOS control: [`/desktop`](./pc/0915-desktop-a.md), a manual 0.5-second native-app trial. Implementation: `components/desktop/`; outside the screen/PC artwork registry.
+Browser collage: `/maximalist-collage` → `/maximalist-collage/0915` → `/maximalist-collage/0915/1`. Implementation: `components/maximalist-collage/0915/1/`; linked in the shared navigation header and registry. [Family index](./maximalist-collage/README.md) · [art references](./maximalist-collage/references.md).
+
+Local macOS control: `/desktop` → `/desktop/0915` → independent versions [1](./desktop/0915/1.md), [2](./desktop/0915/2.md), [3](./desktop/0915/3.md). Implementation: `components/desktop/0915/{1,2,3}/`; all appear in the shared experiment registry and home navigation. [Original fixed-score history](./pc/0915-desktop-a.md).
 
 Code: `apps/goldfishes/components/screen` and `apps/goldfishes/components/pc`; registry: `components/experiments.ts`. The registry is authoritative for routable experiments and archive navigation. `screen/default` is the promoted baseline; dated routes are archival and must not be repurposed.
 
@@ -8,6 +10,10 @@ For a route change, read its document, the specific modules being changed, and t
 
 | Route | Date | Proposition |
 | --- | --- | --- |
+| `/maximalist-collage/0915/1` | 2026-09-15 | Initial interface cut-up trial; visual result rejected by user. [doc](./maximalist-collage/0915/1.md) |
+| `/desktop/0915/1` | 2026-09-15 | Preserved configurable native-app baseline. [doc](./desktop/0915/1.md) |
+| `/desktop/0915/2` | 2026-09-15 | Accumulating native windows, unequal sizes and continuous drift. [doc](./desktop/0915/2.md) |
+| `/desktop/0915/3` | 2026-09-15 | New pages mixed with random tab revisits; bounded turnover and scrolling. [doc](./desktop/0915/3.md) |
 | `/screen/default` | current | Orthographic 3D attention field. [doc](./default.md) |
 | `/screen/2d/1` | retained | Glyph swarm and media cells. [doc](./2d/1.md) |
 | `/screen/0804/tube` | 2026-08-04 | Stations are fixed attraction targets. [doc](./0804/tube.md) |

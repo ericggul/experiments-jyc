@@ -35,6 +35,8 @@ history when their subject affects the task, not for every code change.
 
 ## Experiment map
 
+- [Goldfishes maximalist collage](../apps/goldfishes/docs/maximalist-collage/README.md): independent browser interface cut-ups and accumulated prints.
+
 - [Aerodynamics](../apps/scc/docs/experiments/standalone/aerodynamics/README.md): standalone 3D ABC Euler flow, variants `1`–`2`.
 
 | Code family | Registered variants | Documentation |

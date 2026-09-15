@@ -15,6 +15,7 @@ import type { FishColourPaletteId, GoldfishScene, TargetLineShape } from "../ren
 import type { StoryInfluence } from "../model/types";
 import styles from "./story-tray.module.css";
 import { ApproachEvents } from "../model/approach-events";
+import { techPowerBrandPalettes } from "../model/tech-power-brand-palettes";
 import { techPowerFaces } from "../model/tech-power-faces.generated";
 import { useApproachSound } from "../audio/use-approach-sound";
 import { TechHieroglyph } from "./tech-hieroglyph";
@@ -53,7 +54,8 @@ type StageSize = {
 };
 
 type StorySurface = "empty" | "white" | "face" | "eyes" | "apps" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
-type FaceType = "politician" | "bigTech";
+type FaceType = "politician" | "bigTechColour" | "bigTechOriginal" | "bigTechMonochrome";
+type EyeType = "human" | "bigTech";
 type TechTypeface = "mono" | "ui" | "image" | "imageMono";
 
 type StoryRingPalette = Readonly<{
@@ -99,6 +101,16 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "tech mono", value: "techMono" },
   { label: "tech", value: "tech" },
 ];
+const faceTypeOptions: readonly { label: string; value: FaceType }[] = [
+  { label: "politician", value: "politician" },
+  { label: "big tech colour", value: "bigTechColour" },
+  { label: "big tech original", value: "bigTechOriginal" },
+  { label: "big tech monochrome", value: "bigTechMonochrome" },
+];
+const eyeTypeOptions: readonly { label: string; value: EyeType }[] = [
+  { label: "human", value: "human" },
+  { label: "big tech", value: "bigTech" },
+];
 const techTypefaceOptions: readonly { label: string; value: TechTypeface }[] = [
   { label: "mono", value: "mono" },
   { label: "ui", value: "ui" },
@@ -120,12 +132,8 @@ const politicianLean = [
 const numberGlyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 const egyptianHieroglyphs = Array.from("𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟");
 
-function faceTint(index: number, faceType: FaceType) {
-  // The established politician palette is retained. Big-tech faces traverse
-  // the same spectrum by sequence only; the colour is not an ideology label.
-  const lean = faceType === "politician"
-    ? politicianLean[index % politicianLean.length]!
-    : Math.sin((index + 1) * 2.3999632297);
+function politicianFaceTint(index: number) {
+  const lean = politicianLean[index % politicianLean.length]!;
   const from = lean < 0 ? [42, 105, 255] : [139, 94, 164];
   const to = lean < 0 ? [139, 94, 164] : [244, 61, 74];
   const amount = Math.abs(lean);
@@ -225,20 +233,40 @@ function eyeImageStyle(index: number): CSSProperties {
   };
 }
 
-function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface, faceType: FaceType): CSSProperties {
+function bigTechEyeImageStyle(index: number): CSSProperties {
+  const person = techPowerFaces[index % techPowerFaces.length]!;
+  return {
+    backgroundColor: "#171a1e",
+    backgroundImage: `url("/images/0908/tech-power-eyes/${person.id}.jpg")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+  };
+}
+
+function brandGradient(index: number) {
+  const person = techPowerFaces[index % techPowerFaces.length]!;
+  const colours = techPowerBrandPalettes[person.affiliation];
+  const lastIndex = colours.length - 1;
+  const stops = colours.map((colour, colourIndex) => `${colour} ${colourIndex / lastIndex * 100}%`).join(", ");
+  return `linear-gradient(135deg, ${stops})`;
+}
+
+function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface, faceType: FaceType, eyeType: EyeType): CSSProperties {
   if ((surface === "techMono" || surface === "tech") && (typeface === "image" || typeface === "imageMono")) {
     const image = techImageStyle(index);
     return typeface === "imageMono" ? { ...image, filter: "grayscale(1) contrast(1.08) brightness(0.88)" } : image;
   }
   if (surface === "empty" || surface === "apps" || surface === "numbers" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
   if (surface === "face") {
-    const tint = faceTint(index, faceType);
-    const image = faceType === "politician"
-      ? politicianFaceImages[index % politicianFaceImages.length]!
-      : techPowerFaces[index % techPowerFaces.length]!.image;
-    return { backgroundImage: `linear-gradient(${tint}, ${tint}), url("${image}")`, backgroundBlendMode: "color, normal", backgroundSize: "cover" };
+    const isPolitician = faceType === "politician";
+    const image = isPolitician ? politicianFaceImages[index % politicianFaceImages.length]! : techPowerFaces[index % techPowerFaces.length]!.image;
+    const imageStyle = { backgroundImage: `url("${image}")`, backgroundSize: "cover" };
+    if (faceType === "bigTechOriginal") return imageStyle;
+    if (faceType === "bigTechMonochrome") return { ...imageStyle, filter: "grayscale(1) contrast(1.06)" };
+    const tint = isPolitician ? `linear-gradient(${politicianFaceTint(index)}, ${politicianFaceTint(index)})` : brandGradient(index);
+    return { ...imageStyle, backgroundImage: `${tint}, url("${image}")`, backgroundBlendMode: "color, normal" };
   }
-  if (surface === "eyes") return eyeImageStyle(index);
+  if (surface === "eyes") return eyeType === "bigTech" ? bigTechEyeImageStyle(index) : eyeImageStyle(index);
   if (surface === "colour") return { backgroundColor: colourFor(index, colourSeed) };
   return { backgroundColor: "#fff" };
 }
@@ -354,7 +382,8 @@ export function InstagramSocialStoryTray() {
   const [gridSize, setGridSize] = useState<GridSize>({ columns: 1, rows: 1 });
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [testSurface, setTestSurface] = useState<StorySurface>("techMono");
-  const [faceType, setFaceType] = useState<FaceType>("bigTech");
+  const [faceType, setFaceType] = useState<FaceType>("bigTechColour");
+  const [eyeType, setEyeType] = useState<EyeType>("human");
   const [techTypeface, setTechTypeface] = useState<TechTypeface>("image");
   const [hieroglyphSet, setHieroglyphSet] = useState<"default" | "tech">("default");
   const [iconSize, setIconSize] = useState(DEFAULT_ICON_SIZE);
@@ -678,7 +707,7 @@ export function InstagramSocialStoryTray() {
                     <span
                       aria-hidden="true"
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
-                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface, faceType)}
+                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface, faceType, eyeType)}
                     >
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
                       {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
@@ -716,9 +745,22 @@ export function InstagramSocialStoryTray() {
                 <fieldset className={styles.controlGroup}>
                   <legend className={styles.controlLegend}>face type</legend>
                   <div className={styles.optionGrid}>
-                    {(["politician", "bigTech"] as const).map((type) => (
-                      <button aria-pressed={faceType === type} className={styles.optionButton} key={type} onClick={() => setFaceType(type)} type="button">
-                        {type === "bigTech" ? "big tech" : type}
+                    {faceTypeOptions.map((option) => (
+                      <button aria-pressed={faceType === option.value} className={styles.optionButton} key={option.value} onClick={() => setFaceType(option.value)} type="button">
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
+
+              {testSurface === "eyes" ? (
+                <fieldset className={styles.controlGroup}>
+                  <legend className={styles.controlLegend}>eye type</legend>
+                  <div className={styles.optionGrid}>
+                    {eyeTypeOptions.map((option) => (
+                      <button aria-pressed={eyeType === option.value} className={styles.optionButton} key={option.value} onClick={() => setEyeType(option.value)} type="button">
+                        {option.label}
                       </button>
                     ))}
                   </div>

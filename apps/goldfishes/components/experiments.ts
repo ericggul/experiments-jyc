@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 export type GoldfishExperiment = {
   key: string;
   legacyKeys?: readonly string[];
-  area: "screen" | "pc";
+  area: "screen" | "pc" | "desktop" | "maximalist-collage";
   section: "default" | "2d" | "dated";
   date: string | null;
   phrase: string;
@@ -11,6 +11,10 @@ export type GoldfishExperiment = {
 };
 
 export const goldfishExperiments: readonly GoldfishExperiment[] = [
+  { key: "maximalist-collage/0915/1", legacyKeys: ["pc/0915/maximalist-collage"], area: "maximalist-collage", section: "dated", date: "2026-09-15", phrase: "Interface cut-ups · click to overprint an accumulating flat collage", load: () => import("./maximalist-collage/0915/1") },
+  { key: "desktop/0915/1", area: "desktop", section: "dated", date: "2026-09-15", phrase: "Native desktop · preserved configurable baseline", load: () => import("./desktop/0915/1/controller") },
+  { key: "desktop/0915/2", area: "desktop", section: "dated", date: "2026-09-15", phrase: "Native windows · accumulation, drift and interrupted attention", load: () => import("./desktop/0915/2/controller") },
+  { key: "desktop/0915/3", area: "desktop", section: "dated", date: "2026-09-15", phrase: "Return and interrupt · new pages mixed with random tab revisits", load: () => import("./desktop/0915/3/controller") },
   {
     key: "screen/default",
     legacyKeys: ["default", "3d/1"],
