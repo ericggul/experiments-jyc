@@ -239,6 +239,12 @@ export default function GoldfishesNavigation({
           >
             pc
           </Link>
+          <Link
+            href="/desktop"
+            className="hover:text-white focus-visible:text-white focus-visible:outline-none"
+          >
+            desktop
+          </Link>
           <span>{filteredExperiments.length} experiments</span>
           <span className="hidden lg:inline">J/K move · Enter open · Esc clear</span>
         </div>

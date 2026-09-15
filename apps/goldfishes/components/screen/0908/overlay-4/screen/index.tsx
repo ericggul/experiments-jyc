@@ -15,8 +15,10 @@ import type { FishColourPaletteId, GoldfishScene, TargetLineShape } from "../ren
 import type { StoryInfluence } from "../model/types";
 import styles from "./story-tray.module.css";
 import { ApproachEvents } from "../model/approach-events";
+import { techPowerFaces } from "../model/tech-power-faces.generated";
 import { useApproachSound } from "../audio/use-approach-sound";
 import { TechHieroglyph } from "./tech-hieroglyph";
+import { AppServiceMark } from "./app-service-mark";
 
 const REFERENCE_STORY_SIZE = 93;
 const DEFAULT_ICON_SIZE = 50;
@@ -36,6 +38,8 @@ const DEFAULT_FISH_SCALE = 0.8;
 const DEFAULT_TRACE_SECONDS = 5;
 const TECH_IMAGE_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas-v1.png";
 const TECH_IMAGE_ATLAS_COLUMNS = 6;
+const EYE_IMAGE_COUNT = 75;
+const EYE_IMAGE_DIRECTORY = "/assets/goldfishes/goldfish-eye-collage-circle-75-svg";
 const SESSION_STORAGE_KEY = "goldfishes:0908:overlay-4:stories:v1";
 
 type GridSize = {
@@ -48,7 +52,8 @@ type StageSize = {
   height: number;
 };
 
-type StorySurface = "empty" | "white" | "face" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
+type StorySurface = "empty" | "white" | "face" | "eyes" | "apps" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
+type FaceType = "politician" | "bigTech";
 type TechTypeface = "mono" | "ui" | "image" | "imageMono";
 
 type StoryRingPalette = Readonly<{
@@ -86,6 +91,8 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "empty", value: "empty" },
   { label: "white", value: "white" },
   { label: "face", value: "face" },
+  { label: "eyes", value: "eyes" },
+  { label: "apps", value: "apps" },
   { label: "numbers", value: "numbers" },
   { label: "hieroglyphs", value: "hieroglyphs" },
   { label: "colour", value: "colour" },
@@ -98,7 +105,7 @@ const techTypefaceOptions: readonly { label: string; value: TechTypeface }[] = [
   { label: "image", value: "image" },
   { label: "image mono", value: "imageMono" },
 ];
-const humanFaceImages = Array.from(
+const politicianFaceImages = Array.from(
   { length: 60 },
   (_, index) => `/images/grid-2/politicians/${String(index + 1).padStart(3, "0")}.jpg`,
 );
@@ -113,8 +120,12 @@ const politicianLean = [
 const numberGlyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 const egyptianHieroglyphs = Array.from("𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟");
 
-function politicianTint(index: number) {
-  const lean = politicianLean[index % politicianLean.length]!;
+function faceTint(index: number, faceType: FaceType) {
+  // The established politician palette is retained. Big-tech faces traverse
+  // the same spectrum by sequence only; the colour is not an ideology label.
+  const lean = faceType === "politician"
+    ? politicianLean[index % politicianLean.length]!
+    : Math.sin((index + 1) * 2.3999632297);
   const from = lean < 0 ? [42, 105, 255] : [139, 94, 164];
   const to = lean < 0 ? [139, 94, 164] : [244, 61, 74];
   const amount = Math.abs(lean);
@@ -201,16 +212,33 @@ function colourFor(index: number, seed: number) {
   return `hsl(${hue} ${saturation}% ${lightness}%)`;
 }
 
-function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface): CSSProperties {
+function eyeImageStyle(index: number): CSSProperties {
+  const number = String(index % EYE_IMAGE_COUNT + 1).padStart(3, "0");
+
+  return {
+    backgroundColor: "#171a1e",
+    backgroundImage: `url("${EYE_IMAGE_DIRECTORY}/goldfish-eye-circle-${number}.svg")`,
+    // The source SVGs share one eye crop at (502.175, 165.001), radius 54.
+    // Zooming that crop to the bubble keeps only the photographic eye visible.
+    backgroundPosition: "90.91% 38.01%",
+    backgroundSize: "556.48% 370.37%",
+  };
+}
+
+function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface, faceType: FaceType): CSSProperties {
   if ((surface === "techMono" || surface === "tech") && (typeface === "image" || typeface === "imageMono")) {
     const image = techImageStyle(index);
     return typeface === "imageMono" ? { ...image, filter: "grayscale(1) contrast(1.08) brightness(0.88)" } : image;
   }
-  if (surface === "empty" || surface === "numbers" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
+  if (surface === "empty" || surface === "apps" || surface === "numbers" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
   if (surface === "face") {
-    const tint = politicianTint(index);
-    return { backgroundImage: `linear-gradient(${tint}, ${tint}), url("${humanFaceImages[index % humanFaceImages.length]}")`, backgroundBlendMode: "color, normal", backgroundSize: "cover" };
+    const tint = faceTint(index, faceType);
+    const image = faceType === "politician"
+      ? politicianFaceImages[index % politicianFaceImages.length]!
+      : techPowerFaces[index % techPowerFaces.length]!.image;
+    return { backgroundImage: `linear-gradient(${tint}, ${tint}), url("${image}")`, backgroundBlendMode: "color, normal", backgroundSize: "cover" };
   }
+  if (surface === "eyes") return eyeImageStyle(index);
   if (surface === "colour") return { backgroundColor: colourFor(index, colourSeed) };
   return { backgroundColor: "#fff" };
 }
@@ -326,6 +354,7 @@ export function InstagramSocialStoryTray() {
   const [gridSize, setGridSize] = useState<GridSize>({ columns: 1, rows: 1 });
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [testSurface, setTestSurface] = useState<StorySurface>("techMono");
+  const [faceType, setFaceType] = useState<FaceType>("bigTech");
   const [techTypeface, setTechTypeface] = useState<TechTypeface>("image");
   const [hieroglyphSet, setHieroglyphSet] = useState<"default" | "tech">("default");
   const [iconSize, setIconSize] = useState(DEFAULT_ICON_SIZE);
@@ -648,10 +677,11 @@ export function InstagramSocialStoryTray() {
                   <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : styles.storyRingPlain}`} style={testSurface === "tech" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
                     <span
                       aria-hidden="true"
-                      className={`${styles.logoSurface} ${testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
-                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface)}
+                      className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
+                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface, faceType)}
                     >
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
+                      {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
                       {testSurface === "numbers" ? <NumberMark glyph={numberGlyphs[story.index % numberGlyphs.length]!} /> : null}
                       {testSurface === "hieroglyphs" ? hieroglyphSet === "tech" ? <TechHieroglyph term={techKeyword.abbreviation} /> : <HieroglyphMark glyph={egyptianHieroglyphs[story.index % egyptianHieroglyphs.length]!} /> : null}
                       {testSurface === "techMono" || testSurface === "tech" ? techTypeface === "image" || techTypeface === "imageMono" ? null : <TechMark term={techKeyword.abbreviation} typeface={techTypeface} /> : null}
@@ -681,6 +711,19 @@ export function InstagramSocialStoryTray() {
                   ))}
                 </div>
               </fieldset>
+
+              {testSurface === "face" ? (
+                <fieldset className={styles.controlGroup}>
+                  <legend className={styles.controlLegend}>face type</legend>
+                  <div className={styles.optionGrid}>
+                    {(["politician", "bigTech"] as const).map((type) => (
+                      <button aria-pressed={faceType === type} className={styles.optionButton} key={type} onClick={() => setFaceType(type)} type="button">
+                        {type === "bigTech" ? "big tech" : type}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
 
               {testSurface === "hieroglyphs" ? (
                 <fieldset className={styles.controlGroup}>
