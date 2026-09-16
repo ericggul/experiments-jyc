@@ -57,6 +57,11 @@ export const experimentCatalog = [
     description: "Graph signals and word-timed audio or video distributed across socket screens.",
   },
   {
+    href: "/splice",
+    label: "splice",
+    description: "A two-deck audio instrument for cueing, looping, cutting and mixing fragments.",
+  },
+  {
     href: "/network-system",
     label: "network-system",
     description: "Four-node institutional network and parameter screens.",

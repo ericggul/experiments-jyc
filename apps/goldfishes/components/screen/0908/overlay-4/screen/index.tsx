@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   createSocialStorySystem,
+  INFLUENCE_LIFETIME_MILLISECONDS,
   maintainSocialStoryActivity,
   resizeSocialStorySystem,
   stepSocialStorySystem,
@@ -37,6 +38,14 @@ const MAX_FISH_SCALE = 1.2;
 const DEFAULT_FISH_COUNT = 600;
 const DEFAULT_FISH_SCALE = 0.8;
 const DEFAULT_TRACE_SECONDS = 5;
+const DEFAULT_BUBBLE_APPEAR_SECONDS = 0.3;
+const DEFAULT_BUBBLE_DISAPPEAR_SECONDS = 0.3;
+const MIN_BUBBLE_ANIMATION_SECONDS = 0.05;
+const MAX_BUBBLE_APPEAR_SECONDS = 1.2;
+const MAX_BUBBLE_DISAPPEAR_SECONDS = 2;
+const MIN_ACTIVITY_SPEED = 0.1;
+const MAX_ACTIVITY_SPEED = 2;
+const DEFAULT_ATTENTION_CAP = 80;
 const TECH_IMAGE_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas-v1.png";
 const TECH_IMAGE_ATLAS_COLUMNS = 6;
 const EYE_IMAGE_COUNT = 75;
@@ -53,9 +62,12 @@ type StageSize = {
   height: number;
 };
 
-type StorySurface = "empty" | "white" | "face" | "eyes" | "apps" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
+type StorySurface = "empty" | "white" | "face" | "eyes" | "lips" | "apps" | "numbers" | "hieroglyphs" | "colour" | "techMono" | "tech";
 type FaceType = "politician" | "bigTechColour" | "bigTechOriginal" | "bigTechMonochrome";
-type EyeType = "human" | "bigTech";
+type EyeType = "human" | "bigTech" | "bigTechColour";
+type LipSource = "tech" | "politician" | "mixed";
+type LipVersion = "v1" | "v2";
+type LipColour = "original" | "sourceColour" | "red";
 type TechTypeface = "mono" | "ui" | "image" | "imageMono";
 
 type StoryRingPalette = Readonly<{
@@ -94,6 +106,7 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "white", value: "white" },
   { label: "face", value: "face" },
   { label: "eyes", value: "eyes" },
+  { label: "lips", value: "lips" },
   { label: "apps", value: "apps" },
   { label: "numbers", value: "numbers" },
   { label: "hieroglyphs", value: "hieroglyphs" },
@@ -110,6 +123,21 @@ const faceTypeOptions: readonly { label: string; value: FaceType }[] = [
 const eyeTypeOptions: readonly { label: string; value: EyeType }[] = [
   { label: "human", value: "human" },
   { label: "big tech", value: "bigTech" },
+  { label: "big tech colour", value: "bigTechColour" },
+];
+const lipSourceOptions: readonly { label: string; value: LipSource }[] = [
+  { label: "tech", value: "tech" },
+  { label: "politician", value: "politician" },
+  { label: "tech + politician", value: "mixed" },
+];
+const lipVersionOptions: readonly { label: string; value: LipVersion }[] = [
+  { label: "lips-v1", value: "v1" },
+  { label: "lips-v2", value: "v2" },
+];
+const lipColourOptions: readonly { label: string; value: LipColour }[] = [
+  { label: "original", value: "original" },
+  { label: "tech / politician colour", value: "sourceColour" },
+  { label: "red", value: "red" },
 ];
 const techTypefaceOptions: readonly { label: string; value: TechTypeface }[] = [
   { label: "mono", value: "mono" },
@@ -233,13 +261,45 @@ function eyeImageStyle(index: number): CSSProperties {
   };
 }
 
-function bigTechEyeImageStyle(index: number): CSSProperties {
+function bigTechEyeImageStyle(index: number, withBrandColour: boolean): CSSProperties {
   const person = techPowerFaces[index % techPowerFaces.length]!;
+  const image = `url("/images/0908/tech-power-eyes/${person.id}.jpg")`;
   return {
     backgroundColor: "#171a1e",
-    backgroundImage: `url("/images/0908/tech-power-eyes/${person.id}.jpg")`,
+    backgroundImage: withBrandColour ? `${brandGradient(index)}, ${image}` : image,
+    backgroundBlendMode: withBrandColour ? "color, normal" : undefined,
     backgroundPosition: "center",
     backgroundSize: "cover",
+  };
+}
+
+function lipImageStyle(index: number, source: LipSource, version: LipVersion, colour: LipColour): CSSProperties {
+  const isTech = source === "tech" || source === "mixed" && index % 2 === 0;
+  const sourceIndex = source === "mixed" ? Math.floor(index / 2) : index;
+  const personId = isTech
+    ? techPowerFaces[sourceIndex % techPowerFaces.length]!.id
+    : String(sourceIndex % politicianFaceImages.length + 1).padStart(3, "0");
+  const directory = isTech ? "tech-power-lips" : "politician-lips";
+  const image = `url("/images/0908/${directory}-${version}/${personId}.jpg")`;
+  const baseStyle: CSSProperties = {
+    backgroundColor: "#171a1e",
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+  };
+  if (colour === "original") return { ...baseStyle, backgroundImage: image };
+  if (colour === "sourceColour") {
+    const tint = isTech
+      ? brandGradient(sourceIndex)
+      : `linear-gradient(${politicianFaceTint(sourceIndex)}, ${politicianFaceTint(sourceIndex)})`;
+    return { ...baseStyle, backgroundImage: `${tint}, ${image}`, backgroundBlendMode: "color, normal" };
+  }
+  const highlight = "radial-gradient(ellipse 27% 8% at 43% 57%, rgb(255 222 226 / 32%), transparent 78%)";
+  const upperLip = "radial-gradient(ellipse 56% 19% at 50% 42%, rgb(174 4 49 / 82%), transparent 72%)";
+  const lowerLip = "radial-gradient(ellipse 58% 21% at 50% 60%, rgb(226 22 75 / 74%), transparent 74%)";
+  return {
+    ...baseStyle,
+    backgroundImage: `${highlight}, ${upperLip}, ${lowerLip}, ${image}`,
+    backgroundBlendMode: "screen, soft-light, soft-light, normal",
   };
 }
 
@@ -251,7 +311,7 @@ function brandGradient(index: number) {
   return `linear-gradient(135deg, ${stops})`;
 }
 
-function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface, faceType: FaceType, eyeType: EyeType): CSSProperties {
+function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: number, typeface: TechTypeface, faceType: FaceType, eyeType: EyeType, lipSource: LipSource, lipVersion: LipVersion, lipColour: LipColour): CSSProperties {
   if ((surface === "techMono" || surface === "tech") && (typeface === "image" || typeface === "imageMono")) {
     const image = techImageStyle(index);
     return typeface === "imageMono" ? { ...image, filter: "grayscale(1) contrast(1.08) brightness(0.88)" } : image;
@@ -266,7 +326,8 @@ function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: numbe
     const tint = isPolitician ? `linear-gradient(${politicianFaceTint(index)}, ${politicianFaceTint(index)})` : brandGradient(index);
     return { ...imageStyle, backgroundImage: `${tint}, url("${image}")`, backgroundBlendMode: "color, normal" };
   }
-  if (surface === "eyes") return eyeType === "bigTech" ? bigTechEyeImageStyle(index) : eyeImageStyle(index);
+  if (surface === "eyes") return eyeType === "human" ? eyeImageStyle(index) : bigTechEyeImageStyle(index, eyeType === "bigTechColour");
+  if (surface === "lips") return lipImageStyle(index, lipSource, lipVersion, lipColour);
   if (surface === "colour") return { backgroundColor: colourFor(index, colourSeed) };
   return { backgroundColor: "#fff" };
 }
@@ -381,9 +442,12 @@ export function InstagramSocialStoryTray() {
   const schoolRef = useRef<AttentionSchool | null>(null);
   const [gridSize, setGridSize] = useState<GridSize>({ columns: 1, rows: 1 });
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
-  const [testSurface, setTestSurface] = useState<StorySurface>("techMono");
+  const [testSurface, setTestSurface] = useState<StorySurface>("eyes");
   const [faceType, setFaceType] = useState<FaceType>("bigTechColour");
-  const [eyeType, setEyeType] = useState<EyeType>("human");
+  const [eyeType, setEyeType] = useState<EyeType>("bigTechColour");
+  const [lipSource, setLipSource] = useState<LipSource>("tech");
+  const [lipVersion, setLipVersion] = useState<LipVersion>("v1");
+  const [lipColour, setLipColour] = useState<LipColour>("original");
   const [techTypeface, setTechTypeface] = useState<TechTypeface>("image");
   const [hieroglyphSet, setHieroglyphSet] = useState<"default" | "tech">("default");
   const [iconSize, setIconSize] = useState(DEFAULT_ICON_SIZE);
@@ -392,6 +456,15 @@ export function InstagramSocialStoryTray() {
   const showTracesRef = useRef(false);
   const [traceDurationSeconds, setTraceDurationSeconds] = useState(DEFAULT_TRACE_SECONDS);
   const traceDurationRef = useRef(DEFAULT_TRACE_SECONDS);
+  const [bubbleAppearSeconds, setBubbleAppearSeconds] = useState(DEFAULT_BUBBLE_APPEAR_SECONDS);
+  const [bubbleDisappearSeconds, setBubbleDisappearSeconds] = useState(DEFAULT_BUBBLE_DISAPPEAR_SECONDS);
+  const bubbleDisappearSecondsRef = useRef(DEFAULT_BUBBLE_DISAPPEAR_SECONDS);
+  const [bubblesPaused, setBubblesPaused] = useState(false);
+  const bubblesPausedRef = useRef(false);
+  const [activeBubbleTarget, setActiveBubbleTarget] = useState<number | null>(null);
+  const activeBubbleTargetRef = useRef<number | null>(null);
+  const [activitySpeed, setActivitySpeed] = useState(1);
+  const activitySpeedRef = useRef(1);
   const [showTargetLines, setShowTargetLines] = useState(false);
   const showTargetLinesRef = useRef(false);
   const [showApproachRings, setShowApproachRings] = useState(true);
@@ -406,6 +479,9 @@ export function InstagramSocialStoryTray() {
   const [isControlsExpanded, setIsControlsExpanded] = useState(false);
   const [fishCount, setFishCount] = useState(DEFAULT_FISH_COUNT);
   const [fishScale, setFishScale] = useState(DEFAULT_FISH_SCALE);
+  const [attentionCapEnabled, setAttentionCapEnabled] = useState(false);
+  const [attentionCap, setAttentionCap] = useState(DEFAULT_ATTENTION_CAP);
+  const attentionCapRef = useRef<number | null>(null);
   const [colourSeed] = useState(() => Math.random() * 100000);
   const [ringPaletteId, setRingPaletteId] = useState<StoryRingPalette["id"]>("monochrome");
   const [system, setSystem] = useState(() => createSocialStorySystem(1, 1));
@@ -486,23 +562,37 @@ export function InstagramSocialStoryTray() {
       timer = window.setTimeout(() => {
         if (!active) return;
         const current = performance.now();
-        if (document.visibilityState !== "hidden") {
+        if (document.visibilityState !== "hidden" && !bubblesPausedRef.current) {
           simulationTimeRef.current += Math.min(
             SIMULATION_STEP_MILLISECONDS,
-            Math.max(0, current - previous),
+            Math.max(0, current - previous) * activitySpeedRef.current,
           );
-          let nextSystem = stepSocialStorySystem(systemRef.current, simulationTimeRef.current, schoolRef.current?.drainAttention());
-          nextSystem = maintainSocialStoryActivity(nextSystem, simulationTimeRef.current);
+          let nextSystem = stepSocialStorySystem(
+            systemRef.current,
+            simulationTimeRef.current,
+            schoolRef.current?.drainAttention(),
+            bubbleDisappearSecondsRef.current * 1000,
+            activeBubbleTargetRef.current,
+          );
+          nextSystem = maintainSocialStoryActivity(
+            nextSystem,
+            simulationTimeRef.current,
+            activeBubbleTargetRef.current,
+          );
           systemRef.current = nextSystem;
           setSystem(nextSystem);
           if (current - lastSaved >= 1000) {
             persist();
             lastSaved = current;
           }
+        } else if (document.visibilityState !== "hidden") {
+          // Contact gathered while the story clock is paused must not create a
+          // burst of deferred attention when playback resumes.
+          schoolRef.current?.drainAttention();
         }
         previous = current;
         scheduleStep();
-      }, SIMULATION_STEP_MILLISECONDS);
+      }, SIMULATION_STEP_MILLISECONDS / activitySpeedRef.current);
     };
 
     document.addEventListener("visibilitychange", resetClock);
@@ -561,6 +651,7 @@ export function InstagramSocialStoryTray() {
       layoutKey = nextKey;
       approaches.reset();
       if (school) school.resize(layout); else school = new AttentionSchool(layout, fishCount, fishScale);
+      school.setAttentionCap(attentionCapRef.current);
       schoolRef.current = school;
       targetSystem = undefined;
       syncTargets();
@@ -576,6 +667,7 @@ export function InstagramSocialStoryTray() {
       if (disposed || failed || !scene || !school) return;
       const started = performance.now();
       const layoutChanged = applyLayout();
+      school.setAttentionCap(attentionCapRef.current);
       const targetsChanged = syncTargets();
       const traceChanged = tracesVisible !== showTracesRef.current;
       tracesVisible = showTracesRef.current;
@@ -636,6 +728,12 @@ export function InstagramSocialStoryTray() {
     "--story-separator": `${(iconSize / REFERENCE_STORY_SIZE) * 3.5}px`,
     "--story-ring-gradient": selectedRingPalette.gradient,
   } as CSSProperties;
+  const bubbleCapacity = Math.max(1, gridSize.columns * gridSize.rows);
+  const displayedActiveBubbleTarget = Math.min(activeBubbleTarget ?? bubbleCapacity, bubbleCapacity);
+  const screenStyle = {
+    "--propagation-duration": `${INFLUENCE_LIFETIME_MILLISECONDS / activitySpeed}ms`,
+    ...(jakarta ? { filter: `contrast(${1 + jakartaAmount * 0.0028}) brightness(${1 + jakartaAmount * 0.0004}) saturate(${1 - jakartaAmount * 0.001}) hue-rotate(${jakartaAmount * 0.06}deg)` } : {}),
+  } as CSSProperties;
   const influenceGeometry = useMemo(() => system.influences.map((influence) => (
     getInfluenceGeometry(
       influence,
@@ -655,8 +753,8 @@ export function InstagramSocialStoryTray() {
     system.states,
   ]);
   return (
-    <main aria-label="Instagram stories influenced by nearby stories" className={styles.screen}
-      style={jakarta ? { filter: `contrast(${1 + jakartaAmount * 0.0028}) brightness(${1 + jakartaAmount * 0.0004}) saturate(${1 - jakartaAmount * 0.001}) hue-rotate(${jakartaAmount * 0.06}deg)` } : undefined}>
+    <main aria-label="Instagram stories influenced by nearby stories" className={`${styles.screen} ${bubblesPaused ? styles.bubblesPaused : ""}`}
+      style={screenStyle}>
       <section className={styles.gridStage}>
         <canvas aria-hidden="true" className={styles.ringOverlay} ref={ringCanvasRef} />
         <canvas aria-hidden="true" className={styles.traceOverlay} ref={traceCanvasRef} />
@@ -696,8 +794,9 @@ export function InstagramSocialStoryTray() {
             const bubbleScale = storyState?.bubbleScale ?? 1;
             const storyStyle = {
               "--bubble-scale": bubbleScale,
-              "--bubble-transition-duration": `${300 * bubbleScale}ms`,
-              "--bubble-viewing-duration": `${760 * bubbleScale}ms`,
+              "--bubble-appear-duration": `${bubbleAppearSeconds * bubbleScale / activitySpeed}s`,
+              "--bubble-disappear-duration": `${bubbleDisappearSeconds * bubbleScale / activitySpeed}s`,
+              "--bubble-viewing-duration": `${760 * bubbleScale / activitySpeed}ms`,
             } as CSSProperties;
 
             return (
@@ -707,7 +806,7 @@ export function InstagramSocialStoryTray() {
                     <span
                       aria-hidden="true"
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
-                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface, faceType, eyeType)}
+                      style={getSurfaceStyle(testSurface, story.index, colourSeed, techTypeface, faceType, eyeType, lipSource, lipVersion, lipColour)}
                     >
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
                       {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
@@ -767,6 +866,41 @@ export function InstagramSocialStoryTray() {
                 </fieldset>
               ) : null}
 
+              {testSurface === "lips" ? (
+                <>
+                  <fieldset className={styles.controlGroup}>
+                    <legend className={styles.controlLegend}>lip source</legend>
+                    <div className={styles.optionGrid}>
+                      {lipSourceOptions.map((option) => (
+                        <button aria-pressed={lipSource === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipSource(option.value)} type="button">
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <fieldset className={styles.controlGroup}>
+                    <legend className={styles.controlLegend}>lip version</legend>
+                    <div className={styles.optionGrid}>
+                      {lipVersionOptions.map((option) => (
+                        <button aria-pressed={lipVersion === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipVersion(option.value)} type="button">
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <fieldset className={styles.controlGroup}>
+                    <legend className={styles.controlLegend}>lip colour</legend>
+                    <div className={styles.optionGrid}>
+                      {lipColourOptions.map((option) => (
+                        <button aria-pressed={lipColour === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipColour(option.value)} type="button">
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                </>
+              ) : null}
+
               {testSurface === "hieroglyphs" ? (
                 <fieldset className={styles.controlGroup}>
                   <legend className={styles.controlLegend}>hieroglyphs</legend>
@@ -806,6 +940,53 @@ export function InstagramSocialStoryTray() {
               </fieldset>
 
               <fieldset className={styles.controlGroup}>
+                <legend className={styles.controlLegend}>bubble animation</legend>
+                <label className={styles.sliderControl}>
+                  <span>appear</span>
+                  <input aria-label="Bubble appearing duration" max={MAX_BUBBLE_APPEAR_SECONDS} min={MIN_BUBBLE_ANIMATION_SECONDS} onChange={(event) => setBubbleAppearSeconds(Number(event.currentTarget.value))} step="0.05" type="range" value={bubbleAppearSeconds} />
+                  <output>{bubbleAppearSeconds.toFixed(2)}s</output>
+                </label>
+                <label className={styles.sliderControl}>
+                  <span>disappear</span>
+                  <input aria-label="Bubble disappearing duration" max={MAX_BUBBLE_DISAPPEAR_SECONDS} min={MIN_BUBBLE_ANIMATION_SECONDS} onChange={(event) => { const next = Number(event.currentTarget.value); bubbleDisappearSecondsRef.current = next; setBubbleDisappearSeconds(next); }} step="0.05" type="range" value={bubbleDisappearSeconds} />
+                  <output>{bubbleDisappearSeconds.toFixed(2)}s</output>
+                </label>
+              </fieldset>
+
+              <fieldset className={styles.controlGroup}>
+                <legend className={styles.controlLegend}>bubble system</legend>
+                <div className={styles.optionGrid}>
+                  <button aria-pressed={bubblesPaused} className={styles.optionButton} onClick={() => setBubblesPaused((current) => {
+                    const next = !current;
+                    bubblesPausedRef.current = next;
+                    return next;
+                  })} type="button">{bubblesPaused ? "play" : "pause"}</button>
+                  <button aria-pressed={activeBubbleTarget === null} className={styles.optionButton} onClick={() => {
+                    activeBubbleTargetRef.current = null;
+                    setActiveBubbleTarget(null);
+                  }} type="button">natural level</button>
+                </div>
+                <label className={styles.sliderControl}>
+                  <span>active</span>
+                  <input aria-label="Target level of simultaneously active bubbles" max={bubbleCapacity} min="1" onChange={(event) => {
+                    const next = Number(event.currentTarget.value);
+                    activeBubbleTargetRef.current = next;
+                    setActiveBubbleTarget(next);
+                  }} step="1" type="range" value={displayedActiveBubbleTarget} />
+                  <output>{activeBubbleTarget === null ? "natural" : `~${displayedActiveBubbleTarget}`}</output>
+                </label>
+                <label className={styles.sliderControl}>
+                  <span>speed</span>
+                  <input aria-label="Overall bubble activity speed" max={MAX_ACTIVITY_SPEED} min={MIN_ACTIVITY_SPEED} onChange={(event) => {
+                    const next = Number(event.currentTarget.value);
+                    activitySpeedRef.current = next;
+                    setActivitySpeed(next);
+                  }} step="0.1" type="range" value={activitySpeed} />
+                  <output>×{activitySpeed.toFixed(2)}</output>
+                </label>
+              </fieldset>
+
+              <fieldset className={styles.controlGroup}>
                 <legend className={styles.controlLegend}>fish school</legend>
                 <label className={styles.sliderControl}>
                   <span>size</span>
@@ -816,6 +997,22 @@ export function InstagramSocialStoryTray() {
                   <span>count</span>
                   <input aria-label="Goldfish count" max={MAX_FISH_COUNT} min={MIN_FISH_COUNT} onChange={(event) => setFishCount(Number(event.currentTarget.value))} step="10" type="range" value={fishCount} />
                   <output>{fishCount}</output>
+                </label>
+                <div className={styles.optionGrid}>
+                  <button aria-pressed={attentionCapEnabled} className={styles.optionButton} onClick={() => setAttentionCapEnabled((current) => {
+                    const next = !current;
+                    attentionCapRef.current = next ? attentionCap : null;
+                    return next;
+                  })} type="button">attention cap {attentionCapEnabled ? "on" : "off"}</button>
+                </div>
+                <label aria-disabled={!attentionCapEnabled} className={styles.sliderControl}>
+                  <span>per bubble</span>
+                  <input aria-label="Maximum goldfish attention per bubble" disabled={!attentionCapEnabled} max={MAX_FISH_COUNT} min="1" onChange={(event) => {
+                    const next = Number(event.currentTarget.value);
+                    attentionCapRef.current = next;
+                    setAttentionCap(next);
+                  }} step="1" type="range" value={attentionCap} />
+                  <output>{attentionCapEnabled ? attentionCap : "off"}</output>
                 </label>
                 <div className={styles.paletteRow}>
                   <span className={styles.choiceLabel}>colour</span>

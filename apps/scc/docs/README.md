@@ -1,5 +1,7 @@
 # SCC experiment records
 
+- [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
+
 - [camera-monolith](experiments/standalone/camera-monolith/README.md): mobile camera frames accumulated FIFO into the `0806/duration` temporal monolith.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.

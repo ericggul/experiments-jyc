@@ -1,0 +1,26 @@
+{
+  "026": {
+    "name": "Mary Robinson",
+    "image": "026.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mary_Robinson,_2024_(cropped).jpg",
+    "author": "United States Department of State",
+    "license": "Public domain (work of the United States federal government)",
+    "note": "Replacement source used only for derived politician lip crops because the archive's existing 026 image is a historical crowd print rather than a usable portrait."
+  },
+  "044": {
+    "name": "Nelson Mandela",
+    "image": "044.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Nelson_Mandela.jpg",
+    "author": "Executive Office of the President of the United States",
+    "license": "Public domain (work of the United States federal government)",
+    "note": "Replacement source used only for derived politician lip crops because the archive's existing 044 image is a memorial sign rather than a usable portrait."
+  },
+  "057": {
+    "name": "José Mujica",
+    "image": "057.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Josemujica.jpg",
+    "author": "United States Embassy in Uruguay; author information unavailable on source page",
+    "license": "Public domain (work of the United States federal government)",
+    "note": "Replacement source used only for derived politician lip crops because Vision cannot resolve lip landmarks from the archive's existing line drawing."
+  }
+}

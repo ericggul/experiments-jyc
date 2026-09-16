@@ -9,7 +9,7 @@ import type {
 const DIRECT_TRANSMISSION_CHANCE = 0.985;
 const MAX_VISIBLE_INFLUENCES = 120;
 const VIEW_EVENT_RATE = 0.24;
-const INFLUENCE_LIFETIME = 1200;
+export const INFLUENCE_LIFETIME_MILLISECONDS = 1200;
 const VIEWING_TRANSITION_MILLISECONDS = 760;
 const LEAVING_TRANSITION_MILLISECONDS = 300;
 const EMPTY_COOLDOWN_MILLISECONDS = 1000;
@@ -98,7 +98,7 @@ function propagatedStoryState(now: number, index: number, seed: number): { state
     state: {
       status: "new",
       bubbleScale,
-      viewAt: now + INFLUENCE_LIFETIME * bubbleScale,
+      viewAt: now + INFLUENCE_LIFETIME_MILLISECONDS * bubbleScale,
       viewingUntil: null,
       leavingUntil: null,
       availableAt: now,
@@ -123,13 +123,13 @@ function viewingStoryState(now: number, bubbleScale: number): StoryCellState {
   };
 }
 
-function leavingStoryState(now: number, bubbleScale: number): StoryCellState {
+function leavingStoryState(now: number, bubbleScale: number, transitionMilliseconds: number): StoryCellState {
   return {
     status: "leaving",
     bubbleScale,
     viewAt: null,
     viewingUntil: null,
-    leavingUntil: now + LEAVING_TRANSITION_MILLISECONDS * bubbleScale,
+    leavingUntil: now + transitionMilliseconds * bubbleScale,
     availableAt: now,
     transmitAt: null,
     transmissionsRemaining: 0,
@@ -292,11 +292,17 @@ export function createSocialStorySystem(
 export function maintainSocialStoryActivity(
   system: SocialStorySystem,
   now: number,
+  activeBubbleTarget: number | null = null,
 ): SocialStorySystem {
   // External arrivals replenish a sparse field gradually, without resetting it.
-  const active = system.states.filter((state) => state.status === "new").length;
-  const desired = Math.ceil(system.nodes.length * 0.38);
-  if (active >= desired) return system;
+  const newCount = system.states.filter((state) => state.status === "new").length;
+  const visible = system.states.filter((state) => state.status !== "empty").length;
+  const controlledTarget = activeBubbleTarget === null
+    ? null
+    : Math.max(1, Math.min(system.nodes.length, Math.floor(activeBubbleTarget)));
+  const desired = controlledTarget ?? Math.ceil(system.nodes.length * 0.38);
+  const population = controlledTarget === null ? newCount : visible;
+  if (population >= desired) return system;
 
   const available = system.states.flatMap((state, index) => (
     state.status === "empty" && state.availableAt <= now ? [index] : []
@@ -304,7 +310,8 @@ export function maintainSocialStoryActivity(
   if (available.length === 0) return system;
 
   // Multiple independent arrivals per tick: a one-arrival cap starves large grids.
-  const probability = 1 - Math.exp(-(desired - active) * 1.2 * 0.21 / available.length);
+  const shortage = desired - population;
+  const probability = 1 - Math.exp(-shortage * 1.2 * 0.21 / available.length);
   let randomSeed = system.randomSeed;
   let arrivals = 0;
   const states = [...system.states];
@@ -315,7 +322,7 @@ export function maintainSocialStoryActivity(
     const next = newStoryState(now, index, randomSeed);
     randomSeed = next.seed;
     states[index] = next.state;
-    if (++arrivals >= desired - active) break;
+    if (++arrivals >= shortage) break;
   }
 
   return {
@@ -350,6 +357,8 @@ export function stepSocialStorySystem(
   system: SocialStorySystem,
   now: number,
   attention: ReadonlyMap<number, number> = new Map(),
+  leavingTransitionMilliseconds = LEAVING_TRANSITION_MILLISECONDS,
+  activeBubbleTarget: number | null = null,
 ): SocialStorySystem {
   if (now <= system.time) return system;
 
@@ -368,7 +377,7 @@ export function stepSocialStorySystem(
       return viewingStoryState(now, current.bubbleScale);
     }
     if (current.status === "viewing" && current.viewingUntil !== null && current.viewingUntil <= now) {
-      return leavingStoryState(now, current.bubbleScale);
+      return leavingStoryState(now, current.bubbleScale, leavingTransitionMilliseconds);
     }
     if (current.status === "leaving" && current.leavingUntil !== null && current.leavingUntil <= now) {
       return emptyStoryState(now + EMPTY_COOLDOWN_MILLISECONDS);
@@ -384,6 +393,10 @@ export function stepSocialStorySystem(
   const nextStates = [...resolvedStates];
   const nextInfluences: StoryInfluence[] = system.influences.filter((edge) => edge.expiresAt > now);
   let newCount = activeSources.size;
+  let activeBubbleCount = resolvedStates.filter((state) => state.status !== "empty").length;
+  const controlledTarget = activeBubbleTarget === null
+    ? null
+    : Math.max(1, Math.min(system.nodes.length, Math.floor(activeBubbleTarget)));
   const maximumNewStories = Math.ceil(system.nodes.length * MAXIMUM_NEW_SHARE);
   const propagationLimit = Math.max(1, Math.ceil(system.nodes.length * MAX_PROPAGATIONS_PER_STEP_SHARE));
   const shuffled = shuffleSources([...activeSources], randomSeed);
@@ -391,7 +404,10 @@ export function stepSocialStorySystem(
   let propagations = 0;
 
   for (const source of shuffled.sources) {
-    if (newCount >= maximumNewStories || propagations >= propagationLimit) break;
+    if (
+      newCount >= maximumNewStories
+      || propagations >= propagationLimit
+    ) break;
     const sourceState = nextStates[source];
     if (
       !sourceState
@@ -427,19 +443,32 @@ export function stepSocialStorySystem(
     const transmissionChance = Math.min(DIRECT_TRANSMISSION_CHANCE, 0.18 + 0.22 * localAttention);
     if (attempt.value >= transmissionChance) continue;
 
+    // Population control is an outer admission gate: the original attention-
+    // driven transmission event above remains untouched. Near the requested
+    // level, only the instantiation of successful events tapers smoothly.
+    if (controlledTarget !== null) {
+      const populationPressure = Math.max(0, Math.min(
+        1,
+        0.2 + (controlledTarget - activeBubbleCount) / Math.max(1, controlledTarget * 0.25),
+      ));
+      const admission = unit(source * 101 + Math.round(now) * 0.013);
+      if (admission >= populationPressure) continue;
+    }
+
     const selected = chooseTie(availableTies, randomSeed);
     randomSeed = selected.seed;
     const propagated = propagatedStoryState(now, selected.tie.target, randomSeed);
     randomSeed = propagated.seed;
     nextStates[selected.tie.target] = propagated.state;
     newCount += 1;
+    activeBubbleCount += 1;
     propagations += 1;
     nextInfluences.push({
       id: `${source}-${selected.tie.target}-${now}-${randomSeed}`,
       source,
       target: selected.tie.target,
       createdAt: now,
-      expiresAt: now + INFLUENCE_LIFETIME,
+      expiresAt: now + INFLUENCE_LIFETIME_MILLISECONDS,
     });
   }
 

@@ -87,6 +87,7 @@ export class AttentionSchool {
   private readonly flowX = new Float64Array(64 * 36);
   private readonly flowY = new Float64Array(64 * 36);
   private occupancy = new Map<number, number>();
+  private attentionCap: number | null = null;
   private relationState: CellRelations = { cellCount: 0, centers: new Float64Array(0), radii: new Float64Array(0), flags: new Uint8Array(0), weights: new Float32Array(0), scoreMax: new Float32Array(0) };
 
   private candidateFlags = new Uint8Array(0);
@@ -104,6 +105,16 @@ export class AttentionSchool {
 
   get mechanisms(): readonly AttentionMechanism[] {
     return this.mechanismRecords;
+  }
+
+  /** Optional hard ceiling on fish assigned to any one active bubble. */
+  setAttentionCap(cap: number | null) {
+    const next = cap === null ? null : Math.max(1, Math.floor(cap));
+    if (next === this.attentionCap) return;
+    this.attentionCap = next;
+    // Reconsider immediately so enabling or lowering the cap converges now,
+    // rather than waiting through each fish's normal 2.1–3.7 second interval.
+    for (const fish of this.fish) fish.reconsiderAt = 0;
   }
 
   private nearbyTargets(x: number, y: number, radius: number) {
@@ -279,10 +290,12 @@ export class AttentionSchool {
       this.lastMemoryCleanup = now;
     }
     this.occupancy.clear();
+    const assignments = new Map<number, number>();
     const mechanisms = this.mechanismRecords;
     mechanisms.length = 0;
     for (const fish of this.fish) {
       const target = this.targets.get(fish.target);
+      if (target) assignments.set(target.index, (assignments.get(target.index) ?? 0) + 1);
       if (target && Math.hypot(target.x - fish.x, target.y - fish.y) < target.radius + TARGET_CAPTURE_PADDING) {
         this.occupancy.set(target.index, (this.occupancy.get(target.index) ?? 0) + 1);
       }
@@ -300,6 +313,7 @@ export class AttentionSchool {
       const fish = this.fish[i]!;
       let target = this.targets.get(fish.target);
       if (!target || now >= fish.reconsiderAt) {
+        if (target) assignments.set(target.index, Math.max(0, (assignments.get(target.index) ?? 1) - 1));
         const start = fish.id * this.relationState.cellCount;
         const end = start + this.relationState.cellCount;
         this.candidateFlags.fill(0, start, end);
@@ -312,6 +326,7 @@ export class AttentionSchool {
         for (const candidate of this.nearbyTargets(fish.x, fish.y, 180)) {
           const distance = Math.hypot(candidate.x - fish.x, candidate.y - fish.y);
           if (distance > 180) continue;
+          if (this.attentionCap !== null && (assignments.get(candidate.index) ?? 0) >= this.attentionCap) continue;
           this.markRelation(fish, candidate.index, 1);
           const novelty = 1 + 5 * Math.exp(-Math.max(0, now - candidate.born) / 1700);
           const loyalty = candidate.index === fish.target ? 1.35 : 1;
@@ -328,6 +343,7 @@ export class AttentionSchool {
           if (score > best) { best = score; target = candidate; }
         }
         fish.target = target?.index ?? -1;
+        if (target) assignments.set(target.index, (assignments.get(target.index) ?? 0) + 1);
         fish.reconsiderAt = now + TARGET_RECONSIDER_MINIMUM + unit(fish.id, 9) * TARGET_RECONSIDER_RANGE;
       }
       const heading = Math.atan2(fish.vy, fish.vx);
