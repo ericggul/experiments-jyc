@@ -1,0 +1,614 @@
+@property --instagram-story-view-progress {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.screen {
+  --grid-inset: 32px;
+  --control-inset: 32px;
+  --story-size: 93px;
+  --story-gap: 12px;
+  --story-ring-padding: 3.5px;
+  --story-separator: 3.5px;
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: var(--grid-inset);
+  background: #07090b;
+  color: #f6f7f8;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+
+.screen *,
+.screen *::before,
+.screen *::after {
+  box-sizing: border-box;
+}
+
+.gridStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.storyGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(var(--grid-columns), var(--story-size));
+  grid-template-rows: repeat(var(--grid-rows), var(--story-size));
+  align-content: center;
+  justify-content: center;
+  gap: var(--story-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.influenceLayer {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.fishOverlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.traceOverlay {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ringOverlay {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.originMarker {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  color: rgb(246 246 246 / 58%);
+  font: 400 1.8rem/1 var(--font-geist-mono), monospace;
+  pointer-events: none;
+  user-select: none;
+}
+
+.influence {
+  opacity: var(--influence-opacity, 1);
+}
+
+.influencePath {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2.15;
+  vector-effect: non-scaling-stroke;
+  animation: influence-trace var(--propagation-duration, 1200ms) cubic-bezier(0.25, 0.7, 0.35, 1) both;
+}
+
+.influenceTarget {
+  display: none;
+  fill: #ffd06a;
+  opacity: 0;
+  animation: influence-arrival var(--propagation-duration, 1200ms) ease-out both;
+}
+
+.controls {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  right: var(--control-inset);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: #f6f6f6;
+  font: 0.64rem var(--font-geist-mono), monospace;
+  transform: translateY(-50%);
+}
+
+.controlPanel {
+  width: min(18rem, calc(100svw - 6.5rem));
+  max-height: calc(100dvh - (var(--control-inset) * 2));
+  padding: 0.85rem;
+  border: 1px solid rgb(246 246 246 / 18%);
+  background: rgb(7 9 11 / 94%);
+}
+
+.controlsToggle {
+  min-width: 4.65rem;
+  border: 1px solid rgb(246 246 246 / 24%);
+  border-radius: 2px;
+  padding: 0.5rem 0.65rem;
+  background: rgb(7 9 11 / 86%);
+  color: rgb(246 246 246 / 70%);
+  cursor: pointer;
+  font: inherit;
+}
+
+.controlsToggle:hover,
+.controlsToggle[aria-expanded="true"] {
+  border-color: rgb(246 246 246 / 72%);
+  color: #fff;
+}
+
+.controlsToggle:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 4px;
+}
+
+.controlScroll {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-height: calc(100dvh - (var(--control-inset) * 2) - 1.7rem);
+  overflow-y: auto;
+  scrollbar-color: rgb(246 246 246 / 28%) transparent;
+  scrollbar-width: thin;
+}
+
+.controlGroup {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.controlLegend {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  color: rgb(246 246 246 / 50%);
+  font: inherit;
+}
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.optionButton {
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 0.42rem 0.45rem;
+  background: transparent;
+  color: rgb(246 246 246 / 67%);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.optionButton:hover,
+.optionButton[aria-pressed="true"] {
+  border-color: rgb(246 246 246 / 42%);
+  background: rgb(246 246 246 / 10%);
+  color: #fff;
+}
+
+.optionButton:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.sliderControl {
+  display: grid;
+  grid-template-columns: 3.15rem minmax(0, 1fr) 2.85rem;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgb(246 246 246 / 67%);
+}
+
+.controlGroup > .sliderControl + .sliderControl,
+.controlGroup > .optionGrid + .sliderControl,
+.controlGroup > .sliderControl + .optionGrid,
+.controlGroup > .sliderControl + .paletteRow {
+  margin-top: 0.55rem;
+}
+
+.sliderControl input {
+  width: 100%;
+  margin: 0;
+  accent-color: #f6f6f6;
+  cursor: ew-resize;
+}
+
+.sliderControl input:disabled {
+  cursor: not-allowed;
+}
+
+.sliderControl[aria-disabled="true"] {
+  color: rgb(246 246 246 / 32%);
+}
+
+.sliderControl output {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.paletteRow {
+  display: grid;
+  grid-template-columns: 3.15rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.choiceLabel {
+  color: rgb(246 246 246 / 67%);
+}
+
+.paletteOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.paletteOption {
+  width: 1.28rem;
+  height: 1.28rem;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  padding: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.paletteOption[aria-pressed="true"] {
+  border-color: #fff;
+}
+
+.paletteOption:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.palettePreview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.gridItem {
+  width: var(--story-size);
+  height: var(--story-size);
+}
+
+.story {
+  --bubble-scale: 1;
+  --bubble-appear-duration: 300ms;
+  --bubble-disappear-duration: 300ms;
+  --bubble-viewing-duration: 760ms;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  opacity: 1;
+  transform: scale(var(--bubble-scale));
+  transform-origin: center;
+}
+
+.storyEmpty {
+  opacity: 0;
+  transform: scale(calc(var(--bubble-scale) * 0.92));
+}
+
+.storyEntering {
+  animation:
+    story-enter-opacity var(--bubble-appear-duration) linear both,
+    story-enter-transform var(--bubble-appear-duration) cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.bubblesPaused .storyEntering,
+.bubblesPaused .storyLeaving,
+.bubblesPaused .storyRingViewing::before,
+.bubblesPaused .influencePath,
+.bubblesPaused .influenceTarget {
+  animation-play-state: paused;
+}
+
+.storyLeaving {
+  animation:
+    story-leave-opacity var(--bubble-disappear-duration) ease-out both,
+    story-leave-transform var(--bubble-disappear-duration) cubic-bezier(0.2, 0.85, 0.3, 1) both;
+}
+
+@keyframes story-enter-opacity {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes story-enter-transform {
+  from {
+    transform: scale(calc(var(--bubble-scale) * 0.72));
+  }
+
+  to {
+    transform: scale(var(--bubble-scale));
+  }
+}
+
+@keyframes story-leave-opacity {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes story-leave-transform {
+  from {
+    transform: scale(var(--bubble-scale));
+  }
+
+  to {
+    transform: scale(calc(var(--bubble-scale) * 0.92));
+  }
+}
+
+.storyRing {
+  display: grid;
+  position: relative;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.storyRing {
+  width: var(--story-size);
+  height: var(--story-size);
+  padding: var(--story-ring-padding);
+  transition: padding 260ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.storyRing::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--story-ring-gradient);
+  content: "";
+  opacity: 0;
+  -webkit-mask-image: conic-gradient(
+    from 0deg,
+    transparent 0deg var(--instagram-story-view-progress),
+    #000 calc(var(--instagram-story-view-progress) + 0.5deg) 360deg
+  );
+  mask-image: conic-gradient(
+    from 0deg,
+    transparent 0deg var(--instagram-story-view-progress),
+    #000 calc(var(--instagram-story-view-progress) + 0.5deg) 360deg
+  );
+  transition: opacity 240ms ease-out;
+}
+
+.storyRingNew::before {
+  opacity: 1;
+}
+
+.storyRingViewing::before {
+  opacity: 1;
+  animation: story-ring-viewed var(--bubble-viewing-duration) linear forwards;
+}
+
+/* Keep the viewed ring's padding and separator geometry while the whole
+   bubble fades. Switching to Plain here made the image expand before exit. */
+.storyRingLeaving::before {
+  --instagram-story-view-progress: 360deg;
+  opacity: 0;
+}
+
+/* Empty nodes stay invisible but retain the same inset/separator geometry as
+   an active ring. A propagated arrival can therefore animate only paint,
+   opacity and the parent scale instead of resizing its image content. */
+.storyRingDormant::before {
+  --instagram-story-view-progress: 0deg;
+  opacity: 0;
+}
+
+.storyRing.storyRingPlain {
+  padding: 0;
+}
+
+.storyRingPlain::before {
+  --instagram-story-view-progress: 360deg;
+}
+
+.storyRingPlain .logoSurface {
+  border-width: 0;
+}
+
+.logoSurface {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: var(--story-separator) solid #07090b;
+  border-radius: 50%;
+  overflow: hidden;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 68% auto;
+  transition: border-width 260ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.centeredSurface {
+  display: grid;
+  place-items: center;
+}
+
+.appServiceSurface {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background: var(--app-service-background);
+}
+
+.appServiceMark {
+  display: block;
+  width: 56%;
+  height: 56%;
+}
+
+.appServiceImage {
+  display: block;
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+}
+
+.techHieroglyph {
+  display: block;
+  width: 76%;
+  height: 76%;
+  overflow: visible;
+  color: rgb(237 239 240 / 82%);
+}
+
+.hieroglyphMark {
+  display: grid;
+  width: 62%;
+  height: 62%;
+  place-items: center;
+  overflow: visible;
+}
+
+.hieroglyphMark text {
+  fill: rgb(237 239 240 / 72%);
+  font-family: "Noto Sans Egyptian Hieroglyphs", "Noto Sans EgyptHiero", serif;
+  font-size: 76px;
+  font-weight: 600;
+  opacity: 0;
+}
+
+.techMark {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 66%;
+  height: 66%;
+  overflow: visible;
+}
+
+.techMark text {
+  fill: rgb(237 239 240 / 86%);
+  paint-order: stroke;
+  stroke: rgb(7 9 11 / 28%);
+}
+
+.techMarkMono text {
+  font-family: var(--font-geist-mono), "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -3px;
+  stroke-width: 1.35px;
+}
+
+.techMarkMono .techMarkThree {
+  font-size: 47px;
+  letter-spacing: -4.2px;
+}
+
+.techMarkUi text {
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-size: 61px;
+  font-weight: 720;
+  letter-spacing: -5px;
+  stroke-width: 1px;
+}
+
+.techMarkUi .techMarkThree {
+  font-size: 51px;
+  letter-spacing: -5.8px;
+}
+
+@keyframes influence-trace {
+  0% { opacity: 0; }
+  12% { opacity: 0.98; }
+  78% { opacity: 0.58; }
+  100% { opacity: 0; }
+}
+
+@keyframes story-ring-viewed {
+  from { --instagram-story-view-progress: 0deg; }
+  to { --instagram-story-view-progress: 360deg; }
+}
+
+@media (max-width: 700px) {
+  .screen {
+    --grid-inset: 16px;
+    --control-inset: 12px;
+  }
+
+  .controls {
+    top: var(--control-inset);
+    align-items: flex-start;
+    transform: none;
+  }
+
+  .controlPanel {
+    width: min(17.5rem, calc(100svw - 6rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storyRing,
+  .storyRing::before,
+  .logoSurface,
+  .influencePath,
+  .influenceTarget,
+  .controlsToggle {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
+@keyframes influence-arrival {
+  0%, 58% { opacity: 0; transform: scale(0.4); transform-origin: center; }
+  70% { opacity: 0.92; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1); }
+}

@@ -160,6 +160,15 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/0908/overlay-4"),
   },
   {
+    key: "screen/0908/overlay-5",
+    legacyKeys: ["0908/overlay-5"],
+    area: "screen",
+    section: "dated",
+    date: "2026-09-08",
+    phrase: "Slower, roomier attention field with approach rings initially hidden",
+    load: () => import("./screen/0908/overlay-5"),
+  },
+  {
     key: "screen/0908/overlay-2d",
     legacyKeys: ["0908/overlay-2d"],
     area: "screen",
