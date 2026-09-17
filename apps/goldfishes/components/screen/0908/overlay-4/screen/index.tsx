@@ -33,7 +33,7 @@ const MAX_STORY_GAP = 80;
 const SIMULATION_STEP_MILLISECONDS = 210;
 const MIN_FISH_COUNT = 150;
 const MAX_FISH_COUNT = 600;
-const MIN_FISH_SCALE = 0.8;
+const MIN_FISH_SCALE = 0.7;
 const MAX_FISH_SCALE = 1.2;
 const DEFAULT_FISH_COUNT = 600;
 const DEFAULT_FISH_SCALE = 0.8;
@@ -71,9 +71,10 @@ type LipColour = "original" | "sourceColour" | "red";
 type TechTypeface = "mono" | "ui" | "image" | "imageMono";
 
 type StoryRingPalette = Readonly<{
-  id: "instagram" | "rose" | "sunset" | "lilac" | "ocean" | "forest" | "citrus" | "ember" | "dusk" | "monochrome";
+  id: "transparent" | "instagram" | "rose" | "sunset" | "lilac" | "ocean" | "forest" | "citrus" | "ember" | "dusk" | "monochrome";
   name: string;
   gradient: string;
+  previewGradient?: string;
   edgeStart: string;
   edgeMiddle: string;
   edgeEnd: string;
@@ -168,6 +169,7 @@ function politicianFaceTint(index: number) {
   return `rgb(${from.map((channel, channelIndex) => Math.round(channel + (to[channelIndex]! - channel) * amount)).join(" ")})`;
 }
 const storyRingPalettes: readonly StoryRingPalette[] = [
+  { id: "transparent", name: "Transparent", gradient: "transparent", previewGradient: "repeating-conic-gradient(#7c8288 0 25%, #25292d 0 50%) 50% / 6px 6px", edgeStart: "#d8dde0", edgeMiddle: "#8b949b", edgeEnd: "#f3f5f6" },
   { id: "instagram", name: "Instagram", gradient: "conic-gradient(from 205deg, #fed044, #ff264f 30%, #ed0e9b 58%, #ff5e29 80%, #fed044)", edgeStart: "#ffbd5b", edgeMiddle: "#fa4aa5", edgeEnd: "#ffd06a" },
   { id: "rose", name: "Rose", gradient: "conic-gradient(from 205deg, #ffc990, #f45b99 30%, #bd4ab9 58%, #ee8a74 80%, #ffc990)", edgeStart: "#ffc49a", edgeMiddle: "#e95f9d", edgeEnd: "#ef9dbe" },
   { id: "sunset", name: "Sunset", gradient: "conic-gradient(from 205deg, #ffe179, #ff993f 30%, #ef5551 58%, #bb4e8a 80%, #ffe179)", edgeStart: "#ffd66f", edgeMiddle: "#f46a4f", edgeEnd: "#ca5793" },
@@ -457,8 +459,10 @@ export function InstagramSocialStoryTray() {
   const [traceDurationSeconds, setTraceDurationSeconds] = useState(DEFAULT_TRACE_SECONDS);
   const traceDurationRef = useRef(DEFAULT_TRACE_SECONDS);
   const [bubbleAppearSeconds, setBubbleAppearSeconds] = useState(DEFAULT_BUBBLE_APPEAR_SECONDS);
+  const bubbleAppearSecondsRef = useRef(DEFAULT_BUBBLE_APPEAR_SECONDS);
   const [bubbleDisappearSeconds, setBubbleDisappearSeconds] = useState(DEFAULT_BUBBLE_DISAPPEAR_SECONDS);
   const bubbleDisappearSecondsRef = useRef(DEFAULT_BUBBLE_DISAPPEAR_SECONDS);
+  const [influenceOpacity, setInfluenceOpacity] = useState(1);
   const [bubblesPaused, setBubblesPaused] = useState(false);
   const bubblesPausedRef = useRef(false);
   const [activeBubbleTarget, setActiveBubbleTarget] = useState<number | null>(null);
@@ -573,6 +577,7 @@ export function InstagramSocialStoryTray() {
             schoolRef.current?.drainAttention(),
             bubbleDisappearSecondsRef.current * 1000,
             activeBubbleTargetRef.current,
+            bubbleAppearSecondsRef.current * 1000,
           );
           nextSystem = maintainSocialStoryActivity(
             nextSystem,
@@ -732,6 +737,7 @@ export function InstagramSocialStoryTray() {
   const displayedActiveBubbleTarget = Math.min(activeBubbleTarget ?? bubbleCapacity, bubbleCapacity);
   const screenStyle = {
     "--propagation-duration": `${INFLUENCE_LIFETIME_MILLISECONDS / activitySpeed}ms`,
+    "--influence-opacity": influenceOpacity,
     ...(jakarta ? { filter: `contrast(${1 + jakartaAmount * 0.0028}) brightness(${1 + jakartaAmount * 0.0004}) saturate(${1 - jakartaAmount * 0.001}) hue-rotate(${jakartaAmount * 0.06}deg)` } : {}),
   } as CSSProperties;
   const influenceGeometry = useMemo(() => system.influences.map((influence) => (
@@ -794,7 +800,7 @@ export function InstagramSocialStoryTray() {
             const bubbleScale = storyState?.bubbleScale ?? 1;
             const storyStyle = {
               "--bubble-scale": bubbleScale,
-              "--bubble-appear-duration": `${bubbleAppearSeconds * bubbleScale / activitySpeed}s`,
+              "--bubble-appear-duration": `${bubbleAppearSeconds / activitySpeed}s`,
               "--bubble-disappear-duration": `${bubbleDisappearSeconds * bubbleScale / activitySpeed}s`,
               "--bubble-viewing-duration": `${760 * bubbleScale / activitySpeed}ms`,
             } as CSSProperties;
@@ -802,7 +808,7 @@ export function InstagramSocialStoryTray() {
             return (
               <li className={styles.gridItem} key={story.id}>
                 <span className={`${styles.story} ${isEmpty ? styles.storyEmpty : isLeaving ? styles.storyLeaving : isNew ? styles.storyEntering : ""}`} style={storyStyle}>
-                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : styles.storyRingPlain}`} style={testSurface === "tech" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
+                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : isLeaving ? styles.storyRingLeaving : isEmpty ? styles.storyRingDormant : styles.storyRingPlain}`} style={testSurface === "tech" && ringPaletteId !== "transparent" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
                     <span
                       aria-hidden="true"
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "numbers" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""} ${testSurface === "face" ? styles.monochromeFace : ""}`}
@@ -943,7 +949,7 @@ export function InstagramSocialStoryTray() {
                 <legend className={styles.controlLegend}>bubble animation</legend>
                 <label className={styles.sliderControl}>
                   <span>appear</span>
-                  <input aria-label="Bubble appearing duration" max={MAX_BUBBLE_APPEAR_SECONDS} min={MIN_BUBBLE_ANIMATION_SECONDS} onChange={(event) => setBubbleAppearSeconds(Number(event.currentTarget.value))} step="0.05" type="range" value={bubbleAppearSeconds} />
+                  <input aria-label="Bubble appearing duration" max={MAX_BUBBLE_APPEAR_SECONDS} min={MIN_BUBBLE_ANIMATION_SECONDS} onChange={(event) => { const next = Number(event.currentTarget.value); bubbleAppearSecondsRef.current = next; setBubbleAppearSeconds(next); }} step="0.05" type="range" value={bubbleAppearSeconds} />
                   <output>{bubbleAppearSeconds.toFixed(2)}s</output>
                 </label>
                 <label className={styles.sliderControl}>
@@ -983,6 +989,11 @@ export function InstagramSocialStoryTray() {
                     setActivitySpeed(next);
                   }} step="0.1" type="range" value={activitySpeed} />
                   <output>×{activitySpeed.toFixed(2)}</output>
+                </label>
+                <label className={styles.sliderControl}>
+                  <span>line</span>
+                  <input aria-label="Propagation line opacity" max="1" min="0" onChange={(event) => setInfluenceOpacity(Number(event.currentTarget.value))} step="0.05" type="range" value={influenceOpacity} />
+                  <output>{influenceOpacity.toFixed(2)}</output>
                 </label>
               </fieldset>
 
@@ -1033,7 +1044,7 @@ export function InstagramSocialStoryTray() {
                   <span aria-label="Story ring colour palette" className={styles.paletteOptions} role="group">
                     {storyRingPalettes.map((palette) => (
                       <button aria-label={palette.name} aria-pressed={palette.id === ringPaletteId} className={styles.paletteOption} key={palette.id} onClick={() => setRingPaletteId(palette.id)} type="button">
-                        <span aria-hidden="true" className={styles.palettePreview} style={{ background: palette.gradient }} />
+                        <span aria-hidden="true" className={styles.palettePreview} style={{ background: palette.previewGradient ?? palette.gradient }} />
                       </button>
                     ))}
                   </span>

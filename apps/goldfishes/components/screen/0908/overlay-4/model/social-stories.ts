@@ -11,6 +11,7 @@ const MAX_VISIBLE_INFLUENCES = 120;
 const VIEW_EVENT_RATE = 0.24;
 export const INFLUENCE_LIFETIME_MILLISECONDS = 1200;
 const VIEWING_TRANSITION_MILLISECONDS = 760;
+const APPEARING_TRANSITION_MILLISECONDS = 300;
 const LEAVING_TRANSITION_MILLISECONDS = 300;
 const EMPTY_COOLDOWN_MILLISECONDS = 1000;
 const INITIAL_NEW_SHARE = 0.54;
@@ -359,6 +360,7 @@ export function stepSocialStorySystem(
   attention: ReadonlyMap<number, number> = new Map(),
   leavingTransitionMilliseconds = LEAVING_TRANSITION_MILLISECONDS,
   activeBubbleTarget: number | null = null,
+  appearingTransitionMilliseconds = APPEARING_TRANSITION_MILLISECONDS,
 ): SocialStorySystem {
   if (now <= system.time) return system;
 
@@ -373,7 +375,15 @@ export function stepSocialStorySystem(
     const current = state.status === "new" && state.viewAt !== null
       ? { ...state, viewAt: Math.min(state.availableAt + 12000 * state.bubbleScale, state.viewAt + extension) }
       : state;
-    if (current.status === "new" && current.viewAt !== null && current.viewAt <= now) {
+    const fullyAppearedAt = current.status === "new"
+      ? current.availableAt + appearingTransitionMilliseconds
+      : Number.NEGATIVE_INFINITY;
+    if (
+      current.status === "new"
+      && current.viewAt !== null
+      && current.viewAt <= now
+      && fullyAppearedAt <= now
+    ) {
       return viewingStoryState(now, current.bubbleScale);
     }
     if (current.status === "viewing" && current.viewingUntil !== null && current.viewingUntil <= now) {

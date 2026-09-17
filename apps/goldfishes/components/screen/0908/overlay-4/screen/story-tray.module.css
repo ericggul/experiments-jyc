@@ -104,6 +104,10 @@
   user-select: none;
 }
 
+.influence {
+  opacity: var(--influence-opacity, 1);
+}
+
 .influencePath {
   fill: none;
   stroke-linecap: round;
@@ -344,7 +348,9 @@
 }
 
 .storyEntering {
-  animation: story-enter var(--bubble-appear-duration) cubic-bezier(0.2, 0.85, 0.3, 1) both;
+  animation:
+    story-enter-opacity var(--bubble-appear-duration) linear both,
+    story-enter-transform var(--bubble-appear-duration) cubic-bezier(0.33, 0, 0.2, 1) both;
 }
 
 .bubblesPaused .storyEntering,
@@ -361,14 +367,22 @@
     story-leave-transform var(--bubble-disappear-duration) cubic-bezier(0.2, 0.85, 0.3, 1) both;
 }
 
-@keyframes story-enter {
+@keyframes story-enter-opacity {
   from {
     opacity: 0;
-    transform: scale(calc(var(--bubble-scale) * 0.92));
   }
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes story-enter-transform {
+  from {
+    transform: scale(calc(var(--bubble-scale) * 0.72));
+  }
+
+  to {
     transform: scale(var(--bubble-scale));
   }
 }
@@ -436,6 +450,21 @@
 .storyRingViewing::before {
   opacity: 1;
   animation: story-ring-viewed var(--bubble-viewing-duration) linear forwards;
+}
+
+/* Keep the viewed ring's padding and separator geometry while the whole
+   bubble fades. Switching to Plain here made the image expand before exit. */
+.storyRingLeaving::before {
+  --instagram-story-view-progress: 360deg;
+  opacity: 0;
+}
+
+/* Empty nodes stay invisible but retain the same inset/separator geometry as
+   an active ring. A propagated arrival can therefore animate only paint,
+   opacity and the parent scale instead of resizing its image content. */
+.storyRingDormant::before {
+  --instagram-story-view-progress: 0deg;
+  opacity: 0;
 }
 
 .storyRing.storyRingPlain {
@@ -616,12 +645,6 @@
   to { --instagram-story-view-progress: 360deg; }
 }
 
-@keyframes influence-arrival {
-  0%, 58% { opacity: 0; transform: scale(0.4); transform-origin: center; }
-  70% { opacity: 0.92; transform: scale(1.5); }
-  100% { opacity: 0; transform: scale(1); }
-}
-
 @media (max-width: 700px) {
   .screen {
     --grid-inset: 16px;
@@ -640,7 +663,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .story,
   .storyRing,
   .storyRing::before,
   .logoSurface,
@@ -650,4 +672,9 @@
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
   }
+}
+@keyframes influence-arrival {
+  0%, 58% { opacity: 0; transform: scale(0.4); transform-origin: center; }
+  70% { opacity: 0.92; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1); }
 }
