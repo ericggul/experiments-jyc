@@ -214,6 +214,15 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/0908/attention-print"),
   },
   {
+    key: "screen/0922/default",
+    legacyKeys: ["0922/default"],
+    area: "screen",
+    section: "dated",
+    date: "2026-09-22",
+    phrase: "Preserved overlay-5 attention field as the 0922 baseline",
+    load: () => import("./screen/0922/default"),
+  },
+  {
     key: "pc/0908/default",
     legacyKeys: [],
     area: "pc",

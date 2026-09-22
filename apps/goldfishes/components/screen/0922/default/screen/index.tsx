@@ -51,7 +51,7 @@ const TECH_IMAGE_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas
 const TECH_IMAGE_ATLAS_COLUMNS = 6;
 const EYE_IMAGE_COUNT = 75;
 const EYE_IMAGE_DIRECTORY = "/assets/goldfishes/goldfish-eye-collage-circle-75-svg";
-const SESSION_STORAGE_KEY = "goldfishes:0908:overlay-5:stories:v1";
+const SESSION_STORAGE_KEY = "goldfishes:0922:default:stories:v1";
 
 type GridSize = {
   columns: number;
@@ -707,7 +707,7 @@ export function InstagramSocialStoryTray() {
       if (disposed || failed) return;
       failed = true;
       window.clearTimeout(timer);
-      console.error("Goldfishes 0908 overlay-5 renderer:", reason);
+      console.error("Goldfishes 0922 default renderer:", reason);
     };
     const syncTargets = () => {
       if (!school || targetSystem === systemRef.current) return false;

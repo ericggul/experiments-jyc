@@ -44,3 +44,17 @@ unchanged from the copied overlay-4 baseline.
 
 The social propagation rules, attention scoring, fish motion values, event
 timing, control ranges, and all remaining surface behavior are unchanged.
+
+## Parameter combinations
+
+The `4` / `5` switch at the top of the right-hand controls panel changes only
+the five parameters that distinguish the two versions. `4` applies speed `×1`, icon `50px`, margin `30px`, fish size
+`×0.8`, and approach rings on. `5` restores speed `×0.5`, icon `60px`, margin
+`36px`, fish size `×0.7`, and approach rings off. The default is `5`.
+
+Both choices continue to use overlay-5's route, session, assets, optimized
+renderer, surface set, propagation model, and all other controls. Manually
+changing one of these five values leaves both preset buttons unselected until
+the values again match a complete combination. Presets and individual controls
+share the same update functions, including the existing rule that enabling
+approach rings switches off target lines.
