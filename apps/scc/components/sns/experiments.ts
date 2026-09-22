@@ -1,4 +1,14 @@
 export const snsExperiments = [
+  { key: "mobile/1", category: "mobile", slug: "1", label: "sns/mobile/1 — 오브제" },
+  { key: "mobile/2", category: "mobile", slug: "2", label: "sns/mobile/2 — 한끼" },
+  { key: "mobile/3", category: "mobile", slug: "3", label: "sns/mobile/3 — 여백" },
+  { key: "mobile/4", category: "mobile", slug: "4", label: "sns/mobile/4 — 오늘" },
+  { key: "mobile/5", category: "mobile", slug: "5", label: "sns/mobile/5 — 곁" },
+  { key: "mobile/6", category: "mobile", slug: "6", label: "sns/mobile/6 — THREAD" },
+  { key: "mobile/7", category: "mobile", slug: "7", label: "sns/mobile/7 — SIDEWALK" },
+  { key: "mobile/8", category: "mobile", slug: "8", label: "sns/mobile/8 — PLATFORM" },
+  { key: "mobile/9", category: "mobile", slug: "9", label: "sns/mobile/9 — REP" },
+  { key: "mobile/10", category: "mobile", slug: "10", label: "sns/mobile/10 — COMMON" },
   { key: "feed/1", category: "feed", slug: "1", label: "sns/feed/1" },
   {
     key: "instagram/1",

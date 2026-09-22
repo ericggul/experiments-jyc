@@ -36,7 +36,8 @@ For a route change, read its document, the specific modules being changed, and t
 | `/screen/0908/overlay-2d-3` | 2026-09-08 | Local attention, habituation and trail feedback reshape the keyword field. [doc](./0908/overlay-2d-3.md) |
 | `/screen/0908/overlay-2d-4` | 2026-09-08 | Explicit selected targets, attention contact and keyword propagation. [doc](./0908/overlay-2d-4.md) |
 | `/screen/0908/attention-print` | 2026-09-08 | Serial technology signs, vermilion fish and accumulated ink. [doc](./0908/attention-print.md) |
-| `/screen/0922/default` | 2026-09-22 | Exact overlay-5 baseline copied for 0922 experiments. [doc](./0922/default.md) |
+| `/screen/0922/default` | 2026-09-22 | Overlay-5 baseline with optional independent blinking across all 80 tech eyes. [doc](./0922/default.md) |
+| `/screen/0922/blink-auto` | 2026-09-23 | Preserved accepted full-tech-eye auto-blink baseline before manual blink-all. [doc](./0922/blink-auto.md) |
 | `/pc/0908/default` | 2026-09-08 | Independent keyword-driven news phones, one per goldfish. [doc](./pc/0908/default.md) |
 | `/pc/0908/variations` | 2026-09-08 | Mobile colour and keyword surface variations. [doc](./pc/0908/variations.md) |
 | `/pc/0910/image-search` | 2026-09-10 | Desktop image-search grammar under subsecond technology-query replacement. [doc](./pc/0910/image-search.md) |

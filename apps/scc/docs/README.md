@@ -1,5 +1,8 @@
 # SCC experiment records
 
+- [SNS mobile services 1–10](experiments/sns/mobile/README.md): independent Korean
+  and US/UK mobile service surfaces for web-interface collage experiments.
+
 - [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
 
 - [camera-monolith](experiments/standalone/camera-monolith/README.md): mobile camera frames accumulated FIFO into the `0806/duration` temporal monolith.

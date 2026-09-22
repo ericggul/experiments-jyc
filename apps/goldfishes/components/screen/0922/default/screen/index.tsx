@@ -21,6 +21,10 @@ import { techPowerFaces } from "../model/tech-power-faces.generated";
 import { useApproachSound } from "../audio/use-approach-sound";
 import { TechHieroglyph } from "./tech-hieroglyph";
 import { AppServiceMark } from "./app-service-mark";
+import { TechEyeBlink } from "./tech-eye-blink";
+import { createEyeBlinkController } from "../model/eye-blink-controller";
+import { TechEye3D, blinkAll3DEyes } from "./tech-eye-3d";
+import { techEye3DStudies } from "../model/tech-eye-3d";
 
 const REFERENCE_STORY_SIZE = 93;
 const DEFAULT_ICON_SIZE = 60;
@@ -461,6 +465,11 @@ export function InstagramSocialStoryTray() {
   const [testSurface, setTestSurface] = useState<StorySurface>("eyes");
   const [faceType, setFaceType] = useState<FaceType>("bigTechColour");
   const [eyeType, setEyeType] = useState<EyeType>("bigTechColour");
+  const [eyeBlinkEnabled, setEyeBlinkEnabled] = useState(true);
+  const [eyeBlinkController] = useState(createEyeBlinkController);
+  const [eye3DEnabled, setEye3DEnabled] = useState(false);
+  const [eye3DBlinking, setEye3DBlinking] = useState(false);
+  const [eye3DStudyIndex, setEye3DStudyIndex] = useState(0);
   const [lipSource, setLipSource] = useState<LipSource>("tech");
   const [lipVersion, setLipVersion] = useState<LipVersion>("v1");
   const [lipColour, setLipColour] = useState<LipColour>("original");
@@ -888,6 +897,12 @@ export function InstagramSocialStoryTray() {
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""}`}
                       style={surfaceStyles[story.index]}
                     >
+                      {testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? (
+                        <TechEye3D index={story.index} blinking={eye3DBlinking} gradient={eyeType === "bigTechColour" ? brandGradient(story.index) : undefined} active={!isEmpty && !isLeaving && !bubblesPaused} />
+                      ) : null}
+                      {testSurface === "eyes" && eyeType !== "human" && !eye3DEnabled && eyeBlinkEnabled ? (
+                        <TechEyeBlink index={story.index} gradient={eyeType === "bigTechColour" ? brandGradient(story.index) : undefined} active={!isEmpty && !isLeaving} paused={bubblesPaused} controller={eyeBlinkController} />
+                      ) : null}
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
                       {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
                       {testSurface === "hieroglyphs" ? hieroglyphSet === "tech" ? <TechHieroglyph term={techKeyword.abbreviation} /> : <HieroglyphMark glyph={egyptianHieroglyphs[story.index % egyptianHieroglyphs.length]!} /> : null}
@@ -950,6 +965,21 @@ export function InstagramSocialStoryTray() {
                       </button>
                     ))}
                   </div>
+                  {eyeType !== "human" ? (
+                    <div aria-label="Tech eye motion" className={styles.optionGrid} role="group">
+                      <button aria-pressed={!eye3DEnabled && !eyeBlinkEnabled} className={styles.optionButton} onClick={() => { setEye3DEnabled(false); setEyeBlinkEnabled(false); }} type="button">static 2D</button>
+                      <button aria-pressed={!eye3DEnabled && eyeBlinkEnabled} className={styles.optionButton} onClick={() => { setEye3DEnabled(false); setEyeBlinkEnabled(true); }} type="button">blinking 2D</button>
+                      <button aria-pressed={eye3DEnabled && !eye3DBlinking} className={styles.optionButton} onClick={() => { setEye3DEnabled(true); setEye3DBlinking(false); }} type="button">3D eyeball</button>
+                      <button aria-pressed={eye3DEnabled && eye3DBlinking} className={styles.optionButton} onClick={() => { setEye3DEnabled(true); setEye3DBlinking(true); }} type="button">3D blinking</button>
+                      <button disabled={!eye3DEnabled && !eyeBlinkEnabled} className={styles.optionButton} onClick={() => eye3DEnabled ? blinkAll3DEyes() : eyeBlinkController.blinkAll()} title="Blink all loaded eyes once, including while paused" type="button">blink all</button>
+                    </div>
+                  ) : null}
+                  {eyeType !== "human" && eye3DEnabled ? (
+                    <details style={{ marginTop: "0.65rem" }}>
+                      <summary style={{ cursor: "pointer" }}>inspect 3D · drag to rotate</summary>
+                      <EyeStudyInspector index={eye3DStudyIndex} onChange={setEye3DStudyIndex} blinking={eye3DBlinking} paused={bubblesPaused} />
+                    </details>
+                  ) : null}
                 </fieldset>
               ) : null}
 
@@ -1175,4 +1205,43 @@ export function InstagramSocialStoryTray() {
       </section>
     </main>
   );
+}
+
+function EyeStudyInspector({ index, onChange, blinking, paused }: { index: number; onChange: (index: number) => void; blinking: boolean; paused: boolean }) {
+  // Mount only while the native disclosure is open, so it consumes no GPU when closed.
+  const host = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [showSource, setShowSource] = useState(false);
+  const study = techEye3DStudies[index]!;
+  const { size, crop } = study.profile;
+  useEffect(() => {
+    const details = host.current?.closest("details");
+    if (!details) return;
+    const update = () => setVisible(details.open);
+    details.addEventListener("toggle", update);
+    update();
+    return () => details.removeEventListener("toggle", update);
+  }, []);
+  return <div ref={host}>
+    <div style={{ position: "relative", width: "100%", aspectRatio: "1", maxWidth: 240, margin: "0.5rem auto" }}>
+      {visible && !showSource ? <TechEye3D key={study.id} index={index} active={blinking && !paused} blinking={blinking} inspect /> : null}
+      {showSource ? <div role="img" aria-label={`${study.name}: original photographic eye crop`} style={{
+        position: "absolute", inset: 0, borderRadius: "50%",
+        backgroundImage: `url(${study.sourceImage})`,
+        backgroundSize: `${size[0] / crop[2] * 100}% ${size[1] / crop[2] * 100}%`,
+        backgroundPosition: `${crop[0] / (size[0] - crop[2]) * 100}% ${crop[1] / (size[1] - crop[2]) * 100}%`,
+      }} /> : null}
+    </div>
+    <div className={styles.optionGrid} style={{ marginBottom: "0.5rem" }}>
+      <button type="button" className={styles.optionButton} aria-pressed={!showSource} onClick={() => setShowSource(false)}>3D</button>
+      <button type="button" className={styles.optionButton} aria-pressed={showSource} onClick={() => setShowSource(true)}>original photo</button>
+    </div>
+    <div className={styles.optionGrid}>
+      <button type="button" className={styles.optionButton} onClick={() => onChange((index + techEye3DStudies.length - 1) % techEye3DStudies.length)}>previous</button>
+      <button type="button" className={styles.optionButton} onClick={() => onChange((index + 1) % techEye3DStudies.length)}>next</button>
+    </div>
+    <select aria-label="3D eye identity" className={styles.optionButton} value={index} onChange={(event) => onChange(Number(event.target.value))} style={{ width: "100%", marginTop: "0.3rem" }}>
+      {techEye3DStudies.map((item) => <option key={item.id} value={item.index}>{item.name}</option>)}
+    </select>
+  </div>;
 }

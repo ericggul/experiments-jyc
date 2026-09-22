@@ -4,14 +4,136 @@
 - Date: 2026-09-22
 - Baseline: [`0908/overlay-5`](../0908/overlay-5.md), including its current local changes
 
-This is a standalone copy of overlay-5. The question for the 0922 family is
-what can be changed after preserving that exact working baseline; this default
-introduces no visual, algorithmic, timing, control, or interaction mutation.
+This began as a standalone, exact copy of overlay-5. The 2026-09-23 blink
+experiment now covers all 80 tech-eye sources, including repeated instances,
+in this route's `big tech` and `big tech colour` options only. Human eyes and
+other dated routes are unchanged. The UI offers `static 2D / blinking 2D / 3D eyeball / 3D blinking`, initially blinking 2D.
 Its initial selection remains parameter combination `5`, and combination `4`
 remains available in the right-hand controls.
 
 The component modules are local to `0922/default`; the story session key,
 renderer log label, generator target, and copied audio asset use the new
-experiment identity. Existing 0908 image URLs remain unchanged so the same
-source images and appearance are used. No distinct runtime outcome has been
-observed yet; verification is static until this HTTPS route is tested.
+experiment identity. Existing 0908 image URLs remain unchanged.
+
+## 3D eyeballs — 2026-09-23
+
+The separate [80-source 3D eyeball option](./tech-eye-3d.md) preserves both 2D
+modes and the default selection. The added `3D blinking` option and shared
+`blink all` command also preserve the lid-free 3D option. Source/proportion and renderer verification
+are documented independently from the blink tests below.
+
+## Manual blink command — 2026-09-23
+
+The accepted automatic version is preserved independently at
+[`/screen/0922/blink-auto`](./blink-auto.md). This default adds the right-panel
+`blink all` button in tech-eye `blinking 2D` mode. One click starts one blink
+on every currently visible, loaded eye; it cancels that eye's pending/ongoing
+automatic blink and does not add a double blink. Autonomy resumes after a normal
+interval. While the bubble system is paused, the button still works and the
+eyes stay open afterwards. Manual input is also permitted under reduced motion;
+automatic movement remains suppressed. Hidden/inactive eyes do not queue a
+command to replay later. Static 2D disables the button; the later 3D extension
+dispatches the same button to its separate volumetric blink renderer.
+
+This is sprite playback, not video: eyelid appearance comes from the existing
+WebP frames, while initiation and frame timing are programmatic. The screen-local
+controller exposes `blinkAll()` and `blinkEye(storyIndex)` so a later algorithm
+can trigger individual eyes through the same path. No decision algorithm or
+additional parameter controls have been introduced.
+
+Verification: eight timing/controller tests passed, including command replacement,
+individual addressing, instance isolation, pause, reduced motion, and cleanup.
+The exact HTTPS route rendered without the reported missing-module error after
+the parallel 3D dependency file was present; current app typecheck passed.
+In browser testing, all 43 loaded visible eyes received the same button-request
+ID while paused and returned open; a screenshot captured their simultaneous
+closing phase. No browser errors/warnings were captured. The preserved route
+also loaded with automatic blinking selected and no `blink all` button.
+
+## Full tech-eye blinking — 2026-09-23
+
+The initial three-eye trial was accepted, with feedback that the motion felt
+slow and too regular. The expanded version uses 206–244 ms blinks, faster
+closure than reopening, a 36–44 ms closed dwell, independently sampled entry
+delays (180–920 ms), and 2.6–6.8 second recurring intervals. A 12% chance adds
+one quick second blink; rapid chains are prevented. These are visual tuning
+parameters, not a physiological model.
+
+A stationary open frame holds the surrounding face still. Only an elliptical,
+feathered eyelid region advances through the generated frames, reducing skin
+and eyebrow drift. Existing brand gradients and global filters are applied
+consistently to both layers. Generated open frames remain reconstructions;
+`static 2D` restores the original source photos exactly.
+
+80 unique 576×384 WebP sheets total 1,576,742 bytes at this revision; each frame
+is 192×192. Their worst-case decoded RGBA footprint is 67.5 MiB before browser
+overhead. The two display layers reuse the same image. Mounted cells preload
+their sheets, including empty cells, and retain the loaded open photograph through
+leaving/empty/entering and pause changes. This fixes the source-photo/crop swap
+at bubble transitions. No canvas, video decoder, or per-frame React updates
+were added. Hidden documents, bubble pause, and reduced motion stop automatic timing;
+reduced motion retains the open sprite frame; a failed load retains the original photo.
+The transition fix passed 10 pure tests and typecheck. HTTPS browser sampling
+observed 54 colour-mode and 43 original-mode cells changing lifecycle state with
+no image URL, background-size, or loaded-layer visibility changes.
+Source IDs wrap by the existing 80-person registry, while each instance has
+independent timing. Original generated files remain at their recorded paths.
+
+[Asset provenance and generation prompt](../../components/screen/0922/default/source/tech-eye-blink/README.md).
+The pure timing tests cover cadence, duration, asymmetrical closure/reopening,
+and double blinks. The asset audit checks all 80 sheets and preserved originals.
+
+Final HTTPS review used a temporary 48px-icon layout to expose 91 instances,
+including every source and repeated IDs. In original-colour mode, DOM frame
+observations recorded closure and subsequent reopening for all 80 sources.
+Colour-mode observation recorded 79 distinct closures during its bounded sample;
+the remaining source was not observed closing in that interval. Both modes were
+visually inspected over more than 32 seconds with no captured browser warnings,
+runtime/GPU errors, or device-loss messages. Static and human modes mounted no
+blink surfaces, and bubble pause reset all eyelid frames to open. The temporary
+test tab was closed. Typecheck, scoped ESLint, four pure timing tests, asset audit
+(`checked: 551, missing: 0`), and diff checks passed. No 3D-eye behavior is covered
+by this verification.
+
+## Initial three-eye trial
+
+Story indices 0, 1, and 4 (Sam Altman, Mark Zuckerberg, Dario Amodei) initially
+used generated 3×2 frame sheets under the `blink · 3 eyes` toggle.
+Other instances remained static. `static` restored the original photographs. Bubble appearance,
+fish, geometry, presets, and existing brand-gradient/global-filter behavior
+are retained. The generated open frames are reconstructions, not pixel-identical
+original photographs; identity, crop, and skin stability remain quality criteria.
+
+The initial timing was 620–800 ms after entry, then 390–440 ms per blink and
+2.6–7 seconds between blinks. These timings were superseded by the full version.
+
+The built-in imagegen tool produced `001.png`, `002.png`, and `005.png` from
+their matching `/images/0908/tech-power-eyes/*.jpg` sources. Final prompt:
+
+> Identity-preserving edit for photographic blink sprite sheet. Output
+> 1536x1024 landscape, exactly 3 columns by 2 rows of equal SQUARE frames, no
+> margins/gaps/borders/labels. Input is the exact eye crop to animate. Keep
+> original entire square crop and original eye size/position within each square,
+> skin color, eyebrow, glasses if present, lighting, identity. Do not zoom/reframe.
+> Six chronological frames read left-to-right then next row: 1 exactly original
+> fully open; 2 upper lid 25% closed; 3 upper lid 60% closed; 4 upper lid 85%
+> closed; 5 fully gently closed eyelash seam; 6 same fully closed. Photorealistic.
+> Upper eyelid slides over fixed eyeball, lower lid only slightly rises. All
+> surrounding skin, glasses, eyebrow fixed identically in every cell. No text.
+> Preserve source softness. Use natural skin folds, no graphic masks.
+
+Verification: app typecheck and scoped ESLint passed. HTTPS browser inspection
+confirmed the static comparison, three sprite surfaces, original-color display,
+and no reported browser errors during the initial observation. It exposed a
+global step-easing bug that held the open frame. Following a report that blinks
+were still invisible, the per-entry delay (up to 4.12 seconds for index 4) was
+shortened and Web Animations replaced with explicit frame timers. A pure mock-clock
+check verifies closure before 900 ms at midpoint jitter, reopening by 1200 ms,
+and timer cleanup/pause for all three indices. Scoped ESLint passes.
+After browser reconnection, the exact HTTPS route showed closed eyelids on all
+three instances (captured visually in brand-colour mode). DOM frame observations
+also confirmed closed → open transitions for all three in original-colour mode;
+browser warning/error logs were empty. The original brand-colour selection was
+restored. Blinking now works, but these generated frames still reconstruct skin
+and eye detail, so this is not yet a claim of hyperrealistic temporal fidelity.
+The user accepted this trial and requested the full expansion described above.

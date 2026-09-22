@@ -1,0 +1,33 @@
+{
+  "derivation": "Original-resolution versions of the exact photographs already used by /images/0908/tech-power-faces. Originals are unmodified. Eye crops and iris bands are sampled by mesh UV coordinates at runtime. No AI-generated iris is used. Mesh depth, sclera outside the photo, and hidden iris tissue reconstruction are approximate.",
+  "selected": [
+    {
+      "file": "portrait-001.jpg", "name": "Sam Altman",
+      "source": "https://commons.wikimedia.org/wiki/File:Meeting_with_Masayoshi_Son_and_Sam_Altman_(February_3,_2025)_(3x4_cropped_on_Altman).jpg",
+      "artist": "Office of the Prime Minister of Japan Official Website",
+      "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "file": "portrait-002.jpg", "name": "Mark Zuckerberg",
+      "source": "https://commons.wikimedia.org/wiki/File:F20250904AH-2824_(54778373111)_(3x4_cropped_on_Zuckerberg_following_the_rule_of_thirds).jpg",
+      "artist": "The White House / Andrea Hanks", "license": "Public domain"
+    },
+    {
+      "file": "portrait-003.jpg", "name": "Jensen Huang",
+      "source": "https://commons.wikimedia.org/wiki/File:Jen-Hsun_Huang_2025.jpg",
+      "artist": "The White House / Daniel Torok", "license": "Public domain"
+    },
+    {
+      "file": "portrait-004.jpg", "name": "Sundar Pichai",
+      "source": "https://commons.wikimedia.org/wiki/File:Sundar_Pichai_-_2023_(cropped).jpg",
+      "artist": "Lukasz Kobus / European Commission",
+      "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "file": "portrait-005.jpg", "name": "Dario Amodei",
+      "source": "https://commons.wikimedia.org/wiki/File:Dario_Amodei_at_TechCrunch_Disrupt_2023_01_(cropped).jpg",
+      "artist": "TechCrunch",
+      "license": "CC BY 2.0", "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
+    }
+  ]
+}

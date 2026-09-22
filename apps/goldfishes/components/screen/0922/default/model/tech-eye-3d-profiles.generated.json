@@ -1,0 +1,5102 @@
+[
+  {
+    "id": "001",
+    "name": "Sam Altman",
+    "affiliation": "OpenAI",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/001.jpg",
+    "size": [
+      390,
+      520
+    ],
+    "crop": [
+      125.548,
+      142.731,
+      65.531
+    ],
+    "eye": [
+      [
+        144.37,
+        177.715
+      ],
+      [
+        151.848,
+        172.022
+      ],
+      [
+        164.199,
+        172.119
+      ],
+      [
+        172.256,
+        177.185
+      ],
+      [
+        163.909,
+        177.715
+      ],
+      [
+        152.765,
+        178.97
+      ]
+    ],
+    "pupil": [
+      156.19,
+      174.386
+    ],
+    "iris": [
+      156.19,
+      174.386,
+      5.577,
+      2.084
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Meeting_with_Masayoshi_Son_and_Sam_Altman_(February_3,_2025)_(3x4_cropped_on_Altman).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "首相官邸ホームページ / Office of the Prime Minister of Japan Official Website",
+    "credit": "https://www.kantei.go.jp/jp/103/actions/202502/03menkai.html",
+    "wikipedia": "https://en.wikipedia.org/wiki/Sam_Altman",
+    "assetOrigin": "reused-existing-commons-raster",
+    "resolvedSource": "https://commons.wikimedia.org/wiki/File:Meeting_with_Masayoshi_Son_and_Sam_Altman_(February_3,_2025)_(3x4_cropped_on_Altman).jpg",
+    "visionStatus": "ok"
+  },
+  {
+    "id": "002",
+    "name": "Mark Zuckerberg",
+    "affiliation": "Meta",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/002.jpg",
+    "size": [
+      374,
+      499
+    ],
+    "crop": [
+      70.682,
+      146.3,
+      43.9
+    ],
+    "eye": [
+      [
+        83.291,
+        168.38
+      ],
+      [
+        88.255,
+        164.932
+      ],
+      [
+        96.903,
+        167.179
+      ],
+      [
+        101.972,
+        171.254
+      ],
+      [
+        96.067,
+        171.568
+      ],
+      [
+        88.177,
+        171.098
+      ]
+    ],
+    "pupil": [
+      90.006,
+      168.015
+    ],
+    "iris": [
+      90.006,
+      168.015,
+      3.736,
+      1.991
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:F20250904AH-2824_(54778373111)_(3x4_cropped_on_Zuckerberg_following_the_rule_of_thirds).jpg",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "artist": "The White House",
+    "credit": "https://www.flickr.com/photos/202101414@N05/54778373111/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mark_Zuckerberg",
+    "assetOrigin": "reused-existing-commons-raster",
+    "resolvedSource": "https://commons.wikimedia.org/wiki/File:F20250904AH-2824_(54778373111)_(3x4_cropped_on_Zuckerberg_following_the_rule_of_thirds).jpg",
+    "visionStatus": "ok"
+  },
+  {
+    "id": "003",
+    "name": "Jensen Huang",
+    "affiliation": "Nvidia",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/003.jpg",
+    "size": [
+      645,
+      839
+    ],
+    "crop": [
+      127.137,
+      301.955,
+      126.914
+    ],
+    "eye": [
+      [
+        163.591,
+        366.627
+      ],
+      [
+        178.283,
+        357.715
+      ],
+      [
+        202.399,
+        360.854
+      ],
+      [
+        217.597,
+        371.489
+      ],
+      [
+        200.879,
+        372.907
+      ],
+      [
+        178.689,
+        373.109
+      ]
+    ],
+    "pupil": [
+      182.843,
+      365.108
+    ],
+    "iris": [
+      182.843,
+      365.108,
+      10.801,
+      4.618
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Jen-Hsun_Huang_2025.jpg",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "artist": "The White House",
+    "credit": "https://www.flickr.com/photos/202101414@N05/54934445728/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Jensen_Huang",
+    "assetOrigin": "reused-existing-commons-raster",
+    "resolvedSource": "https://commons.wikimedia.org/wiki/File:Jen-Hsun_Huang_2025.jpg",
+    "visionStatus": "ok"
+  },
+  {
+    "id": "004",
+    "name": "Sundar Pichai",
+    "affiliation": "Alphabet",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/004.jpg",
+    "size": [
+      959,
+      1439
+    ],
+    "crop": [
+      298.013,
+      384.829,
+      214.214
+    ],
+    "eye": [
+      [
+        359.543,
+        492.087
+      ],
+      [
+        387.207,
+        477.419
+      ],
+      [
+        426.813,
+        485.282
+      ],
+      [
+        450.698,
+        506.453
+      ],
+      [
+        422.429,
+        505.697
+      ],
+      [
+        384.788,
+        503.731
+      ]
+    ],
+    "pupil": [
+      394.009,
+      488.155
+    ],
+    "iris": [
+      394.009,
+      488.155,
+      18.231,
+      8.71
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Sundar_Pichai_-_2023_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Photographer: Lukasz Kobus (European Commission)",
+    "credit": "https://audiovisual.ec.europa.eu/en/photo-details/P-061142~2F00-14",
+    "wikipedia": "https://en.wikipedia.org/wiki/Sundar_Pichai",
+    "assetOrigin": "reused-existing-commons-raster",
+    "resolvedSource": "https://commons.wikimedia.org/wiki/File:Sundar_Pichai_-_2023_(cropped).jpg",
+    "visionStatus": "ok"
+  },
+  {
+    "id": "005",
+    "name": "Dario Amodei",
+    "affiliation": "Anthropic",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/005.jpg",
+    "size": [
+      1500,
+      1941
+    ],
+    "crop": [
+      332.976,
+      634.233,
+      248.206
+    ],
+    "eye": [
+      [
+        404.269,
+        758.644
+      ],
+      [
+        436.324,
+        740.981
+      ],
+      [
+        483.381,
+        750.429
+      ],
+      [
+        509.888,
+        774.87
+      ],
+      [
+        477.422,
+        775.691
+      ],
+      [
+        433.242,
+        773.432
+      ]
+    ],
+    "pupil": [
+      447.421,
+      755.564
+    ],
+    "iris": [
+      447.421,
+      755.564,
+      21.124,
+      10.413
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Dario_Amodei_at_TechCrunch_Disrupt_2023_01_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/53202070940/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Dario_Amodei",
+    "assetOrigin": "reused-existing-commons-raster",
+    "resolvedSource": "https://commons.wikimedia.org/wiki/File:Dario_Amodei_at_TechCrunch_Disrupt_2023_01_(cropped).jpg",
+    "visionStatus": "ok"
+  },
+  {
+    "id": "006",
+    "name": "Satya Nadella",
+    "affiliation": "Microsoft",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/006.jpg",
+    "size": [
+      960,
+      1227
+    ],
+    "crop": [
+      311.57,
+      350.137,
+      170.189
+    ],
+    "eye": [
+      [
+        360.455,
+        437.538
+      ],
+      [
+        382.228,
+        424.648
+      ],
+      [
+        413.942,
+        430.088
+      ],
+      [
+        432.875,
+        445.815
+      ],
+      [
+        411.102,
+        443.805
+      ],
+      [
+        381.518,
+        443.332
+      ]
+    ],
+    "pupil": [
+      387.08,
+      432.335
+    ],
+    "iris": [
+      387.08,
+      432.335,
+      14.484,
+      6.35
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:MS-Exec-Nadella-Satya-2017-08-31-22_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Brian Smale and Microsoft",
+    "credit": "Satya Nadella Microsoft leadership profile page",
+    "wikipedia": "https://en.wikipedia.org/wiki/Satya_Nadella",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/MS-Exec-Nadella-Satya-2017-08-31-22_%28cropped%29.jpg/960px-MS-Exec-Nadella-Satya-2017-08-31-22_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2119,
+      2708
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "007",
+    "name": "Tim Cook",
+    "affiliation": "Apple",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/007.jpg",
+    "size": [
+      518,
+      694
+    ],
+    "crop": [
+      157.554,
+      184.574,
+      98.527
+    ],
+    "eye": [
+      [
+        185.854,
+        236.499
+      ],
+      [
+        197.261,
+        228.939
+      ],
+      [
+        215.681,
+        229.865
+      ],
+      [
+        227.781,
+        237.039
+      ],
+      [
+        215.141,
+        237.656
+      ],
+      [
+        198.263,
+        238.736
+      ]
+    ],
+    "pupil": [
+      204.351,
+      232.719
+    ],
+    "iris": [
+      204.351,
+      232.719,
+      8.385,
+      2.939
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Tim_Cook_March_2026_(cropped_2).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Tessa Bury",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Tim_Cook",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Tim_Cook_March_2026_%28cropped_2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      518,
+      694
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "008",
+    "name": "Elon Musk",
+    "affiliation": "xAI / SpaceX / Tesla",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/008.jpg",
+    "size": [
+      960,
+      1262
+    ],
+    "crop": [
+      344.584,
+      307.555,
+      173.799
+    ],
+    "eye": [
+      [
+        394.505,
+        398.381
+      ],
+      [
+        415.169,
+        383.882
+      ],
+      [
+        448.16,
+        384.848
+      ],
+      [
+        468.462,
+        401.16
+      ],
+      [
+        445.864,
+        403.698
+      ],
+      [
+        416.015,
+        405.027
+      ]
+    ],
+    "pupil": [
+      427.133,
+      391.132
+    ],
+    "iris": [
+      427.133,
+      391.132,
+      14.791,
+      6.344
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Elon_Musk_-_54820081119_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Gage Skidmore",
+    "credit": "https://www.flickr.com/photos/gageskidmore/54820081119/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Elon_Musk",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Elon_Musk_-_54820081119_%28cropped%29.jpg/960px-Elon_Musk_-_54820081119_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2924,
+      3843
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "009",
+    "name": "Demis Hassabis",
+    "affiliation": "Google DeepMind",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/009.jpg",
+    "size": [
+      960,
+      1279
+    ],
+    "crop": [
+      261.054,
+      334.26,
+      223.079
+    ],
+    "eye": [
+      [
+        325.13,
+        448.574
+      ],
+      [
+        351.856,
+        432.805
+      ],
+      [
+        393.185,
+        435.141
+      ],
+      [
+        420.057,
+        451.64
+      ],
+      [
+        391.433,
+        456.604
+      ],
+      [
+        352.732,
+        458.794
+      ]
+    ],
+    "pupil": [
+      364.999,
+      443.171
+    ],
+    "iris": [
+      364.999,
+      443.171,
+      18.985,
+      7.797
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Demis_Hassabis,_2024_Nobel_Prize_Laureate_in_Chemistry_7_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "John Sears",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Demis_Hassabis",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Demis_Hassabis%2C_2024_Nobel_Prize_Laureate_in_Chemistry_7_%28cropped%29.jpg/960px-Demis_Hassabis%2C_2024_Nobel_Prize_Laureate_in_Chemistry_7_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2458,
+      3275
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "010",
+    "name": "Andy Jassy",
+    "affiliation": "Amazon",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/010.jpg",
+    "size": [
+      1280,
+      1280
+    ],
+    "crop": [
+      497.312,
+      358.833,
+      150.272
+    ],
+    "eye": [
+      [
+        540.475,
+        436.666
+      ],
+      [
+        559.075,
+        427.861
+      ],
+      [
+        586.04,
+        429.622
+      ],
+      [
+        604.42,
+        438.647
+      ],
+      [
+        585.05,
+        437.986
+      ],
+      [
+        559.405,
+        440.078
+      ]
+    ],
+    "pupil": [
+      563.258,
+      431.053
+    ],
+    "iris": [
+      563.258,
+      431.053,
+      12.789,
+      3.665
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Andy_Jassy.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Lisi Mezistrano Wolf",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Andy_Jassy",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Andy_Jassy.jpg/1280px-Andy_Jassy.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2462,
+      2462
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "011",
+    "name": "Lisa Su",
+    "affiliation": "AMD",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/011.jpg",
+    "size": [
+      960,
+      1282
+    ],
+    "crop": [
+      365.106,
+      340.332,
+      160.366
+    ],
+    "eye": [
+      [
+        411.168,
+        426.893
+      ],
+      [
+        430.248,
+        415.19
+      ],
+      [
+        459.393,
+        413.551
+      ],
+      [
+        479.409,
+        423.148
+      ],
+      [
+        459.159,
+        424.319
+      ],
+      [
+        432.121,
+        427.479
+      ]
+    ],
+    "pupil": [
+      442.304,
+      417.647
+    ],
+    "iris": [
+      442.304,
+      417.647,
+      13.648,
+      4.178
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:SXSW-2024-alih-OB7A0861-Lisa_Su_(cropped_2).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Fuzheado",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Lisa_Su",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/SXSW-2024-alih-OB7A0861-Lisa_Su_%28cropped_2%29.jpg/960px-SXSW-2024-alih-OB7A0861-Lisa_Su_%28cropped_2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1911,
+      2551
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "012",
+    "name": "Shou Zi Chew",
+    "affiliation": "TikTok",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/012.jpg",
+    "size": [
+      872,
+      1272
+    ],
+    "crop": [
+      208.423,
+      343.552,
+      172.864
+    ],
+    "eye": [
+      [
+        258.075,
+        432.838
+      ],
+      [
+        279.15,
+        420.065
+      ],
+      [
+        311.783,
+        422.782
+      ],
+      [
+        331.634,
+        437.593
+      ],
+      [
+        309.199,
+        438.952
+      ],
+      [
+        278.878,
+        439.903
+      ]
+    ],
+    "pupil": [
+      292.747,
+      428.354
+    ],
+    "iris": [
+      292.747,
+      428.354,
+      14.712,
+      5.952
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:TikTok_CEO_Shou_Zi_Chew.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Photographer: Lukasz Kobus",
+    "credit": "https://audiovisual.ec.europa.eu/en/photo-details/P-059817~2F00-13",
+    "wikipedia": "https://en.wikipedia.org/wiki/Shou_Zi_Chew",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/b/bc/TikTok_CEO_Shou_Zi_Chew.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      872,
+      1272
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "013",
+    "name": "Mira Murati",
+    "affiliation": "Thinking Machines Lab",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/013.jpg",
+    "size": [
+      459,
+      675
+    ],
+    "crop": [
+      291.978,
+      127.879,
+      27.788
+    ],
+    "eye": [
+      [
+        299.959,
+        143.043
+      ],
+      [
+        303.901,
+        141.116
+      ],
+      [
+        309.419,
+        139.627
+      ],
+      [
+        311.784,
+        141.554
+      ],
+      [
+        308.806,
+        143.7
+      ],
+      [
+        303.638,
+        143.919
+      ]
+    ],
+    "pupil": [
+      308.718,
+      141.905
+    ],
+    "iris": [
+      308.718,
+      141.905,
+      2.365,
+      1.288
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Guests_at_the_2026_Met_Gala_274_(Mira_Murati).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "SWinxy",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mira_Murati",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Guests_at_the_2026_Met_Gala_274_%28Mira_Murati%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      459,
+      675
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "014",
+    "name": "Brian Chesky",
+    "affiliation": "Airbnb",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/014.jpg",
+    "size": [
+      960,
+      1285
+    ],
+    "crop": [
+      380.008,
+      257.277,
+      115.298
+    ],
+    "eye": [
+      [
+        413.125,
+        315.224
+      ],
+      [
+        427.521,
+        308.495
+      ],
+      [
+        448.9,
+        310.284
+      ],
+      [
+        462.188,
+        319.313
+      ],
+      [
+        446.941,
+        320.846
+      ],
+      [
+        426.669,
+        321.357
+      ]
+    ],
+    "pupil": [
+      435.187,
+      312.669
+    ],
+    "iris": [
+      435.187,
+      312.669,
+      9.813,
+      3.859
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Brian_Chesky_2025.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Celeste Sloman",
+    "credit": "Provided by Airbnb",
+    "wikipedia": "https://en.wikipedia.org/wiki/Brian_Chesky",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Brian_Chesky_2025.jpg/960px-Brian_Chesky_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2989,
+      4000
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "015",
+    "name": "Pony Ma",
+    "affiliation": "Tencent",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/015.jpg",
+    "size": [
+      811,
+      1080
+    ],
+    "crop": [
+      324.935,
+      235.2,
+      103.447
+    ],
+    "eye": [
+      [
+        354.649,
+        289.207
+      ],
+      [
+        367.478,
+        282.396
+      ],
+      [
+        386.722,
+        280.954
+      ],
+      [
+        398.669,
+        288.646
+      ],
+      [
+        385.759,
+        291.851
+      ],
+      [
+        367.799,
+        292.893
+      ]
+    ],
+    "pupil": [
+      381.67,
+      285.601
+    ],
+    "iris": [
+      381.67,
+      285.601,
+      8.804,
+      3.582
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:%E9%A9%AC%E5%8C%96%E8%85%BE_Pony_Ma_2019.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "artist": "中国新闻网",
+    "credit": "YouTube : https://www.youtube.com/watch?v=35pMlcsbXVs – View/save archived versions on archive.org",
+    "wikipedia": "https://en.wikipedia.org/wiki/Pony_Ma",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/d/d6/%E9%A9%AC%E5%8C%96%E8%85%BE_Pony_Ma_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      811,
+      1080
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "016",
+    "name": "Safra Catz",
+    "affiliation": "Oracle",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/016.jpg",
+    "size": [
+      717,
+      1375
+    ],
+    "crop": [
+      346.01,
+      145.791,
+      42.628
+    ],
+    "eye": [
+      [
+        358.254,
+        168.482
+      ],
+      [
+        362.656,
+        163.996
+      ],
+      [
+        371.148,
+        164.662
+      ],
+      [
+        376.394,
+        168.349
+      ],
+      [
+        370.881,
+        169.548
+      ],
+      [
+        363.412,
+        170.214
+      ]
+    ],
+    "pupil": [
+      365.323,
+      166.883
+    ],
+    "iris": [
+      365.323,
+      166.883,
+      3.628,
+      1.865
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Safra_Catz_Oracle_CloudWorld_2024.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "artist": "Cvdlvp",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Safra_Catz",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Safra_Catz_Oracle_CloudWorld_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      717,
+      1375
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "017",
+    "name": "Mustafa Suleyman",
+    "affiliation": "Microsoft AI",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/017.jpg",
+    "size": [
+      960,
+      1200
+    ],
+    "crop": [
+      310.251,
+      326.803,
+      137.72
+    ],
+    "eye": [
+      [
+        349.809,
+        398.712
+      ],
+      [
+        365.712,
+        386.185
+      ],
+      [
+        392.291,
+        388.255
+      ],
+      [
+        408.413,
+        400.673
+      ],
+      [
+        390.548,
+        403.07
+      ],
+      [
+        366.475,
+        405.139
+      ]
+    ],
+    "pupil": [
+      376.496,
+      392.83
+    ],
+    "iris": [
+      376.496,
+      392.83,
+      11.721,
+      5.686
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Mustafa_Suleyman_photo_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Christopher Wilson",
+    "credit": "Christopher Wilson",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mustafa_Suleyman",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Mustafa_Suleyman_photo_%28cropped%29.jpg/960px-Mustafa_Suleyman_photo_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1338,
+      1672
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "018",
+    "name": "Dara Khosrowshahi",
+    "affiliation": "Uber",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/018.jpg",
+    "size": [
+      626,
+      937
+    ],
+    "crop": [
+      130.762,
+      280.925,
+      169.214
+    ],
+    "eye": [
+      [
+        179.366,
+        358.527
+      ],
+      [
+        202.789,
+        352.328
+      ],
+      [
+        233.649,
+        362.743
+      ],
+      [
+        251.372,
+        378.736
+      ],
+      [
+        229.063,
+        373.033
+      ],
+      [
+        198.947,
+        368.322
+      ]
+    ],
+    "pupil": [
+      205.764,
+      359.643
+    ],
+    "iris": [
+      205.764,
+      359.643,
+      14.401,
+      7.922
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:CEO_of_Uber_Technologies_Dara_Khosrowshahi_in_New_York_-_2019_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "The Presidential Office of Ukraine.",
+    "credit": "https://www.president.gov.ua/en/news/volodimir-zelenskij-obgovoriv-z-vikonavchim-direktorom-uber-57457 https://www.president.gov.ua/photos/thumbs/robochij-vizit-prezidenta-ukrayini-do-ssha-dlya-uchasti-u-74-3157",
+    "wikipedia": "https://en.wikipedia.org/wiki/Dara_Khosrowshahi",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/1/15/CEO_of_Uber_Technologies_Dara_Khosrowshahi_in_New_York_-_2019_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      626,
+      937
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "019",
+    "name": "Arvind Krishna",
+    "affiliation": "IBM",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/019.jpg",
+    "size": [
+      127,
+      170
+    ],
+    "crop": [
+      34.157,
+      33.005,
+      32.549
+    ],
+    "eye": [
+      [
+        43.506,
+        50.589
+      ],
+      [
+        47.25,
+        48.154
+      ],
+      [
+        53.245,
+        47.717
+      ],
+      [
+        57.357,
+        49.578
+      ],
+      [
+        53.245,
+        50.198
+      ],
+      [
+        47.71,
+        50.841
+      ]
+    ],
+    "pupil": [
+      49.616,
+      48.981
+    ],
+    "iris": [
+      49.616,
+      48.981,
+      2.77,
+      1
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Arvind_Krishna_in_2025_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "首相官邸",
+    "credit": "https://www.kantei.go.jp/jp/103/actions/202503/21hyoukei2.html",
+    "wikipedia": "https://en.wikipedia.org/wiki/Arvind_Krishna",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/3/30/Arvind_Krishna_in_2025_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      127,
+      170
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "020",
+    "name": "Ilya Sutskever",
+    "affiliation": "Safe Superintelligence",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/020.jpg",
+    "size": [
+      192,
+      287
+    ],
+    "crop": [
+      82.846,
+      69.781,
+      14.574
+    ],
+    "eye": [
+      [
+        87.033,
+        77.643
+      ],
+      [
+        88.771,
+        76.95
+      ],
+      [
+        91.331,
+        76.234
+      ],
+      [
+        93.234,
+        76.257
+      ],
+      [
+        91.543,
+        77.338
+      ],
+      [
+        88.971,
+        77.902
+      ]
+    ],
+    "pupil": [
+      90.075,
+      77.056
+    ],
+    "iris": [
+      90.075,
+      77.056,
+      1.24,
+      1
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Ilya_Sutskever_and_Sam_Altman_in_TAU_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Eladkarmel",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Ilya_Sutskever",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      192,
+      287
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "021",
+    "name": "Daniel Ek",
+    "affiliation": "Spotify",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/021.jpg",
+    "size": [
+      960,
+      1280
+    ],
+    "crop": [
+      296.37,
+      287.518,
+      111.333
+    ],
+    "eye": [
+      [
+        328.348,
+        345.931
+      ],
+      [
+        341.269,
+        334.566
+      ],
+      [
+        363.135,
+        338.733
+      ],
+      [
+        375.724,
+        350.288
+      ],
+      [
+        361.336,
+        351.708
+      ],
+      [
+        341.648,
+        351.803
+      ]
+    ],
+    "pupil": [
+      346.097,
+      341.953
+    ],
+    "iris": [
+      346.097,
+      341.953,
+      9.475,
+      5.171
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Daniel_Ek_EC_2025_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Lukasz Kobus/European Commission",
+    "credit": "https://audiovisual.ec.europa.eu/en/photo-details/P-065685~2F00-12",
+    "wikipedia": "https://en.wikipedia.org/wiki/Daniel_Ek",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Daniel_Ek_EC_2025_%28cropped%29.jpg/960px-Daniel_Ek_EC_2025_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2402,
+      3202
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "022",
+    "name": "Lei Jun",
+    "affiliation": "Xiaomi",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/022.jpg",
+    "size": [
+      386,
+      549
+    ],
+    "crop": [
+      124.782,
+      130.227,
+      55.142
+    ],
+    "eye": [
+      [
+        140.621,
+        158.263
+      ],
+      [
+        147.498,
+        154.453
+      ],
+      [
+        157.906,
+        156.033
+      ],
+      [
+        164.086,
+        161.144
+      ],
+      [
+        156.884,
+        161.097
+      ],
+      [
+        147.265,
+        160.679
+      ]
+    ],
+    "pupil": [
+      151.819,
+      157.148
+    ],
+    "iris": [
+      151.819,
+      157.148,
+      4.693,
+      2.007
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Lei_Jun_(2026)_01.jpg",
+    "license": "Attribution",
+    "licenseUrl": "",
+    "artist": "Pool Moncloa/Borja Puig de la Bellacasa",
+    "credit": "El presidente del Gobierno se reúne en Pekín con el CEO de la empresa tecnológica china Xiaomi",
+    "wikipedia": "https://en.wikipedia.org/wiki/Lei_Jun",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Lei_Jun_%282026%29_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      386,
+      549
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "023",
+    "name": "Marc Benioff",
+    "affiliation": "Salesforce",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/023.jpg",
+    "size": [
+      960,
+      1440
+    ],
+    "crop": [
+      229.793,
+      550.43,
+      190.195
+    ],
+    "eye": [
+      [
+        284.423,
+        647.403
+      ],
+      [
+        308.252,
+        638.65
+      ],
+      [
+        342.154,
+        640.039
+      ],
+      [
+        365.358,
+        649.21
+      ],
+      [
+        341.043,
+        650.321
+      ],
+      [
+        308.252,
+        652.405
+      ]
+    ],
+    "pupil": [
+      321.452,
+      643.93
+    ],
+    "iris": [
+      321.452,
+      643.93,
+      16.187,
+      4.127
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Marc_Benioff.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "artist": "Salesforce.",
+    "credit": "https://www.flickr.com/photos/salesforce/52304269299/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Marc_Benioff",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Marc_Benioff.jpg/960px-Marc_Benioff.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      4480,
+      6720
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "024",
+    "name": "Fei-Fei Li",
+    "affiliation": "World Labs / Stanford",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/024.jpg",
+    "size": [
+      909,
+      1350
+    ],
+    "crop": [
+      453.284,
+      155.773,
+      98.847
+    ],
+    "eye": [
+      [
+        481.676,
+        206.341
+      ],
+      [
+        494.119,
+        197.638
+      ],
+      [
+        513.433,
+        199.776
+      ],
+      [
+        523.738,
+        210.998
+      ],
+      [
+        510.99,
+        212.754
+      ],
+      [
+        493.356,
+        212.143
+      ]
+    ],
+    "pupil": [
+      500.532,
+      203.898
+    ],
+    "iris": [
+      500.532,
+      203.898,
+      8.412,
+      4.535
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Fei-Fei_Li_at_AI_for_Good_2017.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "ITU Pictures",
+    "credit": "https://www.flickr.com/photos/itupictures/35011409612/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Fei-Fei_Li",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Fei-Fei_Li_at_AI_for_Good_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      909,
+      1350
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "025",
+    "name": "Masayoshi Son",
+    "affiliation": "SoftBank",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/025.jpg",
+    "size": [
+      847,
+      1117
+    ],
+    "crop": [
+      326.991,
+      323.459,
+      151.904
+    ],
+    "eye": [
+      [
+        370.623,
+        396.229
+      ],
+      [
+        390.487,
+        392.499
+      ],
+      [
+        417.484,
+        397.217
+      ],
+      [
+        435.263,
+        406.323
+      ],
+      [
+        415.509,
+        406.323
+      ],
+      [
+        389.17,
+        403.69
+      ]
+    ],
+    "pupil": [
+      395.974,
+      398.314
+    ],
+    "iris": [
+      395.974,
+      398.314,
+      12.928,
+      4.147
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Masayoshi_Son_(P066533-522034,_cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "European Communities, 2025 / EC - Audiovisual Service",
+    "credit": "Visit by Henna Virkkunen, Executive Vice-President of the European Commission, to Japan",
+    "wikipedia": "https://en.wikipedia.org/wiki/Masayoshi_Son",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/5/58/Masayoshi_Son_%28P066533-522034%2C_cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      847,
+      1117
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "026",
+    "name": "Hock Tan",
+    "affiliation": "Broadcom",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/026.jpg",
+    "size": [
+      960,
+      1398
+    ],
+    "crop": [
+      263.58,
+      380.626,
+      200.23
+    ],
+    "eye": [
+      [
+        321.093,
+        488.705
+      ],
+      [
+        342.912,
+        473.255
+      ],
+      [
+        379.86,
+        470.229
+      ],
+      [
+        406.297,
+        479.786
+      ],
+      [
+        381.134,
+        485.36
+      ],
+      [
+        346.734,
+        491.254
+      ]
+    ],
+    "pupil": [
+      358.36,
+      478.512
+    ],
+    "iris": [
+      358.36,
+      478.512,
+      17.041,
+      6.307
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Hock_Tan_2022.png",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Greg Bezat, d/b/a Bezat Video Group",
+    "credit": "This image was provided by Broadcom. It is the official headshot of Hock Tan taken by the company.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Hock_Tan",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Hock_Tan_2022.png/960px-Hock_Tan_2022.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1224,
+      1783
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "027",
+    "name": "Pavel Durov",
+    "affiliation": "Telegram",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/027.jpg",
+    "size": [
+      800,
+      800
+    ],
+    "crop": [
+      276.645,
+      213.451,
+      90.837
+    ],
+    "eye": [
+      [
+        302.737,
+        263.018
+      ],
+      [
+        312.316,
+        253.979
+      ],
+      [
+        329.653,
+        252.292
+      ],
+      [
+        341.391,
+        258.566
+      ],
+      [
+        329.855,
+        261.601
+      ],
+      [
+        314.34,
+        265.447
+      ]
+    ],
+    "pupil": [
+      320.816,
+      256.744
+    ],
+    "iris": [
+      320.816,
+      256.744,
+      7.731,
+      3.946
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Pavel_Durov_sitting_portrait_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "NickLubushko",
+    "credit": "http://www.pond5.com/photo/50885759/pavel-durov-portrait-sitting.html",
+    "wikipedia": "https://en.wikipedia.org/wiki/Pavel_Durov",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/4/44/Pavel_Durov_sitting_portrait_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      800,
+      800
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "028",
+    "name": "Jack Ma",
+    "affiliation": "Alibaba",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/028.jpg",
+    "size": [
+      960,
+      1138
+    ],
+    "crop": [
+      343.073,
+      325.523,
+      192.227
+    ],
+    "eye": [
+      [
+        398.288,
+        428.268
+      ],
+      [
+        419.952,
+        412.51
+      ],
+      [
+        456.059,
+        410.934
+      ],
+      [
+        480.086,
+        424.46
+      ],
+      [
+        455.402,
+        428.793
+      ],
+      [
+        422.709,
+        432.339
+      ]
+    ],
+    "pupil": [
+      437.283,
+      419.732
+    ],
+    "iris": [
+      437.283,
+      419.732,
+      16.36,
+      6.421
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:20th_Anniversary_Schwab_Foundation_Gala_Dinner_(44887783681)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Foundations World Economic Forum",
+    "credit": "20th Anniversary Schwab Foundation Gala Dinner",
+    "wikipedia": "https://en.wikipedia.org/wiki/Jack_Ma",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/20th_Anniversary_Schwab_Foundation_Gala_Dinner_%2844887783681%29_%28cropped%29.jpg/960px-20th_Anniversary_Schwab_Foundation_Gala_Dinner_%2844887783681%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2250,
+      2667
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "029",
+    "name": "Cristiano Amon",
+    "affiliation": "Qualcomm",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/029.jpg",
+    "size": [
+      960,
+      1280
+    ],
+    "crop": [
+      214.283,
+      343.149,
+      141.661
+    ],
+    "eye": [
+      [
+        254.972,
+        417.52
+      ],
+      [
+        269.777,
+        401.822
+      ],
+      [
+        298.384,
+        405.481
+      ],
+      [
+        315.254,
+        420.589
+      ],
+      [
+        296.615,
+        424.957
+      ],
+      [
+        271.37,
+        426.137
+      ]
+    ],
+    "pupil": [
+      283.402,
+      412.209
+    ],
+    "iris": [
+      283.402,
+      412.209,
+      12.056,
+      7.294
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Cristiano_Amon_(President_%26_CEOQualcomm)_(54916855494)_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Web Summit",
+    "credit": "Cristiano Amon (President &amp; CEOQualcomm)",
+    "wikipedia": "https://en.wikipedia.org/wiki/Cristiano_Amon",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Cristiano_Amon_%28President_%26_CEOQualcomm%29_%2854916855494%29_%28cropped%29.jpg/960px-Cristiano_Amon_%28President_%26_CEOQualcomm%29_%2854916855494%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1637,
+      2183
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "030",
+    "name": "Arthur Mensch",
+    "affiliation": "Mistral AI",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/030.jpg",
+    "size": [
+      960,
+      1280
+    ],
+    "crop": [
+      375.4,
+      205.879,
+      68.725
+    ],
+    "eye": [
+      [
+        395.141,
+        241.863
+      ],
+      [
+        402.654,
+        236.81
+      ],
+      [
+        415.406,
+        236.311
+      ],
+      [
+        424.385,
+        239.243
+      ],
+      [
+        415.718,
+        242.051
+      ],
+      [
+        403.808,
+        244.172
+      ]
+    ],
+    "pupil": [
+      405.71,
+      239.368
+    ],
+    "iris": [
+      405.71,
+      239.368,
+      5.849,
+      2.358
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Arthur_Mensch.png",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "artist": "Jan2342342423",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Arthur_Mensch",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Arthur_Mensch.png/960px-Arthur_Mensch.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2141,
+      2855
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "031",
+    "name": "Ted Sarandos",
+    "affiliation": "Netflix",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/031.jpg",
+    "size": [
+      960,
+      1212
+    ],
+    "crop": [
+      244.548,
+      336.659,
+      215.368
+    ],
+    "eye": [
+      [
+        306.41,
+        448.733
+      ],
+      [
+        332.464,
+        433.141
+      ],
+      [
+        372.304,
+        437.834
+      ],
+      [
+        398.056,
+        454.334
+      ],
+      [
+        370.335,
+        455.242
+      ],
+      [
+        333.222,
+        455.545
+      ]
+    ],
+    "pupil": [
+      345.34,
+      442.981
+    ],
+    "iris": [
+      345.34,
+      442.981,
+      18.329,
+      6.721
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Ted_Sarandos_2024.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "artist": "UKinUSA",
+    "credit": "https://www.flickr.com/photos/31430487@N05/54201101209/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Ted_Sarandos",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Ted_Sarandos_2024.jpg/960px-Ted_Sarandos_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1414,
+      1785
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "032",
+    "name": "Zhang Yiming",
+    "affiliation": "ByteDance",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/032.jpg",
+    "size": [
+      270,
+      352
+    ],
+    "crop": [
+      110.182,
+      87.499,
+      40.957
+    ],
+    "eye": [
+      [
+        121.947,
+        108.451
+      ],
+      [
+        127.188,
+        106.241
+      ],
+      [
+        134.576,
+        106.746
+      ],
+      [
+        139.375,
+        109.714
+      ],
+      [
+        134.008,
+        109.651
+      ],
+      [
+        127.062,
+        109.588
+      ]
+    ],
+    "pupil": [
+      129.461,
+      107.441
+    ],
+    "iris": [
+      129.461,
+      107.441,
+      3.486,
+      1.042
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:The_CEO_Magazine_Cover.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "CEO Magazine",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Zhang_Yiming",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/e/e0/The_CEO_Magazine_Cover.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      270,
+      352
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "033",
+    "name": "Greg Brockman",
+    "affiliation": "OpenAI",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/033.jpg",
+    "size": [
+      960,
+      1194
+    ],
+    "crop": [
+      245.846,
+      291.028,
+      188.238
+    ],
+    "eye": [
+      [
+        299.915,
+        390.281
+      ],
+      [
+        320.963,
+        374.21
+      ],
+      [
+        357.109,
+        376.591
+      ],
+      [
+        380.016,
+        391.174
+      ],
+      [
+        355.621,
+        393.555
+      ],
+      [
+        323.194,
+        396.084
+      ]
+    ],
+    "pupil": [
+      329.441,
+      381.65
+    ],
+    "iris": [
+      329.441,
+      381.65,
+      16.02,
+      6.562
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Disrupt_SF_TechCrunch_Disrupt_San_Francisco_2019_-_Day_2_(48838200316)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "TechCrunch Disrupt San Francisco 2019 - Day 2",
+    "wikipedia": "https://en.wikipedia.org/wiki/Greg_Brockman",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Disrupt_SF_TechCrunch_Disrupt_San_Francisco_2019_-_Day_2_%2848838200316%29_%28cropped%29.jpg/960px-Disrupt_SF_TechCrunch_Disrupt_San_Francisco_2019_-_Day_2_%2848838200316%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1489,
+      1852
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "034",
+    "name": "Adam Mosseri",
+    "affiliation": "Instagram",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/034.jpg",
+    "size": [
+      960,
+      1279
+    ],
+    "crop": [
+      380.753,
+      233.697,
+      151.077
+    ],
+    "eye": [
+      [
+        424.148,
+        310.781
+      ],
+      [
+        443.445,
+        298.31
+      ],
+      [
+        472.764,
+        301.294
+      ],
+      [
+        488.436,
+        317.709
+      ],
+      [
+        468.713,
+        320.161
+      ],
+      [
+        441.952,
+        319.521
+      ]
+    ],
+    "pupil": [
+      452.72,
+      307.157
+    ],
+    "iris": [
+      452.72,
+      307.157,
+      12.858,
+      6.555
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Head_of_Instagram_Adam_Mosseri_META_(52321290009)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Anthony Quintano from Mount Laurel, United States",
+    "credit": "Head of Instagram Adam Mosseri META",
+    "wikipedia": "https://en.wikipedia.org/wiki/Adam_Mosseri",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Head_of_Instagram_Adam_Mosseri_META_%2852321290009%29_%28cropped%29.jpg/960px-Head_of_Instagram_Adam_Mosseri_META_%2852321290009%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      3114,
+      4149
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "035",
+    "name": "Bill McDermott",
+    "affiliation": "ServiceNow",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/035.jpg",
+    "size": [
+      960,
+      1445
+    ],
+    "crop": [
+      504.878,
+      494.6,
+      76.584
+    ],
+    "eye": [
+      [
+        526.875,
+        535.451
+      ],
+      [
+        535.315,
+        528.113
+      ],
+      [
+        550.039,
+        528.606
+      ],
+      [
+        559.464,
+        535.019
+      ],
+      [
+        549.607,
+        536.129
+      ],
+      [
+        536.301,
+        537.671
+      ]
+    ],
+    "pupil": [
+      540.49,
+      531.381
+    ],
+    "iris": [
+      540.49,
+      531.381,
+      6.518,
+      2.867
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:SAP_ExecutiveBoard_McDermott_002.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "artist": "SAP",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Bill_McDermott",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/SAP_ExecutiveBoard_McDermott_002.jpg/960px-SAP_ExecutiveBoard_McDermott_002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      3736,
+      5624
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "036",
+    "name": "Drew Houston",
+    "affiliation": "Dropbox",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/036.jpg",
+    "size": [
+      500,
+      666
+    ],
+    "crop": [
+      178.81,
+      227.724,
+      120.434
+    ],
+    "eye": [
+      [
+        213.403,
+        290.215
+      ],
+      [
+        229.112,
+        281.033
+      ],
+      [
+        252.204,
+        281.977
+      ],
+      [
+        264.651,
+        294.333
+      ],
+      [
+        249.285,
+        294.848
+      ],
+      [
+        228.425,
+        294.247
+      ]
+    ],
+    "pupil": [
+      240.186,
+      285.238
+    ],
+    "iris": [
+      240.186,
+      285.238,
+      10.25,
+      4.144
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Drew_Houston_at_Web_Summit_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Web Summit",
+    "credit": "https://www.flickr.com/photos/websummit/15710056891/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Drew_Houston",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Drew_Houston_at_Web_Summit_%28cropped%29.jpg/500px-Drew_Houston_at_Web_Summit_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      818,
+      1089
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "037",
+    "name": "Ren Zhengfei",
+    "affiliation": "Huawei",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/037.jpg",
+    "size": [
+      833,
+      1271
+    ],
+    "crop": [
+      249.322,
+      314.509,
+      183.915
+    ],
+    "eye": [
+      [
+        302.149,
+        409.326
+      ],
+      [
+        323.896,
+        397.602
+      ],
+      [
+        357.948,
+        399.175
+      ],
+      [
+        380.41,
+        412.186
+      ],
+      [
+        356.66,
+        414.187
+      ],
+      [
+        325.04,
+        415.331
+      ]
+    ],
+    "pupil": [
+      335.056,
+      404.322
+    ],
+    "iris": [
+      335.056,
+      404.322,
+      15.652,
+      5.319
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Ren_Zhengfei_(2016).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Georges Boulougouris",
+    "credit": "https://audiovisual.ec.europa.eu/en/photo-details/P-033058~2F00-02",
+    "wikipedia": "https://en.wikipedia.org/wiki/Ren_Zhengfei",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Ren_Zhengfei_%282016%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      833,
+      1271
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "038",
+    "name": "Shantanu Narayen",
+    "affiliation": "Adobe",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/038.jpg",
+    "size": [
+      960,
+      1440
+    ],
+    "crop": [
+      355.728,
+      409.692,
+      160.743
+    ],
+    "eye": [
+      [
+        401.899,
+        491.741
+      ],
+      [
+        421.57,
+        480.452
+      ],
+      [
+        451.859,
+        484.476
+      ],
+      [
+        470.3,
+        498.335
+      ],
+      [
+        449.623,
+        499.564
+      ],
+      [
+        421.346,
+        499.676
+      ]
+    ],
+    "pupil": [
+      428.052,
+      488.052
+    ],
+    "iris": [
+      428.052,
+      488.052,
+      13.68,
+      5.767
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Shantanu_Narayen_-_the_CEO_of_Adobe_Inc.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Brian Cummings Photography",
+    "credit": "https://www.adobe.com/content/dam/acom/en/leaders/photos/shantanu-narayen.jpg",
+    "wikipedia": "https://en.wikipedia.org/wiki/Shantanu_Narayen",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Shantanu_Narayen_-_the_CEO_of_Adobe_Inc.jpg/960px-Shantanu_Narayen_-_the_CEO_of_Adobe_Inc.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1471,
+      2206
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "039",
+    "name": "Mike Krieger",
+    "affiliation": "Anthropic / Instagram",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/039.jpg",
+    "size": [
+      960,
+      1275
+    ],
+    "crop": [
+      323.216,
+      323.31,
+      155.43
+    ],
+    "eye": [
+      [
+        367.861,
+        403.557
+      ],
+      [
+        387.321,
+        392.196
+      ],
+      [
+        416.229,
+        395.008
+      ],
+      [
+        434.002,
+        407.831
+      ],
+      [
+        413.98,
+        409.068
+      ],
+      [
+        386.871,
+        409.856
+      ]
+    ],
+    "pupil": [
+      396.995,
+      399.395
+    ],
+    "iris": [
+      396.995,
+      399.395,
+      13.228,
+      5.298
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Mike_Krieger_in_2018_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Christopher Michel",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mike_Krieger",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Mike_Krieger_in_2018_%28cropped%29.jpg/960px-Mike_Krieger_in_2018_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2849,
+      3783
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "040",
+    "name": "Eric Yuan",
+    "affiliation": "Zoom",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/040.jpg",
+    "size": [
+      960,
+      1456
+    ],
+    "crop": [
+      262.931,
+      368.238,
+      165.502
+    ],
+    "eye": [
+      [
+        310.469,
+        455.804
+      ],
+      [
+        328.353,
+        439.631
+      ],
+      [
+        360.174,
+        441.236
+      ],
+      [
+        380.895,
+        455.434
+      ],
+      [
+        359.557,
+        459.014
+      ],
+      [
+        330.573,
+        462.347
+      ]
+    ],
+    "pupil": [
+      334.52,
+      447.903
+    ],
+    "iris": [
+      334.52,
+      447.903,
+      14.085,
+      6.815
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Eric_Yuan_2025_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/54886273253/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Eric_Yuan",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Eric_Yuan_2025_%28cropped%29.jpg/960px-Eric_Yuan_2025_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2913,
+      4418
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "041",
+    "name": "Joseph Tsai",
+    "affiliation": "Alibaba",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/041.jpg",
+    "size": [
+      469,
+      620
+    ],
+    "crop": [
+      198.691,
+      128.747,
+      68.979
+    ],
+    "eye": [
+      [
+        218.504,
+        164.091
+      ],
+      [
+        227,
+        160.78
+      ],
+      [
+        239.525,
+        160.835
+      ],
+      [
+        247.856,
+        165.14
+      ],
+      [
+        239.028,
+        165.692
+      ],
+      [
+        227.221,
+        165.692
+      ]
+    ],
+    "pupil": [
+      232.187,
+      162.656
+    ],
+    "iris": [
+      232.187,
+      162.656,
+      5.871,
+      1.474
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Joseph_Tsai_at_the_2024_New_York_Liberty_Ticker_Tape_Parade_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "WOWyerrr",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Joseph_Tsai",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/6/61/Joseph_Tsai_at_the_2024_New_York_Liberty_Ticker_Tape_Parade_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      469,
+      620
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "042",
+    "name": "Chuck Robbins",
+    "affiliation": "Cisco",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/042.jpg",
+    "size": [
+      300,
+      450
+    ],
+    "crop": [
+      93.357,
+      84.082,
+      39.445
+    ],
+    "eye": [
+      [
+        104.687,
+        103.475
+      ],
+      [
+        109.46,
+        102.271
+      ],
+      [
+        116.427,
+        103.159
+      ],
+      [
+        121.472,
+        104.965
+      ],
+      [
+        116.283,
+        105.338
+      ],
+      [
+        109.346,
+        105.338
+      ]
+    ],
+    "pupil": [
+      110.206,
+      103.417
+    ],
+    "iris": [
+      110.206,
+      103.417,
+      3.357,
+      1
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Charles_H._Robbins.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Chairman of the Joint Chiefs of Staff from Washington D.C, United States",
+    "credit": "180405-D-SW162-2195",
+    "wikipedia": "https://en.wikipedia.org/wiki/Chuck_Robbins",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/5/59/Charles_H._Robbins.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      300,
+      450
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "043",
+    "name": "Alexandr Wang",
+    "affiliation": "Meta",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/043.jpg",
+    "size": [
+      960,
+      1440
+    ],
+    "crop": [
+      280.492,
+      333.95,
+      96.141
+    ],
+    "eye": [
+      [
+        308.107,
+        388.085
+      ],
+      [
+        316.675,
+        376.341
+      ],
+      [
+        336.408,
+        374.224
+      ],
+      [
+        349.019,
+        381.251
+      ],
+      [
+        337.371,
+        385.679
+      ],
+      [
+        320.718,
+        389.818
+      ]
+    ],
+    "pupil": [
+      330.151,
+      380.192
+    ],
+    "iris": [
+      330.151,
+      380.192,
+      8.182,
+      4.678
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Alexandr_Wang,_Chief_A.I._Officer,_Meta.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Meta Platforms, Inc.",
+    "credit": "Provided by Alexandr Wang's employer, Meta.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Alexandr_Wang",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Alexandr_Wang%2C_Chief_A.I._Officer%2C_Meta.jpg/960px-Alexandr_Wang%2C_Chief_A.I._Officer%2C_Meta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      5760,
+      8640
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "044",
+    "name": "Dylan Field",
+    "affiliation": "Figma",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/044.jpg",
+    "size": [
+      594,
+      792
+    ],
+    "crop": [
+      205.671,
+      239.01,
+      128.915
+    ],
+    "eye": [
+      [
+        242.7,
+        305.496
+      ],
+      [
+        258.914,
+        295.852
+      ],
+      [
+        283.145,
+        297.745
+      ],
+      [
+        297.557,
+        309.281
+      ],
+      [
+        281.253,
+        310.993
+      ],
+      [
+        258.734,
+        311.084
+      ]
+    ],
+    "pupil": [
+      267.741,
+      301.981
+    ],
+    "iris": [
+      267.741,
+      301.981,
+      10.971,
+      4.569
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Dylan_Field_TechCrunch_Disrupt_2022_1435088567_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/52457337945/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Dylan_Field",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Dylan_Field_TechCrunch_Disrupt_2022_1435088567_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      594,
+      792
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "045",
+    "name": "Lip-Bu Tan",
+    "affiliation": "Intel",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/045.jpg",
+    "size": [
+      342,
+      433
+    ],
+    "crop": [
+      105.046,
+      115.128,
+      65.473
+    ],
+    "eye": [
+      [
+        123.852,
+        149.668
+      ],
+      [
+        131.402,
+        144.947
+      ],
+      [
+        143.517,
+        144.59
+      ],
+      [
+        151.713,
+        148.555
+      ],
+      [
+        143.383,
+        149.802
+      ],
+      [
+        132.159,
+        151.138
+      ]
+    ],
+    "pupil": [
+      136.613,
+      147.085
+    ],
+    "iris": [
+      136.613,
+      147.085,
+      5.572,
+      1.964
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Howard_Lutnick_with_Intel_CEO_Lip-Bu_Tan_(2025)_(cropped3).jpg",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "artist": "United States Department of Commerce",
+    "credit": "Howard Lutnick in X",
+    "wikipedia": "https://en.wikipedia.org/wiki/Lip-Bu_Tan",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/1/10/Howard_Lutnick_with_Intel_CEO_Lip-Bu_Tan_%282025%29_%28cropped3%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      342,
+      433
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "046",
+    "name": "Geoffrey Hinton",
+    "affiliation": "AI research",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/046.jpg",
+    "size": [
+      960,
+      1344
+    ],
+    "crop": [
+      379.613,
+      361.214,
+      163.941
+    ],
+    "eye": [
+      [
+        426.703,
+        437.64
+      ],
+      [
+        448.412,
+        430.33
+      ],
+      [
+        479.024,
+        439.59
+      ],
+      [
+        496.465,
+        456.038
+      ],
+      [
+        474.024,
+        453.479
+      ],
+      [
+        444.631,
+        449.337
+      ]
+    ],
+    "pupil": [
+      452.924,
+      438.859
+    ],
+    "iris": [
+      452.924,
+      438.859,
+      13.952,
+      7.712
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Geoffrey_Hinton_in_2026.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Cmichel67",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Geoffrey_Hinton",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Geoffrey_Hinton_in_2026.jpg/960px-Geoffrey_Hinton_in_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      4131,
+      5784
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "047",
+    "name": "Melanie Perkins",
+    "affiliation": "Canva",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/047.jpg",
+    "size": [
+      960,
+      1440
+    ],
+    "crop": [
+      365.091,
+      299.187,
+      92.219
+    ],
+    "eye": [
+      [
+        391.58,
+        344.979
+      ],
+      [
+        403.098,
+        339.259
+      ],
+      [
+        420.574,
+        342.834
+      ],
+      [
+        430.822,
+        351.334
+      ],
+      [
+        418.271,
+        350.301
+      ],
+      [
+        402.304,
+        349.507
+      ]
+    ],
+    "pupil": [
+      408.897,
+      344.264
+    ],
+    "iris": [
+      408.897,
+      344.264,
+      7.848,
+      3.622
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:M_Perkins.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "artist": "Melanie Perkins",
+    "credit": "https://www.flickr.com/photos/182855606@N07/48352760127/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Melanie_Perkins",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/M_Perkins.jpg/960px-M_Perkins.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      3266,
+      4898
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "048",
+    "name": "Nikesh Arora",
+    "affiliation": "Palo Alto Networks",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/048.jpg",
+    "size": [
+      960,
+      1443
+    ],
+    "crop": [
+      353.351,
+      225.597,
+      142.36
+    ],
+    "eye": [
+      [
+        394.242,
+        292.316
+      ],
+      [
+        413.8,
+        285.599
+      ],
+      [
+        440.478,
+        292.918
+      ],
+      [
+        454.821,
+        307.956
+      ],
+      [
+        435.764,
+        306.853
+      ],
+      [
+        410.189,
+        303.144
+      ]
+    ],
+    "pupil": [
+      418.513,
+      293.219
+    ],
+    "iris": [
+      418.513,
+      293.219,
+      12.116,
+      6.707
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Nikesh_Arora_TechCrunch_Disrupt_2015.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/21639393641/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Nikesh_Arora",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Nikesh_Arora_TechCrunch_Disrupt_2015.jpg/960px-Nikesh_Arora_TechCrunch_Disrupt_2015.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2832,
+      4256
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "049",
+    "name": "Yann LeCun",
+    "affiliation": "AI research",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/049.jpg",
+    "size": [
+      960,
+      1215
+    ],
+    "crop": [
+      267.964,
+      287.087,
+      175.961
+    ],
+    "eye": [
+      [
+        318.506,
+        380.36
+      ],
+      [
+        339.262,
+        367.99
+      ],
+      [
+        371.854,
+        366.563
+      ],
+      [
+        393.383,
+        376.316
+      ],
+      [
+        371.14,
+        379.885
+      ],
+      [
+        340.809,
+        383.572
+      ]
+    ],
+    "pupil": [
+      354.131,
+      373.581
+    ],
+    "iris": [
+      354.131,
+      373.581,
+      14.975,
+      5.103
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Laura_Chaubard_%26_Yann_Le_Cun_-_2024_(53814052697)_(cropped).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "artist": "Jérémy Barande",
+    "credit": "Executive master de l'Ecole polytechnique",
+    "wikipedia": "https://en.wikipedia.org/wiki/Yann_LeCun",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Laura_Chaubard_%26_Yann_Le_Cun_-_2024_%2853814052697%29_%28cropped%29.jpg/960px-Laura_Chaubard_%26_Yann_Le_Cun_-_2024_%2853814052697%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2082,
+      2635
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "050",
+    "name": "Tobias Lütke",
+    "affiliation": "Shopify",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/050.jpg",
+    "size": [
+      960,
+      1440
+    ],
+    "crop": [
+      327.549,
+      404.242,
+      175.489
+    ],
+    "eye": [
+      [
+        377.956,
+        493.783
+      ],
+      [
+        399.64,
+        482.107
+      ],
+      [
+        432.231,
+        485.828
+      ],
+      [
+        452.632,
+        500.455
+      ],
+      [
+        429.921,
+        501.867
+      ],
+      [
+        398.999,
+        501.867
+      ]
+    ],
+    "pupil": [
+      409.392,
+      490.832
+    ],
+    "iris": [
+      409.392,
+      490.832,
+      14.935,
+      5.928
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:NYC-Commerce-Tobi-L%C3%BCtki-561.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Benjamin Forrest",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Tobias_L%C3%BCtke",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/NYC-Commerce-Tobi-L%C3%BCtki-561.jpg/960px-NYC-Commerce-Tobi-L%C3%BCtki-561.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      3537,
+      5305
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "051",
+    "name": "Yoshua Bengio",
+    "affiliation": "AI research",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/051.jpg",
+    "size": [
+      960,
+      1158
+    ],
+    "crop": [
+      252.032,
+      438.227,
+      220.362
+    ],
+    "eye": [
+      [
+        315.327,
+        552.742
+      ],
+      [
+        341.558,
+        535.885
+      ],
+      [
+        382.628,
+        537.49
+      ],
+      [
+        409.098,
+        553.866
+      ],
+      [
+        380.382,
+        557.077
+      ],
+      [
+        342.199,
+        560.93
+      ]
+    ],
+    "pupil": [
+      354.232,
+      543.912
+    ],
+    "iris": [
+      354.232,
+      543.912,
+      18.754,
+      7.514
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:ICLR_2025_-_Yoshua_Bengio_02.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Xuthoria",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Yoshua_Bengio",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/ICLR_2025_-_Yoshua_Bengio_02.jpg/960px-ICLR_2025_-_Yoshua_Bengio_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2430,
+      2930
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "052",
+    "name": "Tony Xu",
+    "affiliation": "DoorDash",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/052.jpg",
+    "size": [
+      960,
+      1279
+    ],
+    "crop": [
+      355.935,
+      388.226,
+      237.121
+    ],
+    "eye": [
+      [
+        424.044,
+        499.889
+      ],
+      [
+        456.644,
+        492.646
+      ],
+      [
+        500.282,
+        500.234
+      ],
+      [
+        524.947,
+        520.927
+      ],
+      [
+        493.382,
+        520.582
+      ],
+      [
+        451.469,
+        514.029
+      ]
+    ],
+    "pupil": [
+      469.062,
+      502.821
+    ],
+    "iris": [
+      469.062,
+      502.821,
+      20.181,
+      8.484
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:TechCrunch_Disrupt_San_Francisco_2018_-_day_1_(43784924924)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "775105076GB00231_TechCrunch",
+    "wikipedia": "https://en.wikipedia.org/wiki/Tony_Xu",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/TechCrunch_Disrupt_San_Francisco_2018_-_day_1_%2843784924924%29_%28cropped%29.jpg/960px-TechCrunch_Disrupt_San_Francisco_2018_-_day_1_%2843784924924%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1334,
+      1777
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "053",
+    "name": "Matthew Prince",
+    "affiliation": "Cloudflare",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/053.jpg",
+    "size": [
+      960,
+      1279
+    ],
+    "crop": [
+      432.768,
+      452.216,
+      166.849
+    ],
+    "eye": [
+      [
+        480.692,
+        536.435
+      ],
+      [
+        502.444,
+        525.317
+      ],
+      [
+        534.583,
+        527.394
+      ],
+      [
+        551.692,
+        544.743
+      ],
+      [
+        530.062,
+        545.964
+      ],
+      [
+        501.222,
+        543.399
+      ]
+    ],
+    "pupil": [
+      515.52,
+      533.38
+    ],
+    "iris": [
+      515.52,
+      533.38,
+      14.2,
+      6.194
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:TechCrunch_Disrupt_SF_2015_-_Day_Two_-_002_(21643811351).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/21643811351/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Matthew_Prince",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/TechCrunch_Disrupt_SF_2015_-_Day_Two_-_002_%2821643811351%29.jpg/960px-TechCrunch_Disrupt_SF_2015_-_Day_Two_-_002_%2821643811351%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1365,
+      1819
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "054",
+    "name": "Andrew Ng",
+    "affiliation": "DeepLearning.AI",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/054.jpg",
+    "size": [
+      960,
+      1178
+    ],
+    "crop": [
+      432.245,
+      172.44,
+      113.208
+    ],
+    "eye": [
+      [
+        464.763,
+        228.906
+      ],
+      [
+        479.99,
+        220.235
+      ],
+      [
+        501.678,
+        224.571
+      ],
+      [
+        512.937,
+        237.853
+      ],
+      [
+        497.894,
+        236.747
+      ],
+      [
+        478.144,
+        234.625
+      ]
+    ],
+    "pupil": [
+      484.974,
+      225.862
+    ],
+    "iris": [
+      484.974,
+      225.862,
+      9.635,
+      5.285
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Andrew_Ng_at_TechCrunch_Disrupt_SF_2017.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "https://www.flickr.com/photos/techcrunch/37167013946/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Andrew_Ng",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Andrew_Ng_at_TechCrunch_Disrupt_SF_2017.jpg/960px-Andrew_Ng_at_TechCrunch_Disrupt_SF_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2219,
+      2724
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "055",
+    "name": "Steve Huffman",
+    "affiliation": "Reddit",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/055.jpg",
+    "size": [
+      960,
+      1192
+    ],
+    "crop": [
+      393.543,
+      271.153,
+      144.963
+    ],
+    "eye": [
+      [
+        435.181,
+        346.416
+      ],
+      [
+        453.142,
+        332.832
+      ],
+      [
+        481.366,
+        332.832
+      ],
+      [
+        496.868,
+        348.341
+      ],
+      [
+        478.373,
+        353.047
+      ],
+      [
+        452.715,
+        354.438
+      ]
+    ],
+    "pupil": [
+      464.261,
+      340.426
+    ],
+    "iris": [
+      464.261,
+      340.426,
+      12.337,
+      6.482
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Web_Summit_2017_-_Centre_Stage_Day_2_CG1_7885_(38232183112)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Photo by Cody Glenn/Web Summit via Sportsfile ©SPORTSFILE",
+    "credit": "CG1_7885 , Web Summit",
+    "wikipedia": "https://en.wikipedia.org/wiki/Steve_Huffman",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Web_Summit_2017_-_Centre_Stage_Day_2_CG1_7885_%2838232183112%29_%28cropped%29.jpg/960px-Web_Summit_2017_-_Centre_Stage_Day_2_CG1_7885_%2838232183112%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2294,
+      2849
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "056",
+    "name": "Lee Jae-yong",
+    "affiliation": "Samsung",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/056.jpg",
+    "size": [
+      342,
+      493
+    ],
+    "crop": [
+      74.549,
+      152.797,
+      64.78
+    ],
+    "eye": [
+      [
+        93.156,
+        183.961
+      ],
+      [
+        101.212,
+        179.613
+      ],
+      [
+        113.754,
+        183.515
+      ],
+      [
+        120.722,
+        190.65
+      ],
+      [
+        111.803,
+        190.762
+      ],
+      [
+        100.152,
+        189.424
+      ]
+    ],
+    "pupil": [
+      102.215,
+      184.463
+    ],
+    "iris": [
+      102.215,
+      184.463,
+      5.513,
+      3.345
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Lee_Jae-yong_in_2016.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "artist": "KBS",
+    "credit": "YouTube : https://www.youtube.com/watch?v=qdpz2-KdVMo – View/save archived versions on archive.org",
+    "wikipedia": "https://en.wikipedia.org/wiki/Lee_Jae-yong",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/d/de/Lee_Jae-yong_in_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      342,
+      493
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "057",
+    "name": "Patrick Collison",
+    "affiliation": "Stripe",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/057.jpg",
+    "size": [
+      960,
+      1281
+    ],
+    "crop": [
+      280.687,
+      358.44,
+      175.076
+    ],
+    "eye": [
+      [
+        330.975,
+        444.656
+      ],
+      [
+        353.842,
+        430.707
+      ],
+      [
+        388.023,
+        437.2
+      ],
+      [
+        405.475,
+        458.845
+      ],
+      [
+        381.885,
+        461.25
+      ],
+      [
+        350.472,
+        458.484
+      ]
+    ],
+    "pupil": [
+      366.72,
+      443.934
+    ],
+    "iris": [
+      366.72,
+      443.934,
+      14.9,
+      9.163
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Patrick_Collison_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "JD Lasica",
+    "credit": "https://flickr.com/photos/jdlasica/16509334145/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Patrick_Collison",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Patrick_Collison_%28cropped%29.jpg/960px-Patrick_Collison_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1399,
+      1867
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "058",
+    "name": "Andrej Karpathy",
+    "affiliation": "AI research / education",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/058.jpg",
+    "size": [
+      490,
+      665
+    ],
+    "crop": [
+      179.926,
+      110.883,
+      32.079
+    ],
+    "eye": [
+      [
+        189.141,
+        126.168
+      ],
+      [
+        193.216,
+        125.526
+      ],
+      [
+        198.883,
+        126.587
+      ],
+      [
+        202.791,
+        128.262
+      ],
+      [
+        198.548,
+        128.318
+      ],
+      [
+        192.853,
+        127.955
+      ]
+    ],
+    "pupil": [
+      193.942,
+      126.587
+    ],
+    "iris": [
+      193.942,
+      126.587,
+      2.73,
+      1
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Andrej_Karpathy,_OpenAI.png",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "artist": "Gladwin Analytics",
+    "credit": "YouTube : https://www.youtube.com/watch?v=mi-_VsNum1sEatcha&lt;br&gt;https://web.archive.org/web/20191216063455/https://www.youtube.com/watch?v=mi-_VsNum1s&lt;br&gt;http://archive.is/7GTrb – View/save archived versions on archive.org",
+    "wikipedia": "https://en.wikipedia.org/wiki/Andrej_Karpathy",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Andrej_Karpathy%2C_OpenAI.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      490,
+      665
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "059",
+    "name": "Whitney Wolfe Herd",
+    "affiliation": "Bumble",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/059.jpg",
+    "size": [
+      960,
+      1293
+    ],
+    "crop": [
+      435.781,
+      285.518,
+      96.331
+    ],
+    "eye": [
+      [
+        463.45,
+        334.631
+      ],
+      [
+        476.36,
+        328.143
+      ],
+      [
+        494.741,
+        329.018
+      ],
+      [
+        504.442,
+        339.224
+      ],
+      [
+        491.969,
+        339.151
+      ],
+      [
+        475.412,
+        337.839
+      ]
+    ],
+    "pupil": [
+      487.374,
+      331.788
+    ],
+    "iris": [
+      487.374,
+      331.788,
+      8.198,
+      3.324
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:TechCrunch_Disrupt_San_Francisco_2018_-_day_2_(30647055838).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "775208326GB00030_TechCrunch",
+    "wikipedia": "https://en.wikipedia.org/wiki/Whitney_Wolfe_Herd",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/TechCrunch_Disrupt_San_Francisco_2018_-_day_2_%2830647055838%29.jpg/960px-TechCrunch_Disrupt_San_Francisco_2018_-_day_2_%2830647055838%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2224,
+      2995
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "060",
+    "name": "Morris Chang",
+    "affiliation": "TSMC",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/060.jpg",
+    "size": [
+      804,
+      1074
+    ],
+    "crop": [
+      248.149,
+      248.915,
+      130.82
+    ],
+    "eye": [
+      [
+        285.725,
+        312.571
+      ],
+      [
+        302.697,
+        308.157
+      ],
+      [
+        326.571,
+        310.873
+      ],
+      [
+        341.393,
+        319.474
+      ],
+      [
+        324.421,
+        320.493
+      ],
+      [
+        301.565,
+        319.021
+      ]
+    ],
+    "pupil": [
+      312.993,
+      313.25
+    ],
+    "iris": [
+      312.993,
+      313.25,
+      11.134,
+      3.701
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:11.21_2020_APEC%E6%9A%A8%E7%B6%93%E6%BF%9F%E9%A0%98%E8%A2%96%E6%9C%83%E8%AD%B0%E6%9C%83%E5%BE%8C%E8%A8%98%E8%80%85%E6%9C%83_(50628253717)_(cropped2).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "總統府",
+    "credit": "11.21 2020 APEC暨經濟領袖會議會後記者會",
+    "wikipedia": "https://en.wikipedia.org/wiki/Morris_Chang",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/4/47/11.21_2020_APEC%E6%9A%A8%E7%B6%93%E6%BF%9F%E9%A0%98%E8%A2%96%E6%9C%83%E8%AD%B0%E6%9C%83%E5%BE%8C%E8%A8%98%E8%80%85%E6%9C%83_%2850628253717%29_%28cropped2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      804,
+      1074
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "061",
+    "name": "Kai-Fu Lee",
+    "affiliation": "Sinovation Ventures",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/061.jpg",
+    "size": [
+      960,
+      1280
+    ],
+    "crop": [
+      346.024,
+      197.75,
+      115.394
+    ],
+    "eye": [
+      [
+        379.169,
+        257.202
+      ],
+      [
+        392.074,
+        247.664
+      ],
+      [
+        414.243,
+        250.813
+      ],
+      [
+        428.273,
+        260.712
+      ],
+      [
+        412.894,
+        262.421
+      ],
+      [
+        392.749,
+        263.231
+      ]
+    ],
+    "pupil": [
+      394.638,
+      254.503
+    ],
+    "iris": [
+      394.638,
+      254.503,
+      9.821,
+      4.67
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:2007GoogleTaiwanPressConference_KaifuLee.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Rico Shen",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Kai-Fu_Lee",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/2007GoogleTaiwanPressConference_KaifuLee.jpg/960px-2007GoogleTaiwanPressConference_KaifuLee.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2493,
+      3324
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "062",
+    "name": "Jack Dorsey",
+    "affiliation": "Block",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/062.jpg",
+    "size": [
+      1280,
+      1265
+    ],
+    "crop": [
+      373.962,
+      487.076,
+      79.457
+    ],
+    "eye": [
+      [
+        396.785,
+        532.291
+      ],
+      [
+        402.025,
+        518.95
+      ],
+      [
+        419.992,
+        518.077
+      ],
+      [
+        430.597,
+        527.428
+      ],
+      [
+        421.239,
+        533.538
+      ],
+      [
+        406.642,
+        535.532
+      ]
+    ],
+    "pupil": [
+      411.757,
+      526.057
+    ],
+    "iris": [
+      411.757,
+      526.057,
+      6.762,
+      5.237
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Jack_Dorsey_in_Washington_D.C._-_2018_(44538272181)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "Mark Warner",
+    "credit": "MRW_4445.jpg",
+    "wikipedia": "https://en.wikipedia.org/wiki/Jack_Dorsey",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Jack_Dorsey_in_Washington_D.C._-_2018_%2844538272181%29_%28cropped%29.jpg/1280px-Jack_Dorsey_in_Washington_D.C._-_2018_%2844538272181%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2671,
+      2639
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "063",
+    "name": "John Collison",
+    "affiliation": "Stripe",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/063.jpg",
+    "size": [
+      960,
+      1438
+    ],
+    "crop": [
+      246.116,
+      319.871,
+      135.293
+    ],
+    "eye": [
+      [
+        284.976,
+        394.594
+      ],
+      [
+        299.414,
+        381.4
+      ],
+      [
+        325.534,
+        379.96
+      ],
+      [
+        342.548,
+        388.357
+      ],
+      [
+        325.414,
+        390.876
+      ],
+      [
+        302.41,
+        395.074
+      ]
+    ],
+    "pupil": [
+      307.921,
+      386.078
+    ],
+    "iris": [
+      307.921,
+      386.078,
+      11.514,
+      4.534
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:The_Prime_Minister_meets_with_the_Founder_%26_President_of_Stripe_-_52922981984_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "UK Prime Minister",
+    "credit": "https://www.flickr.com/photos/49707497@N06/52922981984/",
+    "wikipedia": "https://en.wikipedia.org/wiki/John_Collison",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/The_Prime_Minister_meets_with_the_Founder_%26_President_of_Stripe_-_52922981984_%28cropped%29.jpg/960px-The_Prime_Minister_meets_with_the_Founder_%26_President_of_Stripe_-_52922981984_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1201,
+      1799
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "064",
+    "name": "Aidan Gomez",
+    "affiliation": "Cohere",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/064.jpg",
+    "size": [
+      960,
+      1344
+    ],
+    "crop": [
+      287.345,
+      398.544,
+      131.357
+    ],
+    "eye": [
+      [
+        325.075,
+        470.439
+      ],
+      [
+        336.642,
+        452.256
+      ],
+      [
+        364.296,
+        454.837
+      ],
+      [
+        380.971,
+        468.21
+      ],
+      [
+        364.296,
+        472.551
+      ],
+      [
+        341.104,
+        476.188
+      ]
+    ],
+    "pupil": [
+      343.159,
+      460.82
+    ],
+    "iris": [
+      343.159,
+      460.82,
+      11.179,
+      7.179
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Aidan_Gomez_at_%22ALL_IN%22_2025_06.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Gabriel Hutchinson",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Aidan_Gomez",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Aidan_Gomez_at_%22ALL_IN%22_2025_06.jpg/960px-Aidan_Gomez_at_%22ALL_IN%22_2025_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2857,
+      4000
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "065",
+    "name": "Alex Karp",
+    "affiliation": "Palantir",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/065.jpg",
+    "size": [
+      942,
+      1177
+    ],
+    "crop": [
+      373.996,
+      300.723,
+      156.456
+    ],
+    "eye": [
+      [
+        418.936,
+        381.003
+      ],
+      [
+        437.91,
+        370.799
+      ],
+      [
+        466.76,
+        373.017
+      ],
+      [
+        485.513,
+        384.22
+      ],
+      [
+        465.429,
+        386.216
+      ],
+      [
+        438.132,
+        387.104
+      ]
+    ],
+    "pupil": [
+      445.123,
+      377.121
+    ],
+    "iris": [
+      445.123,
+      377.121,
+      13.315,
+      4.891
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Alex_Karp_attends_AI_Summit_(53302457013)_4-5_ratio.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "UK Government",
+    "credit": "Deputy Prime Minister Oliver Dowden attends AI Summit",
+    "wikipedia": "https://en.wikipedia.org/wiki/Alex_Karp",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/5/50/Alex_Karp_attends_AI_Summit_%2853302457013%29_4-5_ratio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      942,
+      1177
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "066",
+    "name": "Bom Kim",
+    "affiliation": "Coupang",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/066.jpg",
+    "size": [
+      457,
+      571
+    ],
+    "crop": [
+      152.793,
+      135.213,
+      70.412
+    ],
+    "eye": [
+      [
+        173.018,
+        172.392
+      ],
+      [
+        181.19,
+        167.113
+      ],
+      [
+        194.198,
+        167.169
+      ],
+      [
+        202.981,
+        172.17
+      ],
+      [
+        193.975,
+        172.836
+      ],
+      [
+        181.968,
+        173.726
+      ]
+    ],
+    "pupil": [
+      186.637,
+      169.669
+    ],
+    "iris": [
+      186.637,
+      169.669,
+      5.993,
+      1.984
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:20231102%E9%87%91%E7%AF%84%E9%8C%AB.jpg",
+    "license": "Attribution",
+    "licenseUrl": "",
+    "artist": "桃園市政府",
+    "credit": "https://www.tycg.gov.tw/ch/home.jsp?id=10412&amp;parentpath=0,10401&amp;mcustomize=news_view.jsp&amp;dataserno=202311020005&amp;aplistdn=ou=news,ou=chinese,ou=ap_root,o=tycg,c=tw&amp;toolsflag=Y",
+    "wikipedia": "https://en.wikipedia.org/wiki/Bom_Kim",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/5/5c/20231102%E9%87%91%E7%AF%84%E9%8C%AB.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      457,
+      571
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "067",
+    "name": "Changpeng Zhao",
+    "affiliation": "Binance",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/067.jpg",
+    "size": [
+      746,
+      979
+    ],
+    "crop": [
+      304.538,
+      199.826,
+      81.338
+    ],
+    "eye": [
+      [
+        327.901,
+        240.204
+      ],
+      [
+        338.169,
+        235.104
+      ],
+      [
+        353.602,
+        235.491
+      ],
+      [
+        362.513,
+        242.593
+      ],
+      [
+        352.052,
+        245.886
+      ],
+      [
+        337.394,
+        245.822
+      ]
+    ],
+    "pupil": [
+      346.692,
+      239.623
+    ],
+    "iris": [
+      346.692,
+      239.623,
+      6.922,
+      3.235
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Changpeng_Zhao_in_2022.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Aevozer",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Changpeng_Zhao",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Changpeng_Zhao_in_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      746,
+      979
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "068",
+    "name": "Peter Thiel",
+    "affiliation": "Founders Fund / Palantir",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/068.jpg",
+    "size": [
+      960,
+      1263
+    ],
+    "crop": [
+      364.516,
+      257.566,
+      165.671
+    ],
+    "eye": [
+      [
+        412.102,
+        343.808
+      ],
+      [
+        432.986,
+        331.107
+      ],
+      [
+        464.37,
+        333.416
+      ],
+      [
+        482.601,
+        349.696
+      ],
+      [
+        461.255,
+        348.08
+      ],
+      [
+        433.102,
+        347.156
+      ]
+    ],
+    "pupil": [
+      447.64,
+      337.111
+    ],
+    "iris": [
+      447.64,
+      337.111,
+      14.1,
+      5.577
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Peter_Thiel_by_Gage_Skidmore.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "artist": "Gage Skidmore",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Peter_Thiel",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Peter_Thiel_by_Gage_Skidmore.jpg/960px-Peter_Thiel_by_Gage_Skidmore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2642,
+      3477
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "069",
+    "name": "Chey Tae-won",
+    "affiliation": "SK Group",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/069.jpg",
+    "size": [
+      960,
+      1198
+    ],
+    "crop": [
+      221.559,
+      426.273,
+      109.301
+    ],
+    "eye": [
+      [
+        252.954,
+        483.555
+      ],
+      [
+        261.835,
+        469.739
+      ],
+      [
+        285.781,
+        473.16
+      ],
+      [
+        299.464,
+        486.977
+      ],
+      [
+        284.86,
+        491.714
+      ],
+      [
+        264.992,
+        492.109
+      ]
+    ],
+    "pupil": [
+      270.913,
+      479.608
+    ],
+    "iris": [
+      270.913,
+      479.608,
+      9.302,
+      6.711
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Korea_Portuguese_Business_Forum_01_(cropped).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "artist": "Republic of Korea",
+    "credit": "https://www.flickr.com/photos/koreanet/52811274709/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Chey_Tae-won",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Korea_Portuguese_Business_Forum_01_%28cropped%29.jpg/960px-Korea_Portuguese_Business_Forum_01_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1306,
+      1630
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "070",
+    "name": "Vitalik Buterin",
+    "affiliation": "Ethereum",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/070.jpg",
+    "size": [
+      960,
+      1071
+    ],
+    "crop": [
+      387.377,
+      298.38,
+      145.908
+    ],
+    "eye": [
+      [
+        429.286,
+        375.646
+      ],
+      [
+        446.187,
+        362.487
+      ],
+      [
+        473.94,
+        362.931
+      ],
+      [
+        491.375,
+        376.18
+      ],
+      [
+        472.517,
+        378.136
+      ],
+      [
+        447.433,
+        380.181
+      ]
+    ],
+    "pupil": [
+      451.969,
+      368.711
+    ],
+    "iris": [
+      451.969,
+      368.711,
+      12.418,
+      5.308
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Vitalik_Buterin_TechCrunch_London_2015_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "John Phillips",
+    "credit": "https://www.flickr.com/photos/techcrunch/22987802684/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Vitalik_Buterin",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Vitalik_Buterin_TechCrunch_London_2015_%28cropped%29.jpg/960px-Vitalik_Buterin_TechCrunch_London_2015_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      3223,
+      3597
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "071",
+    "name": "Matei Zaharia",
+    "affiliation": "Databricks",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/071.jpg",
+    "size": [
+      1280,
+      853
+    ],
+    "crop": [
+      720.973,
+      265.397,
+      98.671
+    ],
+    "eye": [
+      [
+        749.315,
+        316.536
+      ],
+      [
+        760.974,
+        308.142
+      ],
+      [
+        779.782,
+        309.044
+      ],
+      [
+        791.302,
+        317.646
+      ],
+      [
+        778.602,
+        320.005
+      ],
+      [
+        761.252,
+        321.323
+      ]
+    ],
+    "pupil": [
+      766.734,
+      312.721
+    ],
+    "iris": [
+      766.734,
+      312.721,
+      8.398,
+      3.954
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Matei_Zaharia.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "DKP415",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Matei_Zaharia",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Matei_Zaharia.jpg/1280px-Matei_Zaharia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      6605,
+      4403
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "072",
+    "name": "Reid Hoffman",
+    "affiliation": "Greylock / LinkedIn",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/072.jpg",
+    "size": [
+      960,
+      1277
+    ],
+    "crop": [
+      305.356,
+      373.039,
+      172.539
+    ],
+    "eye": [
+      [
+        354.915,
+        468.379
+      ],
+      [
+        374.044,
+        455.863
+      ],
+      [
+        404.987,
+        448.69
+      ],
+      [
+        428.336,
+        453.753
+      ],
+      [
+        407.378,
+        462.895
+      ],
+      [
+        377.56,
+        469.926
+      ]
+    ],
+    "pupil": [
+      390.5,
+      458.675
+    ],
+    "iris": [
+      390.5,
+      458.675,
+      14.684,
+      6.371
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:2022_Reid_Hoffman_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "U.S. Secretary of Defense",
+    "credit": "221017-D-BN624-0158",
+    "wikipedia": "https://en.wikipedia.org/wiki/Reid_Hoffman",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/2022_Reid_Hoffman_%28cropped%29.jpg/960px-2022_Reid_Hoffman_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1059,
+      1409
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "073",
+    "name": "Thomas Kurian",
+    "affiliation": "Google Cloud",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/073.jpg",
+    "size": [
+      960,
+      1280
+    ],
+    "crop": [
+      165.194,
+      442.94,
+      227.379
+    ],
+    "eye": [
+      [
+        230.505,
+        557.254
+      ],
+      [
+        258.303,
+        539.246
+      ],
+      [
+        302.494,
+        550.479
+      ],
+      [
+        327.263,
+        573.835
+      ],
+      [
+        296.792,
+        574.013
+      ],
+      [
+        256.521,
+        571.339
+      ]
+    ],
+    "pupil": [
+      265.431,
+      553.688
+    ],
+    "iris": [
+      265.431,
+      553.688,
+      19.351,
+      10.43
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Thomas_Kurian_Google_Cloud_CEO_2022_(cropped).jpg",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "artist": "Eric Dietrich",
+    "credit": "https://www.dvidshub.net/image/7426971/cso-raymond-and-google-cloud-ceo-kurian-panel-discussion-asc22",
+    "wikipedia": "https://en.wikipedia.org/wiki/Thomas_Kurian",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Thomas_Kurian_Google_Cloud_CEO_2022_%28cropped%29.jpg/960px-Thomas_Kurian_Google_Cloud_CEO_2022_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1717,
+      2290
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "074",
+    "name": "Ben Horowitz",
+    "affiliation": "Andreessen Horowitz",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/074.jpg",
+    "size": [
+      960,
+      1031
+    ],
+    "crop": [
+      442.327,
+      145.044,
+      104.344
+    ],
+    "eye": [
+      [
+        472.298,
+        198.161
+      ],
+      [
+        485.76,
+        189.893
+      ],
+      [
+        505.757,
+        193.358
+      ],
+      [
+        516.7,
+        204.54
+      ],
+      [
+        502.923,
+        204.304
+      ],
+      [
+        484.658,
+        203.122
+      ]
+    ],
+    "pupil": [
+      488.83,
+      195.326
+    ],
+    "iris": [
+      488.83,
+      195.326,
+      8.88,
+      4.394
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:TechCrunch_Disrupt_San_Francisco_2018_-_day_2_(42713740520)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "TechCrunch",
+    "credit": "775208326EC00097_TechCrunch",
+    "wikipedia": "https://en.wikipedia.org/wiki/Ben_Horowitz",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/TechCrunch_Disrupt_San_Francisco_2018_-_day_2_%2842713740520%29_%28cropped%29.jpg/960px-TechCrunch_Disrupt_San_Francisco_2018_-_day_2_%2842713740520%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      2051,
+      2203
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "075",
+    "name": "Kevin Scott (computer scientist)",
+    "affiliation": "Microsoft",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/075.jpg",
+    "size": [
+      1024,
+      684
+    ],
+    "crop": [
+      235.922,
+      206.561,
+      17.77
+    ],
+    "eye": [
+      [
+        241.026,
+        216.13
+      ],
+      [
+        242.899,
+        214.399
+      ],
+      [
+        246.242,
+        214.278
+      ],
+      [
+        248.588,
+        215.285
+      ],
+      [
+        246.302,
+        216.11
+      ],
+      [
+        243.211,
+        216.613
+      ]
+    ],
+    "pupil": [
+      243.775,
+      215.244
+    ],
+    "iris": [
+      243.775,
+      215.244,
+      1.512,
+      1
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Kevin_Scott.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Vetala Hawkins and Microsoft",
+    "credit": "https://news.microsoft.com/exec/kevin-scott/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Kevin_Scott_(computer_scientist)",
+    "assetOrigin": "commons-original",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Kevin_Scott.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "sourceSize": [
+      1024,
+      684
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "076",
+    "name": "Vinod Khosla",
+    "affiliation": "Khosla Ventures",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/076.jpg",
+    "size": [
+      1280,
+      853
+    ],
+    "crop": [
+      655.59,
+      274.43,
+      69.883
+    ],
+    "eye": [
+      [
+        675.663,
+        308.579
+      ],
+      [
+        684.846,
+        305.737
+      ],
+      [
+        697.419,
+        307.923
+      ],
+      [
+        705.4,
+        313.005
+      ],
+      [
+        696.271,
+        312.349
+      ],
+      [
+        684.026,
+        311.584
+      ]
+    ],
+    "pupil": [
+      689.493,
+      308.579
+    ],
+    "iris": [
+      689.493,
+      308.579,
+      5.947,
+      2.18
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:2024-03-14_SXSW_Vinod-Khosla_08741.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Jay Dixit",
+    "credit": "Own work",
+    "wikipedia": "https://en.wikipedia.org/wiki/Vinod_Khosla",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/2024-03-14_SXSW_Vinod-Khosla_08741.jpg/1280px-2024-03-14_SXSW_Vinod-Khosla_08741.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      6000,
+      4000
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "077",
+    "name": "Neal Mohan",
+    "affiliation": "YouTube",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/077.jpg",
+    "size": [
+      960,
+      1279
+    ],
+    "crop": [
+      300.794,
+      352.398,
+      184.188
+    ],
+    "eye": [
+      [
+        353.699,
+        439.076
+      ],
+      [
+        377.62,
+        432.042
+      ],
+      [
+        412.096,
+        439.638
+      ],
+      [
+        432.077,
+        455.254
+      ],
+      [
+        407.733,
+        456.942
+      ],
+      [
+        374.947,
+        451.456
+      ]
+    ],
+    "pupil": [
+      390.285,
+      444.703
+    ],
+    "iris": [
+      390.285,
+      444.703,
+      15.676,
+      7.47
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Neal_Mohan,_in_New_York_City_on_September_19,_2023_-_53199232941_(cropped).jpg",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "artist": "U.S. Department of State",
+    "credit": "https://www.flickr.com/photos/9364837@N06/53199232941/",
+    "wikipedia": "https://en.wikipedia.org/wiki/Neal_Mohan",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Neal_Mohan%2C_in_New_York_City_on_September_19%2C_2023_-_53199232941_%28cropped%29.jpg/960px-Neal_Mohan%2C_in_New_York_City_on_September_19%2C_2023_-_53199232941_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1190,
+      1586
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "078",
+    "name": "Bill Gates",
+    "affiliation": "Microsoft / Gates Foundation",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/078.jpg",
+    "size": [
+      960,
+      1282
+    ],
+    "crop": [
+      344.213,
+      273.56,
+      142.681
+    ],
+    "eye": [
+      [
+        385.196,
+        347.387
+      ],
+      [
+        403.224,
+        338.27
+      ],
+      [
+        429.23,
+        340.86
+      ],
+      [
+        445.911,
+        351.53
+      ],
+      [
+        427.676,
+        351.116
+      ],
+      [
+        403.017,
+        351.427
+      ]
+    ],
+    "pupil": [
+      410.269,
+      343.45
+    ],
+    "iris": [
+      410.269,
+      343.45,
+      12.143,
+      3.978
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Bill_Gates_at_the_European_Commission_-_P067383-987995_(cropped)_5.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Bogdan Hoyaux / European Union",
+    "credit": "https://audiovisual.ec.europa.eu/en/photo/P-067383~2F00-01",
+    "wikipedia": "https://en.wikipedia.org/wiki/Bill_Gates",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Bill_Gates_at_the_European_Commission_-_P067383-987995_%28cropped%29_5.jpg/960px-Bill_Gates_at_the_European_Commission_-_P067383-987995_%28cropped%29_5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1000,
+      1335
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "079",
+    "name": "Andrew Bosworth",
+    "affiliation": "Meta",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/079.jpg",
+    "size": [
+      960,
+      1302
+    ],
+    "crop": [
+      609.086,
+      238.715,
+      85.106
+    ],
+    "eye": [
+      [
+        633.531,
+        269.968
+      ],
+      [
+        648.467,
+        269.763
+      ],
+      [
+        666.063,
+        278.353
+      ],
+      [
+        669.746,
+        292.772
+      ],
+      [
+        658.084,
+        286.636
+      ],
+      [
+        643.352,
+        277.126
+      ]
+    ],
+    "pupil": [
+      659.107,
+      277.74
+    ],
+    "iris": [
+      659.107,
+      277.74,
+      7.243,
+      6.903
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:26.02.2024_-_Andrew_Bosworth.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "UK Home Office",
+    "credit": "Home Secretary James Cleverly visits San Francisco to meet leading tech companies",
+    "wikipedia": "https://en.wikipedia.org/wiki/Andrew_Bosworth",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/26.02.2024_-_Andrew_Bosworth.jpg/960px-26.02.2024_-_Andrew_Bosworth.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "sourceSize": [
+      1110,
+      1506
+    ],
+    "visionStatus": "ok"
+  },
+  {
+    "id": "080",
+    "name": "Larry Page",
+    "affiliation": "Alphabet",
+    "sourceImage": "/images/0922/tech-eye-3d/portraits/080.jpg",
+    "size": [
+      930,
+      1239
+    ],
+    "crop": [
+      242.485,
+      268.048,
+      150.191
+    ],
+    "eye": [
+      [
+        285.625,
+        350.018
+      ],
+      [
+        301.458,
+        333.957
+      ],
+      [
+        330.582,
+        331.877
+      ],
+      [
+        349.536,
+        342.392
+      ],
+      [
+        331.045,
+        349.093
+      ],
+      [
+        304.694,
+        354.408
+      ]
+    ],
+    "pupil": [
+      316.02,
+      340.774
+    ],
+    "iris": [
+      316.02,
+      340.774,
+      12.782,
+      6.759
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Larry_Page_in_the_European_Parliament,_17.06.2009_(cropped_2).jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "artist": "Stansfield PL",
+    "credit": "Wikimedia Commons",
+    "wikipedia": "https://en.wikipedia.org/wiki/Larry_Page",
+    "assetOrigin": "commons-1024-thumbnail",
+    "resolvedSource": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Larry_Page_in_the_European_Parliament%2C_17.06.2009_%28cropped_2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "sourceSize": [
+      930,
+      1239
+    ],
+    "visionStatus": "ok"
+  }
+]

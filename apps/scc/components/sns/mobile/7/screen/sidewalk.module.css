@@ -1,0 +1,160 @@
+.stage { --ink: #191919; --muted: #656565; --red: #df3022; width: 100%; min-height: 100dvh; background: #eeeeeb; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+.stage * { box-sizing: border-box; }
+.stage h1, .stage h2, .stage h3, .stage p { margin: 0; }
+.stage button, .stage input, .stage select, .stage textarea { font: inherit; color: inherit; }
+.stage button { border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:disabled { opacity: .35; cursor: default; }
+.stage button:focus-visible, .stage input:focus-visible, .stage select:focus-visible, .stage textarea:focus-visible { outline: 3px solid #1875be; outline-offset: 3px; }
+.stage img { display: block; object-fit: cover; }
+.stage svg { width: 23px; height: 23px; flex-shrink: 0; }
+.app { position: relative; max-width: 480px; height: 100dvh; margin: 0 auto; background: white; display: flex; flex-direction: column; overflow: hidden; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(15px + env(safe-area-inset-top)) 20px 13px; flex-shrink: 0; }
+.destination { min-width: 0; }
+.wordmark { display: block; font-size: 20px; font-weight: 950; letter-spacing: -1.2px; line-height: 1; }
+.wordmark > span { color: var(--red); padding-left: 3px; }
+.destination > button { display: flex; align-items: center; gap: 5px; max-width: 100%; min-height: 34px; padding: 7px 0 0; font-size: 12px; font-weight: 700; }
+.destination > button > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.destination svg { width: 14px; height: 14px; }
+.bagButton { position: relative; width: 44px; height: 44px; background: #f3f3f3 !important; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; }
+.bagButton > span { position: absolute; top: -3px; right: -3px; background: var(--red); color: white; border-radius: 20px; min-width: 20px; height: 20px; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+.pageTitle { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.pageTitle h1 { font-size: 19px; letter-spacing: -.5px; }
+.iconButton { width: 30px; height: 44px; padding: 0; flex-shrink: 0; }
+.content { flex: 1; overflow-y: auto; overscroll-behavior-y: contain; min-height: 0; scrollbar-width: none; }
+.browseControls { padding: 0 20px; }
+.switchRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 16px; }
+.switchRow > span { color: var(--muted); font-size: 11px; }
+.modeSwitch { display: flex; align-items: center; padding: 3px; border-radius: 24px; background: #f0f0f0; width: fit-content; }
+.modeSwitch button { padding: 10px 16px; border-radius: 22px; font-size: 12px; font-weight: 700; min-height: 38px; }
+.modeSwitch button[aria-pressed=true] { color: white; background: var(--ink); }
+.search { height: 49px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-radius: 10px; background: #f3f3f3; }
+.search svg { width: 20px; height: 20px; }
+.search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; }
+.search button { padding: 5px 0; }
+.categories { display: flex; gap: 18px; padding: 22px 20px 17px; overflow-x: auto; scrollbar-width: none; }
+.categories > button { padding: 0 0 5px; min-width: 51px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; }
+.categories img, .allCategory { width: 51px; height: 51px; border-radius: 50%; }
+.allCategory { display: grid; place-items: center; background: #f1f0eb; }
+.categories button[aria-pressed=true] > span:last-child { color: var(--red); }
+.categories button[aria-pressed=true] img, .categories button[aria-pressed=true] .allCategory { outline: 2px solid var(--red); outline-offset: 3px; }
+.filters { display: flex; gap: 8px; padding: 0 20px 20px; align-items: center; }
+.filters > button, .filters select { background: #f2f2f2; border: 0; border-radius: 20px; padding: 10px 12px; min-height: 38px; font-size: 11px; font-weight: 700; min-width: 0; }
+.filters select { max-width: 165px; }
+.filters > button[aria-pressed=true] { color: white; background: var(--ink); }
+.restaurants { padding: 0 20px 24px; }
+.sectionTitle { margin-bottom: 19px; }
+.sectionTitle h1 { font-size: 25px; letter-spacing: -.85px; line-height: 1.13; font-weight: 850; }
+.sectionTitle p { margin-top: 7px; font-size: 11px; color: var(--muted); }
+.restaurant { margin-bottom: 25px; }
+.restaurantImage { position: relative; }
+.restaurantImage > button:first-child { display: block; padding: 0; width: 100%; }
+.restaurantImage img { width: 100%; height: 178px; border-radius: 8px; }
+.restaurantImage > span { position: absolute; right: 10px; bottom: 10px; padding: 7px 10px; background: white; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.favorite { display: grid; place-items: center; position: absolute; right: 11px; top: 11px; width: 36px; height: 36px; background: white !important; border-radius: 50%; }
+.favorite svg { width: 19px; height: 19px; }
+.favorite[aria-pressed=true] svg { fill: var(--red); stroke: var(--red); }
+.restaurantInfo { text-align: left; width: 100%; padding: 11px 0 0; }
+.restaurantInfo > div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.restaurantInfo h2 { font-size: 19px; font-weight: 800; letter-spacing: -.6px; }
+.restaurantInfo > div > b { font-size: 12px; white-space: nowrap; }
+.restaurantInfo > div > b > span { font-size: 10px; }
+.restaurantInfo > p { color: var(--muted); font-size: 12px; margin: 5px 0; }
+.restaurantInfo .meta { font-size: 11px; line-height: 1.5; }
+.meta > span:last-child { color: var(--muted); }
+.navigation { display: flex; justify-content: space-around; flex-shrink: 0; padding: 9px 15px calc(9px + env(safe-area-inset-bottom)); background: white; box-shadow: 0 -3px 15px #00000007; z-index: 2; }
+.navigation > button { min-height: 47px; width: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: #666; }
+.navigation button > span { font-size: 10px; font-weight: 700; }
+.navigation button[aria-current] { color: var(--red); }
+.storeHero { position: relative; }
+.storeHero > img { width: 100%; height: 220px; }
+.storeIntro { padding: 23px 20px; }
+.storeIntro h1 { font-size: 30px; letter-spacing: -1.2px; margin-bottom: 11px; }
+.storeIntro > p { font-size: 12px; color: var(--muted); margin: 7px 0; line-height: 1.5; }
+.storeIntro > p b { color: var(--ink); }
+.storeIntro .description { margin-top: 14px; line-height: 1.65; }
+.storeMode { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-top: 21px; }
+.storeMode > span { display: grid; gap: 5px; text-align: right; }
+.storeMode > span b { font-size: 13px; }
+.storeMode > span small { font-size: 10px; color: var(--muted); }
+.menu { padding: 5px 20px 25px; }
+.menu > h2 { font-size: 23px; letter-spacing: -.6px; }
+.dish { display: flex; width: 100%; text-align: left; align-items: center; gap: 15px; padding: 20px 0; }
+.dish > span:first-child { flex: 1; }
+.dish h3 { font-size: 15px; line-height: 1.3; }
+.dish p { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 7px 0 10px; }
+.dish b { font-size: 13px; }
+.dishImage { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+.dishImage > img { width: 100%; height: 100%; border-radius: 7px; }
+.dishImage i { display: grid; place-items: center; position: absolute; bottom: -5px; right: -3px; width: 35px; height: 35px; border-radius: 50%; background: white; font-size: 27px; font-style: normal; box-shadow: 0 2px 7px #0002; }
+.floatingBag { display: flex; gap: 15px; align-items: center; margin: 8px 16px; padding: 15px 18px; background: var(--red) !important; color: white !important; border-radius: 8px; }
+.floatingBag > span { display: grid; place-items: center; min-width: 23px; height: 23px; border-radius: 5px; background: #0002; font-size: 12px; }
+.floatingBag b, .floatingBag strong { font-size: 13px; }
+.floatingBag strong { margin-left: auto; }
+.checkout { padding: 15px 20px 25px; }
+.cartRestaurant { text-align: left; padding: 0; margin-bottom: 24px; display: grid; gap: 8px; }
+.cartRestaurant h2 { font-size: 25px; letter-spacing: -.7px; }
+.cartRestaurant span { font-size: 12px; color: var(--red); font-weight: 700; }
+.cartItem { margin: 21px 0; }
+.cartItem > div { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.cartItem > div h3 { font-size: 15px; }
+.cartItem > div > b { font-size: 13px; white-space: nowrap; }
+.cartItem > p { font-size: 12px; color: var(--muted); margin-top: 7px; overflow-wrap: anywhere; }
+.cartItem > div:last-child { margin-top: 13px; }
+.textButton { font-size: 12px !important; text-decoration: underline; text-underline-offset: 3px; padding: 8px 0; }
+.stepper { display: flex; align-items: center; background: #f1f1f1; border-radius: 24px; }
+.stepper button { width: 37px; height: 38px; font-size: 22px; }
+.stepper > span { min-width: 22px; text-align: center; font-size: 13px; font-weight: 700; }
+.checkoutSection { margin-top: 32px; }
+.checkoutSection h2 { font-size: 20px; letter-spacing: -.4px; margin-bottom: 13px; }
+.checkoutSection > p { font-size: 12px; color: var(--muted); margin-bottom: 15px; }
+.addressRow { display: flex; align-items: flex-start; gap: 12px; margin: 24px 0; }
+.addressRow > div { flex: 1; }
+.addressRow b { font-size: 13px; }
+.addressRow p { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 6px; overflow-wrap: anywhere; }
+.field { display: grid; gap: 9px; font-size: 12px; font-weight: 700; margin: 20px 0; }
+.field input, .field select, .field textarea { width: 100%; min-width: 0; padding: 13px; background: #f3f3f3; border: 0; border-radius: 7px; font-size: 13px; font-weight: 400; }
+.field textarea { min-height: 85px; resize: vertical; }
+.tips { display: flex; gap: 7px; }
+.tips > button { flex: 1; padding: 13px 5px; display: grid; gap: 6px; border-radius: 7px; background: #f1f1f1; font-size: 12px; font-weight: 700; }
+.tips small { font-size: 10px; font-weight: 400; }
+.tips > button[aria-pressed=true] { background: var(--ink); color: white; }
+.totals { display: grid; gap: 14px; margin: 31px 0 23px; }
+.totals > div { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.totals dd { margin: 0; }
+.totals .total { font-size: 22px; font-weight: 800; margin-top: 8px; }
+.simulation { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 18px !important; }
+.primary { display: block; width: 100%; background: var(--red) !important; color: white !important; padding: 17px 13px; border-radius: 8px; min-height: 52px; font-size: 14px !important; font-weight: 700 !important; }
+.orders { padding: 16px 20px 28px; }
+.orders > article { padding: 19px 0 26px; display: grid; gap: 13px; }
+.orderHeading { display: flex; justify-content: space-between; align-items: center; }
+.orderHeading > span { font-size: 11px; color: #326946; font-weight: 700; }
+.orders article h2 { font-size: 23px; letter-spacing: -.6px; }
+.orders article > p { font-size: 12px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+.orders small { color: var(--muted); font-size: 10px; }
+.empty { padding: 65px 8px; display: grid; justify-items: center; text-align: center; gap: 18px; }
+.empty > svg { width: 40px; height: 40px; }
+.empty h2 { font-size: 23px; letter-spacing: -.7px; }
+.empty > p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.empty > button { margin-top: 10px; }
+.toast { position: absolute; left: 20px; right: 20px; bottom: calc(86px + env(safe-area-inset-bottom)); background: var(--ink); color: white; padding: 15px; border-radius: 8px; text-align: center; font-size: 12px; z-index: 4; }
+.dialog { margin: auto; width: min(440px, calc(100% - 24px)); max-height: 90dvh; border: 0; border-radius: 14px; padding: 0; background: white; color: var(--ink); overflow: auto; overscroll-behavior: contain; }
+.dialog::backdrop { background: #0008; }
+.close { position: absolute; right: 12px; top: 12px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: white !important; z-index: 1; }
+.close svg { width: 19px; height: 19px; }
+.detailPhoto { width: 100%; height: 220px; }
+.dialogBody { padding: 29px 23px 25px; }
+.dialogBody > h2 { font-size: 26px; letter-spacing: -.8px; padding-right: 20px; line-height: 1.1; }
+.dialogBody > p { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 13px 0 19px; }
+.detailPrice { font-size: 19px; }
+.customize { border: 0; padding: 0; margin: 28px 0; }
+.customize legend { display: flex; gap: 15px; font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.customize legend > span { font-size: 11px; color: var(--muted); font-weight: 400; }
+.customize label { display: flex; justify-content: space-between; align-items: center; gap: 14px; min-height: 43px; font-size: 13px; }
+.customize label > span { display: grid; gap: 6px; }
+.customize small { font-size: 11px; color: var(--muted); }
+.customize input { accent-color: var(--red); width: 20px; height: 20px; }
+.dialogBody .smallPrint { font-size: 10px; }
+.quantityRow { display: flex; justify-content: space-between; align-items: center; margin: 24px 0; font-size: 13px; }
+.secondary { display: block; width: 100%; margin-top: 10px; padding: 15px; font-size: 13px !important; font-weight: 700 !important; }
+@media (max-width: 359px) { .header, .browseControls, .restaurants, .checkout, .orders, .storeIntro, .menu { padding-left: 16px; padding-right: 16px; } .categories { padding-left: 16px; padding-right: 16px; gap: 15px; } .filters { padding-left: 16px; padding-right: 16px; } .restaurantImage img { height: 158px; } .sectionTitle h1 { font-size: 23px; } .modeSwitch button { padding-left: 13px; padding-right: 13px; } .dishImage { width: 87px; height: 95px; } .storeMode > span b { font-size: 12px; } .storeMode > span small { font-size: 9px; } .destination > button { font-size: 11px; } .restaurantInfo h2 { font-size: 18px; } .filters select { max-width: 155px; } }
+@media (prefers-reduced-motion: reduce) { .stage * { scroll-behavior: auto !important; } }

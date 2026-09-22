@@ -223,6 +223,15 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/0922/default"),
   },
   {
+    key: "screen/0922/blink-auto",
+    legacyKeys: ["0922/blink-auto"],
+    area: "screen",
+    section: "dated",
+    date: "2026-09-23",
+    phrase: "Accepted independent full-tech-eye auto-blink baseline before manual blink-all",
+    load: () => import("./screen/0922/blink-auto"),
+  },
+  {
     key: "pc/0908/default",
     legacyKeys: [],
     area: "pc",

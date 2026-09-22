@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
+import SnsMobileOne from "@/components/sns/mobile/1";
+import SnsMobileTwo from "@/components/sns/mobile/2";
+import SnsMobileThree from "@/components/sns/mobile/3";
+import SnsMobileFour from "@/components/sns/mobile/4";
+import SnsMobileFive from "@/components/sns/mobile/5";
+import SnsMobileSix from "@/components/sns/mobile/6";
+import SnsMobileSeven from "@/components/sns/mobile/7";
+import SnsMobileEight from "@/components/sns/mobile/8";
+import SnsMobileNine from "@/components/sns/mobile/9";
+import SnsMobileTen from "@/components/sns/mobile/10";
 import SnsFeedOne from "@/components/sns/feed/1";
 import SnsInstagramOne from "@/components/sns/instagram/1";
 import SnsInstagramTwo from "@/components/sns/instagram/2";
@@ -29,6 +39,16 @@ import {
 } from "@/components/sns/experiments";
 
 const components: Record<SnsExperimentKey, ComponentType> = {
+  "mobile/1": SnsMobileOne,
+  "mobile/2": SnsMobileTwo,
+  "mobile/3": SnsMobileThree,
+  "mobile/4": SnsMobileFour,
+  "mobile/5": SnsMobileFive,
+  "mobile/6": SnsMobileSix,
+  "mobile/7": SnsMobileSeven,
+  "mobile/8": SnsMobileEight,
+  "mobile/9": SnsMobileNine,
+  "mobile/10": SnsMobileTen,
   "feed/1": SnsFeedOne,
   "instagram/1": SnsInstagramOne,
   "instagram/2": SnsInstagramTwo,
