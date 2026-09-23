@@ -4,8 +4,8 @@
 
 - Complete the requested work without unrelated redesigns or cleanup. Later requests are additive unless explicitly replacing earlier work. Make routine decisions; ask only when a missing choice materially changes scope or outcome.
 - Inspect `git status`; preserve others' modified/untracked work. Re-read shared files before surgical edits. Never revert, relocate, or finish another task's work unasked.
-- `apps/scc` and `apps/goldfishes` are experimental archives: use bounded, reversible trials and preserve baselines, stable routes, and useful failures. `apps/c-val` and `apps/ddong-meong` are finished projects: maintain established behavior and presentation unless the user requests an extension.
-- Keep four independent app roots. Routes stay thin; implementation/data/registries belong in the owning `components/` family, sockets in `apps/<owner>/socket/experiments/`, and notes in `apps/<owner>/docs/`.
+- `apps/scc`, `apps/goldfishes`, and `apps/six-sigma` are experimental archives: use bounded, reversible trials and preserve baselines, stable routes, and useful failures. `apps/c-val` and `apps/ddong-meong` are finished projects: maintain established behavior and presentation unless the user requests an extension.
+- Keep five independent app roots. Routes stay thin; implementation/data/registries belong in the owning `components/` family, sockets in `apps/<owner>/socket/experiments/`, and notes in `apps/<owner>/docs/`.
 
 ## Model and token policy
 
@@ -44,7 +44,7 @@ Start with target code and the app's `docs/README.md`; follow relevant links, no
 
 | Task | Required reference |
 | --- | --- |
-| Create/substantially change an SCC or Goldfishes experiment | [Tinkering](docs/foundations/tinkering.md) |
+| Create/substantially change an SCC, Goldfishes, or six-sigma experiment | [Tinkering](docs/foundations/tinkering.md) |
 | New/materially redesigned UI | [Design](docs/foundations/design-guidelines.md) |
 | Routes, registries, component organization | [Structure](docs/harness/experiments.md) |
 | New rendering techniques/current references | [Rendering research](docs/harness/visual-rendering-research.md) |

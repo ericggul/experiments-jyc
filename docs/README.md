@@ -7,6 +7,7 @@ index and relevant contract. This is a lookup map, not a reading checklist.
 | --- | --- | --- |
 | SCC | Experimental archive | [SCC docs](../apps/scc/docs/README.md) |
 | Goldfishes | Experimental archive | [Goldfishes docs](../apps/goldfishes/docs/README.md) |
+| six-sigma | Experimental archive | [six-sigma docs](../apps/six-sigma/docs/README.md) |
 | C-VAL | Finished; maintenance | [C-VAL docs](../apps/c-val/docs/README.md) |
 | ddong-meong | Finished; maintenance | [ddong-meong docs](../apps/ddong-meong/docs/README.md) |
 

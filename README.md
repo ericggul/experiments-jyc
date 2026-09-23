@@ -1,13 +1,14 @@
 # Experiments workspace
 
-One Git repository contains four independently deployable Next.js artworks:
+One Git repository contains five independent Next.js app roots:
 
 | App | Workspace root | Production URL | Local HTTPS URL |
 | --- | --- | --- | --- |
 | SCC archive | `apps/scc` | existing SCC project | `https://<local-hostname>:2000` |
-| C-VAL | `apps/c-val` | `https://c-val.vercel.app` | `https://<local-hostname>:2001` |
-| ddong-meong | `apps/ddong-meong` | `https://ddong-meong.vercel.app` | `https://<local-hostname>:2002` |
-| Goldfishes | `apps/goldfishes` | `https://goldfishes.vercel.app` | `https://<local-hostname>:2003` |
+| Goldfishes | `apps/goldfishes` | `https://goldfishes.vercel.app` | `https://<local-hostname>:2001` |
+| six-sigma | `apps/six-sigma` | Not deployed | `https://<local-hostname>:2002` |
+| ddong-meong | `apps/ddong-meong` | `https://ddong-meong.vercel.app` | `https://<local-hostname>:2010` |
+| C-VAL | `apps/c-val` | `https://c-val.vercel.app` | `https://<local-hostname>:2011` |
 
 The apps share dependency installation, certificates, tooling, and the modular
 Socket.IO relay without sharing their Next.js route or asset namespaces.
@@ -28,13 +29,13 @@ Install dependencies with the pinned Node version active:
 pnpm install
 ```
 
-The user-owned HTTPS development workflow for all four apps is:
+The user-owned HTTPS development workflow for all five apps is:
 
 ```bash
 pnpm dev
 ```
 
-It exposes the four app URLs in the table, the socket relay at
+It exposes the five app URLs in the table, the socket relay at
 `https://<local-hostname>:4000`, and the local root certificate at
 `https://<local-hostname>:4000/cert`. Focused workflows start one app plus the
 same relay:
@@ -44,6 +45,7 @@ pnpm dev:scc
 pnpm dev:c-val
 pnpm dev:ddong-meong
 pnpm dev:goldfishes
+pnpm dev:six-sigma
 ```
 
 C-VAL's canonical routes include `/mobile`, `/controller`, `/screen/[screen]`,

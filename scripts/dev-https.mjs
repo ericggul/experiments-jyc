@@ -19,22 +19,28 @@ const applications = [
     root: join(repositoryRoot, "apps", "scc"),
   },
   {
-    id: "c-val",
-    label: "C-VAL",
-    port: Number.parseInt(process.env.C_VAL_PORT || "2001", 10),
-    root: join(repositoryRoot, "apps", "c-val"),
+    id: "goldfishes",
+    label: "Goldfishes",
+    port: Number.parseInt(process.env.GOLDFISHES_PORT || "2001", 10),
+    root: join(repositoryRoot, "apps", "goldfishes"),
+  },
+  {
+    id: "six-sigma",
+    label: "six-sigma",
+    port: Number.parseInt(process.env.SIX_SIGMA_PORT || "2002", 10),
+    root: join(repositoryRoot, "apps", "six-sigma"),
   },
   {
     id: "ddong-meong",
     label: "ddong-meong",
-    port: Number.parseInt(process.env.DDONG_MEONG_PORT || "2002", 10),
+    port: Number.parseInt(process.env.DDONG_MEONG_PORT || "2010", 10),
     root: join(repositoryRoot, "apps", "ddong-meong"),
   },
   {
-    id: "goldfishes",
-    label: "Goldfishes",
-    port: Number.parseInt(process.env.GOLDFISHES_PORT || "2003", 10),
-    root: join(repositoryRoot, "apps", "goldfishes"),
+    id: "c-val",
+    label: "C-VAL",
+    port: Number.parseInt(process.env.C_VAL_PORT || "2011", 10),
+    root: join(repositoryRoot, "apps", "c-val"),
   },
 ];
 

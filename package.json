@@ -6,6 +6,7 @@
     "#socket/c-val": "./apps/c-val/socket/experiments/index.mjs",
     "#socket/ddong-meong": "./apps/ddong-meong/socket/experiments/index.mjs",
     "#socket/goldfishes": "./apps/goldfishes/socket/experiments/index.mjs",
+    "#socket/six-sigma": "./apps/six-sigma/socket/experiments/index.mjs",
     "#socket/scc": "./apps/scc/socket/experiments/index.mjs"
   },
   "engines": {
@@ -17,12 +18,14 @@
     "dev:c-val": "node scripts/dev-https.mjs --app c-val",
     "dev:ddong-meong": "node scripts/dev-https.mjs --app ddong-meong",
     "dev:goldfishes": "node scripts/dev-https.mjs --app goldfishes",
+    "dev:six-sigma": "node scripts/dev-https.mjs --app six-sigma",
     "dev:next": "node scripts/dev-https.mjs --all",
     "dev:socket": "bash scripts/generate-certs.sh && node socket-server.mjs",
     "dev:socket:scc": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=scc node socket-server.mjs",
     "dev:socket:c-val": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=c-val node socket-server.mjs",
     "dev:socket:ddong-meong": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=ddong-meong node socket-server.mjs",
     "dev:socket:goldfishes": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=goldfishes node socket-server.mjs",
+    "dev:socket:six-sigma": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=six-sigma node socket-server.mjs",
     "socket:production": "node socket-server-production.mjs",
     "deploy:scc-relay": "node scripts/deploy-scc-relay.mjs",
     "typecheck": "pnpm --recursive --if-present typecheck",

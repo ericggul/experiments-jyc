@@ -9,6 +9,8 @@ const INSPECT_TILE = 320;
 const WIDTH = INSPECT_TILE;
 const HEIGHT = INSPECT_TILE;
 const FRAME_MS = 1000 / 18;
+const MAX_FIELD_DRAWS_PER_FRAME = 8;
+const MAX_IMAGE_LOADS = 2;
 
 type FaceEntry = {
   canvas: HTMLCanvasElement;
@@ -90,6 +92,8 @@ export class Face3DAtlasRenderer {
   private readonly rotation = techFace3DStudies.map((study) => ({ x: study.restingTurn[0], y: study.restingTurn[1] }));
   private readonly requested = new Set<number>();
   private readonly pending = new Map<number, HTMLImageElement>();
+  private readonly loadQueue: number[] = [];
+  private fieldCursor = 0;
   private timer: number | undefined;
   private lastFrame = 0;
   private dirty = true;
@@ -155,42 +159,55 @@ export class Face3DAtlasRenderer {
   private request(index: number) {
     if (this.requested.has(index)) return;
     this.requested.add(index);
-    const source = new Image();
-    source.decoding = "async";
-    this.pending.set(index, source);
-    source.onload = () => {
-      this.pending.delete(index);
-      if (this.disposed) return;
-      const asset = this.assets[index]!;
-      const baked = makeSinglePortraitTexture(source, techFace3DStudies[index]!.faceWindow);
-      const texture = new THREE.CanvasTexture(baked);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
-      texture.needsUpdate = true;
-      asset.texture = texture; asset.material.map = texture; asset.material.needsUpdate = true; asset.loaded = true;
-      this.invalidate();
-    };
-    source.onerror = () => {
-      this.pending.delete(index);
-      const asset = this.assets[index];
-      if (asset) asset.failed = true;
-      this.entries.forEach((entry) => { if (entry.index === index) entry.canvas.dataset.face3dStatus = "fallback"; });
-    };
-    source.src = techFace3DStudies[index]!.sourceImage;
+    this.loadQueue.push(index);
+    this.loadNext();
+  }
+
+  private loadNext() {
+    while (!this.disposed && this.pending.size < MAX_IMAGE_LOADS && this.loadQueue.length) {
+      const index = this.loadQueue.shift()!;
+      if (!this.requested.has(index) || this.pending.has(index) || this.assets[index]?.loaded) continue;
+      const source = new Image();
+      source.decoding = "async";
+      this.pending.set(index, source);
+      source.onload = () => {
+        this.pending.delete(index);
+        if (this.disposed) return;
+        const asset = this.assets[index]!;
+        const baked = makeSinglePortraitTexture(source, techFace3DStudies[index]!.faceWindow);
+        const texture = new THREE.CanvasTexture(baked);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
+        texture.needsUpdate = true;
+        asset.texture = texture; asset.material.map = texture; asset.material.needsUpdate = true; asset.loaded = true;
+        this.invalidate();
+        this.loadNext();
+      };
+      source.onerror = () => {
+        this.pending.delete(index);
+        const asset = this.assets[index];
+        if (asset) asset.failed = true;
+        this.entries.forEach((entry) => { if (entry.index === index) entry.canvas.dataset.face3dStatus = "fallback"; });
+        this.loadNext();
+      };
+      source.src = techFace3DStudies[index]!.sourceImage;
+    }
   }
 
   private release(index: number) {
     if ([...this.entries.values()].some((entry) => entry.index === index && (entry.active || entry.inspect))) return;
+    this.requested.delete(index);
     const pending = this.pending.get(index);
     if (pending) {
       pending.onload = null; pending.onerror = null; pending.src = "";
       this.pending.delete(index);
+      this.loadNext();
     }
     const asset = this.assets[index];
     if (!asset) return;
     asset.texture?.dispose(); asset.texture = undefined;
     asset.material.map = null; asset.material.needsUpdate = true;
-    asset.loaded = false; this.requested.delete(index);
+    asset.loaded = false;
   }
 
   private frame = () => {
@@ -198,14 +215,21 @@ export class Face3DAtlasRenderer {
     this.lastFrame = now; this.timer = undefined;
     if (this.disposed || this.failed || document.hidden) return;
     // Inspection is event-driven. Only field forms may retain the 18 Hz loop.
-    const needsMotion = !this.reducedMotion.matches && [...this.entries.values()].some((entry) => entry.active && !entry.inspect);
-    if (!this.dirty && !needsMotion) return;
+    const fieldEntries = [...this.entries.values()].filter((entry) => entry.active && !entry.inspect);
+    const needsMotion = !this.reducedMotion.matches && fieldEntries.length > 0;
+    const needsFirstPaint = () => fieldEntries.some((entry) => entry.canvas.dataset.face3dStatus !== "ready" && this.assets[entry.index]?.loaded);
+    if (!this.dirty && !needsMotion && !needsFirstPaint()) return;
     this.renderer.setRenderTarget(null);
     this.renderer.setClearColor("#000000", 0);
     this.renderer.clear(true, true, true);
-    this.entries.forEach((entry) => {
+    const selected = fieldEntries.length <= MAX_FIELD_DRAWS_PER_FRAME
+      ? fieldEntries
+      : Array.from({ length: MAX_FIELD_DRAWS_PER_FRAME }, (_, offset) => fieldEntries[(this.fieldCursor + offset) % fieldEntries.length]!);
+    this.fieldCursor = fieldEntries.length ? (this.fieldCursor + selected.length) % fieldEntries.length : 0;
+    const inspector = [...this.entries.values()].find((entry) => entry.inspect);
+    for (const entry of inspector ? [...selected, inspector] : selected) {
       const asset = this.assets[entry.index]!;
-      if (!asset.loaded) return;
+      if (!asset.loaded) continue;
       const study = techFace3DStudies[entry.index]!;
       const pose = this.rotation[entry.index]!;
       if (entry.active && !entry.inspect && !this.reducedMotion.matches) {
@@ -230,9 +254,9 @@ export class Face3DAtlasRenderer {
       entry.canvas.style.visibility = "visible";
       entry.canvas.dataset.face3dStatus = "ready";
       entry.canvas.dataset.face3dSource = study.id;
-    });
+    }
     this.dirty = false;
-    if (needsMotion) this.schedule();
+    if (needsMotion || needsFirstPaint()) this.schedule();
   };
 
   attach(canvas: HTMLCanvasElement, index: number, active: boolean, inspect = false) {

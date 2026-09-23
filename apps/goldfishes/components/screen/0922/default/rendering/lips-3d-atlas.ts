@@ -13,6 +13,7 @@ const WORLD = 2.55;
 const WIDTH = INSPECT;
 const HEIGHT = INSPECT;
 const FRAME_MS = 1000 / 18;
+const MAX_FIELD_DRAWS_PER_FRAME = 8;
 
 type Entry = { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D; index: number; active: boolean; inspect: boolean };
 type Pose = { x: number; y: number; t: number };
@@ -92,6 +93,7 @@ export class Lips3DRenderer {
   private readonly part = new THREE.Object3D();
   private readonly matrix = new THREE.Matrix4();
   private timer: number | undefined;
+  private fieldCursor = 0;
   private decoding = 0;
   private dirty = true;
   private disposed = false;
@@ -234,7 +236,12 @@ export class Lips3DRenderer {
       entry.canvas.style.visibility = "visible"; entry.canvas.dataset.lips3dStatus = "ready"; entry.canvas.dataset.lips3dSource = lips3DStudies[index]!.id;
       this.lastUsed.set(index, performance.now());
     };
-    active.forEach((index) => { const entry = [...this.entries.values()].find((candidate) => !candidate.inspect && candidate.index === index); if (entry) draw(entry, false); });
+    const fieldEntries = [...this.entries.values()].filter((entry) => !entry.inspect && active.has(entry.index));
+    const selected = fieldEntries.length <= MAX_FIELD_DRAWS_PER_FRAME
+      ? fieldEntries
+      : Array.from({ length: MAX_FIELD_DRAWS_PER_FRAME }, (_, offset) => fieldEntries[(this.fieldCursor + offset) % fieldEntries.length]!);
+    this.fieldCursor = fieldEntries.length ? (this.fieldCursor + selected.length) % fieldEntries.length : 0;
+    selected.forEach((entry) => draw(entry, false));
     if (inspector) draw(inspector, true);
     this.dirty = false; if (active.size) this.schedule();
   };

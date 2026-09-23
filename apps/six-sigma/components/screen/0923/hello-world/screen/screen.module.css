@@ -1,0 +1,26 @@
+.screen {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.screen h1,
+.screen p {
+  margin: 0;
+}
+
+.screen h1 {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}
+
+.screen p {
+  color: #666;
+  font-size: 0.875rem;
+}

@@ -19,12 +19,17 @@
 .identity>img{width:34px;height:34px}
 .identity strong{font-size:13px}
 .photoButton img{aspect-ratio:1/1.03}
-.postActions{height:47px;gap:0;padding:0 11px;justify-content:space-between}
-.postActions button{display:flex;align-items:center;gap:4px;min-width:0;padding:5px 0;line-height:1}
-.postActions button span{font-size:12px;font-weight:600;white-space:nowrap}
-.postActions svg{width:23px;height:23px;stroke-width:1.8;flex:none}
-.postActions .saveAction{margin-left:9px}
-.postActions .saveAction svg{width:24px;height:24px}
+.postActions{height:60px;gap:18px;padding:0 13px;display:flex;align-items:flex-start}
+.postActions button{display:flex;align-items:center;gap:8px;min-width:0;margin-top:8px;padding:5px 0;line-height:1}
+.postActions button span{font-size:14px;font-weight:600;white-space:nowrap}
+.postActions svg{width:26px;height:26px;stroke-width:2;flex:none}
+.postActions svg[data-icon="heart"]{transform:translateX(1px) scale(1.1)}
+.postActions svg[data-icon="message"]{transform:translateX(2px) scale(1.18,1.08)}
+.postActions svg[data-icon="repost"]{transform:translateX(3px) scaleY(1.04)}
+.postActions svg[data-icon="send"]{transform:scale(1.1)}
+.postActions svg[data-icon="save"]{transform:scale(1.12,1.08)}
+.postActions .saveAction{margin-left:auto;margin-top:8.5px}
+.postActions .saveAction svg{width:25px;height:25px}
 .postCopy{padding:0 12px}
 .postCopy p{margin:0 0 4px;font-size:13px}
 .feedPost{padding-bottom:15px}
@@ -39,3 +44,4 @@
 .darkNav button[aria-current=page]{color:#fff}
 @media(max-width:350px){.postActions button span{font-size:10px}.postActions svg{width:20px;height:20px}.bottomNav{left:8px;right:8px}}
 .wordmark{display:block;width:145px;height:auto;max-height:38px;object-fit:contain}
+@media(max-width:350px){.postActions button span{font-size:10px}.postActions svg{width:22px;height:22px}.postActions .saveAction svg{width:22px;height:22px}}

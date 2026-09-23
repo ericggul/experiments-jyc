@@ -1,6 +1,7 @@
 import { cValExperiments } from "#socket/c-val";
 import { ddongMeongExperiments } from "#socket/ddong-meong";
 import { goldfishesExperiments } from "#socket/goldfishes";
+import { sixSigmaExperiments } from "#socket/six-sigma";
 import { sccExperiments } from "#socket/scc";
 
 function validateExperimentRegistry(items) {
@@ -33,6 +34,7 @@ export const experiments = validateExperimentRegistry([
   ...cValExperiments,
   ...sccExperiments.slice(5),
   ...goldfishesExperiments,
+  ...sixSigmaExperiments,
 ]);
 
 export const experimentRegistries = Object.freeze({
@@ -40,5 +42,6 @@ export const experimentRegistries = Object.freeze({
   "c-val": validateExperimentRegistry(cValExperiments),
   "ddong-meong": validateExperimentRegistry(ddongMeongExperiments),
   goldfishes: validateExperimentRegistry(goldfishesExperiments),
+  "six-sigma": validateExperimentRegistry(sixSigmaExperiments),
   scc: validateExperimentRegistry(sccExperiments),
 });
