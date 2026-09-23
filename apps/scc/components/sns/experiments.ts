@@ -9,6 +9,9 @@ export const snsExperiments = [
   { key: "mobile/8", category: "mobile", slug: "8", label: "sns/mobile/8 — PLATFORM" },
   { key: "mobile/9", category: "mobile", slug: "9", label: "sns/mobile/9 — REP" },
   { key: "mobile/10", category: "mobile", slug: "10", label: "sns/mobile/10 — COMMON" },
+  { key: "mobile/11", category: "mobile", slug: "11", label: "sns/mobile/11 — Instagram" },
+  { key: "mobile/12", category: "mobile", slug: "12", label: "sns/mobile/12 — TikTok" },
+  { key: "mobile/13", category: "mobile", slug: "13", label: "sns/mobile/13 — X" },
   { key: "feed/1", category: "feed", slug: "1", label: "sns/feed/1" },
   {
     key: "instagram/1",

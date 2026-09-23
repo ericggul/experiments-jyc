@@ -15,6 +15,8 @@ export default function BarabasiAlbertIndexPage() {
       <nav aria-label="Experiments" className="grid gap-2">
         {barabasiAlbertExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/barabasi-albert/${experiment.slug}`}
             className="w-fit bg-[#e7684f] px-3 py-2 text-sm font-semibold text-[#202943] outline-offset-4 hover:bg-[#f1e6c8] focus-visible:outline focus-visible:outline-1"

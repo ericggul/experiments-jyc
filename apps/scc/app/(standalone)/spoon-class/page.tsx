@@ -15,6 +15,8 @@ export default function SpoonClassIndexPage() {
       <nav className="grid">
         {spoonClassExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/spoon-class/${experiment.slug}`}
             className="py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-[#535353] hover:text-[#f7f7f7]"

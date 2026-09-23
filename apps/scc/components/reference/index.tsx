@@ -7,7 +7,7 @@ export default function ReferenceShelf() {
     <main className={styles.page}>
       <div className={styles.frame}>
         <header className={styles.header}>
-          <Link className={styles.homeLink} href="/">
+          <Link target="_blank" rel="noopener noreferrer" className={styles.homeLink} href="/">
             SCC
           </Link>
           <p>Reference shelf</p>

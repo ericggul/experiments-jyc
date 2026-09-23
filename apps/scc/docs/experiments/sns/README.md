@@ -1,7 +1,7 @@
 # SNS Experiment
 
-- [Mobile services 1–10](./mobile/README.md): independent Korean and US/UK
-  service interfaces for later collage experiments.
+- [Mobile surfaces 1–13](./mobile/README.md): ten independent Korean and US/UK
+  services, then Instagram, TikTok and X interface replicas with local content.
 
 Routes:
 

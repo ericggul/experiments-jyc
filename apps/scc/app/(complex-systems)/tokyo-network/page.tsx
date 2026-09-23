@@ -15,6 +15,8 @@ export default function TokyoNetworkIndexPage() {
       <nav className="grid border-t border-[#17201c]">
         {tokyoNetworkExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/tokyo-network/${experiment.slug}`}
             className="border-b border-[#17201c] py-4 font-mono text-[clamp(24px,6vw,64px)] leading-none tracking-[-0.06em] hover:bg-[#17201c] hover:text-[#dce2dc]"

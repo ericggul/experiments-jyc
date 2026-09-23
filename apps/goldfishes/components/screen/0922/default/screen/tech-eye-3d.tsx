@@ -3,8 +3,13 @@ import type { TechEyeRenderer } from "../rendering/tech-eyeball-atlas";
 
 let shared: TechEyeRenderer | null = null;
 let consumers = 0;
+let selectedBlinkSpeed = 0.7;
 
 export function blinkAll3DEyes() { shared?.blinkAll(); }
+export function set3DEyeBlinkSpeed(speed: number) {
+  selectedBlinkSpeed = speed;
+  shared?.setBlinkSpeed(speed);
+}
 
 export function TechEye3D({ index, active, gradient, inspect = false, blinking = false }: {
   index: number;
@@ -34,7 +39,10 @@ export function TechEye3D({ index, active, gradient, inspect = false, blinking =
     // Load Three only when this mode is selected. The blink module is independent.
     void import("../rendering/tech-eyeball-atlas").then(({ TechEyeRenderer }) => {
       if (cancelled) return;
-      shared ??= new TechEyeRenderer();
+      if (!shared) {
+        shared = new TechEyeRenderer();
+        shared.setBlinkSpeed(selectedBlinkSpeed);
+      }
       attached = shared;
       consumers++;
       renderer.current = shared;

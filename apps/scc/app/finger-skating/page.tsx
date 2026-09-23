@@ -21,6 +21,8 @@ export default function FingerSkatingPage() {
             <div className="grid border-t border-black">
               {group.experiments.flatMap((experiment) => [
                 <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
                   key={`${group.slug}-${experiment.slug}-mobile`}
                   href={`/finger-skating/${group.slug}/${experiment.slug}/mobile`}
                   className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-black hover:text-white"
@@ -28,6 +30,8 @@ export default function FingerSkatingPage() {
                   {experiment.slug}/mobile
                 </Link>,
                 <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
                   key={`${group.slug}-${experiment.slug}-screen`}
                   href={`/finger-skating/${group.slug}/${experiment.slug}/screen`}
                   className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-black hover:text-white"

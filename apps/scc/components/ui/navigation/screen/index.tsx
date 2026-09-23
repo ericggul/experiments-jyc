@@ -9,7 +9,7 @@ export function UiNavigation() {
         <h1 className={styles.title}>ui</h1>
         <nav aria-label="UI experiments" className={styles.routes}>
           {uiCategories.map((category) => (
-            <Link className={styles.route} href={category.href} key={category.id}>
+            <Link target="_blank" rel="noopener noreferrer" className={styles.route} href={category.href} key={category.id}>
               <span className={styles.label}>{category.label}</span>
               <span className={styles.path}>{category.href}</span>
             </Link>

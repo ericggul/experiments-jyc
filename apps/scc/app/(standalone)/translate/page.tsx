@@ -14,6 +14,8 @@ export default function TranslateIndexPage() {
       <nav className="grid border-t border-black">
         {translateExperiments.map((experiment) => (
           <a
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/translate/${experiment.slug}`}
             className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-black hover:text-white"

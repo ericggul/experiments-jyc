@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { advanceEyeBlink3D, createEyeBlink3D, triggerEyeBlink3D } from "./eye-blink-3d.ts";
+import { advanceEyeBlink3D, createEyeBlink3D, setEyeBlink3DSpeed, triggerEyeBlink3D } from "./eye-blink-3d.ts";
 
 function advanceFor(state, seconds) {
   for (let remaining = seconds; remaining > 0; remaining -= .02) {
@@ -59,6 +59,23 @@ test("manual command replaces a blink and permits no extra follow-up", () => {
     assert.equal(state.followup, false);
     assert.ok(state.delay > 2);
   }
+});
+
+test("speed changes duration without altering cadence or jumping the lid", () => {
+  const normal = createEyeBlink3D(7);
+  const slow = createEyeBlink3D(7);
+  setEyeBlink3DSpeed(slow, 0.7);
+  assert.equal(slow.delay, normal.delay);
+  triggerEyeBlink3D(normal);
+  triggerEyeBlink3D(slow);
+  assert.ok(slow.duration > normal.duration * 1.4);
+  advanceEyeBlink3D(slow, slow.duration / 2, true);
+  const halfway = 1 - slow.elapsed / slow.duration;
+  const remaining = slow.duration - slow.elapsed;
+  setEyeBlink3DSpeed(slow, 0.4);
+  assert.ok(Math.abs(1 - slow.elapsed / slow.duration - halfway) < 1e-10);
+  assert.ok(slow.duration - slow.elapsed > remaining);
+  assert.equal(slow.speed, 0.4);
 });
 
 test("a double blink is bounded to one follow-up before the normal interval", () => {

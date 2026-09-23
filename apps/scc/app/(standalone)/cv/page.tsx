@@ -15,6 +15,8 @@ export default function CvIndexPage() {
       <nav className="grid border-t border-black">
         {cvExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/cv/${experiment.slug}`}
             className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-black hover:text-white"

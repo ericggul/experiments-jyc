@@ -35,7 +35,7 @@ history when their subject affects the task, not for every code change.
 
 ## Experiment map
 
-- [SNS mobile services 1–10](../apps/scc/docs/experiments/sns/mobile/README.md): independent Korean and US/UK mobile service interfaces.
+- [SNS mobile surfaces 1–13](../apps/scc/docs/experiments/sns/mobile/README.md): mobile services and Instagram, TikTok and X replicas.
 
 - [Goldfishes maximalist collage](../apps/goldfishes/docs/maximalist-collage/README.md): independent browser interface cut-ups and accumulated prints.
 - [Splice](../apps/scc/docs/experiments/standalone/splice/README.md): two-deck audio collage practice; a separate instrument for the later native application collage direction.

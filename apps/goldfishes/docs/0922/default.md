@@ -15,12 +15,22 @@ The component modules are local to `0922/default`; the story session key,
 renderer log label, generator target, and copied audio asset use the new
 experiment identity. Existing 0908 image URLs remain unchanged.
 
+The optional [face and lips 3D studies and full-field expansion](./face-lips-3d-trials.md)
+are isolated behind their respective right-panel controls. The original 2D
+face and lips options remain the comparison baseline. Face 3D renders 76
+source-matched portraits with four exact-photo fallbacks; lips 3D renders 64
+source-matched forms with 16 exact V2 fallbacks where source quality is
+insufficient or a higher-resolution original could not be obtained.
+
 ## 3D eyeballs — 2026-09-23
 
 The separate [80-source 3D eyeball option](./tech-eye-3d.md) preserves both 2D
-modes and the default selection. The added `3D blinking` option and shared
-`blink all` command also preserve the lid-free 3D option. Source/proportion and renderer verification
-are documented independently from the blink tests below.
+modes and the default selection. The `3D blinking` option has a `blink speed`
+slider, which also controls the 3D `blink all` command. The three requested
+`surface` options (`tech`, `colour`, `hieroglyphs`) are absent from this route's
+menu; `tech mono` remains. The thin story ring and separator are hidden around
+3D eyes. Source/proportion and renderer verification are documented independently
+from the 2D blink tests below.
 
 ## Manual blink command — 2026-09-23
 

@@ -15,6 +15,8 @@ export default function ErdosRenyiIndexPage() {
       <nav aria-label="Experiments" className="grid gap-2">
         {erdosRenyiExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/erdos-renyi/${experiment.slug}`}
             className="w-fit bg-[#28529d] px-3 py-2 text-sm font-semibold text-[#f7f8fb] outline-offset-4 hover:bg-[#bb765d] focus-visible:outline focus-visible:outline-1"

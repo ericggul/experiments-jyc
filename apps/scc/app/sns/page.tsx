@@ -15,6 +15,8 @@ export default function SnsIndexPage() {
       <nav className="grid border-t border-black">
         {snsExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={`${experiment.category}/${experiment.slug}`}
             href={`/sns/${experiment.category}/${experiment.slug}`}
             className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-black hover:text-white"

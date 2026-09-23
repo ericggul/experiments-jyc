@@ -10,7 +10,7 @@ export default function ChessIndexPage() {
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Chess</h1>
       <nav aria-label="Chess experiments">
         {chessExperiments.map((experiment) => (
-          <Link key={experiment.slug} href={`/chess/${experiment.slug}`} className="inline-block py-3 underline underline-offset-4">
+          <Link target="_blank" rel="noopener noreferrer" key={experiment.slug} href={`/chess/${experiment.slug}`} className="inline-block py-3 underline underline-offset-4">
             {experiment.label}
           </Link>
         ))}

@@ -12,6 +12,8 @@ export default function MomaOne() {
       <header className="sticky top-0 z-20 border-b border-black bg-white">
         <div className="grid grid-cols-[1fr_auto] items-center gap-4 px-4 py-3 md:grid-cols-[240px_1fr_auto] md:px-6">
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             href="/moma"
             className="text-[42px] font-black leading-none tracking-[-0.08em] md:text-[64px]"
             aria-label="Back to MoMA experiments"

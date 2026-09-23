@@ -103,7 +103,7 @@ export default function SpliceOne() {
   return (
     <main className={styles.instrument}>
       <header className={styles.header}>
-        <div className={styles.identity}><Link href="/splice" className={styles.wordmark}>splice</Link><span>Audio instrument</span></div>
+        <div className={styles.identity}><Link target="_blank" rel="noopener noreferrer" href="/splice" className={styles.wordmark}>splice</Link><span>Audio instrument</span></div>
         <div className={styles.headerActions}>
           <button type="button" className={styles.textButton} disabled={loading} onClick={() => operate((engine) => { void engine.loadPracticePair(); })}>
             {loading ? "Loading…" : "Load practice pair"}

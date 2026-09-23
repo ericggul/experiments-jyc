@@ -1,8 +1,10 @@
-# Mobile service surfaces
+# Mobile service and social-platform surfaces
 
-Ten independent fictional service interfaces, created 2026-09-23 as reusable
-DOM material for later web-interface collage experiments. These are original
-plausible services, not pixel-matched copies of named commercial applications.
+The first ten routes are independent fictional service interfaces, created
+2026-09-23 as reusable DOM material for later web-interface collage experiments.
+They are original plausible services, not pixel-matched copies of named
+commercial applications. Routes 11–13 instead reconstruct recognizable
+social-platform navigation and interaction patterns with local sample content.
 
 | Route | Service | Primary workflow |
 | --- | --- | --- |
@@ -16,6 +18,9 @@ plausible services, not pixel-matched copies of named commercial applications.
 | `/sns/mobile/8` | [PLATFORM — British rail](8.md) | Select outbound/return fares and manage local sample tickets |
 | `/sns/mobile/9` | [REP — US fitness booking](9.md) | Find scheduled classes, inspect studios and manage local bookings |
 | `/sns/mobile/10` | [COMMON — London neighbourhood marketplace](10.md) | Find nearby items, compose listings and continue local conversations |
+| `/sns/mobile/11` | [Instagram](11.md) | Move among the feed, stories, discovery, posts, Reels and profiles |
+| `/sns/mobile/12` | [TikTok](12.md) | Watch and navigate videos, creators, search, comments and saved states |
+| `/sns/mobile/13` | [X](13.md) | Read feeds and threads, search, visit profiles, compose and manage post actions |
 
 The existing SNS experiments establish the method: Instagram contributes
 recognizable viewport and action grammar; LinkedIn connects feed, detail and
@@ -24,7 +29,7 @@ and a library. This family preserves that connected behavior while changing
 the service and its mobile composition. Existing variants remain untouched.
 
 Each numbered folder owns its model, screen, CSS Module and entrypoint. The
-shared SNS registry and dynamic route expose the ten surfaces. Independent
+shared SNS registry and dynamic route expose the numbered surfaces. Independent
 markup and state keep future cut-up or distortion experiments bounded; no
 canvas screenshot, cross-service store, socket or production API is involved.
 
@@ -45,6 +50,12 @@ and adaptation decisions. Differences include density, navigation, photography,
 currency, sizing, locality and service-specific copy. They are fictional
 adaptations, not verified pixel replicas. No 1–5 implementation is changed by
 the 6–10 extension.
+
+Variants 11–13 are replicas of recognizable social-platform interface systems
+rather than fictional brands. They use local sample posts, media and state;
+social actions do not publish to or retrieve from Instagram, TikTok or X. Their
+numbered records specify the reference frame and the implemented inner-page
+flows. The earlier mobile services remain independent baselines.
 
 ## Variants 1–5 verification — 2026-09-23
 
@@ -98,3 +109,32 @@ physical-phone behavior, photo-file selection and remote photo availability
 remain unverified; the earlier 1–5 browser evidence does not apply to these
 variants. Public reference screenshots were inspected before implementation,
 but these fictional services are not verified pixel matches.
+
+## Variants 11–13 verification — 2026-09-23
+
+The three replicas use distinct platform navigation and session-local data.
+Instagram links its feed, stories, post detail, profile, Explore and Reels;
+TikTok links a local-video feed with comments, search, creator profiles and
+saved/liked views; X links its timeline, threads, profile, search and composer.
+Their individual records describe which visual and behavioral references were
+observed and where the reconstruction relies on inference.
+
+The 2026-09-23 revision gives Instagram 100 photo posts with 100 distinct
+source image IDs and captions, interleaved across ten accounts. Its bottom
+navigation follows Meta's publicly announced Home–Reels–Messages–Search–Profile
+arrangement; the announcement does not establish universal rollout. X has 108
+distinct top-level posts across 20 fictional accounts plus 14 linked replies;
+its dark shell follows a public mobile screenshot whose capture date is unknown.
+TikTok no longer wraps its five local clips back to the first. It advances in
+ordered batches from a curated Commons list, reaching at most 34 distinct
+source videos based on a static metadata check. Missing media, network or codec
+support can shorten a browser session, and the finite selection cannot match
+TikTok's continually replenished live feed.
+
+The integrated SCC TypeScript check, scoped ESLint, TikTok's pure feed-boundary
+test, local media-path and documentation-link checks, and `git diff --check`
+passed. A read-only source
+review also checked linked detail flows and corrected profile/search state
+issues before handoff. No browser, playback, device or same-viewport visual
+gate was run for 11–13. Their rendered fit, gesture timing, external photo
+loading and exact visual fidelity remain unverified.

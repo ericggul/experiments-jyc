@@ -15,6 +15,8 @@ export default function SmileExperimentsIndexPage() {
       <nav className="grid border-t border-black">
         {smileExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none hover:bg-black hover:text-white"
             href={`/ui/smile/${experiment.slug}`}
             key={experiment.slug}

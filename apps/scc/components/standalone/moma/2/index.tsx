@@ -9,14 +9,16 @@ export default function MomaTwo() {
       <div className="grid h-full grid-rows-[auto_1fr]">
         <nav className="grid grid-cols-[auto_1fr] items-center border-b border-black">
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             href="/moma"
             className="border-r border-black px-3 py-2 text-[clamp(28px,5vw,56px)] font-black leading-none tracking-[-0.08em]"
           >
             MoMA
           </Link>
           <div className="flex justify-end gap-4 px-3 text-sm font-bold">
-            <Link href="/moma/1">1</Link>
-            <Link href="/moma/2">2</Link>
+            <Link target="_blank" rel="noopener noreferrer" href="/moma/1">1</Link>
+            <Link target="_blank" rel="noopener noreferrer" href="/moma/2">2</Link>
           </div>
         </nav>
 

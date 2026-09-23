@@ -15,6 +15,9 @@ Within a family, a minimal `page.tsx` index links registered variants;
 `[experiment]/page.tsx` selects the variant from the matching
 `components/.../experiments.ts`. Use dynamic variants, not literal numbered
 route directories. Keep implementation in `components/.../[experiment]/`.
+SCC route links in the main catalogue, family indexes, and route navigation open
+their destination in a new tab so the catalogue stays available. In-screen
+state controls remain in the current tab.
 
 Multi-device variants add `[experiment]/mobile/page.tsx` and
 `[experiment]/screen/page.tsx`; controller/multi-screen variants use

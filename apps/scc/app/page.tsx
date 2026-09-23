@@ -23,6 +23,8 @@ export default function Home() {
           <div className="grid gap-3">
             {experimentCatalog.map((route) => (
               <Link
+                target="_blank"
+                rel="noopener noreferrer"
                 key={route.href}
                 href={route.href}
                 className="group grid gap-3 border border-[#171717]/15 bg-white/45 p-5 transition hover:border-[#171717]/55 hover:bg-white/80"

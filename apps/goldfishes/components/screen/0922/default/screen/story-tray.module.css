@@ -461,6 +461,18 @@
   border-width: 0;
 }
 
+.storyRing.storyRingEye3D {
+  padding: 0;
+}
+
+.storyRingEye3D::before {
+  display: none;
+}
+
+.storyRingEye3D .logoSurface {
+  border-width: 0;
+}
+
 .logoSurface {
   display: block;
   position: relative;

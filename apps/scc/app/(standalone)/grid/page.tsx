@@ -15,6 +15,8 @@ export default function GridIndexPage() {
       <nav className="grid border-t border-white">
         {gridExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/grid/${experiment.slug}`}
             className="border-b border-white py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-white hover:text-black"

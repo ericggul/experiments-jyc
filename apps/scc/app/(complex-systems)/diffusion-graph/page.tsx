@@ -15,6 +15,8 @@ export default function DiffusionGraphIndexPage() {
       <nav className="grid">
         {diffusionGraphExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/diffusion-graph/${experiment.slug}`}
             className="py-4 font-mono text-[clamp(20px,5vw,52px)] leading-none tracking-[-0.06em] hover:text-[#9ebcff]"

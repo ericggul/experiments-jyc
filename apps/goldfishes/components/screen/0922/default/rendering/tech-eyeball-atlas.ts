@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { techEye3DStudies } from "../model/tech-eye-3d";
-import { createEyeBlink3D, advanceEyeBlink3D, triggerEyeBlink3D } from "../model/eye-blink-3d";
+import { createEyeBlink3D, advanceEyeBlink3D, triggerEyeBlink3D, setEyeBlink3DSpeed } from "../model/eye-blink-3d";
 import { createEyeLids } from "./tech-eye-lids";
 
 // All identities share four instanced meshes and one transmission capture.
@@ -9,12 +9,13 @@ import { createEyeLids } from "./tech-eye-lids";
 const COUNT = techEye3DStudies.length;
 const COLUMNS = 10;
 const ROWS = Math.ceil(COUNT / COLUMNS);
-const TILE = 128;
+const TILE = 96;
 const INSPECT = 256;
 const WORLD_CELL = 2.3;
 const WIDTH = COLUMNS * TILE + INSPECT;
 const HEIGHT = Math.max(ROWS * TILE, INSPECT);
 const FRAME_MS = 1000 / 24;
+const BLINK_FRAME_MS = 1000 / 60;
 const IRIS_RADIUS = Math.sin(0.55);
 const IRIS_Z = Math.cos(0.55);
 const SLOT_COUNT = COUNT + 1;
@@ -97,6 +98,7 @@ export class TechEyeRenderer {
   private decoding = 0;
   private timer: number | undefined;
   private lastFrame = 0;
+  private movingLid = false;
   private disposed = false;
   private failed = false;
   private dirty = true;
@@ -118,7 +120,7 @@ export class TechEyeRenderer {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.82;
-    this.renderer.transmissionResolutionScale = 1;
+    this.renderer.transmissionResolutionScale = 0.7;
     this.renderer.info.autoReset = false;
     const worldWidth = WIDTH / TILE * WORLD_CELL, worldHeight = HEIGHT / TILE * WORLD_CELL;
     this.camera = new THREE.OrthographicCamera(-worldWidth / 2, worldWidth / 2, worldHeight / 2, -worldHeight / 2, 0.1, 30);
@@ -215,7 +217,8 @@ export class TechEyeRenderer {
   private invalidate = () => { this.dirty = true; this.schedule(); };
   private schedule() {
     if (this.timer !== undefined || this.disposed || this.failed || document.hidden) return;
-    this.timer = window.setTimeout(this.frame, Math.max(0, this.lastFrame + FRAME_MS - performance.now()));
+    const interval = this.movingLid ? BLINK_FRAME_MS : FRAME_MS;
+    this.timer = window.setTimeout(this.frame, Math.max(0, this.lastFrame + interval - performance.now()));
   }
 
   private request(index: number) {
@@ -260,9 +263,9 @@ export class TechEyeRenderer {
     const observedIrisRatio = study.profile.iris[2]! * 2 / Math.max(1, width);
     // Source-derived iris proportion; small authored anatomical variations elsewhere.
     const irisScale = 1.18 * THREE.MathUtils.clamp(observedIrisRatio / 0.43 * (0.96 + seeded(index, 19) * 0.08), 0.84, 1.15);
-    const overall = (inspect ? 2 : 1) * (0.91 + seeded(index, 10) * 0.07);
-    const x = inspect ? (COLUMNS + 1) * WORLD_CELL : (index % COLUMNS + 0.5) * WORLD_CELL;
-    const y = inspect ? WORLD_CELL : (Math.floor(index / COLUMNS) + 0.5) * WORLD_CELL;
+    const overall = (inspect ? INSPECT / TILE : 1) * (0.91 + seeded(index, 10) * 0.07);
+    const x = inspect ? (COLUMNS + INSPECT / TILE / 2) * WORLD_CELL : (index % COLUMNS + 0.5) * WORLD_CELL;
+    const y = inspect ? INSPECT / TILE / 2 * WORLD_CELL : (Math.floor(index / COLUMNS) + 0.5) * WORLD_CELL;
     this.root.position.set(x - WIDTH / TILE * WORLD_CELL / 2, HEIGHT / TILE * WORLD_CELL / 2 - y, 0);
     this.root.rotation.set(pose.x, pose.y, (seeded(index, 11) - 0.5) * 0.05);
     this.root.scale.set(overall * (0.975 + seeded(index, 12) * 0.05), overall * (0.97 + seeded(index, 13) * 0.06), overall * (0.97 + seeded(index, 14) * 0.07));
@@ -291,6 +294,7 @@ export class TechEyeRenderer {
     if (this.disposed || this.failed || document.hidden) return;
     const active = new Map<number, DOMRect>();
     const present = new Set<number>();
+    const firstPaint = new Set<number>();
     const blinkEnabled = new Set<number>();
     let showLids = false;
     let inspector: Entry | undefined;
@@ -301,6 +305,7 @@ export class TechEyeRenderer {
       }
       if (entry.inspect) { inspector = entry; return; }
       present.add(entry.index);
+      if (entry.canvas.dataset.eye3dStatus !== "ready") firstPaint.add(entry.index);
       if (entry.active && !this.reducedMotion.matches) {
         const rect = entry.canvas.getBoundingClientRect();
         if (rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight) active.set(entry.index, rect);
@@ -312,13 +317,22 @@ export class TechEyeRenderer {
     if (showLids && !this.lids) { this.lids = createEyeLids(SLOT_COUNT); this.scene.add(this.lids.mesh); }
     if (this.lids) this.lids.mesh.visible = showLids;
     const openness = this.blinks.map((state, index) => advanceEyeBlink3D(state, delta, blinkEnabled.has(index)));
+    const justFinished = new Set<number>();
     this.manualBlinks.forEach((index) => {
-      if (this.blinks[index]!.phase === "open") { this.manualBlinks.delete(index); this.dirty = true; }
+      if (this.blinks[index]!.phase === "open") {
+        this.manualBlinks.delete(index);
+        justFinished.add(index);
+        this.dirty = true;
+      }
     });
+    this.movingLid = [...blinkEnabled].some((index) => this.blinks[index]!.phase !== "open");
     showLids = this.manualBlinks.size > 0 || [...this.entries.values()].some((entry) => entry.blinking);
     if (this.lids) this.lids.mesh.visible = showLids;
+    let slot = 0;
+    const drawn = new Set<number>();
     for (let index = 0; index < COUNT; index++) {
-      if (!present.has(index) || !this.loaded.has(index)) { this.hideSlot(index); continue; }
+      if (!present.has(index) || !this.loaded.has(index)) continue;
+      if (!active.has(index) && !firstPaint.has(index) && !this.manualBlinks.has(index) && !justFinished.has(index)) continue;
       const pose = this.poses[index]!;
       const rect = active.get(index);
       if (rect) {
@@ -331,13 +345,27 @@ export class TechEyeRenderer {
         }
         pose.x += (pitch - pose.x) * 0.13; pose.y += (yaw - pose.y) * 0.13;
       }
-      this.place(index, index, pose, false);
-      this.lids?.openness.setX(index, openness[index]!);
+      this.place(slot, index, pose, false);
+      this.lids?.openness.setX(slot, openness[index]!);
+      if (this.lids && openness[index]! >= 0.995) {
+        this.matrix.makeScale(0, 0, 0);
+        this.lids.mesh.setMatrixAt(slot, this.matrix);
+      }
+      drawn.add(index);
+      slot++;
     }
-    if (inspector && this.loaded.has(inspector.index)) this.place(COUNT, inspector.index, this.inspectPose, true);
-    else this.hideSlot(COUNT);
+    if (inspector && this.loaded.has(inspector.index)) {
+      this.place(slot, inspector.index, this.inspectPose, true);
+      this.lids?.openness.setX(slot, openness[inspector.index]!);
+      if (this.lids && openness[inspector.index]! >= 0.995) {
+        this.matrix.makeScale(0, 0, 0);
+        this.lids.mesh.setMatrixAt(slot, this.matrix);
+      }
+      slot++;
+    }
+    this.meshes.forEach((mesh) => { mesh.count = slot; });
     if (this.lids) {
-      if (inspector) this.lids.openness.setX(COUNT, openness[inspector.index]!);
+      this.lids.mesh.count = slot;
       this.lids.openness.needsUpdate = true; this.lids.mesh.instanceMatrix.needsUpdate = true;
     }
     this.meshes.forEach((mesh) => { mesh.instanceMatrix.needsUpdate = true; });
@@ -347,6 +375,7 @@ export class TechEyeRenderer {
     this.renderer.render(this.scene, this.camera);
     this.entries.forEach((entry) => {
       if (!this.loaded.has(entry.index)) return;
+      if (!entry.inspect && !drawn.has(entry.index)) return;
       if (!this.dirty && !entry.inspect && !active.has(entry.index) && !blinkEnabled.has(entry.index)) return;
       const size = entry.inspect ? INSPECT : TILE;
       const x = entry.inspect ? COLUMNS * TILE : entry.index % COLUMNS * TILE;
@@ -407,6 +436,10 @@ export class TechEyeRenderer {
       if (this.loaded.has(index) && rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight) indices.add(index);
     });
     indices.forEach((index) => { triggerEyeBlink3D(this.blinks[index]!); this.manualBlinks.add(index); });
+    this.invalidate();
+  }
+  setBlinkSpeed(speed: number) {
+    this.blinks.forEach((state) => setEyeBlink3DSpeed(state, speed));
     this.invalidate();
   }
   detach(canvas: HTMLCanvasElement) { this.entries.delete(canvas); this.invalidate(); }

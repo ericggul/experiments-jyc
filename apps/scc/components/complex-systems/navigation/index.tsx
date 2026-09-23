@@ -179,6 +179,8 @@ export default function ComplexSystemsNavigation({
             <div className={styles.routes}>
               {group.experiments.map((experiment) => (
                 <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
                   key={experiment.id}
                   href={experiment.href}
                   prefetch={false}

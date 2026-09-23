@@ -17,6 +17,8 @@ export default function ParametricInterfaceNavigation({
       <nav aria-label="Parametric interface experiments" className={styles.list}>
         {experiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/parametric-interface/${experiment.slug}`}
             className={styles.link}

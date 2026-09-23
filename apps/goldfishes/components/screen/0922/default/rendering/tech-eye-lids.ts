@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 /** Separate add-on: baseline eyeball geometry/materials are untouched. */
 export function createEyeLids(count: number) {
-  const columns = 40, rows = 12;
+  const columns = 32, rows = 8;
   const positions: number[] = [], uvs: number[] = [], sides: number[] = [], indices: number[] = [];
   for (let side = 0; side < 2; side++) {
     const offset = positions.length / 3;
@@ -36,7 +36,7 @@ export function createEyeLids(count: number) {
         float edge=mix(closed, lidSide<.5 ? .87*arc : -.90*arc, opening);
         float y=lidSide<.5 ? mix(edge,arc,uv.y) : mix(-arc,edge,uv.y);
         float z=sqrt(max(0.,1.-x*x-y*y))*1.18+.014;
-        return vec3(x*1.015,y*1.015,z);
+        return vec3(x*.985,y*.985,z);
       }
     ` + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace("#include <beginnormal_vertex>",

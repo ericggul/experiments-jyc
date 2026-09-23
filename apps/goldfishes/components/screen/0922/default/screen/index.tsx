@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   createSocialStorySystem,
@@ -23,8 +23,12 @@ import { TechHieroglyph } from "./tech-hieroglyph";
 import { AppServiceMark } from "./app-service-mark";
 import { TechEyeBlink } from "./tech-eye-blink";
 import { createEyeBlinkController } from "../model/eye-blink-controller";
-import { TechEye3D, blinkAll3DEyes } from "./tech-eye-3d";
+import { TechEye3D, blinkAll3DEyes, set3DEyeBlinkSpeed } from "./tech-eye-3d";
 import { techEye3DStudies } from "../model/tech-eye-3d";
+import { TechFace3D } from "./tech-face-3d";
+import { techFace3DStudies } from "../model/face-3d";
+import { TechLips3D } from "./tech-lips-3d";
+import { lips3DStudies, lips3DTrialSourceIndices } from "../model/lips-3d";
 
 const REFERENCE_STORY_SIZE = 93;
 const DEFAULT_ICON_SIZE = 60;
@@ -133,10 +137,7 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "eyes", value: "eyes" },
   { label: "lips", value: "lips" },
   { label: "apps", value: "apps" },
-  { label: "hieroglyphs", value: "hieroglyphs" },
-  { label: "colour", value: "colour" },
   { label: "tech mono", value: "techMono" },
-  { label: "tech", value: "tech" },
 ];
 const faceTypeOptions: readonly { label: string; value: FaceType }[] = [
   { label: "politician", value: "politician" },
@@ -464,14 +465,19 @@ export function InstagramSocialStoryTray() {
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [testSurface, setTestSurface] = useState<StorySurface>("eyes");
   const [faceType, setFaceType] = useState<FaceType>("bigTechColour");
+  const [face3DTrialEnabled, setFace3DTrialEnabled] = useState(false);
+  const [face3DStudyIndex, setFace3DStudyIndex] = useState(0);
   const [eyeType, setEyeType] = useState<EyeType>("bigTechColour");
   const [eyeBlinkEnabled, setEyeBlinkEnabled] = useState(true);
   const [eyeBlinkController] = useState(createEyeBlinkController);
   const [eye3DEnabled, setEye3DEnabled] = useState(false);
   const [eye3DBlinking, setEye3DBlinking] = useState(false);
+  const [eye3DBlinkSpeed, setEye3DBlinkSpeed] = useState(0.7);
   const [eye3DStudyIndex, setEye3DStudyIndex] = useState(0);
   const [lipSource, setLipSource] = useState<LipSource>("tech");
   const [lipVersion, setLipVersion] = useState<LipVersion>("v1");
+  const [lips3DTrialEnabled, setLips3DTrialEnabled] = useState(false);
+  const [lips3DStudyIndex, setLips3DStudyIndex] = useState(0);
   const [lipColour, setLipColour] = useState<LipColour>("original");
   const [techTypeface, setTechTypeface] = useState<TechTypeface>("image");
   const [hieroglyphSet, setHieroglyphSet] = useState<"default" | "tech">("default");
@@ -881,6 +887,7 @@ export function InstagramSocialStoryTray() {
             const isViewing = storyState?.status === "viewing";
             const isLeaving = storyState?.status === "leaving";
             const bubbleScale = storyState?.bubbleScale ?? 1;
+            const lip3DIndex = lips3DTrialSourceIndices.indexOf(story.index % techPowerFaces.length);
             const storyStyle = {
               "--bubble-scale": bubbleScale,
               "--bubble-appear-duration": `${bubbleAppearSeconds / activitySpeed}s`,
@@ -891,7 +898,7 @@ export function InstagramSocialStoryTray() {
             return (
               <li className={styles.gridItem} key={story.id}>
                 <span className={`${styles.story} ${isEmpty ? styles.storyEmpty : isLeaving ? styles.storyLeaving : isNew ? styles.storyEntering : ""}`} style={storyStyle}>
-                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : isLeaving ? styles.storyRingLeaving : isEmpty ? styles.storyRingDormant : styles.storyRingPlain}`} style={testSurface === "tech" && ringPaletteId !== "transparent" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
+                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : isLeaving ? styles.storyRingLeaving : isEmpty ? styles.storyRingDormant : styles.storyRingPlain} ${testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? styles.storyRingEye3D : ""}`} style={testSurface === "tech" && ringPaletteId !== "transparent" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
                     <span
                       aria-hidden="true"
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""}`}
@@ -902,6 +909,12 @@ export function InstagramSocialStoryTray() {
                       ) : null}
                       {testSurface === "eyes" && eyeType !== "human" && !eye3DEnabled && eyeBlinkEnabled ? (
                         <TechEyeBlink index={story.index} gradient={eyeType === "bigTechColour" ? brandGradient(story.index) : undefined} active={!isEmpty && !isLeaving} paused={bubblesPaused} controller={eyeBlinkController} />
+                      ) : null}
+                      {testSurface === "face" && face3DTrialEnabled && faceType === "bigTechOriginal" ? (
+                        <TechFace3D index={story.index % techFace3DStudies.length} active={!isEmpty && !isLeaving && !bubblesPaused} />
+                      ) : null}
+                      {testSurface === "lips" && lips3DTrialEnabled && lipSource === "tech" && lipVersion === "v2" && lipColour === "original" && lips3DStudies[lip3DIndex]?.usable ? (
+                        <TechLips3D index={lip3DIndex} active={!isEmpty && !isLeaving && !bubblesPaused} />
                       ) : null}
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
                       {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
@@ -947,11 +960,21 @@ export function InstagramSocialStoryTray() {
                   <legend className={styles.controlLegend}>face type</legend>
                   <div className={styles.optionGrid}>
                     {faceTypeOptions.map((option) => (
-                      <button aria-pressed={faceType === option.value} className={styles.optionButton} key={option.value} onClick={() => setFaceType(option.value)} type="button">
+                      <button aria-pressed={faceType === option.value} className={styles.optionButton} key={option.value} onClick={() => { setFaceType(option.value); if (option.value !== "bigTechOriginal") setFace3DTrialEnabled(false); }} type="button">
                         {option.label}
                       </button>
                     ))}
                   </div>
+                  <div aria-label="Face dimension" className={styles.optionGrid} role="group" style={{ marginTop: "0.5rem" }}>
+                    <button aria-pressed={!face3DTrialEnabled} className={styles.optionButton} onClick={() => setFace3DTrialEnabled(false)} type="button">photo 2D</button>
+                    <button aria-pressed={face3DTrialEnabled} className={styles.optionButton} onClick={() => { setFaceType("bigTechOriginal"); setFace3DTrialEnabled(true); }} type="button">face 3D · all</button>
+                  </div>
+                  {face3DTrialEnabled && faceType === "bigTechOriginal" ? (
+                    <details style={{ marginTop: "0.65rem" }}>
+                      <summary style={{ cursor: "pointer" }}>inspect 3D faces · drag to rotate</summary>
+                      <FaceStudyInspector index={face3DStudyIndex} onChange={setFace3DStudyIndex} />
+                    </details>
+                  ) : null}
                 </fieldset>
               ) : null}
 
@@ -975,6 +998,17 @@ export function InstagramSocialStoryTray() {
                     </div>
                   ) : null}
                   {eyeType !== "human" && eye3DEnabled ? (
+                    <label className={styles.sliderControl}>
+                      <span>blink speed</span>
+                      <input aria-label="3D blink speed" max="1.4" min="0.4" onChange={(event) => {
+                        const speed = Number(event.currentTarget.value);
+                        setEye3DBlinkSpeed(speed);
+                        set3DEyeBlinkSpeed(speed);
+                      }} step="0.05" type="range" value={eye3DBlinkSpeed} />
+                      <output>×{eye3DBlinkSpeed.toFixed(2)}</output>
+                    </label>
+                  ) : null}
+                  {eyeType !== "human" && eye3DEnabled ? (
                     <details style={{ marginTop: "0.65rem" }}>
                       <summary style={{ cursor: "pointer" }}>inspect 3D · drag to rotate</summary>
                       <EyeStudyInspector index={eye3DStudyIndex} onChange={setEye3DStudyIndex} blinking={eye3DBlinking} paused={bubblesPaused} />
@@ -989,7 +1023,7 @@ export function InstagramSocialStoryTray() {
                     <legend className={styles.controlLegend}>lip source</legend>
                     <div className={styles.optionGrid}>
                       {lipSourceOptions.map((option) => (
-                        <button aria-pressed={lipSource === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipSource(option.value)} type="button">
+                        <button aria-pressed={lipSource === option.value} className={styles.optionButton} key={option.value} onClick={() => { setLipSource(option.value); if (option.value !== "tech") setLips3DTrialEnabled(false); }} type="button">
                           {option.label}
                         </button>
                       ))}
@@ -999,7 +1033,7 @@ export function InstagramSocialStoryTray() {
                     <legend className={styles.controlLegend}>lip version</legend>
                     <div className={styles.optionGrid}>
                       {lipVersionOptions.map((option) => (
-                        <button aria-pressed={lipVersion === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipVersion(option.value)} type="button">
+                        <button aria-pressed={lipVersion === option.value} className={styles.optionButton} key={option.value} onClick={() => { setLipVersion(option.value); if (option.value !== "v2") setLips3DTrialEnabled(false); }} type="button">
                           {option.label}
                         </button>
                       ))}
@@ -1009,11 +1043,21 @@ export function InstagramSocialStoryTray() {
                     <legend className={styles.controlLegend}>lip colour</legend>
                     <div className={styles.optionGrid}>
                       {lipColourOptions.map((option) => (
-                        <button aria-pressed={lipColour === option.value} className={styles.optionButton} key={option.value} onClick={() => setLipColour(option.value)} type="button">
+                        <button aria-pressed={lipColour === option.value} className={styles.optionButton} key={option.value} onClick={() => { setLipColour(option.value); if (option.value !== "original") setLips3DTrialEnabled(false); }} type="button">
                           {option.label}
                         </button>
                       ))}
                     </div>
+                    <div aria-label="Lip dimension" className={styles.optionGrid} role="group" style={{ marginTop: "0.5rem" }}>
+                      <button aria-pressed={!lips3DTrialEnabled} className={styles.optionButton} onClick={() => setLips3DTrialEnabled(false)} type="button">photo 2D</button>
+                      <button aria-pressed={lips3DTrialEnabled} className={styles.optionButton} onClick={() => { setLipSource("tech"); setLipVersion("v2"); setLipColour("original"); setLips3DTrialEnabled(true); }} type="button">lips 3D · all</button>
+                    </div>
+                    {lips3DTrialEnabled && lipSource === "tech" && lipVersion === "v2" && lipColour === "original" ? (
+                      <details style={{ marginTop: "0.65rem" }}>
+                        <summary style={{ cursor: "pointer" }}>inspect 3D lips · drag to rotate</summary>
+                        <LipsStudyInspector index={lips3DStudyIndex} onChange={setLips3DStudyIndex} />
+                      </details>
+                    ) : null}
                   </fieldset>
                 </>
               ) : null}
@@ -1146,7 +1190,7 @@ export function InstagramSocialStoryTray() {
                 </div>
               </fieldset>
 
-              <fieldset className={styles.controlGroup}>
+              {testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? null : <fieldset className={styles.controlGroup}>
                 <legend className={styles.controlLegend}>story rings</legend>
                 <div className={styles.paletteRow}>
                   <span className={styles.choiceLabel}>colour</span>
@@ -1158,7 +1202,7 @@ export function InstagramSocialStoryTray() {
                     ))}
                   </span>
                 </div>
-              </fieldset>
+              </fieldset>}
 
               <fieldset className={styles.controlGroup}>
                 <legend className={styles.controlLegend}>sound</legend>
@@ -1242,6 +1286,61 @@ function EyeStudyInspector({ index, onChange, blinking, paused }: { index: numbe
     </div>
     <select aria-label="3D eye identity" className={styles.optionButton} value={index} onChange={(event) => onChange(Number(event.target.value))} style={{ width: "100%", marginTop: "0.3rem" }}>
       {techEye3DStudies.map((item) => <option key={item.id} value={item.index}>{item.name}</option>)}
+    </select>
+  </div>;
+}
+
+function FaceStudyInspector({ index, onChange }: { index: number; onChange: (index: number) => void }) {
+  const study = techFace3DStudies[index]!;
+  return <TrialStudyInspector
+    index={index} count={techFace3DStudies.length} name={study.name} sourceImage={study.sourceImage}
+    label="3D face identity" onChange={onChange}
+    options={techFace3DStudies.map((item) => ({ id: item.id, name: item.name }))}
+    model={<TechFace3D key={study.id} index={index} inspect active={false} />}
+  />;
+}
+
+function LipsStudyInspector({ index, onChange }: { index: number; onChange: (index: number) => void }) {
+  const study = lips3DStudies[index]!;
+  return <TrialStudyInspector
+    index={index} count={lips3DStudies.length} name={study.name} sourceImage={study.v2ComparisonImage}
+    label="3D lip identity" onChange={onChange}
+    options={lips3DStudies.map((item) => ({ id: item.id, name: item.name }))}
+    fallbackReason={!study.usable ? "V2 photo retained · no verified 3D source" : undefined}
+    model={<TechLips3D key={study.id} index={index} inspect active={false} />}
+  />;
+}
+
+function TrialStudyInspector({ index, count, name, sourceImage, label, onChange, options, model, fallbackReason }: {
+  index: number; count: number; name: string; sourceImage: string; label: string;
+  onChange: (index: number) => void; options: readonly { id: string; name: string }[]; model: ReactNode; fallbackReason?: string;
+}) {
+  const host = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [showSource, setShowSource] = useState(false);
+  useEffect(() => {
+    const details = host.current?.closest("details");
+    if (!details) return;
+    const update = () => setVisible(details.open);
+    details.addEventListener("toggle", update);
+    update();
+    return () => details.removeEventListener("toggle", update);
+  }, []);
+  return <div ref={host}>
+    <div style={{ position: "relative", width: "100%", aspectRatio: "1", maxWidth: 240, margin: "0.5rem auto" }}>
+      {visible && !showSource && !fallbackReason ? model : null}
+      {(showSource || fallbackReason) ? <div role="img" aria-label={`${name}: exact original photographic source`} style={{ position: "absolute", inset: 0, borderRadius: "50%", backgroundImage: `url(${sourceImage})`, backgroundPosition: "center", backgroundSize: "cover" }} /> : null}
+    </div>
+    {fallbackReason ? <p style={{ margin: "0 0 0.5rem", opacity: 0.72, fontSize: "0.7rem" }}>{fallbackReason}</p> : <div className={styles.optionGrid} style={{ marginBottom: "0.5rem" }}>
+      <button type="button" className={styles.optionButton} aria-pressed={!showSource} onClick={() => setShowSource(false)}>3D</button>
+      <button type="button" className={styles.optionButton} aria-pressed={showSource} onClick={() => setShowSource(true)}>original photo</button>
+    </div>}
+    <div className={styles.optionGrid}>
+      <button type="button" className={styles.optionButton} onClick={() => onChange((index + count - 1) % count)}>previous</button>
+      <button type="button" className={styles.optionButton} onClick={() => onChange((index + 1) % count)}>next</button>
+    </div>
+    <select aria-label={label} className={styles.optionButton} value={index} onChange={(event) => onChange(Number(event.target.value))} style={{ width: "100%", marginTop: "0.3rem" }}>
+      {options.map((item, optionIndex) => <option key={item.id} value={optionIndex}>{item.name}</option>)}
     </select>
   </div>;
 }

@@ -15,6 +15,8 @@ export default function BastilleDayIndexPage() {
       <nav className="grid border-t border-black">
         {bastilleDayExperiments.map((experiment) => (
           <Link
+            target="_blank"
+            rel="noopener noreferrer"
             key={experiment.slug}
             href={`/bastille-day/${experiment.slug}`}
             className="border-b border-black py-4 text-[clamp(28px,7vw,72px)] font-black leading-none tracking-[-0.06em] hover:bg-black hover:text-white"

@@ -44,16 +44,17 @@ remain local experiment history.
 ## Bounded rendering
 
 One WebGL context and four instanced meshes serve all identities plus one
-inspector. A 1536×1024 live render atlas supplies 128px field cells and a 256px
+inspector. A 1216×768 live render atlas supplies 96px field cells and a 256px
 inspector cell to lightweight 2D presentation canvases. The presented image is
 generated from real geometry each update, not a pre-rendered eye sprite.
 Seven measured draw calls include the physical transmission capture. Geometry
-is shared (492,480 submitted triangles at full fixed instance capacity, including
-capture), with five renderer-reported textures. Source decoding is limited to
-three concurrent images, loaded lazily. The iris atlas is 1280×1024, sclera
+is shared and active identities are packed into the draw batch each update,
+with five renderer-reported textures. Source decoding is limited to three
+concurrent images, loaded lazily. The iris atlas is 960×768, sclera
 1024×512, plus bounded environment/transmission targets.
 
-DPR is 1; scheduling is capped at 24 Hz, without per-frame React state changes.
+DPR is 1; idle gaze updates target 24 Hz and moving lids target 60 Hz, without
+per-frame React state changes. The transmissive capture uses 0.7 resolution scale.
 Only active identities animate; repeated IDs share their gaze. Pause and reduced
 motion stop autonomous gaze; hidden documents stop scheduling. Inspector input
 can explicitly invalidate a paused view. Unmount releases geometry, materials,
@@ -107,8 +108,9 @@ but explicit commands run once. Hidden documents stop the shared renderer.
 Ownership: `model/eye-blink-3d.ts` (pure deterministic timing) and
 `rendering/tech-eye-lids.ts` (optional geometry/material) are separate from both
 the original eyeball surfaces and the independent 2D blink implementation.
-The optional shell adds one instanced mesh: 9 calls / 803,520 submitted
-triangles including capture; disabling it returns to 7 / 492,480.
+The optional shell adds one instanced mesh. In the final packed renderer,
+3D blinking measured 9 calls and roughly 325,000–358,000 submitted triangles
+with 39–43 active identities; geometry cost scales with drawn identities.
 
 The five pure tests cover timing variation, slower reopening, pause, capped
 elapsed time, non-chaining doubles, and manual replacement across all 80 seeds.
@@ -123,3 +125,37 @@ In a separate approximately 10-second DOM sample, 41 identities were observed
 partially closing and 32 fully closing; inactive bubbles intentionally do not
 blink. These are observed samples, not a guarantee that all 80 blink in a
 fixed window. This verification does not measure GPU time or application FPS.
+
+## Slower, smoother control and field optimisation
+
+The right-panel `blink speed` slider ranges from ×0.40 to ×1.40, with ×0.70
+selected initially. It scales closing, dwell, and reopening time without
+changing the 2.5–7-second recurrence. A change mid-blink preserves the current
+lid position and rescales the remaining time. The same value applies to
+automatic blinks and 3D `blink all`. Identity and per-blink timing variation
+remain in effect.
+
+To keep the slower motion smooth, the moving-lid scheduler targets 60 updates/s;
+it targets 24 when no lid moves. Only active identities, first paints, manual
+blink targets, and the inspector enter the render batch. Offscreen and inactive
+canvases keep their last frame. The field cell resolution is 96px while the
+inspector retains 256px. Lid mesh subdivisions and transmission capture
+resolution are reduced. These changes cut the atlas from 1536×1024 to
+1216×768 without reducing the inspector's displayed resolution.
+
+On the same HTTPS browser, a 12.63-second sample before the optimisation gave
+approximately 18.7 eye updates/s, 2.59 ms average CPU work per update, 9 calls,
+and 803,520 submitted triangles. Afterward, a 14.55-second sample gave
+approximately 42.7 updates/s, 1.93 ms cumulative average CPU work, 9 calls,
+and 325,120–357,632 triangles. This is eye-renderer cadence, not total app FPS
+or GPU duration. At slider ×0.40, browser sampling observed at least 11 distinct
+lid positions during one reopening. No new browser errors or warnings appeared.
+
+The 3D-specific outer story ring and separator are hidden, and a fully open
+eyelid shell is collapsed so it cannot leave a thin rim around the globe.
+The ring colour control is hidden in 3D eye mode; other surfaces retain it.
+
+After packing active identities, the paused `blink all` path was checked again:
+84 ready outputs entered the blink and all 84 returned to an open frame at
+slider ×0.40. The final open frame is explicitly painted before an identity
+leaves the draw batch; the seven-call baseline then resumes.

@@ -10,6 +10,7 @@ export type EyeBlink3DState = {
   elapsed: number;
   duration: number;
   delay: number;
+  speed: number;
   /** The next blink is the second half of an already-authorized double blink. */
   followup: boolean;
   /** Only an ordinary blink may authorize one follow-up. */
@@ -53,7 +54,7 @@ function reset(state: EyeBlink3DState) {
 export function createEyeBlink3D(index: number): EyeBlink3DState {
   const state: EyeBlink3DState = {
     seed: seedFor(index), random: seedFor(index), phase: "open", elapsed: 0,
-    duration: 0, delay: 0, followup: false, blinkMayDouble: false,
+    duration: 0, delay: 0, speed: 1, followup: false, blinkMayDouble: false,
   };
   reset(state);
   return state;
@@ -66,7 +67,18 @@ function beginBlink(state: EyeBlink3DState) {
   state.phase = "closing";
   state.elapsed = 0;
   // Fast close, brief full closure, and a distinctly slower reopening.
-  state.duration = between(state, 0.11, 0.145) * pace(state);
+  state.duration = between(state, 0.11, 0.145) * pace(state) / state.speed;
+}
+
+/** Change motion speed without jumping the lid mid-blink. Cadence is unchanged. */
+export function setEyeBlink3DSpeed(state: EyeBlink3DState, speed: number) {
+  const next = Math.min(1.4, Math.max(0.4, Number.isFinite(speed) ? speed : 1));
+  const ratio = state.speed / next;
+  if (state.phase !== "open") {
+    state.elapsed *= ratio;
+    state.duration *= ratio;
+  }
+  state.speed = next;
 }
 
 /** Replace any pending/active blink with exactly one explicit blink. */
@@ -80,10 +92,10 @@ function finishPhase(state: EyeBlink3DState) {
   state.elapsed = 0;
   if (state.phase === "closing") {
     state.phase = "closed";
-    state.duration = between(state, 0.045, 0.075) * pace(state);
+    state.duration = between(state, 0.045, 0.075) * pace(state) / state.speed;
   } else if (state.phase === "closed") {
     state.phase = "opening";
-    state.duration = between(state, 0.17, 0.22) * pace(state);
+    state.duration = between(state, 0.17, 0.22) * pace(state) / state.speed;
   } else {
     state.phase = "open";
     state.delay = state.blinkMayDouble ? between(state, 0.12, 0.26) : between(state, MIN_INTERVAL, MAX_INTERVAL);
