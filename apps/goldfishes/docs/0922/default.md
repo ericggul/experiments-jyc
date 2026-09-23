@@ -17,10 +17,9 @@ experiment identity. Existing 0908 image URLs remain unchanged.
 
 The optional [face and lips 3D studies and full-field expansion](./face-lips-3d-trials.md)
 are isolated behind their respective right-panel controls. The original 2D
-face and lips options remain the comparison baseline. Face 3D renders 76
-source-matched portraits with four exact-photo fallbacks; lips 3D renders 64
-source-matched forms with 16 exact V2 fallbacks where source quality is
-insufficient or a higher-resolution original could not be obtained.
+face and lips options remain the comparison baseline. Both optional 3D modes
+now render all 80 identities as geometry. Four faces and 16 lips have
+lower-resolution photographic texture, but none stays as a flat 2D fallback.
 
 ## 3D eyeballs — 2026-09-23
 

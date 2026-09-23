@@ -7,7 +7,6 @@ type FaceRenderer = import("../rendering/face-3d-atlas").Face3DAtlasRenderer;
 
 let shared: FaceRenderer | null = null;
 let consumers = 0;
-const smallSourceAspect: Record<string, number> = { "016": 717 / 1375, "020": 192 / 287, "058": 490 / 665, "075": 1024 / 684 };
 
 export function TechFace3D({ index, inspect = false, active = true }: { index: number; inspect?: boolean; active?: boolean }) {
   const study = techFace3DStudy(index);
@@ -26,7 +25,7 @@ export function TechFace3D({ index, inspect = false, active = true }: { index: n
     let cancelled = false;
     let attached: FaceRenderer | null = null;
     let importing = false;
-    let inViewport = inspect && study.renderable;
+    let inViewport = inspect;
     const observer = new ResizeObserver(() => renderer.current?.update(element, activeRef.current));
     observer.observe(element);
     const detach = () => {
@@ -37,8 +36,8 @@ export function TechFace3D({ index, inspect = false, active = true }: { index: n
     const attach = () => {
       if (cancelled || !inViewport || attached || importing) return;
       importing = true;
-      // Rendering is code-split and viewport-lazy: the exact local portrait is
-      // retained as the immediate fallback, and off-screen faces allocate no texture.
+      // Rendering is code-split and viewport-lazy; off-screen faces allocate
+      // no texture, and the 3D option has no photographic DOM underlay.
       void import("../rendering/face-3d-atlas").then(({ Face3DAtlasRenderer }) => {
         importing = false;
         if (cancelled || !inViewport) return;
@@ -47,7 +46,7 @@ export function TechFace3D({ index, inspect = false, active = true }: { index: n
         shared.attach(element, index, activeRef.current, inspect);
       }).catch(() => { importing = false; element.dataset.face3dStatus = "fallback"; });
     };
-    const visibility = inspect || !study.renderable ? null : new IntersectionObserver((records) => {
+    const visibility = inspect ? null : new IntersectionObserver((records) => {
       inViewport = Boolean(records[0]?.isIntersecting);
       if (inViewport) attach(); else detach();
     }, { rootMargin: "80px" });
@@ -60,14 +59,8 @@ export function TechFace3D({ index, inspect = false, active = true }: { index: n
 
   if (!study) return null;
   const label = `${study.name}, volumetric portrait study. Drag or use arrow keys to rotate.`;
-  const [cropLeft, cropTop, cropWidth, cropHeight] = study.faceWindow;
-  const aspect = smallSourceAspect[study.id];
-  const imageHeight = aspect ? Math.max(1 / cropHeight, 1 / (cropWidth * aspect)) : 1 / cropHeight;
-  const imageWidth = aspect ? imageHeight * aspect : 1 / cropWidth;
   return <span style={{ position: "absolute", inset: 0, display: "block", overflow: "hidden", borderRadius: "50%", isolation: "isolate" }}>
-    {/* eslint-disable-next-line @next/next/no-img-element -- exact local source is also the failure fallback. */}
-    <img data-face3d-fallback src={study.sourceImage} alt="" aria-hidden style={{ position: "absolute", left: `${(0.5 - (cropLeft + cropWidth / 2) * imageWidth) * 100}%`, top: `${(0.5 - (cropTop + cropHeight / 2) * imageHeight) * 100}%`, width: `${imageWidth * 100}%`, height: `${imageHeight * 100}%`, maxWidth: "none" }} />
-    <canvas ref={canvas} data-tech-face-3d={index} data-face3d-status={study.renderable ? "loading" : "fallback"} aria-hidden={!inspect}
+    <canvas ref={canvas} data-tech-face-3d={index} data-face3d-status="loading" aria-hidden={!inspect}
       aria-label={inspect ? label : undefined} tabIndex={inspect ? 0 : undefined}
       onPointerDown={inspect ? (event) => event.currentTarget.setPointerCapture(event.pointerId) : undefined}
       onPointerMove={inspect ? (event) => {

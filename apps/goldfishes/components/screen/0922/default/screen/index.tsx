@@ -888,6 +888,8 @@ export function InstagramSocialStoryTray() {
             const isLeaving = storyState?.status === "leaving";
             const bubbleScale = storyState?.bubbleScale ?? 1;
             const lip3DIndex = lips3DTrialSourceIndices.indexOf(story.index % techPowerFaces.length);
+            const showFace3D = testSurface === "face" && face3DTrialEnabled && faceType === "bigTechOriginal";
+            const showLips3D = testSurface === "lips" && lips3DTrialEnabled && lipSource === "tech" && lipVersion === "v2" && lipColour === "original" && lip3DIndex >= 0;
             const storyStyle = {
               "--bubble-scale": bubbleScale,
               "--bubble-appear-duration": `${bubbleAppearSeconds / activitySpeed}s`,
@@ -902,7 +904,7 @@ export function InstagramSocialStoryTray() {
                     <span
                       aria-hidden="true"
                       className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""}`}
-                      style={surfaceStyles[story.index]}
+                      style={showFace3D || showLips3D ? { backgroundColor: "#171a1e" } : surfaceStyles[story.index]}
                     >
                       {testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? (
                         <TechEye3D index={story.index} blinking={eye3DBlinking} gradient={eyeType === "bigTechColour" ? brandGradient(story.index) : undefined} active={!isEmpty && !isLeaving && !bubblesPaused} />
@@ -910,10 +912,10 @@ export function InstagramSocialStoryTray() {
                       {testSurface === "eyes" && eyeType !== "human" && !eye3DEnabled && eyeBlinkEnabled ? (
                         <TechEyeBlink index={story.index} gradient={eyeType === "bigTechColour" ? brandGradient(story.index) : undefined} active={!isEmpty && !isLeaving} paused={bubblesPaused} controller={eyeBlinkController} />
                       ) : null}
-                      {testSurface === "face" && face3DTrialEnabled && faceType === "bigTechOriginal" ? (
+                      {showFace3D ? (
                         <TechFace3D index={story.index % techFace3DStudies.length} active={!isEmpty && !isLeaving && !bubblesPaused} />
                       ) : null}
-                      {testSurface === "lips" && lips3DTrialEnabled && lipSource === "tech" && lipVersion === "v2" && lipColour === "original" && lips3DStudies[lip3DIndex]?.usable ? (
+                      {showLips3D ? (
                         <TechLips3D index={lip3DIndex} active={!isEmpty && !isLeaving && !bubblesPaused} />
                       ) : null}
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}

@@ -1,4 +1,4 @@
-# SCC workspace
+# Experiments workspace
 
 One Git repository contains four independently deployable Next.js artworks:
 

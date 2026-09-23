@@ -19,9 +19,8 @@ type FaceEntry = {
 };
 
 type FaceAsset = {
-  root: THREE.Group;
+  root: THREE.Mesh;
   material: THREE.MeshPhysicalMaterial;
-  coreMaterial: THREE.MeshPhysicalMaterial;
   texture?: THREE.Texture;
   loaded: boolean;
   failed: boolean;
@@ -44,20 +43,40 @@ function createFaceGeometry() {
   return deformFaceGeometry(new THREE.SphereGeometry(1, 64, 48));
 }
 
-function createPhotoGeometry() {
-  // A projected window spans only the frontal 115 degrees. The matte ovoid
-  // below supplies the sides/back, so a portrait never wraps through a front
-  // cylindrical seam when the form turns.
-  const geometry = deformFaceGeometry(new THREE.SphereGeometry(1, 64, 48, Math.PI * 0.18, Math.PI * 0.64));
-  const positions = geometry.getAttribute("position");
-  const uv = geometry.getAttribute("uv");
-  const halfWidth = Math.sin(Math.PI * 0.32);
-  for (let point = 0; point < positions.count; point++) {
-    // Three's canvas texture convention places v=1 at the top of this mesh.
-    uv.setXY(point, 0.5 + positions.getX(point) / (2 * halfWidth), 0.5 + positions.getY(point) / 2);
+function makeSinglePortraitTexture(source: HTMLImageElement, window: readonly [number, number, number, number]) {
+  // Three's sphere faces +Z at UV x=.25. One image occupies the front half;
+  // the other half is filled from its own edge colours, not a second surface.
+  const canvas = document.createElement("canvas");
+  canvas.width = 768; canvas.height = 512;
+  const context = canvas.getContext("2d")!;
+  const [left, top, width, height] = window;
+  context.drawImage(source, source.naturalWidth * left, source.naturalHeight * top,
+    source.naturalWidth * width, source.naturalHeight * height, 0, 0, 384, 512);
+  const averageEdge = (x: number, y: number) => {
+    const pixels = context.getImageData(x, y, 4, 8).data;
+    let red = 0, green = 0, blue = 0;
+    for (let pixel = 0; pixel < pixels.length; pixel += 4) { red += pixels[pixel]!; green += pixels[pixel + 1]!; blue += pixels[pixel + 2]!; }
+    const count = pixels.length / 4;
+    return [Math.round(red / count), Math.round(green / count), Math.round(blue / count)] as const;
+  };
+  for (let y = 0; y < 512; y += 8) {
+    const leftEdge = averageEdge(80, y), rightEdge = averageEdge(300, y);
+    const colour = (value: readonly number[]) => `rgb(${value[0]} ${value[1]} ${value[2]})`;
+    const tint = (value: readonly number[], alpha: number) => `rgba(${value[0]}, ${value[1]}, ${value[2]}, ${alpha})`;
+    // Extend the face's own nearby colour into its sides inside this one map.
+    // No photograph-shaped mesh or second material sits over the ovoid.
+    const leftBlend = context.createLinearGradient(0, 0, 88, 0);
+    leftBlend.addColorStop(0, tint(leftEdge, 1)); leftBlend.addColorStop(1, tint(leftEdge, 0));
+    context.fillStyle = leftBlend; context.fillRect(0, y, 88, 8);
+    const rightBlend = context.createLinearGradient(296, 0, 384, 0);
+    rightBlend.addColorStop(0, tint(rightEdge, 0)); rightBlend.addColorStop(1, tint(rightEdge, 1));
+    context.fillStyle = rightBlend; context.fillRect(296, y, 88, 8);
+    const middle = [0, 1, 2].map((index) => Math.round((leftEdge[index]! + rightEdge[index]!) / 2));
+    const gradient = context.createLinearGradient(384, 0, 768, 0);
+    gradient.addColorStop(0, colour(rightEdge)); gradient.addColorStop(.5, colour(middle)); gradient.addColorStop(1, colour(leftEdge));
+    context.fillStyle = gradient; context.fillRect(384, y, 384, 8);
   }
-  uv.needsUpdate = true;
-  return geometry;
+  return canvas;
 }
 
 export class Face3DAtlasRenderer {
@@ -66,7 +85,6 @@ export class Face3DAtlasRenderer {
   private readonly camera = new THREE.PerspectiveCamera(27, 1, 0.1, 20);
   private readonly environment: THREE.WebGLRenderTarget;
   private readonly geometry = createFaceGeometry();
-  private readonly photoGeometry = createPhotoGeometry();
   private readonly assets: FaceAsset[] = [];
   private readonly entries = new Map<HTMLCanvasElement, FaceEntry>();
   private readonly rotation = techFace3DStudies.map((study) => ({ x: study.restingTurn[0], y: study.restingTurn[1] }));
@@ -106,29 +124,12 @@ export class Face3DAtlasRenderer {
 
     techFace3DStudies.forEach((study) => {
       const material = new THREE.MeshPhysicalMaterial({
-        roughness: 0.56, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.28,
-        envMapIntensity: 0.42, reflectivity: 0.22, specularIntensity: 0.2,
-        transparent: true, depthWrite: false,
+        roughness: 0.77 + study.finish[0] * 0.2, metalness: 0, clearcoat: study.finish[1] * 0.08, clearcoatRoughness: 0.8,
+        envMapIntensity: 0.18, reflectivity: 0.16, specularIntensity: 0.1,
       });
-      material.onBeforeCompile = (shader) => {
-        shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `#include <map_fragment>
-          // The photograph is a frontal observation, not a panorama. A broad
-          // lateral feather lets the observed face dissolve into the material
-          // ovoid instead of ending as a pasted vertical strip.
-          float photoFeather = smoothstep(0.055, 0.235, vMapUv.x)
-            * (1.0 - smoothstep(0.765, 0.945, vMapUv.x));
-          diffuseColor.a *= photoFeather;`);
-      };
-      material.customProgramCacheKey = () => "face-3d-frontal-feather-v1";
-      const coreMaterial = new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color().setHSL(0.07 + study.ovoid[2] * 0.025, 0.18, 0.31),
-        roughness: study.finish[0], metalness: 0.04, clearcoat: study.finish[1], clearcoatRoughness: 0.18, envMapIntensity: 0.76,
-      });
-      const core = new THREE.Mesh(this.geometry, coreMaterial);
-      const photograph = new THREE.Mesh(this.photoGeometry, material);
-      core.scale.set(...study.ovoid); photograph.scale.set(...study.ovoid).multiplyScalar(1.003);
-      const root = new THREE.Group(); root.add(core, photograph); root.visible = false;
-      this.assets.push({ root, material, coreMaterial, loaded: false, failed: false });
+      const root = new THREE.Mesh(this.geometry, material);
+      root.scale.set(...study.ovoid); root.visible = false;
+      this.assets.push({ root, material, loaded: false, failed: false });
       this.scene.add(root);
     });
     document.addEventListener("visibilitychange", this.onVisibility);
@@ -161,14 +162,8 @@ export class Face3DAtlasRenderer {
       this.pending.delete(index);
       if (this.disposed) return;
       const asset = this.assets[index]!;
-      const [left, top, width, height] = techFace3DStudies[index]!.faceWindow;
-      const crop = document.createElement("canvas");
-      crop.width = 512; crop.height = 640;
-      const context = crop.getContext("2d");
-      if (!context) return;
-      context.drawImage(source, source.naturalWidth * left, source.naturalHeight * top,
-        source.naturalWidth * width, source.naturalHeight * height, 0, 0, crop.width, crop.height);
-      const texture = new THREE.CanvasTexture(crop);
+      const baked = makeSinglePortraitTexture(source, techFace3DStudies[index]!.faceWindow);
+      const texture = new THREE.CanvasTexture(baked);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
       texture.needsUpdate = true;
@@ -179,7 +174,7 @@ export class Face3DAtlasRenderer {
       this.pending.delete(index);
       const asset = this.assets[index];
       if (asset) asset.failed = true;
-      this.entries.forEach((entry) => { if (entry.index === index) { entry.canvas.dataset.face3dStatus = "fallback"; this.setFallback(entry.canvas, true); } });
+      this.entries.forEach((entry) => { if (entry.index === index) entry.canvas.dataset.face3dStatus = "fallback"; });
     };
     source.src = techFace3DStudies[index]!.sourceImage;
   }
@@ -221,7 +216,7 @@ export class Face3DAtlasRenderer {
       const squash = entry.active && !entry.inspect && !this.reducedMotion.matches
         ? Math.sin(now * 0.00057 + entry.index * 2.17) * study.wobble[0]
         : 0;
-      asset.root.scale.set(1 + squash, 1 - squash * study.wobble[1], 1 + squash * 0.35);
+      asset.root.scale.set(study.ovoid[0] * (1 + squash), study.ovoid[1] * (1 - squash * study.wobble[1]), study.ovoid[2] * (1 + squash * 0.35));
       asset.root.visible = true;
       const size = entry.inspect ? INSPECT_TILE : TILE;
       const bottom = HEIGHT - size;
@@ -235,7 +230,6 @@ export class Face3DAtlasRenderer {
       entry.canvas.style.visibility = "visible";
       entry.canvas.dataset.face3dStatus = "ready";
       entry.canvas.dataset.face3dSource = study.id;
-      this.setFallback(entry.canvas, false);
     });
     this.dirty = false;
     if (needsMotion) this.schedule();
@@ -250,10 +244,6 @@ export class Face3DAtlasRenderer {
     this.entries.set(canvas, { canvas, context, index, active, inspect });
     if (active || inspect) this.request(index);
     this.invalidate();
-  }
-  private setFallback(canvas: HTMLCanvasElement, visible: boolean) {
-    const fallback = canvas.parentElement?.querySelector<HTMLElement>("[data-face3d-fallback]");
-    if (fallback) fallback.style.visibility = visible ? "visible" : "hidden";
   }
   update(canvas: HTMLCanvasElement, active: boolean) {
     const entry = this.entries.get(canvas);
@@ -283,7 +273,7 @@ export class Face3DAtlasRenderer {
     document.removeEventListener("visibilitychange", this.onVisibility);
     this.reducedMotion.removeEventListener("change", this.invalidate);
     this.renderer.domElement.removeEventListener("webglcontextlost", this.onContextLost);
-    this.assets.forEach((asset) => { asset.texture?.dispose(); asset.material.dispose(); asset.coreMaterial.dispose(); });
-    this.geometry.dispose(); this.photoGeometry.dispose(); this.environment.dispose(); this.renderer.dispose(); this.renderer.forceContextLoss();
+    this.assets.forEach((asset) => { asset.texture?.dispose(); asset.material.dispose(); });
+    this.geometry.dispose(); this.environment.dispose(); this.renderer.dispose(); this.renderer.forceContextLoss();
   }
 }

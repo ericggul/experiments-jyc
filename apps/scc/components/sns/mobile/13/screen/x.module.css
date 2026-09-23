@@ -3,3 +3,42 @@
 .headerBalance{width:38px;height:38px}.communityTabs{display:flex;gap:6px;padding:12px 14px;overflow-x:auto}.communityTabs button{white-space:nowrap;border:1px solid #536471;border-radius:18px;padding:7px 12px;font-size:13px}.communityTabs button[aria-pressed=true]{background:#e7e9ea;color:#000;border-color:#e7e9ea}.communityIntro{color:#71767b;font-size:13px;line-height:1.4;padding:4px 16px 15px}.messageRow{display:flex;width:100%;gap:12px;padding:14px 16px;text-align:left;border-bottom:1px solid #2f3336!important}.messageRow>span:last-child{display:flex;flex-direction:column;gap:3px;min-width:0}.messageRow small,.messageRow>span:last-child>span{font-size:13px;color:#71767b}.messageConversation{padding:18px 16px 70px;display:flex;flex-direction:column;gap:16px}.messageReceived,.messageSent{max-width:82%;padding:12px 15px;border-radius:18px;font-size:14px;line-height:1.4}.messageReceived{background:#202327;align-self:flex-start}.messageSent{background:#1d9bf0;color:#fff;align-self:flex-end}.messageForm{display:flex;gap:9px;position:sticky;bottom:calc(54px + env(safe-area-inset-bottom));background:#000;padding:10px 14px;border-top:1px solid #2f3336}.messageForm input{flex:1;min-width:0;border:1px solid #536471;border-radius:20px;background:#000;color:#e7e9ea;padding:10px 14px;font:inherit}.messageForm button{font-weight:700;color:#1d9bf0}.messageForm button:disabled{opacity:.45}.postBody:hover,.identity:hover,.personText:hover{text-decoration:none}.post:hover{background:#080808}
 
 .quote{display:block;width:100%;text-align:left;margin-top:9px;padding:11px!important;border:1px solid #536471!important;border-radius:14px;font-size:13px;line-height:1.35}.quote strong{font-weight:700}.quote span{margin-left:5px;color:#71767b}.quote p{margin-top:6px!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.communityTabs button[aria-pressed=true]{font-weight:700}
+
+/* Feed measurements follow the dated March 2026 iPhone X frame. */
+.app{width:min(100%,430px)}
+.homeHeader{height:calc(49px + env(safe-area-inset-top));padding-left:12px;padding-right:12px}
+.homeHeader+.tabs{top:calc(49px + env(safe-area-inset-top))}
+.homeHeader .miniAvatar{width:32px;height:32px;font-size:11px}
+.brand{display:grid;place-items:center;width:26px;height:26px;color:#fff}
+.brand svg{display:block;width:26px;height:26px}
+.homeHeader .topRight svg{width:24px;height:24px;stroke-width:1.8}
+.tabs{min-height:46px}
+.tabs button{padding:11px 6px;font-size:14px;font-weight:500}
+.tabs button[aria-current=page]{font-weight:700}
+.tabs button[aria-current=page]:after{height:2px;min-width:0;width:62px;max-width:none;border-radius:2px}
+.post{padding:10px 12px 9px}
+.postGrid{grid-template-columns:40px minmax(0,1fr);column-gap:10px}
+.postHeading{min-height:20px}
+.identity{font-size:14px;gap:4px;max-width:calc(100% - 24px)}
+.identity strong{font-weight:750}
+.postBody{font-size:15px;line-height:1.34}
+.iconButton{width:22px;height:22px}
+.iconButton svg{width:18px;height:18px}
+.actions{gap:4px;margin-top:8px;max-width:none}
+.actions button{gap:3px;padding:0;min-height:20px;font-size:11px}
+.actions svg{width:16px;height:16px;stroke-width:1.7}
+.media{margin-top:9px;border-radius:13px}
+.postDetail .postBody{font-size:18px;line-height:1.4}
+.postDetail .actions{margin-top:10px}
+.bottom{height:calc(52px + env(safe-area-inset-bottom));padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);justify-content:stretch}
+.bottom button{flex:1;width:auto;height:50px}
+.bottom svg{width:24px;height:24px;stroke-width:1.8}
+.bottom button[aria-current=page] svg{stroke-width:2}
+.fab{right:16px;bottom:calc(68px + env(safe-area-inset-bottom));width:54px;height:54px}
+.fab svg{width:25px;height:25px;stroke-width:1.9}
+.simpleHeader{min-height:50px;padding-left:12px;padding-right:12px}
+.simpleHeader h1{font-size:18px}
+.back svg{width:21px;height:21px}
+.scroller{padding-bottom:calc(62px + env(safe-area-inset-bottom))}
+@media(max-width:360px){.post{padding-left:10px;padding-right:10px}.postGrid{column-gap:8px}.identity{font-size:13px}.actions svg{width:16px;height:16px}}
+.outer{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}

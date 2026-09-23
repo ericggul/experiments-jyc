@@ -29,8 +29,12 @@ function formFromUpgrade(source: UpgradeEntry): Lips3DForm {
 export const lips3DStudies: readonly Lips3DStudy[] = techPowerFaces.map((person, storyIndex) => {
   const profile = byId.get(person.id), baseline = baselineForms[person.id], upgrade = sourceUpgrades.get(person.id);
   // 030/035 retain accepted matching crops from the five-person baseline.
-  const baselinePreserved = Boolean(baseline && !profile?.usable), usable = Boolean(upgrade || profile?.usable || baselinePreserved);
-  return { storyIndex, id: person.id, name: person.name, affiliation: person.affiliation, sourceImage: upgrade?.crop ?? `/images/0922/lips-3d/${person.id}.jpg`, v2ComparisonImage: `/images/0908/tech-power-lips-v2/${person.id}.jpg`, usable, sourceQuality: upgrade ? "source-upgrade" : baselinePreserved ? "baseline-preserved" : profile?.quality ?? "unusable", ...(profile?.reason && !upgrade ? { qualityReason: profile.reason } : {}), framing: usable ? (upgrade || profile?.quality === "usable" ? "well-framed" : "v2-clipped") : "unresolved", form: baseline ?? (upgrade ? formFromUpgrade(upgrade) : formFrom(profile?.mouth ?? null)) };
+  // The other small-source studies deliberately use their own V2 crop: it is
+  // low resolution, but remains the named person's photograph on 3D tissue.
+  const baselinePreserved = Boolean(baseline && !profile?.usable);
+  const useV2Crop = !upgrade && !profile?.usable && !baselinePreserved;
+  const v2ComparisonImage = `/images/0908/tech-power-lips-v2/${person.id}.jpg`;
+  return { storyIndex, id: person.id, name: person.name, affiliation: person.affiliation, sourceImage: upgrade?.crop ?? (useV2Crop ? v2ComparisonImage : `/images/0922/lips-3d/${person.id}.jpg`), v2ComparisonImage, usable: true, sourceQuality: upgrade ? "source-upgrade" : baselinePreserved ? "baseline-preserved" : profile?.quality ?? "unusable", ...(profile?.reason && !upgrade ? { qualityReason: profile.reason } : {}), framing: upgrade || profile?.quality === "usable" ? "well-framed" : "v2-clipped", form: baseline ?? (upgrade ? formFromUpgrade(upgrade) : formFrom(profile?.mouth ?? null)) };
 });
 /** Same order as `techPowerFaces`; integration may pass `story.index` directly. */
 export const lips3DTrialSourceIndices = lips3DStudies.map((study) => study.storyIndex);

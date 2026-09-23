@@ -38,7 +38,7 @@ DPR 1, lazy source decoding, bounded meshes and cleanup. Browser observation
 checks the exact HTTPS route, visible models, rotation, warnings/errors, and
 coexistence with the moving fish before any performance claim.
 
-## Current trial result
+## Initial five-source result (superseded by the expansion below)
 
 Both optional modes are exposed under `face` and `lips` in the existing right
 panel. The default `eyes` surface and both 2D archives are unchanged. Face 3D
@@ -70,34 +70,40 @@ The optional `face 3D · all` and `lips 3D · all` controls now map every story
 index to its own source identity. Neither replaces the preserved photo 2D
 control or changes the default eyes/blinking-2D surface.
 
-Faces: 76 of the 80 local portraits have Vision-detected face windows and
-render as photographic projections on individually proportioned, softly
-animated ovoids. The size, taper, and gentle squash vary per person to make
-the field a little more absurd without turning the portraits into generic
-cartoons. Four very small detected faces (016, 020, 058, 075) keep an
-aspect-correct, face-centered crop of their exact portrait instead of a
-pixelated 3D projection. One 320×320 DPR-1 WebGL context sequentially draws
+Faces: all 80 local portraits render on individually proportioned, softly
+animated ovoids. The earlier trial's untextured core plus a second
+photographic shell was rejected: a single sphere mesh now has one opaque
+texture baked from that person's own cropped portrait. Colours sampled from
+the image's interior extend into its sides/back within the same texture;
+there is no layered mesh or underlying 2D story image in 3D mode. The size,
+taper, and gentle squash vary per person. Four portraits (016, 020, 058, 075)
+remain lower-resolution but still render on the same 3D geometry. One
+320×320 DPR-1 WebGL context sequentially draws
 visible faces into 2D canvases at at most 18 Hz; off-screen entries do not
 allocate a face texture, and inactive textures are released.
 
-Lips: 64 identities use photographed mouth crops on individually varied
-upper/lower 3D forms. These comprise 45 newly extracted local crops, two
+Lips: all 80 identities render photographed mouth texture on individually
+varied upper/lower 3D forms. The higher-resolution group comprises 45 newly
+extracted local crops, two
 preserved trial crops (030, 035), and 17 further exact-person, licence-matched
 Commons originals recorded in
 [`lips-3d-upgrade-batch.json`](../../components/screen/0922/default/source/lips-3d-upgrade-batch.json).
 The field form is slightly larger than the five-source trial, with a less
 glossy, more skin-like finish. Browser comparison exposed a reversed atlas
 row index that had darkened many mouths; correcting it restored each
-photographed person's colour and texture. The other 16 identities retain their exact
-V2 photo in the field and inspector: 013, 020, 034, 038, 042, 058, 061, 062,
-064, 067, 070, 071, 074, 075, 076, 079. Five exact originals remain too
-small for a credible mouth crop; the other eleven were unavailable because
-Wikimedia rate-limited the source request. No substitute person's mouth or
-synthetic detail was introduced. The shared lips renderer uses a 10×10,
+photographed person's colour and texture. The remaining 16 identities use
+their own lower-resolution V2 mouth crop as the texture of the 3D lip mesh,
+never as a flat field fallback: 013, 020, 034, 038, 042, 058, 061, 062, 064,
+067, 070, 071, 074, 075, 076, 079. Five exact originals remain too small
+for a higher-quality crop; the other eleven were unavailable because
+Wikimedia rate-limited the source request. Their 3D form is real, but the
+photographic detail cannot exceed that source. No substitute person's mouth
+or invented photographic detail was introduced. The shared lips renderer uses a 10×10,
 1280²-pixel source atlas so all 80 slots fit without evicting a visible mouth.
 
 Live HTTPS browser checks covered mode switching, full-field readiness,
-inspector identity changes, a small-face fallback, and warnings/errors.
+inspector identity changes, the four formerly flat faces, a formerly flat
+low-resolution lip, and warnings/errors.
 Goldfishes typecheck and asset audit passed (649 references, none missing),
 as did diff checks. The renderer has explicit resolution and frame-rate caps;
 no device FPS or GPU frame-time claim is made.
