@@ -11,6 +11,19 @@ export type StoryCellState = Readonly<{
   until: number | null;
 }>;
 
+export type StoryActivation = Readonly<{
+  index: number;
+  createdAt: number;
+}>;
+
+export type StoryEdge = Readonly<{
+  id: string;
+  source: number;
+  target: number;
+  createdAt: number;
+  expiresAt: number;
+}>;
+
 export type SocialStorySystem = Readonly<{
   columns: number;
   rows: number;

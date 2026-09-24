@@ -1,13 +1,15 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import {
   activateStory,
   createStorySystem,
   stepStorySystem,
 } from "../model/social-stories";
+import { connectStoryActivation } from "../model/temporal-edges";
+import type { StoryActivation, StoryEdge } from "../model/types";
 import { instagramStoryRows } from "../../1/model/data";
 import styles from "./story-tray.module.css";
 
@@ -20,6 +22,10 @@ type GridSize = {
   columns: number;
   rows: number;
 };
+
+type StageSize = { width: number; height: number };
+type ActivePointer = { x: number; y: number; history: StoryActivation[] };
+type EdgeGeometry = StoryEdge & { path: string; startX: number; startY: number; endX: number; endY: number };
 
 type StorySurface = "empty" | "white" | "face" | "hangul" | "hanja" | "numbers" | "hieroglyph" | "logo" | "colour" | "paris" | "techMono" | "tech";
 
@@ -239,12 +245,45 @@ function TechMark({ term }: { term: string }) {
   );
 }
 
+function edgeGeometry(edge: StoryEdge, stage: StageSize, grid: GridSize, iconSize: number, gap: number): EdgeGeometry {
+  const gridWidth = grid.columns * iconSize + (grid.columns - 1) * gap;
+  const gridHeight = grid.rows * iconSize + (grid.rows - 1) * gap;
+  const center = (index: number) => ({
+    x: (stage.width - gridWidth) / 2 + iconSize / 2 + (index % grid.columns) * (iconSize + gap),
+    y: (stage.height - gridHeight) / 2 + iconSize / 2 + Math.floor(index / grid.columns) * (iconSize + gap),
+  });
+  const source = center(edge.source);
+  const target = center(edge.target);
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const distance = Math.hypot(dx, dy);
+  const unitX = dx / distance;
+  const unitY = dy / distance;
+  const inset = Math.min(iconSize * 0.48, distance * 0.28);
+  const startX = source.x + unitX * inset;
+  const startY = source.y + unitY * inset;
+  const endX = target.x - unitX * inset;
+  const endY = target.y - unitY * inset;
+  const bend = Math.min(18, distance * 0.16) * ((edge.source * 17 + edge.target * 13) % 2 === 0 ? 1 : -1);
+  const controlX = (startX + endX) / 2 - unitY * bend;
+  const controlY = (startY + endY) / 2 + unitX * bend;
+  return {
+    ...edge,
+    path: `M ${startX} ${startY} Q ${controlX} ${controlY} ${endX} ${endY}`,
+    startX, startY, endX, endY,
+  };
+}
+
 export function InstagramFingerStoryTray() {
   const gridRef = useRef<HTMLUListElement>(null);
-  const activePointers = useRef(new Map<number, { x: number; y: number }>());
+  const activePointers = useRef(new Map<number, ActivePointer>());
   const systemRef = useRef(createStorySystem(1, 1));
+  const edgesRef = useRef<StoryEdge[]>([]);
+  const nextEdgeId = useRef(0);
   const [gridSize, setGridSize] = useState<GridSize>({ columns: 1, rows: 1 });
+  const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [system, setSystem] = useState(() => createStorySystem(1, 1));
+  const [edges, setEdges] = useState<StoryEdge[]>([]);
   const [colourSeed] = useState(() => Math.random() * 100000);
   const testSurface = "empty" as StorySurface;
   const iconSize = DEFAULT_ICON_SIZE;
@@ -260,6 +299,9 @@ export function InstagramFingerStoryTray() {
     const updateGridSize = () => {
       const nextStage = { width: grid.clientWidth, height: grid.clientHeight };
       const nextGrid = getGridSize(nextStage.width, nextStage.height, iconSize, storyRowHeight, storyGap);
+      setStageSize((current) => (
+        current.width === nextStage.width && current.height === nextStage.height ? current : nextStage
+      ));
       setGridSize((current) => (
         current.columns === nextGrid.columns && current.rows === nextGrid.rows ? current : nextGrid
       ));
@@ -274,6 +316,8 @@ export function InstagramFingerStoryTray() {
     activePointers.current.clear();
     systemRef.current = createStorySystem(gridSize.columns, gridSize.rows);
     setSystem(systemRef.current);
+    edgesRef.current = [];
+    setEdges([]);
   }, [gridSize]);
 
   useEffect(() => {
@@ -284,13 +328,19 @@ export function InstagramFingerStoryTray() {
         systemRef.current = next;
         setSystem(next);
       }
+      const visible = edgesRef.current.filter((edge) => edge.expiresAt > Date.now());
+      if (visible.length !== edgesRef.current.length) {
+        edgesRef.current = visible;
+        setEdges(visible);
+      }
     }, SIMULATION_STEP_MILLISECONDS);
     return () => window.clearInterval(timer);
   }, []);
 
-  function activateAlongSegment(from: { x: number; y: number }, to: { x: number; y: number }) {
+  function activateAlongSegment(pointerId: number, from: { x: number; y: number }, to: { x: number; y: number }) {
     const grid = gridRef.current;
-    if (!grid) return;
+    const pointer = activePointers.current.get(pointerId);
+    if (!grid || !pointer) return;
     const rect = grid.getBoundingClientRect();
     const gridWidth = gridSize.columns * iconSize + (gridSize.columns - 1) * storyGap;
     const gridHeight = gridSize.rows * storyRowHeight + (gridSize.rows - 1) * storyGap;
@@ -302,6 +352,7 @@ export function InstagramFingerStoryTray() {
     let next = systemRef.current;
     const now = Date.now();
 
+    const crossed: { index: number; position: number }[] = [];
     for (const node of next.nodes) {
       if (next.states[node.index]?.status !== "empty") continue;
       const centerX = left + iconSize / 2 + (node.index % gridSize.columns) * (iconSize + storyGap);
@@ -312,12 +363,28 @@ export function InstagramFingerStoryTray() {
       const closestX = from.x + dx * projection;
       const closestY = from.y + dy * projection;
       if (Math.hypot(centerX - closestX, centerY - closestY) < iconSize / 2) {
-        next = activateStory(next, node.index, now);
+        crossed.push({ index: node.index, position: projection });
       }
     }
+    crossed.sort((a, b) => a.position - b.position);
+    let history = pointer.history;
+    const addedEdges: StoryEdge[] = [];
+    for (const crossing of crossed) {
+      next = activateStory(next, crossing.index, now);
+      const connection = connectStoryActivation(history, crossing.index, now, (source) => (
+        `finger-${pointerId}-${source}-${crossing.index}-${nextEdgeId.current++}`
+      ));
+      history = connection.history;
+      addedEdges.push(...connection.edges);
+    }
+    pointer.history = history;
     if (next !== systemRef.current) {
       systemRef.current = next;
       setSystem(next);
+    }
+    if (addedEdges.length > 0) {
+      edgesRef.current = [...edgesRef.current, ...addedEdges];
+      setEdges(edgesRef.current);
     }
   }
 
@@ -325,15 +392,16 @@ export function InstagramFingerStoryTray() {
     const previous = activePointers.current.get(event.pointerId);
     if (!previous) return;
     const samples = event.nativeEvent.getCoalescedEvents?.() ?? [event.nativeEvent];
-    let from = previous;
+    let from: { x: number; y: number } = previous;
     for (const sample of samples) {
       const to = { x: sample.clientX, y: sample.clientY };
-      activateAlongSegment(from, to);
+      activateAlongSegment(event.pointerId, from, to);
       from = to;
     }
     const final = { x: event.clientX, y: event.clientY };
-    activateAlongSegment(from, final);
-    activePointers.current.set(event.pointerId, final);
+    activateAlongSegment(event.pointerId, from, final);
+    const pointer = activePointers.current.get(event.pointerId);
+    if (pointer) activePointers.current.set(event.pointerId, { ...pointer, ...final });
   }
 
   function releasePointer(event: ReactPointerEvent<HTMLElement>, cancelled = false) {
@@ -354,6 +422,9 @@ export function InstagramFingerStoryTray() {
     "--story-separator": `${(iconSize / REFERENCE_STORY_SIZE) * 3.5}px`,
     "--story-ring-gradient": selectedRingPalette.gradient,
   } as CSSProperties;
+  const edgePaths = useMemo(() => edges.map((edge) => (
+    edgeGeometry(edge, stageSize, gridSize, iconSize, storyGap)
+  )), [edges, stageSize, gridSize, iconSize, storyGap]);
 
   return (
     <main
@@ -363,8 +434,8 @@ export function InstagramFingerStoryTray() {
         if (event.pointerType === "mouse" && event.button !== 0) return;
         event.currentTarget.setPointerCapture(event.pointerId);
         const point = { x: event.clientX, y: event.clientY };
-        activePointers.current.set(event.pointerId, point);
-        activateAlongSegment(point, point);
+        activePointers.current.set(event.pointerId, { ...point, history: [] });
+        activateAlongSegment(event.pointerId, point, point);
       }}
       onPointerMove={movePointer}
       onPointerUp={(event) => releasePointer(event)}
@@ -372,6 +443,22 @@ export function InstagramFingerStoryTray() {
       onLostPointerCapture={(event) => activePointers.current.delete(event.pointerId)}
     >
       <section className={styles.gridStage}>
+        {stageSize.width > 0 && stageSize.height > 0 ? (
+          <svg aria-hidden="true" className={styles.influenceLayer} viewBox={`0 0 ${stageSize.width} ${stageSize.height}`}>
+            <defs>
+              {edgePaths.map((edge) => (
+                <linearGradient gradientUnits="userSpaceOnUse" id={`temporal-${edge.id}`} key={edge.id} x1={edge.startX} x2={edge.endX} y1={edge.startY} y2={edge.endY}>
+                  <stop offset="0%" stopColor={selectedRingPalette.edgeStart} stopOpacity="0.16" />
+                  <stop offset="62%" stopColor={selectedRingPalette.edgeMiddle} stopOpacity="0.76" />
+                  <stop offset="100%" stopColor={selectedRingPalette.edgeEnd} stopOpacity="1" />
+                </linearGradient>
+              ))}
+            </defs>
+            {edgePaths.map((edge) => (
+              <path className={styles.influencePath} d={edge.path} key={edge.id} stroke={`url(#temporal-${edge.id})`} />
+            ))}
+          </svg>
+        ) : null}
         <ul className={styles.storyGrid} ref={gridRef} style={gridStyle}>
           {system.nodes.map((story) => {
             const storyState = system.states[story.index];
