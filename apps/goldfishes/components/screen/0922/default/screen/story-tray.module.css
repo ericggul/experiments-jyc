@@ -473,6 +473,14 @@
   border-width: 0;
 }
 
+.storyRing.storyRingFace3D {
+  padding: 0;
+}
+
+.storyRingFace3D .logoSurface {
+  border-width: 0;
+}
+
 .logoSurface {
   display: block;
   position: relative;

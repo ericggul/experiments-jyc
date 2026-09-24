@@ -147,6 +147,11 @@ export const experimentCatalog = [
     description: "Five parametric stock market interface clone experiments.",
   },
   {
+    href: "/mobile",
+    label: "mobile",
+    description: "Mobile clone archive and camera-based gaze tracking study.",
+  },
+  {
     href: "/sns",
     label: "sns",
     description: "Infinite mobile social feed with horizontal media swipes.",

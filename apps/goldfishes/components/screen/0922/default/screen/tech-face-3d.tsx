@@ -58,7 +58,7 @@ export function TechFace3D({ index, inspect = false, active = true }: { index: n
   }, [index, inspect, study]);
 
   if (!study) return null;
-  const label = `${study.name}, volumetric portrait study. Drag or use arrow keys to rotate.`;
+  const label = `${study.name}, rotating volumetric portrait study. Drag or use arrow keys to adjust the turn.`;
   return <span style={{ position: "absolute", inset: 0, display: "block", overflow: "hidden", borderRadius: "50%", isolation: "isolate" }}>
     <canvas ref={canvas} data-tech-face-3d={index} data-face3d-status="loading" aria-hidden={!inspect}
       aria-label={inspect ? label : undefined} tabIndex={inspect ? 0 : undefined}

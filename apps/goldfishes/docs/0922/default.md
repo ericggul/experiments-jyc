@@ -21,6 +21,51 @@ face and lips options remain the comparison baseline. Both optional 3D modes
 now render all 80 identities as geometry. Four faces and 16 lips have
 lower-resolution photographic texture, but none stays as a flat 2D fallback.
 
+## Apps spheres — 2026-09-24
+
+The `apps` surface now has an optional `2D / spherical 3D` choice. Each 3D
+ball uses a true sphere with the same service background colour and source
+mark as its flat counterpart; the mark is centered on the front, and the
+colour wraps around the sides and back. A rotatable inspector can select each
+service. The flat mark remains the initial mode and loading/failure fallback.
+The `rotate / still` control starts or freezes the whole 3D app field and
+inspector at their current angles; manual inspector dragging remains available.
+When enabled, spheres turn at slightly different, alternating speeds over
+roughly 9–13 seconds per revolution. Their angle persists when a bubble leaves
+and returns. One lazy WebGL context renders the full app field once per frame
+at a 24 Hz ceiling, then copies its tiles into the visible bubbles. Hidden
+documents, paused bubbles, and reduced-motion preference stop autonomous
+turning. The existing field, fish, bubble timing, and rings are unchanged. The
+HTTPS visual result and GPU frame time have not been observed.
+
+## Icons surface — 2026-09-24
+
+The optional `icons` control fills the existing bubble field with one of four
+SNS actions per stable story index: like, comment, repost, or send/share. The
+initial 2D option crops each icon from the exact action-row image used by SCC's
+[`/sns/navigation/2`](../../../scc/docs/experiments/sns/navigation/2.md);
+counts, save, and carousel dots are outside the icon crops. The source image is
+copied into this app's public assets so the route remains independently deployed.
+
+The 3D mode uses contours traced from those same four source-image crops. The
+heart uses the source's outer contour as a filled solid; the comment tail,
+two separate repost arrows, and send plane's opening retain their source
+geometry. All four signs have physical thickness and rounded front and back
+edges. The heart has a deeper curved bevel and smooth vertex normals so its
+side is rounded rather than a flat slab.
+The right panel offers `2D / 3D`, then `monochrome / colour` within 3D, plus a
+rotatable four-icon inspector. Monochrome is the default and stays close to the
+source's white. Colour uses Instagram-like red `#ed4956`, blue `#0095f6`,
+green `#00ba7c`, and neutral silver for send, which has no single recognised
+platform colour; these are authored variants, not an official SNS palette.
+One lazy WebGL context renders the four forms and copies into visible 2D
+canvases at DPR 1, refreshing only on a changed state or inspector rotation.
+The 2D icon remains available if 3D rendering fails. Fish, bubble timing and
+geometry, rings, other surfaces, and the initial selection are unchanged.
+The HTTPS screen was inspected in Chrome in both monochrome and colour; the
+inspector showed the filled heart and rotated objects with visible side depth.
+GPU timing and device frame rate have not been measured.
+
 ## 3D eyeballs — 2026-09-23
 
 The separate [80-source 3D eyeball option](./tech-eye-3d.md) preserves both 2D

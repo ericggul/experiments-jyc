@@ -107,3 +107,61 @@ low-resolution lip, and warnings/errors.
 Goldfishes typecheck and asset audit passed (649 references, none missing),
 as did diff checks. The renderer has explicit resolution and frame-rate caps;
 no device FPS or GPU frame-time claim is made.
+
+## Face field turn and size — 2026-09-24
+
+On `/screen/0922/default`, FACE 3D makes a full yaw turn in the field and
+inspector. Each identity has a persistent angle, a distinct starting phase,
+and one of two opposite rotation directions; turn periods vary from 3 to 4
+seconds. Bubble activation, disappearance, pause, and FACE mode remount do not
+reset that angle. The inspector and field use the same angle, including manual
+drag and arrow-key changes. Reduced motion and hidden-tab states hold the
+current orientation. Long frame gaps advance by at most two target frame
+intervals to avoid a sudden visual jump. Field faces use the full story-circle
+area without the previous inner padding and separator. The photo 2D, EYES 3D, and
+LIPS 3D surfaces are unchanged.
+
+The first rotation change still copied only eight field faces per 18 Hz tick.
+With dozens of active faces, each face updated too rarely to appear continuous.
+The field now uses one shared WebGL canvas and one scene render for all visible
+faces at a capped 30 Hz, DPR 1. Its orthographic camera sits beyond the scaled
+face volumes; placing it inside them had clipped every field face while the
+separate inspector continued to work. Duplicate identities in the larger grid
+get separate meshes, while sharing their texture and turn angle. Portrait
+textures are now 576×384, allowing all 80 identities to stay cached for the
+duration of FACE mode; switching bubbles no longer disposes and reuploads
+their textures. Per-frame DOM status writes and automatic pitch/squash movement
+were removed to reduce work and unexpected motion.
+The field uses at most 105 meshes of roughly 1,536 triangles each (about
+161,000 triangles per frame), one WebGL context, DPR 1, and one field draw
+pass per 30 Hz update. Each 576×384 RGBA portrait texture uses about 1.125 MiB
+with mipmaps, so all 80 identities use about 90 MiB. The inspector adds one 320-pixel
+render/copy pass only while open.
+
+An additional entry/exit correction keeps the cached face texture available
+through bubble transitions. The face's displayed opacity follows the DOM
+bubble opacity with a bounded 260 ms change, including after the DOM reaches
+zero; a newly decoded portrait eases in instead of appearing in one frame.
+In a fresh Chrome tab after this correction, the exact HTTPS route ran in FACE
+3D for 30 seconds with continuing bubble arrivals and departures. At the end,
+52 bubbles were visible, 90 face slots were ready, no canvas reported fallback,
+and that tab logged no warnings or errors. This verifies the observed route and
+error state; it is not a frame-time measurement.
+
+The exact HTTPS route was observed in Chrome for 30 seconds after this change.
+Pause/resume and switching to EYES and back while paused were exercised; field
+faces remained visible and rotation resumed from the held orientation. At the
+end, 54 visible faces and 98 ready slots were reported, with no fallback canvas
+and no browser console warnings or errors. This is a visual and error check,
+not a measured FPS or GPU frame-time benchmark.
+
+## Spherical FACE silhouette — 2026-09-24
+
+The current FACE 3D field and inspector use an undeformed sphere and the same
+scale on all three axes. This removes the per-person vertical stretch and chin
+pinch that made some rotating faces look like tall ovals. Each field sphere's
+diameter is bounded by the smaller dimension of its story circle. The portrait
+textures, shared rotation state, and entry/exit opacity behavior remain in place.
+The exact HTTPS route was visually checked in Chrome with FACE 3D active: field
+silhouettes and the expanded inspector appeared circular, and the tab logged no
+warnings or errors. This is a visual shape check, not a performance measurement.

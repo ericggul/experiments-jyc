@@ -20,7 +20,11 @@ import { techPowerBrandPalettes } from "../model/tech-power-brand-palettes";
 import { techPowerFaces } from "../model/tech-power-faces.generated";
 import { useApproachSound } from "../audio/use-approach-sound";
 import { TechHieroglyph } from "./tech-hieroglyph";
-import { AppServiceMark } from "./app-service-mark";
+import { appServiceAt, appServiceCount, AppServiceMark } from "./app-service-mark";
+import { AppSphere3D } from "./app-sphere-3d";
+import { SnsActionIcon } from "./sns-action-icon";
+import { SnsIcon3D } from "./sns-icon-3d";
+import { snsActions, type SnsActionColour } from "../model/sns-actions";
 import { TechEyeBlink } from "./tech-eye-blink";
 import { createEyeBlinkController } from "../model/eye-blink-controller";
 import { TechEye3D, blinkAll3DEyes, set3DEyeBlinkSpeed } from "./tech-eye-3d";
@@ -71,7 +75,7 @@ type StageSize = {
   height: number;
 };
 
-type StorySurface = "empty" | "face" | "eyes" | "lips" | "apps" | "hieroglyphs" | "colour" | "techMono" | "tech";
+type StorySurface = "empty" | "face" | "eyes" | "lips" | "apps" | "icons" | "hieroglyphs" | "colour" | "techMono" | "tech";
 type FaceType = "politician" | "bigTechColour" | "bigTechOriginal" | "bigTechMonochrome";
 type EyeType = "human" | "bigTech" | "bigTechColour";
 type LipSource = "tech" | "politician" | "mixed";
@@ -137,6 +141,7 @@ const surfaceOptions: readonly { label: string; value: StorySurface }[] = [
   { label: "eyes", value: "eyes" },
   { label: "lips", value: "lips" },
   { label: "apps", value: "apps" },
+  { label: "icons", value: "icons" },
   { label: "tech mono", value: "techMono" },
 ];
 const faceTypeOptions: readonly { label: string; value: FaceType }[] = [
@@ -341,7 +346,7 @@ function getSurfaceStyle(surface: StorySurface, index: number, colourSeed: numbe
     const image = techImageStyle(index);
     return typeface === "imageMono" ? { ...image, filter: "grayscale(1) contrast(1.08) brightness(0.88)" } : image;
   }
-  if (surface === "empty" || surface === "apps" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
+  if (surface === "empty" || surface === "apps" || surface === "icons" || surface === "hieroglyphs" || surface === "techMono" || surface === "tech") return { backgroundColor: "#171a1e" };
   if (surface === "face") {
     const isPolitician = faceType === "politician";
     const image = isPolitician ? politicianFaceImages[index % politicianFaceImages.length]! : techPowerFaces[index % techPowerFaces.length]!.image;
@@ -464,6 +469,12 @@ export function InstagramSocialStoryTray() {
   const [gridSize, setGridSize] = useState<GridSize>({ columns: 1, rows: 1 });
   const [stageSize, setStageSize] = useState<StageSize>({ width: 0, height: 0 });
   const [testSurface, setTestSurface] = useState<StorySurface>("eyes");
+  const [apps3DEnabled, setApps3DEnabled] = useState(false);
+  const [apps3DRotating, setApps3DRotating] = useState(true);
+  const [apps3DStudyIndex, setApps3DStudyIndex] = useState(0);
+  const [icons3DEnabled, setIcons3DEnabled] = useState(false);
+  const [icons3DColour, setIcons3DColour] = useState<SnsActionColour>("monochrome");
+  const [icons3DStudyIndex, setIcons3DStudyIndex] = useState(0);
   const [faceType, setFaceType] = useState<FaceType>("bigTechColour");
   const [face3DTrialEnabled, setFace3DTrialEnabled] = useState(false);
   const [face3DStudyIndex, setFace3DStudyIndex] = useState(0);
@@ -900,10 +911,10 @@ export function InstagramSocialStoryTray() {
             return (
               <li className={styles.gridItem} key={story.id}>
                 <span className={`${styles.story} ${isEmpty ? styles.storyEmpty : isLeaving ? styles.storyLeaving : isNew ? styles.storyEntering : ""}`} style={storyStyle}>
-                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : isLeaving ? styles.storyRingLeaving : isEmpty ? styles.storyRingDormant : styles.storyRingPlain} ${testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? styles.storyRingEye3D : ""}`} style={testSurface === "tech" && ringPaletteId !== "transparent" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
+                  <span className={`${styles.storyRing} ${isNew ? styles.storyRingNew : isViewing ? styles.storyRingViewing : isLeaving ? styles.storyRingLeaving : isEmpty ? styles.storyRingDormant : styles.storyRingPlain} ${testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? styles.storyRingEye3D : ""} ${showFace3D ? styles.storyRingFace3D : ""}`} style={testSurface === "tech" && ringPaletteId !== "transparent" ? { "--story-ring-gradient": techPaletteForIndex(story.index).gradient } as CSSProperties : undefined}>
                     <span
                       aria-hidden="true"
-                      className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""}`}
+                      className={`${styles.logoSurface} ${testSurface === "apps" || testSurface === "icons" || testSurface === "hieroglyphs" || testSurface === "techMono" || testSurface === "tech" ? styles.centeredSurface : ""}`}
                       style={showFace3D || showLips3D ? { backgroundColor: "#171a1e" } : surfaceStyles[story.index]}
                     >
                       {testSurface === "eyes" && eyeType !== "human" && eye3DEnabled ? (
@@ -919,7 +930,10 @@ export function InstagramSocialStoryTray() {
                         <TechLips3D index={lip3DIndex} active={!isEmpty && !isLeaving && !bubblesPaused} />
                       ) : null}
                       {showOriginMarks ? <span aria-hidden="true" className={styles.originMarker}>+</span> : null}
-                      {testSurface === "apps" ? <AppServiceMark index={story.index} /> : null}
+                      {testSurface === "apps" ? apps3DEnabled ? <AppSphere3D index={story.index} active={apps3DRotating && !isEmpty && !isLeaving && !bubblesPaused} /> : <AppServiceMark index={story.index} /> : null}
+                      {testSurface === "icons" ? icons3DEnabled
+                        ? <SnsIcon3D index={story.index} colour={icons3DColour} active={!isEmpty && !isLeaving && !bubblesPaused} />
+                        : <SnsActionIcon index={story.index} /> : null}
                       {testSurface === "hieroglyphs" ? hieroglyphSet === "tech" ? <TechHieroglyph term={techKeyword.abbreviation} /> : <HieroglyphMark glyph={egyptianHieroglyphs[story.index % egyptianHieroglyphs.length]!} /> : null}
                       {testSurface === "techMono" || testSurface === "tech" ? techTypeface === "image" || techTypeface === "imageMono" ? null : <TechMark term={techKeyword.abbreviation} typeface={techTypeface} /> : null}
                     </span>
@@ -957,6 +971,35 @@ export function InstagramSocialStoryTray() {
                 </div>
               </fieldset>
 
+              {testSurface === "icons" ? (
+                <fieldset className={styles.controlGroup}>
+                  <legend className={styles.controlLegend}>icons</legend>
+                  <div aria-label="Icon dimension" className={styles.optionGrid} role="group">
+                    <button aria-pressed={!icons3DEnabled} className={styles.optionButton} onClick={() => setIcons3DEnabled(false)} type="button">2D</button>
+                    <button aria-pressed={icons3DEnabled} className={styles.optionButton} onClick={() => setIcons3DEnabled(true)} type="button">3D</button>
+                  </div>
+                  {icons3DEnabled ? (
+                    <>
+                      <div aria-label="Icon colour" className={styles.optionGrid} role="group" style={{ marginTop: "0.5rem" }}>
+                        <button aria-pressed={icons3DColour === "monochrome"} className={styles.optionButton} onClick={() => setIcons3DColour("monochrome")} type="button">monochrome</button>
+                        <button aria-pressed={icons3DColour === "colour"} className={styles.optionButton} onClick={() => setIcons3DColour("colour")} type="button">colour</button>
+                      </div>
+                      <details style={{ marginTop: "0.65rem" }}>
+                        <summary style={{ cursor: "pointer" }}>inspect 3D icons · drag to rotate</summary>
+                        <div style={{ width: "100%", aspectRatio: "1", maxWidth: "256px", margin: "0.5rem auto", position: "relative" }}>
+                          <SnsIcon3D index={icons3DStudyIndex} colour={icons3DColour} active={false} inspect />
+                        </div>
+                        <div className={styles.optionGrid}>
+                          {snsActions.map((action, index) => (
+                            <button aria-pressed={icons3DStudyIndex === index} className={styles.optionButton} key={action.id} onClick={() => setIcons3DStudyIndex(index)} type="button">{action.label}</button>
+                          ))}
+                        </div>
+                      </details>
+                    </>
+                  ) : null}
+                </fieldset>
+              ) : null}
+
               {testSurface === "face" ? (
                 <fieldset className={styles.controlGroup}>
                   <legend className={styles.controlLegend}>face type</legend>
@@ -977,6 +1020,26 @@ export function InstagramSocialStoryTray() {
                       <FaceStudyInspector index={face3DStudyIndex} onChange={setFace3DStudyIndex} />
                     </details>
                   ) : null}
+                </fieldset>
+              ) : null}
+
+              {testSurface === "apps" ? (
+                <fieldset className={styles.controlGroup}>
+                  <legend className={styles.controlLegend}>app dimension</legend>
+                  <div className={styles.optionGrid}>
+                    <button aria-pressed={!apps3DEnabled} className={styles.optionButton} onClick={() => setApps3DEnabled(false)} type="button">2D</button>
+                    <button aria-pressed={apps3DEnabled} className={styles.optionButton} onClick={() => setApps3DEnabled(true)} type="button">spherical 3D</button>
+                  </div>
+                  {apps3DEnabled ? <>
+                    <div aria-label="App sphere rotation" className={styles.optionGrid} role="group" style={{ marginTop: "0.5rem" }}>
+                      <button aria-pressed={apps3DRotating} className={styles.optionButton} onClick={() => setApps3DRotating(true)} type="button">rotate</button>
+                      <button aria-pressed={!apps3DRotating} className={styles.optionButton} onClick={() => setApps3DRotating(false)} type="button">still</button>
+                    </div>
+                    <details style={{ marginTop: "0.65rem" }}>
+                      <summary style={{ cursor: "pointer" }}>inspect 3D apps · drag to rotate</summary>
+                      <AppStudyInspector index={apps3DStudyIndex} onChange={setApps3DStudyIndex} rotating={apps3DRotating} />
+                    </details>
+                  </> : null}
                 </fieldset>
               ) : null}
 
@@ -1251,6 +1314,31 @@ export function InstagramSocialStoryTray() {
       </section>
     </main>
   );
+}
+
+function AppStudyInspector({ index, onChange, rotating }: { index: number; onChange: (index: number) => void; rotating: boolean }) {
+  const host = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const details = host.current?.closest("details");
+    if (!details) return;
+    const update = () => setVisible(details.open);
+    details.addEventListener("toggle", update);
+    update();
+    return () => details.removeEventListener("toggle", update);
+  }, []);
+  return <div ref={host}>
+    <div style={{ position: "relative", width: "100%", aspectRatio: "1", maxWidth: 240, margin: "0.5rem auto" }}>
+      {visible ? <AppSphere3D key={index} index={index} active={rotating} inspect /> : null}
+    </div>
+    <div className={styles.optionGrid}>
+      <button className={styles.optionButton} onClick={() => onChange((index + appServiceCount - 1) % appServiceCount)} type="button">previous</button>
+      <button className={styles.optionButton} onClick={() => onChange((index + 1) % appServiceCount)} type="button">next</button>
+    </div>
+    <select aria-label="3D app identity" className={styles.optionButton} value={index} onChange={(event) => onChange(Number(event.target.value))} style={{ width: "100%", marginTop: "0.3rem" }}>
+      {Array.from({ length: appServiceCount }, (_, itemIndex) => <option key={itemIndex} value={itemIndex}>{appServiceAt(itemIndex).name}</option>)}
+    </select>
+  </div>;
 }
 
 function EyeStudyInspector({ index, onChange, blinking, paused }: { index: number; onChange: (index: number) => void; blinking: boolean; paused: boolean }) {

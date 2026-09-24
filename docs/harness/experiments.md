@@ -9,6 +9,7 @@ filesystem route groups never change public URLs.
 | Single-device | `app/(standalone)/[group]` | `components/standalone/[group]` |
 | Small socket experiments | `app/(realtime)/[group]` | `components/realtime/[group]` |
 | Workstations | `app/(dashboard)/[group]` | `components/dashboard/[group]` |
+| Mobile experiments | `app/mobile` | `components/mobile` |
 | `dj`, `finger-skating`, `network-system`, `sns` | `app/[group]` | `components/[group]` |
 
 Within a family, a minimal `page.tsx` index links registered variants;

@@ -1,5 +1,7 @@
 # SCC experiment records
 
+- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive and the gaze-tracking camera study.
+
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
 
