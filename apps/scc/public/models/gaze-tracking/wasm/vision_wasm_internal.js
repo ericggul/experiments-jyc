@@ -147,7 +147,14 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
 
 var out = console.log.bind(console);
 
-var err = console.error.bind(console);
+// TensorFlow Lite emits this success message on stderr; keep actual errors visible.
+var err = function(message) {
+  if (message === "INFO: Created TensorFlow Lite XNNPACK delegate for CPU.") {
+    console.info(message);
+  } else {
+    console.error(message);
+  }
+};
 
 // end include: shell.js
 // include: preamble.js
@@ -8838,4 +8845,3 @@ if (typeof exports === 'object' && typeof module === 'object') {
   module.exports.default = ModuleFactory;
 } else if (typeof define === 'function' && define['amd'])
   define([], () => ModuleFactory);
-

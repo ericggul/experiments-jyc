@@ -42,7 +42,7 @@ export function readEyeRatios(landmarks: NormalizedLandmark[]): EyeRatios | null
 export function projectGaze(ratio: Point, center: Point = { x: 0.5, y: 0.5 }): Point {
   // A front-facing camera reverses the person's horizontal movement in its image.
   return {
-    x: clamp(0.5 - (ratio.x - center.x) * 2.35, 0.07, 0.93),
-    y: clamp(0.5 + (ratio.y - center.y) * 1.65, 0.09, 0.91),
+    x: clamp(0.5 - (ratio.x - center.x) * 2.35, 0, 1),
+    y: clamp(0.5 + (ratio.y - center.y) * 1.65, 0, 1),
   };
 }

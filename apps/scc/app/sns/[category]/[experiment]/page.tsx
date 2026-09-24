@@ -18,6 +18,7 @@ import SnsFeedOne from "@/components/sns/feed/1";
 import SnsInstagramOne from "@/components/sns/instagram/1";
 import SnsInstagramTwo from "@/components/sns/instagram/2";
 import SnsInstagramThree from "@/components/sns/instagram/3";
+import SnsInstagramThreeFinger from "@/components/sns/instagram/3-finger";
 import SnsInstagramFour from "@/components/sns/instagram/4";
 import SnsNavigationOne from "@/components/sns/navigation/1";
 import SnsNavigationTwo from "@/components/sns/navigation/2";
@@ -59,6 +60,7 @@ const components: Record<SnsExperimentKey, ComponentType> = {
   "instagram/1": SnsInstagramOne,
   "instagram/2": SnsInstagramTwo,
   "instagram/3": SnsInstagramThree,
+  "instagram/3-finger": SnsInstagramThreeFinger,
   "instagram/4": SnsInstagramFour,
   "navigation/default": SnsNavigationDefault,
   "navigation/1": SnsNavigationOne,

@@ -1,0 +1,7 @@
+# Pixelate — /mobile/transform/pixelate/[clone]
+
+2026-09-24. The baseline is each preserved `clone/1`–`clone/13` component at `/sns/mobile/1`–`/sns/mobile/13`. This trial varies only the visible rasterization: an 8 CSS-pixel SVG filter is active on entry, and one shared slider changes the block size immediately from 4 to 16 CSS pixels. The clone components and their original routes are untouched. A fixed, click-through backdrop filter covers the viewport, while the lower-right button and slider sit above it and remain sharp. The clone's own click, scroll, input, and fixed-position layout rules remain in place.
+
+The common effect implementation is `components/mobile/transform/pixelate/`; one route composes it with a clone selected from `clones.ts`. Future effects can follow this source × transform × settings pattern without copying an implementation 13 times.
+
+The first implementation used repeated `html2canvas` captures and made interaction and scrolling slow. That capture loop was removed. A second attempt applied the SVG filter to the document root; in Chrome, scrolling made the content vanish into a white screen and also pixelated the filter control. The current viewport backdrop filter fixes those observed faults. In Chrome on `/mobile/transform/pixelate/2`, scrolling at 8px and 16px kept the clone visible, entering a restaurant detail still worked, and the slider changed the visible block size immediately. No frame-rate measurement or iOS/Android browser check has been performed; SVG backdrop filter support and performance can differ by engine.

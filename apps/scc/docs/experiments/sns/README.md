@@ -76,6 +76,7 @@ contract.
 
 The larger service reconstructions have variant-specific contracts:
 
+- [Instagram 3-finger](./instagram/3-finger.md)
 - [YouTube 1](./youtube/1.md)
 - [YouTube 2](./youtube/2.md)
 - [YouTube 3](./youtube/3.md)

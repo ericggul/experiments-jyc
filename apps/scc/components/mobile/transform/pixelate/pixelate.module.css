@@ -1,0 +1,10 @@
+.definitions{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.layer{position:fixed;inset:0;z-index:2147483000;pointer-events:none}
+.control{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483001;display:grid;justify-items:end;gap:8px;font:13px Arial,Helvetica,sans-serif;color:#171717}
+.control *{box-sizing:border-box}
+.trigger{min-width:66px;min-height:42px;border:0;border-radius:22px;padding:0 15px;background:#171717;color:#fff;font:600 13px Arial,Helvetica,sans-serif;box-shadow:0 3px 16px #0003;cursor:pointer}
+.panel{width:min(250px,calc(100vw - 32px));padding:14px;border-radius:13px;background:#fff;color:#171717;box-shadow:0 4px 28px #0004}
+.label{display:flex;justify-content:space-between;margin-bottom:13px;font-size:12px;font-weight:600}
+.slider{display:block;width:100%;margin:0;accent-color:#171717;cursor:pointer}
+.range{display:flex;justify-content:space-between;margin-top:7px;font-size:11px;color:#666}
+.control button:focus-visible,.slider:focus-visible{outline:2px solid #1469d8;outline-offset:2px}
