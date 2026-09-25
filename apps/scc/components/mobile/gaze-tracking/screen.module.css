@@ -6,3 +6,27 @@
 .rightDot{background:#e4553f}
 .startButton{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);min-height:45px;border:0;border-radius:12px;padding:0 18px;background:#191919;color:#fff;font:600 14px Arial,Helvetica,sans-serif;white-space:nowrap;cursor:pointer}
 .startButton:focus-visible{outline:2px solid #1469d8;outline-offset:2px}
+.overlayPage{z-index:2147483000;background:transparent;pointer-events:none}
+.overlayPage .startButton{pointer-events:auto;box-shadow:0 3px 16px #0003}
+.differenceDot{position:fixed;left:50vw;top:50dvh;z-index:2147483001;width:100px;height:100px;background:#fff;box-shadow:none;mix-blend-mode:difference}
+.differenceDot.leftDot{background:#fff;outline:2px solid #f00}
+.differenceDot.rightDot{background:#fff;outline:2px solid #00f}
+.targetDot{position:fixed;left:50vw;top:50dvh;z-index:2147483002;width:5px;height:5px;box-shadow:none}
+.targetDot.leftDot{background:#f00}
+.targetDot.rightDot{background:#00f}
+.control{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483003;display:grid;justify-items:end;gap:8px;font:13px Arial,Helvetica,sans-serif;color:#171717}
+.control *{box-sizing:border-box}
+.controlTrigger{min-height:42px;border:0;border-radius:22px;padding:0 15px;background:#171717;color:#fff;font:600 13px Arial,Helvetica,sans-serif;box-shadow:0 3px 16px #0003;cursor:pointer}
+.panel{width:min(300px,calc(100vw - 32px));padding:14px;border-radius:13px;background:#fff;color:#171717;box-shadow:0 4px 28px #0004}
+.modeGroup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 15px;padding:0;border:0}
+.modeGroup legend{margin-bottom:9px;font-size:12px;font-weight:600}
+.modeGroup label{display:flex;align-items:center;gap:6px;min-height:38px;padding:0 9px;border-radius:7px;background:#f2f2f2;cursor:pointer}
+.modeGroup input{margin:0;accent-color:#171717}
+.controlLabel{display:flex;justify-content:space-between;margin-bottom:13px;font-size:12px;font-weight:600}
+.adjustment+.adjustment{margin-top:16px}
+.slider{display:block;width:100%;margin:0;accent-color:#171717;cursor:pointer}
+.range{display:flex;justify-content:space-between;margin-top:7px;font-size:11px;color:#666}
+.gridToggle{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:12px;cursor:pointer}
+.gridToggle input{margin:0;accent-color:#171717}
+.control button:focus-visible,.control input:focus-visible{outline:2px solid #1469d8;outline-offset:2px}
+.effectCanvas{position:fixed;inset:0;z-index:2147482999;width:100vw;height:100dvh;pointer-events:none}

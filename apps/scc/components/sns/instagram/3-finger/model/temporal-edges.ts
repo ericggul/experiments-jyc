@@ -1,6 +1,6 @@
 import type { StoryActivation, StoryEdge } from "./types";
 
-const HISTORY_MILLISECONDS = 1000;
+const HISTORY_MILLISECONDS = 2000;
 export const EDGE_MILLISECONDS = 1200;
 
 export function connectStoryActivation(

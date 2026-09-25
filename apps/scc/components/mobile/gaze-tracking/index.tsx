@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { projectGaze, readEyeRatios, type EyeRatios } from "./model/gaze";
 import { easePoint } from "./motion";
@@ -13,7 +14,17 @@ const INITIAL_DOTS: EyeRatios = {
   right: { x: 0.52, y: 0.5 },
 };
 
-export default function GazeTracking() {
+export default function GazeTracking({
+  variant = 1,
+  mode = "circle",
+  diameter = 100,
+  gazeRef,
+}: {
+  variant?: 1 | 2;
+  mode?: "circle" | "liquid" | "spacetime";
+  diameter?: number;
+  gazeRef?: RefObject<EyeRatios>;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fieldRef = useRef<HTMLElement>(null);
   const leftDotRef = useRef<HTMLSpanElement>(null);
@@ -27,10 +38,19 @@ export default function GazeTracking() {
   const lastAnimationRef = useRef(0);
   const targetRef = useRef<EyeRatios>({ ...INITIAL_DOTS });
   const positionRef = useRef<EyeRatios>({ ...INITIAL_DOTS });
+  const diameterRef = useRef(diameter);
+  diameterRef.current = diameter;
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
   const accessGrantedRef = useRef(false);
   const startRef = useRef<() => void>(() => {});
   const [phase, setPhase] = useState<Phase>("idle");
   const [accessGranted, setAccessGranted] = useState(false);
+  const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (variant === 2) setPortalHost(document.body);
+  }, [variant]);
 
   const stop = useCallback((update = true) => {
     requestRef.current += 1;
@@ -45,10 +65,11 @@ export default function GazeTracking() {
     lastAnimationRef.current = 0;
     targetRef.current = { ...INITIAL_DOTS };
     positionRef.current = { ...INITIAL_DOTS };
+    if (gazeRef) gazeRef.current = { ...INITIAL_DOTS };
     if (update) {
       setPhase("idle");
     }
-  }, []);
+  }, [gazeRef]);
 
   useEffect(() => {
     const leave = () => {
@@ -149,11 +170,13 @@ export default function GazeTracking() {
             positionRef.current[eye] = point;
             const dot = eye === "left" ? leftDotRef.current : rightDotRef.current;
             if (dot) {
-              const x = Math.min(width - 11, Math.max(11, point.x * width));
-              const y = Math.min(height - 11, Math.max(11, point.y * height));
+              const radius = variant === 2 ? (modeRef.current === "circle" ? diameterRef.current / 2 : 2.5) : 11;
+              const x = Math.min(width - radius, Math.max(radius, point.x * width));
+              const y = Math.min(height - radius, Math.max(radius, point.y * height));
               dot.style.transform = `translate3d(${x - width / 2}px, ${y - height / 2}px, 0) translate(-50%, -50%)`;
             }
           }
+          if (gazeRef) gazeRef.current = positionRef.current;
         }
         frameRef.current = requestAnimationFrame(tick);
       };
@@ -169,14 +192,20 @@ export default function GazeTracking() {
   startRef.current = () => { void start(); };
 
   return (
-    <main ref={fieldRef} className={styles.page} aria-label="시선 방향 표시 영역">
+    <main ref={fieldRef} className={`${styles.page} ${variant === 2 ? styles.overlayPage : ""}`} data-gaze-overlay={variant === 2 || undefined} aria-label="시선 방향 표시 영역">
       <video ref={videoRef} className={styles.cameraInput} autoPlay muted playsInline aria-hidden="true" />
-      {phase === "tracking" && (
+      {phase === "tracking" && (variant === 2 && portalHost ? createPortal(
+        <>
+          <span ref={leftDotRef} className={`${styles.dot} ${styles.leftDot} ${mode === "circle" ? styles.differenceDot : styles.targetDot}`} style={mode === "circle" ? { width: diameter, height: diameter } : undefined} data-gaze-overlay aria-hidden="true" />
+          <span ref={rightDotRef} className={`${styles.dot} ${styles.rightDot} ${mode === "circle" ? styles.differenceDot : styles.targetDot}`} style={mode === "circle" ? { width: diameter, height: diameter } : undefined} data-gaze-overlay aria-hidden="true" />
+        </>,
+        portalHost,
+      ) : (
         <>
           <span ref={leftDotRef} className={`${styles.dot} ${styles.leftDot}`} aria-hidden="true" />
           <span ref={rightDotRef} className={`${styles.dot} ${styles.rightDot}`} aria-hidden="true" />
         </>
-      )}
+      ))}
       {!accessGranted && phase !== "loading" && (
         <button type="button" className={styles.startButton} onClick={start}>카메라 켜기</button>
       )}

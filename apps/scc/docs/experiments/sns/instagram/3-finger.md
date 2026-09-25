@@ -12,4 +12,4 @@ This fork tests a continuous gesture selecting discrete story cells. It retains 
 
 ## Temporal edges
 
-When a new bubble is activated, it receives a directed edge from every bubble activated by the same uninterrupted pointer gesture in the preceding one second. The sources are ordered by actual crossings along the pointer path, including a fast swipe processed as one event. Edge paths use the baseline's short fading trace (1.2 seconds). Lifting or cancelling the pointer ends that gesture's history; another finger has its own history. Existing bubbles never create edges on their own.
+When a new bubble is activated, it receives a directed edge from every bubble activated by the same uninterrupted pointer gesture in the preceding two seconds. The sources are ordered by actual crossings along the pointer path, including a fast swipe processed as one event. Edge paths use the baseline's short fading trace (1.2 seconds). Lifting or cancelling the pointer ends that gesture's history; another finger has its own history. Existing bubbles never create edges on their own.

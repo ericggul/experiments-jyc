@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Pixelate from "@/components/mobile/transform/pixelate";
-import { clones } from "@/components/mobile/transform/pixelate/clones";
+import { clones } from "@/components/mobile/transform/clones";
 
 export function generateStaticParams() {
   return Object.keys(clones).map((clone) => ({ clone }));
