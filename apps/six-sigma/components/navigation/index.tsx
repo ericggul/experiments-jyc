@@ -7,7 +7,7 @@ import styles from "./navigation.module.css";
 
 type Props = {
   experiments: readonly NavigationExperiment[];
-  scope?: "screen";
+  scope?: "screen" | "mobile";
   archiveDate?: string;
 };
 
@@ -17,7 +17,7 @@ export default function SixSigmaNavigation({ experiments, scope, archiveDate }: 
   const filtered = experiments.filter((item) =>
     [item.key, item.label, item.date].join(" ").toLowerCase().includes(search),
   );
-  const dates = [...new Set(filtered.map((item) => item.key.split("/")[1]))].sort(
+  const groups = [...new Set(filtered.map((item) => item.key.split("/").slice(0, 2).join("/")))].sort(
     (a, b) => b.localeCompare(a),
   );
 
@@ -26,7 +26,7 @@ export default function SixSigmaNavigation({ experiments, scope, archiveDate }: 
       <header className={styles.header}>
         <h1>
           {scope ? <Link href="/">six-sigma</Link> : "six-sigma"}
-          {scope && <> / <Link href="/screen">screen</Link></>}
+          {scope && <> / <Link href={`/${scope}`}>{scope}</Link></>}
           {archiveDate && <> / {archiveDate}</>}
         </h1>
         <label className={styles.search}>
@@ -38,16 +38,19 @@ export default function SixSigmaNavigation({ experiments, scope, archiveDate }: 
             placeholder="Search experiments"
           />
         </label>
-        <Link href="/screen" className={styles.familyLink}>screen</Link>
+        <div className={styles.families}>
+          <Link href="/screen" className={styles.familyLink}>screen</Link>
+          <Link href="/mobile" className={styles.familyLink}>mobile</Link>
+        </div>
       </header>
 
       <nav aria-label="six-sigma experiments" className={styles.list}>
-        {dates.map((date) => (
-          <section key={date} className={styles.group}>
+        {groups.map((group) => (
+          <section key={group} className={styles.group}>
             <h2>
-              {archiveDate ? date : <Link href={`/screen/${date}`}>{date}</Link>}
+              {archiveDate ? archiveDate : <Link href={`/${group}`}>{scope ? group.split("/")[1] : group}</Link>}
             </h2>
-            {filtered.filter((item) => item.key.split("/")[1] === date).map((item) => (
+            {filtered.filter((item) => item.key.startsWith(`${group}/`)).map((item) => (
               <Link key={item.key} href={`/${item.key}`} className={styles.experiment}>
                 <span>{item.label}</span>
                 <span className={styles.path}>/{item.key}</span>

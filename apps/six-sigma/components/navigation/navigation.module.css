@@ -39,6 +39,11 @@
   font: inherit;
 }
 
+.families {
+  display: flex;
+  gap: 1rem;
+}
+
 .familyLink {
   font-size: 0.8rem;
 }

@@ -36,6 +36,8 @@ history when their subject affects the task, not for every code change.
 
 ## Experiment map
 
+- [six-sigma mobile / K6](../apps/six-sigma/docs/0927/K6.md): regular-hexagon complete graph, `mobile/0927/K6`.
+
 - [SNS mobile surfaces 1–13](../apps/scc/docs/experiments/sns/mobile/README.md): mobile services and Instagram, TikTok and X replicas.
 
 - [Goldfishes maximalist collage](../apps/goldfishes/docs/maximalist-collage/README.md): independent browser interface cut-ups and accumulated prints.

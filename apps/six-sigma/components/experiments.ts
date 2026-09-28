@@ -11,6 +11,12 @@ export type NavigationExperiment = Pick<SixSigmaExperiment, "key" | "date" | "la
 
 export const sixSigmaExperiments: readonly SixSigmaExperiment[] = [
   {
+    key: "mobile/0927/K6",
+    date: "2026-09-27",
+    label: "K6",
+    load: () => import("./mobile/0927/K6"),
+  },
+  {
     key: "screen/0923/hello-world",
     date: "2026-09-23",
     label: "Hello world",
