@@ -1,6 +1,6 @@
 # SCC experiment records
 
-- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field, gaze tracking, and shared pixelate and substitution transforms.
+- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate and substitution transforms.
 
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
