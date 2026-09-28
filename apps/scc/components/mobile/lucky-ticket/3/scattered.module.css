@@ -10,7 +10,7 @@
   bottom: calc(112px + env(safe-area-inset-bottom));
   left: 20px;
   margin: 0;
-  font-size: clamp(8.8px, 2.2vw, 35.2px);
+  font-size: clamp(8px, 2vw, 32px);
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: -0.05em;

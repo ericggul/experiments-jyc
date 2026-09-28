@@ -42,7 +42,7 @@ export default function ScatteredPresentation({ message }: { message: string }) 
         }
       }
       text.style.fontSize = `${smallest}px`;
-      setFontSize(smallest * 1.1);
+      setFontSize(smallest);
     };
     fit();
     const observer = new ResizeObserver(fit);

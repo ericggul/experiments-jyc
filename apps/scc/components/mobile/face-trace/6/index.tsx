@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaceLandmarker, FilesetResolver, type NormalizedLandmark } from "@mediapipe/tasks-vision";
-import { createLiquidField } from "./liquid-field";
-import { FEATURE_SIZE, updateFeatureAtlas } from "./feature-atlas";
 import styles from "./screen.module.css";
 
 type Phase = "idle" | "loading" | "seeking" | "tracking" | "error";
@@ -56,13 +54,6 @@ function smoothPose(current: FacePose, target: FacePose, elapsed: number): FaceP
   };
 }
 
-function centerScale(x: number, y: number, width: number, height: number) {
-  const distance = Math.hypot((x - width / 2) / (width / 2), (y - height / 2) / (height / 2));
-  const amount = Math.max(0, Math.min(1, (0.85 - distance) / 0.7));
-  const eased = amount * amount * (3 - 2 * amount);
-  return 1 + eased;
-}
-
 function traceContour(
   context: CanvasRenderingContext2D,
   points: NormalizedLandmark[],
@@ -102,9 +93,11 @@ function drawFrame(
   context.globalAlpha = opacity;
   context.translate(width, 0);
   context.scale(-1, 1);
-  context.translate(width / 2, height * 0.34);
+  const offsetX = (pose.x / frame.canvas.width - 0.5) * width * 0.42;
+  const offsetY = (pose.y / frame.canvas.height - 0.5) * height * 0.42;
+  context.translate(width / 2 + offsetX, height * 0.34 + offsetY);
   context.rotate(pose.angle - frame.pose.angle);
-  const poseScale = width * 0.45 / frame.pose.span;
+  const poseScale = width * 2.5 / frame.canvas.width;
   context.scale(poseScale, poseScale);
   context.translate(-frame.pose.x, -frame.pose.y);
   context.drawImage(frame.canvas, 0, 0);
@@ -131,7 +124,8 @@ function paint(
   }
   context.clearRect(0, 0, width, height);
   if (!current || !pose) return;
-  const groupSize = Math.max(1, Math.round(Math.min(width * 0.26, height * 0.14)));
+  const originalGroupSize = Math.max(1, Math.round(Math.min(width * 0.22, height * 0.12)));
+  const groupSize = originalGroupSize * 2;
   if (group.width !== groupSize || group.height !== groupSize) {
     group.width = groupSize;
     group.height = groupSize;
@@ -144,9 +138,9 @@ function paint(
   drawFrame(groupContext, current, pose, blend);
 
   // One live set of features is placed below center, then copied around the same circle.
-  const radius = Math.max(0, Math.min(height * 0.25, width * 0.5 - groupSize * 0.53));
-  for (let copy = 0; copy < 12; copy += 1) {
-    const angle = copy * Math.PI / 6;
+  const radius = Math.max(0, Math.min(height * 0.25, width * 0.5 - originalGroupSize * 0.53));
+  for (let copy = 0; copy < 24; copy += 1) {
+    const angle = copy * Math.PI / 12;
     context.save();
     context.translate(width / 2, height / 2);
     context.rotate(angle);
@@ -155,26 +149,10 @@ function paint(
   }
 }
 
-function clearLiquid(canvas: HTMLCanvasElement | null) {
-  const gl = canvas?.getContext("webgl2");
-  if (!gl) return;
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-}
-
 export default function FaceTraceSix() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const groupRef = useRef<HTMLCanvasElement | null>(null);
-  const fieldRef = useRef<HTMLCanvasElement>(null);
-  const fieldRendererRef = useRef<ReturnType<typeof createLiquidField> | null>(null);
-  const atlasRef = useRef<HTMLCanvasElement | null>(null);
-  const tileRef = useRef<HTMLCanvasElement | null>(null);
-  const atlasReadyRef = useRef(false);
-  const targetSitesRef = useRef(new Float32Array([0.22, 0.35, 0.78, 0.35, 0.5, 0.75]));
-  const displaySitesRef = useRef(new Float32Array([0.22, 0.35, 0.78, 0.35, 0.5, 0.75]));
-  const targetRadiiRef = useRef(new Float32Array([0.08, 0.025, 0.08, 0.025, 0.11, 0.05]));
-  const displayRadiiRef = useRef(new Float32Array([0.08, 0.025, 0.08, 0.025, 0.11, 0.05]));
   const streamRef = useRef<MediaStream | null>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const frameRef = useRef<number | null>(null);
@@ -197,74 +175,7 @@ export default function FaceTraceSix() {
     if (videoRef.current) videoRef.current.srcObject = null;
     const canvas = canvasRef.current;
     canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
-    atlasReadyRef.current = false;
-    clearLiquid(fieldRef.current);
     if (update) setPhase("idle");
-  }, []);
-
-  useEffect(() => {
-    const canvas = fieldRef.current;
-    if (!canvas) return;
-    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, powerPreference: "low-power" });
-    if (!gl) return;
-
-    let field: ReturnType<typeof createLiquidField> | null = null;
-    let frame: number | null = null;
-    let lastDraw = 0;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const resize = () => {
-      field?.resize(canvas.clientWidth, canvas.clientHeight);
-      lastDraw = 0;
-    };
-    const draw = (now: number) => {
-      if (field && atlasReadyRef.current && !document.hidden && now - lastDraw >= 42) {
-        const elapsed = Math.min(50, lastDraw ? now - lastDraw : 42);
-        const blend = 1 - Math.exp(-elapsed / 150);
-        const display = displaySitesRef.current;
-        const target = targetSitesRef.current;
-        const displayRadii = displayRadiiRef.current;
-        const targetRadii = targetRadiiRef.current;
-        for (let index = 0; index < display.length; index += 1) {
-          display[index] += (target[index] - display[index]) * blend;
-          displayRadii[index] += (targetRadii[index] - displayRadii[index]) * blend;
-        }
-        field.draw(reducedMotion.matches ? 0 : now / 1000, display, displayRadii);
-        lastDraw = now;
-      }
-      frame = requestAnimationFrame(draw);
-    };
-    const initialize = () => {
-      try {
-        field = createLiquidField(gl);
-        fieldRendererRef.current = field;
-        if (atlasReadyRef.current && atlasRef.current) field.updateTexture(atlasRef.current);
-        resize();
-      } catch (error) {
-        console.error("Face trace liquid field could not start", error);
-        field = null;
-        fieldRendererRef.current = null;
-      }
-    };
-    const onContextLost = (event: Event) => {
-      event.preventDefault();
-      field = null;
-      fieldRendererRef.current = null;
-    };
-    const onContextRestored = () => initialize();
-    canvas.addEventListener("webglcontextlost", onContextLost);
-    canvas.addEventListener("webglcontextrestored", onContextRestored);
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
-    initialize();
-    frame = requestAnimationFrame(draw);
-    return () => {
-      if (frame !== null) cancelAnimationFrame(frame);
-      observer.disconnect();
-      canvas.removeEventListener("webglcontextlost", onContextLost);
-      canvas.removeEventListener("webglcontextrestored", onContextRestored);
-      field?.destroy();
-      fieldRendererRef.current = null;
-    };
   }, []);
 
   const start = async () => {
@@ -349,53 +260,6 @@ export default function FaceTraceSix() {
                 captureContext.drawImage(video, 0, 0);
                 captureContext.restore();
 
-                const atlas = atlasRef.current ?? document.createElement("canvas");
-                const tile = tileRef.current ?? document.createElement("canvas");
-                if (!atlasRef.current) {
-                  atlas.width = FEATURE_SIZE * 3;
-                  atlas.height = FEATURE_SIZE;
-                  atlasRef.current = atlas;
-                }
-                if (!tileRef.current) {
-                  tile.width = FEATURE_SIZE;
-                  tile.height = FEATURE_SIZE;
-                  tileRef.current = tile;
-                }
-                if (updateFeatureAtlas(atlas, tile, video, points, CONTOURS)) {
-                  atlasReadyRef.current = true;
-                  fieldRendererRef.current?.updateTexture(atlas);
-                  const displayCanvas = canvasRef.current;
-                  if (displayCanvas) {
-                    const viewWidth = displayCanvas.clientWidth;
-                    const viewHeight = displayCanvas.clientHeight;
-                    const cover = Math.max(viewWidth / video.videoWidth, viewHeight / video.videoHeight);
-                    const offsetX = (viewWidth - video.videoWidth * cover) / 2;
-                    const offsetY = (viewHeight - video.videoHeight * cover) / 2;
-                    const centerX = offsetX + pose.x * cover;
-                    const centerY = offsetY + pose.y * cover;
-                    const enlargement = centerScale(centerX, centerY, viewWidth, viewHeight);
-                    for (let feature = 0; feature < CONTOURS.length; feature += 1) {
-                      const contour = CONTOURS[feature];
-                      const featureX = contour.reduce((sum, index) => sum + points[index].x, 0) / contour.length;
-                      const featureY = contour.reduce((sum, index) => sum + points[index].y, 0) / contour.length;
-                      const imageX = offsetX + featureX * video.videoWidth * cover;
-                      const imageY = offsetY + featureY * video.videoHeight * cover;
-                      const x = centerX + (imageX - centerX) * enlargement;
-                      const y = centerY + (imageY - centerY) * enlargement;
-                      const xs = contour.map((index) => points[index].x);
-                      const ys = contour.map((index) => points[index].y);
-                      const radiusX = (Math.max(...xs) - Math.min(...xs)) * video.videoWidth * cover * enlargement / (2 * viewWidth);
-                      const radiusY = (Math.max(...ys) - Math.min(...ys)) * video.videoHeight * cover * enlargement / (2 * viewHeight);
-                      targetSitesRef.current[feature * 2] = Math.max(0.06, Math.min(0.94, 1 - x / viewWidth));
-                      targetSitesRef.current[feature * 2 + 1] = Math.max(0.06, Math.min(0.94, y / viewHeight));
-                      targetRadiiRef.current[feature * 2] = Math.max(0.012, Math.min(0.35, radiusX));
-                      targetRadiiRef.current[feature * 2 + 1] = Math.max(0.012, Math.min(0.25, radiusY));
-                    }
-                  }
-                } else if (atlasReadyRef.current) {
-                  atlasReadyRef.current = false;
-                  clearLiquid(fieldRef.current);
-                }
                 previousFrame = currentFrame;
                 currentFrame = { canvas: capture, pose, capturedAt: now };
                 displayPose ??= { ...pose };
@@ -404,10 +268,6 @@ export default function FaceTraceSix() {
                 currentFrame = null;
                 previousFrame = null;
                 displayPose = null;
-                if (atlasReadyRef.current) {
-                  atlasReadyRef.current = false;
-                  clearLiquid(fieldRef.current);
-                }
               }
               const nextPhase = currentFrame ? "tracking" : "seeking";
               setPhase((current) => current === nextPhase ? current : nextPhase);
@@ -422,8 +282,6 @@ export default function FaceTraceSix() {
             currentFrame = null;
             previousFrame = null;
             displayPose = null;
-            atlasReadyRef.current = false;
-            clearLiquid(fieldRef.current);
           }
           if (currentFrame && displayPose) {
             const elapsed = Math.min(50, lastMotion ? now - lastMotion : 16);
@@ -468,9 +326,8 @@ export default function FaceTraceSix() {
 
   return (
     <main className={styles.stage}>
-      <canvas ref={fieldRef} className={styles.background} aria-hidden="true" />
       <video ref={videoRef} className={styles.source} playsInline muted aria-hidden="true" />
-      <canvas ref={canvasRef} className={styles.image} aria-label="액체처럼 흐르는 얼굴 이미지 위에 카메라로 찍은 눈 24개와 입 12개가 원주를 따라 보입니다" role="img" />
+      <canvas ref={canvasRef} className={styles.image} aria-label="검은 화면에 카메라로 찍은 눈 48개와 입 24개가 원주를 따라 보입니다" role="img" />
       {(phase === "idle" || phase === "error") && (
         <div className={styles.prompt}>
           {message && <p role="alert">{message}</p>}

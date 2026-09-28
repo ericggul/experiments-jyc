@@ -14,7 +14,7 @@ The WebGL layer is one context, capped at 600,000 pixels and about 24 draws per 
 
 ## /3 — nested feature scales
 
-2026-09-28. `/3` retains the processed local camera frame and stabilized face pose from `/1`, then draws each eye and the mouth at ten sizes: 1×, 1.5×, 2.1×, 2.9×, 3.9×, 5.1×, 6.35×, 7.6×, 8.8×, and 10×. Every size shares its own feature's center; larger impressions are more transparent and the original is drawn last. There is no WebGL layer. The source frame contains only the three contour-masked regions. Rendering is capped near 24 FPS and 900,000 canvas pixels; camera inference stays near 15 FPS. Device performance and visual alignment remain to be checked on a phone.
+2026-09-28. `/3` retains local camera tracking and stabilized face pose, then draws each eye and the mouth at ten sizes: 1×, 1.5×, 2.1×, 2.9×, 3.9×, 5.1×, 6.35×, 7.6×, 8.8×, and 10×. Every size shares its feature's center; all impressions are opaque, drawn from largest to smallest so the original stays sharp. There is no WebGL layer. The camera requests up to 1920×1080 as an ideal capture size; a separate image no wider than 640 pixels drives landmark inference. Only three small, oval feature crops are retained from each camera frame, including the immediate eyelid or lip surroundings needed to recognize each part. Rendering is capped near 24 FPS and 3 million canvas pixels; inference stays near 15 FPS. Actual capture resolution, device performance, and visual alignment remain to be checked on a phone.
 
 ## /4 — three-feature gradient
 
@@ -32,6 +32,6 @@ After reviewing the actual `/face-voronoi/3` renderer, `/5` uses its coordinate-
 
 The field is capped at 320,000 pixels and about 20 draws per second with four bounded flux steps. Tracking changes the field; there is no autonomous color or sampling animation. This is a visual approximation of magnetic flux, not a physical magnetic simulation. Camera alignment, shader compilation, motion, and mobile performance have not been checked in a browser or on a device.
 
-## /6 — twelve live feature sets
+## /6 — 24 live feature sets
 
-2026-09-28. Independent copy of `/2`, retaining its liquid WebGL background and `/1`'s live contour-masked camera pixels. The two eyes and mouth are first composed once in a small transparent canvas, centered in the lower half of the portrait viewport, then drawn twelve times at 30° intervals around the viewport center. Each copy rotates as a whole, yielding 24 eyes and 12 mouths on one circle from a single camera and face detection. The radius contracts on narrow screens so the copies fit horizontally. The source composition and copies update with the tracked camera frames; no extra camera or WebGL contexts are created. Browser and physical-device appearance and performance remain unverified.
+2026-09-28. Independent copy of `/2`, using `/1`'s live contour-masked camera pixels. The background is black; the liquid WebGL layer has been removed. The two eyes and mouth are composed once in a small transparent canvas below the portrait viewport center, then drawn 24 times at 15° intervals around that center, yielding 48 eyes and 24 mouths from one camera and one face detection. The tracked face's camera position shifts the feature placement inside every rotated copy, and its apparent size changes with distance from the camera. The radius contracts on narrow screens. The feature groups were subsequently doubled in size while keeping their circle and angles fixed. Browser and physical-device appearance and performance remain unverified.
