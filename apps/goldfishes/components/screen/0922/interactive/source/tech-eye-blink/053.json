@@ -1,0 +1,11 @@
+{
+  "id": "053",
+  "source": "/images/0908/tech-power-eyes/053.jpg",
+  "generatedOriginal": "/Users/jeongyoonchoi/.codex/generated_images/01a0c6cd-1d1e-7db3-896e-e03978d1c3af/exec-aeff4728-f4e2-4daa-b306-a52ed297bdc0.png",
+  "output": "/images/0922/tech-eye-blink/053.webp",
+  "width": 576,
+  "height": 384,
+  "bytes": 30972,
+  "supportingPortrait": "/images/0908/tech-power-faces/053.jpg",
+  "correction": "Fill unintended transparent and black cutout regions with continuous opaque facial skin; preserve the six eyelid poses."
+}

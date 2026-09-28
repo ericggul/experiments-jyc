@@ -1,0 +1,9 @@
+pond-feeding.wav
+Adapted from "Ornamental Fish Pond with Hydrophone" by naturenotesuk (David).
+https://freesound.org/people/naturenotesuk/sounds/746957/
+Licensed under Creative Commons Attribution 4.0 International:
+https://creativecommons.org/licenses/by/4.0/
+Source: public HQ MP3 preview of a Shubunkin pond hydrophone recording.
+Changes: excerpt 55–79 seconds; 110Hz high-pass, 4.2kHz low-pass;
+converted to mono 48kHz 16-bit PCM. Playback extracts, normalizes and fades fragments.
+No endorsement by the original recordist is implied.

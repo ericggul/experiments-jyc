@@ -223,6 +223,15 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/0922/default"),
   },
   {
+    key: "screen/0922/interactive",
+    legacyKeys: ["0922/interactive"],
+    area: "screen",
+    section: "dated",
+    date: "2026-09-28",
+    phrase: "Click to place each story bubble freely among the goldfish",
+    load: () => import("./screen/0922/interactive"),
+  },
+  {
     key: "screen/0922/blink-auto",
     legacyKeys: ["0922/blink-auto"],
     area: "screen",

@@ -20,9 +20,12 @@ export default function InterfaceSurface({ gazeRef, mode, radius, strength, show
   const radiusRef = useRef(radius);
   const strengthRef = useRef(strength);
   const showGridRef = useRef(showGrid);
-  radiusRef.current = radius;
-  strengthRef.current = strength;
-  showGridRef.current = showGrid;
+
+  useEffect(() => {
+    radiusRef.current = radius;
+    strengthRef.current = strength;
+    showGridRef.current = showGrid;
+  }, [radius, strength, showGrid]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -55,8 +58,8 @@ export default function InterfaceSurface({ gazeRef, mode, radius, strength, show
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const resize = () => {
-      const width = Math.max(1, window.innerWidth);
-      const height = Math.max(1, window.innerHeight);
+      const width = Math.max(1, canvas.clientWidth);
+      const height = Math.max(1, canvas.clientHeight);
       scale = Math.min(window.devicePixelRatio || 1, 1.25, Math.sqrt(MAX_PIXELS / (width * height)));
       renderer.resize(Math.max(1, Math.round(width * scale)), Math.max(1, Math.round(height * scale)));
       ready = false;
@@ -75,8 +78,8 @@ export default function InterfaceSurface({ gazeRef, mode, radius, strength, show
         const html2canvas = (await import("html2canvas")).default;
         const snapshot = await html2canvas(document.body, {
           backgroundColor: "#fff",
-          width: window.innerWidth,
-          height: window.innerHeight,
+          width: canvas.clientWidth,
+          height: canvas.clientHeight,
           x: window.scrollX,
           y: window.scrollY,
           scale,
@@ -127,6 +130,8 @@ export default function InterfaceSurface({ gazeRef, mode, radius, strength, show
     };
 
     window.addEventListener("resize", resize);
+    const sizeObserver = new ResizeObserver(resize);
+    sizeObserver.observe(canvas);
     document.addEventListener("scroll", requestCapture, true);
     document.addEventListener("load", requestCapture, true);
     document.addEventListener("visibilitychange", onVisibility);
@@ -137,6 +142,7 @@ export default function InterfaceSurface({ gazeRef, mode, radius, strength, show
       active = false;
       observer.disconnect();
       window.removeEventListener("resize", resize);
+      sizeObserver.disconnect();
       document.removeEventListener("scroll", requestCapture, true);
       document.removeEventListener("load", requestCapture, true);
       document.removeEventListener("visibilitychange", onVisibility);

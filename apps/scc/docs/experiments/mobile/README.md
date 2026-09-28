@@ -4,6 +4,10 @@ The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13
 
 `finger-skating/1` is a single-device arrow field changed directly by a moving finger source at [`/mobile/finger-skating/1`](../../../app/mobile/finger-skating/[experiment]/page.tsx). See [finger skating](finger-skating.md).
 
+`finger-network/1` maps each active mobile touch to a node and joins every pair at [`/mobile/finger-network/1`](../../../app/mobile/finger-network/[experiment]/page.tsx). See [finger network](finger-network.md).
+
+`finger-network/2` keeps the network baseline and turns five active touches into a continuously moving 2D human figure at [`/mobile/finger-network/2`](../../../app/mobile/finger-network/[experiment]/page.tsx). See [finger network /2](finger-network-2.md).
+
 `gaze-tracking/1` preserves the independent camera-input study. The [`/mobile/gaze-tracking`](../../../app/mobile/gaze-tracking/page.tsx) index also links to `gaze-tracking/2`, which applies gaze-driven difference circles, liquid displacement, or a local-curl mesh distortion to each of the 13 clones. See [gaze tracking](gaze-tracking.md) for the sensing and accuracy boundary.
 
 `transform/pixelate/` applies one shared viewport raster effect to any of the 13 archived clones without editing them. The selection index is at [`/mobile/transform/pixelate`](../../../app/mobile/transform/pixelate/page.tsx). See [pixelate](pixelate.md) for its rendering and interaction boundary.
