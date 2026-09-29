@@ -11,6 +11,15 @@ const LEFT_EYE = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 
 const RIGHT_EYE = [263, 249, 390, 373, 374, 380, 381, 382, 362, 398, 384, 385, 386, 387, 388, 466];
 const MOUTH = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146];
 const CONTOURS = [LEFT_EYE, RIGHT_EYE, MOUTH];
+const RINGS = Array.from({ length: 16 }, (_, index) => {
+  const step = 16 - index;
+  return {
+    radius: step / 8,
+    scale: Math.max(1, step / 4),
+    count: step * 4,
+    phase: step % 2 ? 0.5 : 0,
+  };
+});
 
 type FacePose = { x: number; y: number; span: number; angle: number };
 type CameraFrame = {
@@ -107,6 +116,8 @@ function drawFrame(
 function paint(
   canvas: HTMLCanvasElement,
   group: HTMLCanvasElement,
+  boundsCanvas: HTMLCanvasElement,
+  sprites: HTMLCanvasElement[],
   current: CameraFrame | null,
   previous: CameraFrame | null,
   pose: FacePose | null,
@@ -115,7 +126,7 @@ function paint(
   const context = canvas.getContext("2d");
   if (!context) return;
   const area = Math.max(1, canvas.clientWidth * canvas.clientHeight);
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5, Math.sqrt(900_000 / area));
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5, Math.sqrt(650_000 / area));
   const width = Math.max(1, Math.round(canvas.clientWidth * pixelRatio));
   const height = Math.max(1, Math.round(canvas.clientHeight * pixelRatio));
   if (canvas.width !== width || canvas.height !== height) {
@@ -125,7 +136,7 @@ function paint(
   context.clearRect(0, 0, width, height);
   if (!current || !pose) return;
   const originalGroupSize = Math.max(1, Math.round(Math.min(width * 0.22, height * 0.12)));
-  const groupSize = originalGroupSize * 2;
+  const groupSize = originalGroupSize * 4;
   if (group.width !== groupSize || group.height !== groupSize) {
     group.width = groupSize;
     group.height = groupSize;
@@ -137,22 +148,96 @@ function paint(
   if (previous && blend < 1) drawFrame(groupContext, previous, pose, 1);
   drawFrame(groupContext, current, pose, blend);
 
-  // One live set of features is placed below center, then copied around the same circle.
-  const radius = Math.max(0, Math.min(height * 0.25, width * 0.5 - originalGroupSize * 0.53));
-  for (let copy = 0; copy < 24; copy += 1) {
-    const angle = copy * Math.PI / 12;
-    context.save();
-    context.translate(width / 2, height / 2);
-    context.rotate(angle);
-    context.drawImage(group, -groupSize / 2, radius - groupSize / 2);
-    context.restore();
+  // Sample a small alpha mask so the repeated draws skip transparent margins.
+  if (boundsCanvas.width !== 64 || boundsCanvas.height !== 64) {
+    boundsCanvas.width = 64;
+    boundsCanvas.height = 64;
   }
+  const boundsContext = boundsCanvas.getContext("2d", { willReadFrequently: true });
+  if (!boundsContext) return;
+  boundsContext.clearRect(0, 0, 64, 64);
+  boundsContext.drawImage(group, 0, 0, 64, 64);
+  const alpha = boundsContext.getImageData(0, 0, 64, 64).data;
+  let minX = 64;
+  let minY = 64;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < 64; y += 1) {
+    for (let x = 0; x < 64; x += 1) {
+      if (alpha[(y * 64 + x) * 4 + 3] < 4) continue;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  if (maxX < minX) return;
+  const left = Math.max(0, minX - 2) / 64;
+  const top = Math.max(0, minY - 2) / 64;
+  const right = Math.min(64, maxX + 3) / 64;
+  const bottom = Math.min(64, maxY + 3) / 64;
+
+  for (let quarterStep = 4; quarterStep <= 15; quarterStep += 1) {
+    const sprite = sprites[quarterStep - 1] ?? document.createElement("canvas");
+    sprites[quarterStep - 1] = sprite;
+    const size = Math.max(1, Math.round(originalGroupSize * quarterStep / 4));
+    if (sprite.width !== size || sprite.height !== size) {
+      sprite.width = size;
+      sprite.height = size;
+    }
+    const spriteContext = sprite.getContext("2d");
+    if (!spriteContext) return;
+    spriteContext.clearRect(0, 0, size, size);
+    spriteContext.drawImage(group, 0, 0, size, size);
+  }
+
+  const radius = Math.max(0, Math.min(height * 0.25, width * 0.5 - originalGroupSize * 0.53));
+  for (const ring of RINGS) {
+    const size = Math.max(1, Math.round(originalGroupSize * ring.scale));
+    const sprite = ring.scale === 4 ? group : sprites[Math.round(ring.scale * 4) - 1];
+    const ringRadius = radius * ring.radius;
+    const sourceX = Math.floor(left * size);
+    const sourceY = Math.floor(top * size);
+    const sourceRight = Math.ceil(right * size);
+    const sourceBottom = Math.ceil(bottom * size);
+    const sourceWidth = sourceRight - sourceX;
+    const sourceHeight = sourceBottom - sourceY;
+    const drawX = -size / 2 + sourceX;
+    const drawY = ringRadius - size / 2 + sourceY;
+    for (let copy = 0; copy < ring.count; copy += 1) {
+      const angle = (copy + ring.phase) * Math.PI * 2 / ring.count;
+      const cosine = Math.cos(angle);
+      const sine = Math.sin(angle);
+      const centerX = width / 2 + cosine * (drawX + sourceWidth / 2) - sine * (drawY + sourceHeight / 2);
+      const centerY = height / 2 + sine * (drawX + sourceWidth / 2) + cosine * (drawY + sourceHeight / 2);
+      const extentX = (Math.abs(cosine) * sourceWidth + Math.abs(sine) * sourceHeight) / 2;
+      const extentY = (Math.abs(sine) * sourceWidth + Math.abs(cosine) * sourceHeight) / 2;
+      if (centerX + extentX < 0 || centerX - extentX > width || centerY + extentY < 0 || centerY - extentY > height) continue;
+      context.setTransform(cosine, sine, -sine, cosine, width / 2, height / 2);
+      context.drawImage(sprite, sourceX, sourceY, sourceWidth, sourceHeight, drawX, drawY, sourceWidth, sourceHeight);
+    }
+  }
+  const centerSize = Math.max(1, Math.round(originalGroupSize * 1.5));
+  const centerSourceX = Math.floor(left * centerSize);
+  const centerSourceY = Math.floor(top * centerSize);
+  const centerSourceWidth = Math.ceil(right * centerSize) - centerSourceX;
+  const centerSourceHeight = Math.ceil(bottom * centerSize) - centerSourceY;
+  context.setTransform(1, 0, 0, 1, width / 2, height / 2);
+  context.drawImage(
+    sprites[5],
+    centerSourceX, centerSourceY, centerSourceWidth, centerSourceHeight,
+    -centerSize / 2 + centerSourceX, -centerSize / 2 + centerSourceY,
+    centerSourceWidth, centerSourceHeight,
+  );
+  context.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 export default function FaceTraceSix() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const groupRef = useRef<HTMLCanvasElement | null>(null);
+  const boundsRef = useRef<HTMLCanvasElement | null>(null);
+  const spritesRef = useRef<HTMLCanvasElement[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const frameRef = useRef<number | null>(null);
@@ -226,6 +311,7 @@ export default function FaceTraceSix() {
 
       let lastVideoTime = -1;
       let lastPaint = 0;
+      let paintInterval = 65;
       let lastMotion = 0;
       let lastInference = 0;
       let lastFace = 0;
@@ -288,10 +374,14 @@ export default function FaceTraceSix() {
             displayPose = smoothPose(displayPose, currentFrame.pose, elapsed);
           }
           lastMotion = now;
-          if (canvasRef.current && now - lastPaint >= 41) {
+          if (canvasRef.current && now - lastPaint >= paintInterval) {
             groupRef.current ??= document.createElement("canvas");
-            paint(canvasRef.current, groupRef.current, currentFrame, previousFrame, displayPose, now);
-            lastPaint = now;
+            boundsRef.current ??= document.createElement("canvas");
+            const paintStart = performance.now();
+            paint(canvasRef.current, groupRef.current, boundsRef.current, spritesRef.current, currentFrame, previousFrame, displayPose, now);
+            const paintDuration = performance.now() - paintStart;
+            paintInterval = Math.max(65, Math.min(150, paintDuration * 3));
+            lastPaint = performance.now();
           }
         }
         frameRef.current = requestAnimationFrame(tick);
@@ -327,7 +417,7 @@ export default function FaceTraceSix() {
   return (
     <main className={styles.stage}>
       <video ref={videoRef} className={styles.source} playsInline muted aria-hidden="true" />
-      <canvas ref={canvasRef} className={styles.image} aria-label="검은 화면에 카메라로 찍은 눈 48개와 입 24개가 원주를 따라 보입니다" role="img" />
+      <canvas ref={canvasRef} className={styles.image} aria-label="검은 화면의 촘촘한 원주들에 카메라로 찍은 눈과 입이 반복되어 보입니다" role="img" />
       {(phase === "idle" || phase === "error") && (
         <div className={styles.prompt}>
           {message && <p role="alert">{message}</p>}

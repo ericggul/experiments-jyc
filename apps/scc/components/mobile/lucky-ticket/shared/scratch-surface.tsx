@@ -5,7 +5,7 @@ import styles from "./screen.module.css";
 
 type Point = { x: number; y: number };
 
-const brushWidth = 0.7;
+const brushWidth = 1;
 
 export default function ScratchSurface({ onFirstScratch }: { onFirstScratch: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

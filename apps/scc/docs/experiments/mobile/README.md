@@ -16,7 +16,7 @@ The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13
 
 `face-trace/5` keeps the clear eye and mouth fragments while stretching their original camera edge pixels along a shared three-source flux at [`/mobile/face-trace/5`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
 
-`face-trace/6` places 24 live copies of the two-eye-and-mouth cutout at 15° intervals around the viewport center on black, with camera movement changing every copy, at [`/mobile/face-trace/6`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
+`face-trace/6` places live eye-and-mouth copies on 16 concentric circles on black, from `0.125R` to `2R` in `0.125R` steps, with larger inner features and one central set, at [`/mobile/face-trace/6`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
 
 `finger-network/1` maps each active mobile touch to a node and joins every pair at [`/mobile/finger-network/1`](../../../app/mobile/finger-network/[experiment]/page.tsx). See [finger network](finger-network.md).
 

@@ -6,6 +6,6 @@
 
 `/3` retains `/1`'s sentence, seconds counter, cover, and sharing behavior. Its twelve words use `/1`'s single-line letter size, keep their reading order from top to bottom, and vary their horizontal positions across the viewport. The positions stay fixed as the seconds change. The preview shows the uncovered arrangement at `0초`.
 
-The scratch width is 0.7 CSS pixels. Touch identifiers remain separate for simultaneous fingers; mouse and pen use pointer capture. The “손가락을 이용해서 긁어보세요” instruction appears in white until first contact. A revealed share icon can be tapped through the scratched cover. The Kakao icon opens the OS share sheet until this experiment has a Kakao template; the link icon copies the version's entry URL.
+The scratch width is 1 CSS pixel. Touch identifiers remain separate for simultaneous fingers; mouse and pen use pointer capture. The “손가락을 이용해서 긁어보세요” instruction appears in white until first contact. A revealed share icon can be tapped through the scratched cover. The Kakao icon opens the OS share sheet until this experiment has a Kakao template; the link icon copies the version's entry URL.
 
 Static checks cover code and route wiring. Physical touch feel and elapsed reveal time remain unverified without an authorized device check.
