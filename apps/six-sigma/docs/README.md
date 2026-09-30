@@ -4,6 +4,8 @@ The mobile family begins with [K6](./0927/K6.md) at `/mobile/0927/K6`:
 a responsive white graph on black, with K6 / 36-leaf Fractal K6 opt 1 / 630-edge opt 2 and Static / Flow
 options in the bottom-right `edit` panel, plus Fractal K3 opt 2 at depths 3, 4, and 5 with Within/Inter weights.
 Every graph can use Straight, Cubic Bezier, or Cubic Bezier directional edges.
+[Local optimum](./0927/local-optimum.md) at `/mobile/0927/local-optimum` forks that grammar into six
+coupled maps, with 1D (ray, logistic) and 2D (disc, Ikeda) planes in `edit`. Dragging one node outward demands more from it, and past a threshold the other five move.
 Browse `/mobile` and `/mobile/0927`.
 
 The first dated experiment is [`/screen/0923/hello-world`](./0923/hello-world.md):

@@ -37,6 +37,7 @@ history when their subject affects the task, not for every code change.
 ## Experiment map
 
 - [six-sigma mobile / K6](../apps/six-sigma/docs/0927/K6.md): regular-hexagon complete graph, `mobile/0927/K6`.
+- [six-sigma mobile / local optimum](../apps/six-sigma/docs/0927/local-optimum.md): coupled 1D/2D maps on K6, `mobile/0927/local-optimum`.
 
 - [SNS mobile surfaces 1–13](../apps/scc/docs/experiments/sns/mobile/README.md): mobile services and Instagram, TikTok and X replicas.
 

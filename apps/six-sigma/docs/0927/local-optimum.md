@@ -1,0 +1,128 @@
+# Local optimum — 2026-09-27
+
+Mobile surface at `/mobile/0927/local-optimum`, owned by
+`components/mobile/0927/local-optimum`. It is a standalone fork of the
+[K6](./K6.md) grammar and keeps the black viewport, white 1px edges at 0.5
+opacity, white vertex dots, the regular-hexagon angles, safe-area spacing,
+responsive bounds, and a local copy of the bottom-right `edit` disclosure. It
+imports nothing from `K6/`, and K6 is unchanged.
+
+## Tested relation
+
+From the 2026 Summer note (식스시그마): "Local optimisation does not lead to
+global optimisation", "Volatility increase as a consequence of optimising", and
+"(Sum of Local Optimal) != (Global Optimal)". The question is whether one
+participant's local demand on one node can be felt as a system-wide
+consequence, without text, on the K6 graph itself.
+
+## Model
+
+Six maps are coupled over K6's fifteen edges. Because K6 is complete, this is
+a globally coupled map (Kaneko):
+
+`z_i' = (1 − ε) · F(p_i, z_i) + ε · mean_{j≠i} F(p_j, z_j)`
+
+Each node has its own parameter `p_i`, and that parameter is the only thing a
+participant touches. The default coupling is `ε = 0.25`, adjustable from 0 to
+0.5 in `edit`. At rest the whole graph settles on a shared rest point and
+holds still. `model/coupled-map.ts` is the engine shared by both planes, and
+`model/dynamics.ts` holds the two node maps.
+
+The edit panel's **Plane** option chooses the node map:
+
+- **1D · ray**
+  - Uses the logistic map `x' = a x (1 − x)`, with rest `a = 2.9` and a range
+    of 1.8–4. It is stable until 3 and chaotic by about 3.57.
+  - A node's distance from the centre is its state, at `20 + 170x` viewBox
+    units, so the node moves only along its own ray. At rest this is a
+    regular hexagon of radius 131.
+- **2D · disc** (initial)
+  - Uses the Ikeda map, a 2D feedback map from optical ring cavities. The
+    gain `u` is the fraction of the previous state fed back into the next.
+    Rest is `u = 0.4`, with a range of 0.2–0.9.
+  - The cascade runs from a rest point, to period 2 by 0.5, to period 4 by
+    0.6, into planar chaos from about 0.65, to the spiral attractor at 0.9.
+    Above about 0.91 a distant second attractor appears, so the gain is
+    capped at 0.9. Tests confirm 40 of 40 seeds stay on the near attractor.
+  - Each node's displacement from rest is scaled by 80 and rotated into its
+    own frame, with local +x pointing outward along its ray, around an anchor
+    on a radius-120 hexagon.
+  - Beyond radius 150, positions are compressed with tanh so that every
+    reachable state is drawn inside one disc of radius 190. The nodes share
+    that disc and can cross the centre. The disc boundary is not drawn.
+
+Changing the plane restarts the system at rest, because the two parameters are
+not on a shared scale.
+
+The last 48 iterates of each node stay visible as 1.1-unit dots at 0.4
+opacity. In 1D they fall on the ray, where a stable node shows one dot,
+period 2 shows two, and chaos shows a smear. In 2D they draw the node's
+planar attractor: a point, a pair, four points, or a spiral cloud.
+
+## Interaction
+
+This follows finger-skating's particle + wave idea. A finger's angle selects
+one of six equal sectors, which is the discrete, particle part. Its distance
+from the centre sets that node's parameter continuously, which is the wave
+part.
+
+- A finger resting on a node's rest position leaves it unchanged.
+- Pulling outward raises the parameter linearly to its maximum at 190 units.
+- Pushing inward lowers it.
+- The central 40 units are neutral.
+- A stroke around the centre sets every node it crosses.
+- Each pointer holds its own node, so several fingers work at once.
+- Demands persist after release. Repair is another demand, not an automatic
+  decay.
+- Held nodes enlarge from 2.5 to 4 units.
+- Keyboard: 1–6 select a node, and the arrow keys move its parameter in
+  1/40ths of the plane's range.
+
+Iteration runs at the Tempo setting (2–16 per second, default 8). Positions
+are smoothstep-interpolated between iterates. Reduced motion caps the tempo at
+2 per second and drops the interpolation. The loop pauses while the page is
+hidden, and long frames are clamped so a background tab never replays a burst
+of iterations. Random seeding happens only after hydration.
+
+## Observed (pure model, not browser)
+
+`model/coupled-map.test.mjs` and `model/demand.test.mjs` hold 18 tests
+covering both planes, and all pass. A seeded probe measured the RMS spread
+over 400 steps, after 2,000 steps of transient, with the other nodes left at
+rest.
+
+| Plane | ε | Demand | Demanded node(s) | Each untouched node |
+| --- | --- | --- | --- | --- |
+| 1D | 0 | one node at 4 | 0.353 | 0 |
+| 1D | 0.25 | one node at 3.4 | 0.123 | 0.047 |
+| 1D | 0.25 | one node at 4 | 0.240 | 0.076 (about 13 units along each ray) |
+| 2D | 0 | one node at 0.9 | 0.877 | 0 |
+| 2D | 0.25 | one node at 0.6 | 0.289 | 0.131 |
+| 2D | 0.25 | one node at 0.9 | 0.453 | 0.132 (about 11 units in the plane) |
+| 2D | 0.25 | two nodes at 0.9 | 0.440 each | 0.011 |
+
+- In 1D, maximal demand gains the demanded node almost nothing on average,
+  and lowers every other node's mean. At coupling 0.2 the demanded node's
+  mean is 0.657 against 0.655 at rest.
+- With the coupling at zero, the disturbance stays local in both planes. The
+  edges are what carry the cost.
+- Unexpected in 2D: two nodes at maximal demand leave the other four almost
+  still, while one alone disturbs them. Their contributions to the shared
+  mean appear to largely cancel. This is untested beyond this probe.
+
+## Verification boundary and open questions
+
+six-sigma typecheck and scoped ESLint pass. Browser rendering, pointer capture
+on devices, multi-touch, and how legible the effect is at 8 Hz were not
+verified.
+
+Open questions:
+- Whether six-sector selection is discoverable without any instruction.
+- Whether the smaller rest hexagons, with radius 131 in 1D and 120 in 2D
+  against K6's 176, read as a deliberate departure.
+- Whether the undrawn disc boundary is legible from the nodes' confinement
+  alone.
+- Whether persistent demand, rather than decay, produces play or only a
+  one-way collapse.
+- The multi-device form, one phone per node on a shared screen, is the
+  natural next fork. It is not attempted here.
