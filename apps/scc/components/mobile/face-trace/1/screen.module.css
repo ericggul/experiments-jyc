@@ -14,15 +14,29 @@
   pointer-events: none;
 }
 
-.image {
+.background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
 }
 
+.image {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .prompt,
 .status {
   position: absolute;
+  z-index: 2;
   left: 50%;
   bottom: max(32px, env(safe-area-inset-bottom));
   transform: translateX(-50%);

@@ -91,7 +91,7 @@ export function createFlux(edges: readonly Edge[], seed: number, compact = false
       remaining -= untilEvent;
       packets = packets.filter((packet) => motionTime < packet.start + packet.duration);
       const edge = selectEdge();
-      const reverse = lineStyle !== "cubic-directional" && random() < 0.5;
+      const reverse = random() < 0.5;
       // Independent events may share an edge. The previous one-per-edge
       // gate silently discarded more events as the requested rate rose.
       if (edge && packets.length < MAX_PACKETS) {

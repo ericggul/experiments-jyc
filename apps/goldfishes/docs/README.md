@@ -2,15 +2,18 @@
 
 Browser collage: `/maximalist-collage` → `/maximalist-collage/0915` → `/maximalist-collage/0915/1`. Implementation: `components/maximalist-collage/0915/1/`; linked in the shared navigation header and registry. [Family index](./maximalist-collage/README.md) · [art references](./maximalist-collage/references.md).
 
+Phone keyword grid: `/mobile` → `/mobile/0930` → `/mobile/0930/1`. Implementation: `components/mobile/0930/1/`. [Family index](./mobile/README.md).
+
 Local macOS control: `/desktop` → `/desktop/0915` → independent versions [1](./desktop/0915/1.md), [2](./desktop/0915/2.md), [3](./desktop/0915/3.md). Implementation: `components/desktop/0915/{1,2,3}/`; all appear in the shared experiment registry and home navigation. [Original fixed-score history](./pc/0915-desktop-a.md).
 
-Code: `apps/goldfishes/components/screen` and `apps/goldfishes/components/pc`; registry: `components/experiments.ts`. The registry is authoritative for routable experiments and archive navigation. `screen/default` is the promoted baseline; dated routes are archival and must not be repurposed.
+Code: `apps/goldfishes/components/screen` and `apps/goldfishes/components/pc`; registry: `components/experiments.ts`. The registry is authoritative for routable experiments and archive navigation; the navigation's group view (`?view=group`) reads lineages from `components/navigation/families.ts`, where each new trial should be added to its family (unassigned keys appear as "unsorted"). `screen/default` is the promoted baseline; dated routes are archival and must not be repurposed.
 
 For a route change, read its document, the specific modules being changed, and the registry. Read [onboarding](./agent-onboarding.md) when creating or substantially changing a Goldfishes experiment; consult [history](./research-and-rendering-history.md) only for a relevant rendering, measurement, or historical-decision question.
 
 | Route | Date | Proposition |
 | --- | --- | --- |
 | `/maximalist-collage/0915/1` | 2026-09-15 | Initial interface cut-up trial; visual result rejected by user. [doc](./maximalist-collage/0915/1.md) |
+| `/mobile/0930/1` | 2026-09-30 | Tap a grid cross to place and configure a keyword bubble. [doc](./mobile/0930/1.md) |
 | `/desktop/0915/1` | 2026-09-15 | Preserved configurable native-app baseline. [doc](./desktop/0915/1.md) |
 | `/desktop/0915/2` | 2026-09-15 | Accumulating native windows, unequal sizes and continuous drift. [doc](./desktop/0915/2.md) |
 | `/desktop/0915/3` | 2026-09-15 | New pages mixed with random tab revisits; bounded turnover and scrolling. [doc](./desktop/0915/3.md) |

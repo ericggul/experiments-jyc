@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { edgeCurve, edgePath, travelingEdge } from './geometry.ts';
+import { edgeCurve, edgePath, laneCurves, travelingEdge } from './geometry.ts';
 import { createFlux } from '../flow/flux.ts';
 
 const edge = { id: 'a-b', from: { id: 'a', x: 0, y: 0 }, to: { id: 'b', x: 100, y: 0 } };
@@ -34,18 +34,24 @@ test('a signal segment remains on the same cubic in either traversal direction',
   }
 });
 
-test('directional cubic traffic reaches only the stored target', () => {
+test('directional cubic traffic uses two mirrored lanes, one per direction', () => {
   const flux = createFlux([edge], 1234, false, 'cubic-directional');
-  let count = 0;
+  const seen = new Set();
   for (let frame = 0; frame < 24 * 60; frame++) {
     for (const packet of flux.advance(frame / 24, 8)) {
-      assert.equal(packet.from.id, 'a');
-      assert.equal(packet.to.id, 'b');
-      count++;
+      const middle = packet.geometry.pointAt(packet.length / 2);
+      // Keep right: a→b bends below the chord, b→a above it.
+      assert.ok(packet.from.id === 'a' ? middle.y > 0 : middle.y < 0);
+      seen.add(`${packet.from.id}${packet.to.id}`);
     }
   }
-  assert.ok(count > 0);
-  assert.deepEqual(edgeCurve(edge, 'cubic'), edgeCurve(edge, 'cubic-directional'));
+  assert.deepEqual([...seen].sort(), ['ab', 'ba']);
+  const [outgoing, returning] = laneCurves(edge);
+  assert.deepEqual(edgeCurve(edge, 'cubic'), outgoing);
+  for (const key of ['control1', 'control2']) {
+    near(outgoing[key].y, -returning[key === 'control1' ? 'control2' : 'control1'].y);
+    near(outgoing[key].x, returning[key === 'control1' ? 'control2' : 'control1'].x);
+  }
   assert.equal((edgePath(edge, 'cubic').match(/ M /g) ?? []).length, 0);
-  assert.equal((edgePath(edge, 'cubic-directional').match(/ M /g) ?? []).length, 1);
+  assert.equal((edgePath(edge, 'cubic-directional').match(/M /g) ?? []).length, 4);
 });

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BifurcationOne from "@/components/dynamical-systems/bifurcation/1";
+import BifurcationTwo from "@/components/dynamical-systems/bifurcation/2";
+import BifurcationThree from "@/components/dynamical-systems/bifurcation/3";
 import {
   bifurcationExperiments,
   isBifurcationExperimentSlug,
@@ -10,11 +12,19 @@ export function generateStaticParams() {
   return bifurcationExperiments.map(({ slug: experiment }) => ({ experiment }));
 }
 
-export const metadata: Metadata = {
-  title: "bifurcation/1",
-  description:
-    "A GPU particle rendering of the logistic-map period-doubling bifurcation.",
-};
+export async function generateMetadata({
+  params,
+}: Readonly<{
+  params: Promise<{ experiment: string }>;
+}>): Promise<Metadata> {
+  const { experiment } = await params;
+  const registered = bifurcationExperiments.find(({ slug }) => slug === experiment);
+  if (!registered) return {};
+  return {
+    title: `bifurcation/${registered.slug}`,
+    description: registered.description,
+  };
+}
 
 export default async function BifurcationExperimentPage({
   params,
@@ -23,5 +33,6 @@ export default async function BifurcationExperimentPage({
 }>) {
   const { experiment } = await params;
   if (!isBifurcationExperimentSlug(experiment)) notFound();
-  return <BifurcationOne />;
+  if (experiment === "3") return <BifurcationThree />;
+  return experiment === "2" ? <BifurcationTwo /> : <BifurcationOne />;
 }

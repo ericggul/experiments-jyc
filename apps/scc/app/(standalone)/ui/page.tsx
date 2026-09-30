@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import UiNavigation from "@/components/ui/navigation";
+import SccNavigation from "@/components/navigation";
+import { getSccNavigationItems } from "@/components/navigation/experiments";
 
 export const metadata: Metadata = {
   title: "ui",
-  description: "An index of runnable SCC UI experiments.",
+  description: "A dated index of SCC ui experiments.",
 };
 
 export default function UiIndexPage() {
-  return <UiNavigation />;
+  return (
+    <SccNavigation
+      experiments={getSccNavigationItems({ area: "ui" })}
+      scope="ui"
+      scopeKey="ui"
+    />
+  );
 }

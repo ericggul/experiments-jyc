@@ -43,7 +43,7 @@ export default function K6({ animate = true }: { animate?: boolean }) {
             : "Complete graph with six vertices on a regular hexagon and fifteen white edges on black."}
           {" Edge crossings are not additional vertices."}
           {flowing && (lineStyle === "cubic-directional"
-            ? " Signals occur independently at random times and travel from each edge's first node to its second node."
+            ? " Each connection has an outgoing and a returning lane, mirrored on either side; signals occur independently at random times and keep to the lane of their direction."
             : " Signals occur independently at random times and travel in either direction along the edges.")}
         </desc>
         <g className={styles.edges} fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity={flowing ? 0.5 : 1}>

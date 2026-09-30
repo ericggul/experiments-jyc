@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaceLandmarker, FilesetResolver, type NormalizedLandmark } from "@mediapipe/tasks-vision";
+import { createMaterialField } from "./material-field";
+import { createFeatureAtlas, measureFeatures, writeFeatureAtlas, type FeatureAtlas } from "./feature-atlas";
+import { gradeMatrix, gradeRegion, IDENTITY_GAINS, measureFaceTone, targetGains } from "./grade";
 import styles from "./screen.module.css";
 
 type Phase = "idle" | "loading" | "seeking" | "tracking" | "error";
@@ -38,6 +41,21 @@ function readPose(points: NormalizedLandmark[], width: number, height: number): 
     span,
     angle: Math.atan2(rightY - leftY, rightX - leftX),
   };
+}
+
+// Inner-lip gap over mouth width: independent of distance and face size.
+// Closed lips sit near 0.02, speech near 0.15, a wide-open mouth near 0.5.
+// Linear above closed lips, so the field follows the mouth proportionally.
+function mouthOpening(points: NormalizedLandmark[], width: number, height: number) {
+  const upper = points[13];
+  const lower = points[14];
+  const left = points[61];
+  const right = points[291];
+  if (!upper || !lower || !left || !right) return 0;
+  const gap = Math.hypot((lower.x - upper.x) * width, (lower.y - upper.y) * height);
+  const span = Math.hypot((right.x - left.x) * width, (right.y - left.y) * height);
+  if (span < 1) return 0;
+  return Math.max(0, Math.min(1, (gap / span - 0.04) / 0.4));
 }
 
 function smoothPose(current: FacePose, target: FacePose, elapsed: number): FacePose {
@@ -126,7 +144,7 @@ function paint(
   const context = canvas.getContext("2d");
   if (!context) return;
   const area = Math.max(1, canvas.clientWidth * canvas.clientHeight);
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(1_800_000 / area));
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(5_000_000 / area));
   const width = Math.max(1, Math.round(canvas.clientWidth * pixelRatio));
   const height = Math.max(1, Math.round(canvas.clientHeight * pixelRatio));
   if (canvas.width !== width || canvas.height !== height) {
@@ -140,9 +158,28 @@ function paint(
   drawFrame(context, current, pose, magnification, blend);
 }
 
+function clearLiquid(canvas: HTMLCanvasElement | null) {
+  const gl = canvas?.getContext("webgl2");
+  if (!gl) return;
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
 export default function FaceTraceOne() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fieldRef = useRef<HTMLCanvasElement>(null);
+  const fieldRendererRef = useRef<ReturnType<typeof createMaterialField> | null>(null);
+  const atlasRef = useRef<FeatureAtlas | null>(null);
+  const atlasReadyRef = useRef(false);
+  // Anchors are mirrored screen positions (y up) and tile sides, in viewport
+  // heights; the field eases toward them between detections.
+  const targetAnchorsRef = useRef(new Float32Array([0.4, 0.6, 0.1, 0.6, 0.6, 0.1, 0.5, 0.35, 0.12]));
+  const targetLensRef = useRef(new Float32Array([0.5, 0.5]));
+  const targetAngleRef = useRef(0);
+  const presentRef = useRef(false);
+  const mouthRef = useRef(0);
+  const gradeRef = useRef(gradeMatrix(IDENTITY_GAINS));
   const streamRef = useRef<MediaStream | null>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const frameRef = useRef<number | null>(null);
@@ -165,7 +202,115 @@ export default function FaceTraceOne() {
     if (videoRef.current) videoRef.current.srcObject = null;
     const canvas = canvasRef.current;
     canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+    atlasReadyRef.current = false;
+    atlasRef.current = null;
+    presentRef.current = false;
+    clearLiquid(fieldRef.current);
     if (update) setPhase("idle");
+  }, []);
+
+  useEffect(() => {
+    const canvas = fieldRef.current;
+    if (!canvas) return;
+    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, powerPreference: "high-performance" });
+    if (!gl) return;
+
+    let field: ReturnType<typeof createMaterialField> | null = null;
+    let frame: number | null = null;
+    let lastDraw = 0;
+    let stillTime = 0;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const state = {
+      time: 0,
+      drift: new Float32Array(2),
+      lens: new Float32Array([0.5, 0.5]),
+      anchors: Float32Array.from(targetAnchorsRef.current),
+      anchorAngle: 0,
+      presence: 0,
+      mouth: 0,
+      grade: gradeRef.current,
+    };
+    let quality = 1;
+    let slowFrames = 0;
+    let fastFrames = 0;
+    const resize = () => {
+      field?.resize(canvas.clientWidth, canvas.clientHeight, quality);
+      lastDraw = 0;
+    };
+    const draw = (now: number) => {
+      if (field && atlasReadyRef.current && !document.hidden && now - lastDraw >= 33) {
+        const interval = lastDraw ? now - lastDraw : 33;
+        const elapsed = Math.min(60, interval);
+        // Step resolution down only after sustained slow frames, and back up
+        // after sustained headroom.
+        if (interval > 50) slowFrames += 1;
+        else if (interval < 38) fastFrames += 1;
+        if (slowFrames > 20 && quality > 0.5) {
+          quality = Math.max(0.5, quality * 0.85);
+          slowFrames = fastFrames = 0;
+          field.resize(canvas.clientWidth, canvas.clientHeight, quality);
+        } else if (fastFrames > 240 && quality < 1) {
+          quality = Math.min(1, quality / 0.9);
+          slowFrames = fastFrames = 0;
+          field.resize(canvas.clientWidth, canvas.clientHeight, quality);
+        }
+        const follow = 1 - Math.exp(-elapsed / 110);
+        const anchors = targetAnchorsRef.current;
+        for (let index = 0; index < anchors.length; index += 1) {
+          state.anchors[index] += (anchors[index] - state.anchors[index]) * follow;
+        }
+        for (let index = 0; index < 2; index += 1) {
+          state.lens[index] += (targetLensRef.current[index] - state.lens[index]) * follow;
+          // Moving the head drags the lattice a fraction of a cell behind it.
+          state.drift[index] = (0.5 - state.lens[index]) * 1.6;
+        }
+        const turn = targetAngleRef.current - state.anchorAngle;
+        state.anchorAngle += Math.atan2(Math.sin(turn), Math.cos(turn)) * follow;
+        const presence = presentRef.current ? 1 : 0;
+        state.presence += (presence - state.presence) * (1 - Math.exp(-elapsed / 260));
+        // Short easing keeps the swell tied to the lips, not trailing them.
+        const mouthTarget = presentRef.current ? mouthRef.current : 0;
+        const mouthTime = mouthTarget > state.mouth ? 70 : 150;
+        state.mouth += (mouthTarget - state.mouth) * (1 - Math.exp(-elapsed / mouthTime));
+        if (!reducedMotion.matches) stillTime = now / 1000;
+        state.time = stillTime;
+        field.draw(state);
+        lastDraw = now;
+      }
+      frame = requestAnimationFrame(draw);
+    };
+    const initialize = () => {
+      try {
+        field = createMaterialField(gl);
+        fieldRendererRef.current = field;
+        if (atlasReadyRef.current && atlasRef.current) field.updateTexture(atlasRef.current.canvas);
+        resize();
+      } catch (error) {
+        console.error("Face trace material field could not start", error);
+        field = null;
+        fieldRendererRef.current = null;
+      }
+    };
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      field = null;
+      fieldRendererRef.current = null;
+    };
+    const onContextRestored = () => initialize();
+    canvas.addEventListener("webglcontextlost", onContextLost);
+    canvas.addEventListener("webglcontextrestored", onContextRestored);
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    initialize();
+    frame = requestAnimationFrame(draw);
+    return () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      observer.disconnect();
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextrestored", onContextRestored);
+      field?.destroy();
+      fieldRendererRef.current = null;
+    };
   }, []);
 
   const start = async () => {
@@ -182,7 +327,7 @@ export default function FaceTraceOne() {
       }
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 15, max: 20 } },
+        video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } },
       });
       if (request !== requestRef.current) {
         stream.getTracks().forEach((track) => track.stop());
@@ -214,6 +359,16 @@ export default function FaceTraceOne() {
       startingRef.current = false;
       setPhase("seeking");
 
+      // Pixels come from the full camera frame; landmarks from a 640-wide copy.
+      const inferenceCanvas = document.createElement("canvas");
+      inferenceCanvas.width = 640;
+      inferenceCanvas.height = 480;
+      const inferenceContext = inferenceCanvas.getContext("2d", { willReadFrequently: true });
+      if (!inferenceContext) throw new Error("얼굴 추적 화면을 준비할 수 없습니다.");
+      const probe = document.createElement("canvas");
+      probe.width = 16;
+      probe.height = 16;
+      const gains = [...IDENTITY_GAINS];
       let lastVideoTime = -1;
       let lastPaint = 0;
       let lastMotion = 0;
@@ -231,7 +386,10 @@ export default function FaceTraceOne() {
             lastVideoTime = video.currentTime;
             lastInference = now;
             try {
-              const points = landmarker.detectForVideo(video, now).faceLandmarks[0] ?? null;
+              const inferenceHeight = Math.max(1, Math.round(video.videoHeight * inferenceCanvas.width / video.videoWidth));
+              if (inferenceCanvas.height !== inferenceHeight) inferenceCanvas.height = inferenceHeight;
+              inferenceContext.drawImage(video, 0, 0, inferenceCanvas.width, inferenceCanvas.height);
+              const points = landmarker.detectForVideo(inferenceCanvas, now).faceLandmarks[0] ?? null;
               const pose = points && readPose(points, video.videoWidth, video.videoHeight);
               if (points && pose) {
                 const capture = previousFrame?.canvas ?? document.createElement("canvas");
@@ -250,15 +408,62 @@ export default function FaceTraceOne() {
                 captureContext.clip();
                 captureContext.drawImage(video, 0, 0);
                 captureContext.restore();
+                for (const contour of CONTOURS) {
+                  const xs = contour.map((index) => points[index].x * capture.width);
+                  const ys = contour.map((index) => points[index].y * capture.height);
+                  const left = Math.min(...xs) - 2;
+                  const top = Math.min(...ys) - 2;
+                  gradeRegion(captureContext, left, top, Math.max(...xs) + 2 - left, Math.max(...ys) + 2 - top, gradeRef.current);
+                }
+
+                const atlas = atlasRef.current ?? createFeatureAtlas();
+                atlasRef.current = atlas;
+                const features = measureFeatures(points, CONTOURS, video.videoWidth, video.videoHeight, pose.angle);
+                const tone = features && measureFaceTone(probe, video, features);
+                if (tone) {
+                  // Ease the grade so the field does not pump with every blink.
+                  const target = targetGains(tone);
+                  for (let channel = 0; channel < 3; channel += 1) {
+                    gains[channel] += (target[channel] - gains[channel]) * 0.12;
+                  }
+                  gradeMatrix(gains, gradeRef.current);
+                }
+                if (features && writeFeatureAtlas(atlas, video, features, pose.angle)) {
+                  atlasReadyRef.current = true;
+                  presentRef.current = true;
+                  mouthRef.current = mouthOpening(points, video.videoWidth, video.videoHeight);
+                  fieldRendererRef.current?.updateTexture(atlas.canvas);
+                  const displayCanvas = canvasRef.current;
+                  if (displayCanvas) {
+                    const viewWidth = displayCanvas.clientWidth;
+                    const viewHeight = displayCanvas.clientHeight;
+                    const cover = Math.max(viewWidth / video.videoWidth, viewHeight / video.videoHeight);
+                    const offsetX = (viewWidth - video.videoWidth * cover) / 2;
+                    const offsetY = (viewHeight - video.videoHeight * cover) / 2;
+                    const centerX = offsetX + pose.x * cover;
+                    const centerY = offsetY + pose.y * cover;
+                    const enlargement = centerScale(centerX, centerY, viewWidth, viewHeight);
+                    // Each anchor matches the foreground cutout's mirrored
+                    // position and enlarged size, so the tile lies under it.
+                    for (let feature = 0; feature < features.length; feature += 1) {
+                      const { x: featureX, y: featureY, side } = features[feature];
+                      const imageX = offsetX + featureX * cover;
+                      const imageY = offsetY + featureY * cover;
+                      const x = centerX + (imageX - centerX) * enlargement;
+                      const y = centerY + (imageY - centerY) * enlargement;
+                      targetAnchorsRef.current[feature * 3] = 1 - x / viewWidth;
+                      targetAnchorsRef.current[feature * 3 + 1] = 1 - y / viewHeight;
+                      targetAnchorsRef.current[feature * 3 + 2] = side * cover * enlargement / viewHeight;
+                    }
+                    targetLensRef.current[0] = 1 - centerX / viewWidth;
+                    targetLensRef.current[1] = 1 - centerY / viewHeight;
+                    targetAngleRef.current = pose.angle;
+                  }
+                }
                 previousFrame = currentFrame;
                 currentFrame = { canvas: capture, pose, capturedAt: now };
                 displayPose ??= { ...pose };
                 lastFace = now;
-              } else {
-                currentFrame = null;
-                previousFrame = null;
-                displayPose = null;
-                magnification = 1;
               }
               const nextPhase = currentFrame ? "tracking" : "seeking";
               setPhase((current) => current === nextPhase ? current : nextPhase);
@@ -269,11 +474,16 @@ export default function FaceTraceOne() {
               return;
             }
           }
-          if (now - lastFace > 300) {
+          // A single missed landmark frame must not blank the visible eyes or
+          // mouth. Clear only after the face has genuinely been absent.
+          if (currentFrame && now - lastFace > 1200) {
             currentFrame = null;
             previousFrame = null;
             displayPose = null;
             magnification = 1;
+            // The collage keeps flowing from its last tiles; only the anchors
+            // that held it to the face let go.
+            presentRef.current = false;
           }
           if (currentFrame && displayPose) {
             const elapsed = Math.min(50, lastMotion ? now - lastMotion : 16);
@@ -288,7 +498,7 @@ export default function FaceTraceOne() {
             }
           }
           lastMotion = now;
-          if (canvasRef.current && now - lastPaint >= 33) {
+          if (canvasRef.current && now - lastPaint >= 41) {
             paint(canvasRef.current, currentFrame, previousFrame, displayPose, magnification, now);
             lastPaint = now;
           }
@@ -325,8 +535,9 @@ export default function FaceTraceOne() {
 
   return (
     <main className={styles.stage}>
+      <canvas ref={fieldRef} className={styles.background} aria-hidden="true" />
       <video ref={videoRef} className={styles.source} playsInline muted aria-hidden="true" />
-      <canvas ref={canvasRef} className={styles.image} aria-label="카메라 영상에서 두 눈과 입만 보입니다" role="img" />
+      <canvas ref={canvasRef} className={styles.image} aria-label="선명한 두 눈과 입 주위로, 그 눈과 입으로 이루어진 액체 같은 보로노이 콜라주가 화면 전체를 채웁니다" role="img" />
       {(phase === "idle" || phase === "error") && (
         <div className={styles.prompt}>
           {message && <p role="alert">{message}</p>}

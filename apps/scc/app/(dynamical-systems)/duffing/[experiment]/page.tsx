@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DuffingOne from "@/components/dynamical-systems/duffing/1";
+import DuffingTwo from "@/components/dynamical-systems/duffing/2";
+import DuffingThree from "@/components/dynamical-systems/duffing/3";
 import {
   duffingExperiments,
   isDuffingExperimentSlug,
@@ -12,11 +14,19 @@ export function generateStaticParams() {
   }));
 }
 
-export const metadata: Metadata = {
-  title: "duffing/1",
-  description:
-    "An editable visualization of a driven, damped double-well Duffing oscillator.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ experiment: string }>;
+}): Promise<Metadata> {
+  const { experiment } = await params;
+  const registered = duffingExperiments.find(({ slug }) => slug === experiment);
+  if (!registered) return {};
+  return {
+    title: `duffing/${registered.slug}`,
+    description: registered.description,
+  };
+}
 
 export default async function DuffingExperimentPage({
   params,
@@ -25,5 +35,6 @@ export default async function DuffingExperimentPage({
 }) {
   const { experiment } = await params;
   if (!isDuffingExperimentSlug(experiment)) notFound();
-  return <DuffingOne />;
+  if (experiment === "3") return <DuffingThree />;
+  return experiment === "2" ? <DuffingTwo /> : <DuffingOne />;
 }

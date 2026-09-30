@@ -1,0 +1,43 @@
+.root {
+  --scc-fg: #ffffff;
+  --scc-bg: #000000;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  .root:not([data-theme="dark"]) {
+    --scc-fg: #0a0a0a;
+    --scc-bg: #ffffff;
+    color-scheme: light;
+  }
+}
+
+.root[data-theme="light"] {
+  --scc-fg: #0a0a0a;
+  --scc-bg: #ffffff;
+  color-scheme: light;
+}
+
+/* The active colour mode is filled, including when it follows the system. */
+.darkOption,
+.root[data-theme="light"] .lightOption {
+  background: var(--scc-fg);
+  color: var(--scc-bg) !important;
+}
+
+.root[data-theme="light"] .darkOption {
+  background: transparent;
+  color: inherit !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .root:not([data-theme="dark"]) .lightOption {
+    background: var(--scc-fg);
+    color: var(--scc-bg) !important;
+  }
+
+  .root:not([data-theme="dark"]) .darkOption {
+    background: transparent;
+    color: inherit !important;
+  }
+}

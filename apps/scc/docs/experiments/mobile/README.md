@@ -6,17 +6,7 @@ The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13
 
 `lucky-ticket/1`–`/3` are full-viewport scratch-off fortunes with one-line, long-form, and scattered-word presentations at [`/mobile/lucky-ticket/[experiment]`](../../../app/mobile/lucky-ticket/[experiment]/page.tsx). See [lucky ticket](lucky-ticket.md).
 
-`face-trace/1` keeps only the live camera pixels inside the tracked contours of two eyes and a mouth at [`/mobile/face-trace/1`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
-
-`face-trace/2` keeps those three camera fragments and uses only their live pixels as a liquid WebGL material across the rest of the viewport at [`/mobile/face-trace/2`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
-
-`face-trace/3` draws ten concentric sizes of each live eye and mouth cutout from 1× through 10×, without WebGL, at [`/mobile/face-trace/3`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
-
-`face-trace/4` keeps the live eye and mouth cutouts while softly blending their surrounding camera-image patches where the three features meet at [`/mobile/face-trace/4`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
-
-`face-trace/5` keeps the clear eye and mouth fragments while stretching their original camera edge pixels along a shared three-source flux at [`/mobile/face-trace/5`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
-
-`face-trace/6` places live eye-and-mouth copies on 16 concentric circles on black, from `0.125R` to `2R` in `0.125R` steps, with larger inner features and one central set, at [`/mobile/face-trace/6`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
+`face-trace/1` keeps the live eye and mouth cutouts inside a full-screen `face-voronoi/3` `face-gradient 3` lattice made only of those features and their short echoes. Opening the mouth swells and melts the lattice outward from the mouth. It is at [`/mobile/face-trace/1`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
 
 `finger-network/1` maps each active mobile touch to a node and joins every pair at [`/mobile/finger-network/1`](../../../app/mobile/finger-network/[experiment]/page.tsx). See [finger network](finger-network.md).
 

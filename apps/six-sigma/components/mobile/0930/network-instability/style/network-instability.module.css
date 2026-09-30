@@ -1,0 +1,201 @@
+/* Style tokens. Links keep the figure's roles (new / reweighted / unchanged); a restyle can colour them here. */
+.surface {
+  --field: #000;
+  --ink: #fff;
+  --link: #fff;
+  --link-added: #fff;
+  --link-changed: #fff;
+  --link-opacity: 0.38;
+  --link-emphasis-opacity: 1;
+  --secondary-opacity: 0.5;
+  --label-font: 400 9px Arial, Helvetica, sans-serif;
+  --weight-font: italic 400 8.5px Georgia, "Times New Roman", serif;
+  --panel: #fff;
+  --panel-ink: #171717;
+  --panel-muted: #666;
+  --transition: 0.9s;
+
+  width: 100%;
+  height: 100svh;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  align-items: center;
+  overflow: hidden;
+  padding: max(20px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(64px, calc(48px + env(safe-area-inset-bottom)))
+    max(20px, env(safe-area-inset-left));
+  background: var(--field);
+  color: var(--ink);
+}
+
+.graph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 680px;
+  max-height: 680px;
+  min-height: 0;
+}
+
+.axis {
+  display: block;
+  width: 100%;
+  max-width: 680px;
+  height: auto;
+}
+
+.link path {
+  stroke: var(--link);
+  opacity: var(--link-opacity);
+  transition: stroke-dashoffset var(--transition) ease-in-out, opacity var(--transition), stroke var(--transition);
+}
+
+.link text {
+  fill: var(--link);
+  font: var(--weight-font);
+  opacity: var(--link-opacity);
+  transition: opacity var(--transition);
+}
+
+.added path,
+.added text {
+  stroke: var(--link-added);
+  opacity: var(--link-emphasis-opacity);
+}
+
+.added text {
+  fill: var(--link-added);
+  stroke: none;
+}
+
+.changed path,
+.changed text {
+  stroke: var(--link-changed);
+  opacity: var(--link-emphasis-opacity);
+}
+
+.changed text {
+  fill: var(--link-changed);
+  stroke: none;
+}
+
+.absent path,
+.absent text {
+  opacity: 0;
+}
+
+.node {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.node:focus-visible {
+  outline: none;
+}
+
+.node:focus-visible circle:first-child {
+  stroke-width: 2;
+}
+
+.secondary {
+  opacity: var(--secondary-opacity);
+}
+
+.label {
+  font: var(--label-font);
+  fill: currentColor;
+}
+
+.mark {
+  cursor: pointer;
+}
+
+.mark:focus-visible {
+  outline: none;
+}
+
+.mark:focus-visible text {
+  text-decoration: underline;
+}
+
+/* Local copy of the K6 bottom-right edit disclosure. */
+.control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: var(--panel-ink);
+}
+
+.controlTrigger {
+  min-height: 42px;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 15px;
+  background: var(--panel-ink);
+  color: var(--panel);
+  font: 600 13px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.panel {
+  width: min(300px, calc(100vw - 32px));
+  max-height: calc(100dvh - 100px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 13px;
+  background: var(--panel);
+  color: var(--panel-ink);
+}
+
+.adjustment + .adjustment {
+  margin-top: 16px;
+}
+
+.controlLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 13px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.slider {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--panel-ink);
+  cursor: pointer;
+}
+
+.range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  font-size: 11px;
+  color: var(--panel-muted);
+}
+
+.control button:focus-visible,
+.control input:focus-visible {
+  outline: 2px solid #999;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface {
+    --transition: 0s;
+  }
+
+  .pulses {
+    display: none;
+  }
+}

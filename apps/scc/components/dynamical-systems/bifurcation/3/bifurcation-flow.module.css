@@ -1,0 +1,80 @@
+.field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #030409;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  outline: 0;
+  touch-action: none;
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
+
+.canvas:focus-visible {
+  outline: 1px solid rgba(230, 235, 255, 0.86);
+  outline-offset: -0.55rem;
+}
+
+.systems {
+  position: absolute;
+  right: clamp(1rem, 2.5vmin, 2rem);
+  bottom: clamp(1rem, 2.5vmin, 2rem);
+  left: clamp(1rem, 2.5vmin, 2rem);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.42rem clamp(0.7rem, 1.7vw, 1.4rem);
+  pointer-events: none;
+}
+
+.systemButton {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(215, 224, 255, 0.48);
+  cursor: pointer;
+  font: 0.72rem var(--font-geist-mono), monospace;
+  letter-spacing: 0.01em;
+  pointer-events: auto;
+}
+
+.systemButton[aria-pressed="true"] {
+  color: rgba(247, 217, 183, 0.96);
+}
+
+.systemButton:hover {
+  color: rgba(235, 240, 255, 0.92);
+}
+
+.systemButton:focus-visible {
+  outline: 1px solid rgba(230, 235, 255, 0.86);
+  outline-offset: 0.35rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas {
+    cursor: default;
+  }
+
+  .systemButton {
+    cursor: default;
+  }
+}
+
+.parameter {
+  color: rgba(215, 224, 255, 0.48);
+  font: 0.72rem var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}

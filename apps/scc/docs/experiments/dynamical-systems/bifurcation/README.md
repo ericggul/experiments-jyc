@@ -118,3 +118,95 @@ next:        Determine whether the `r = 3.55` period-eight stage should remain
              at the current dwell time or be isolated in a later variant for
              slower inspection, without changing the established 1→2→4→chaos
              progression.
+
+## bifurcation/2 — the cascade assembles itself
+
+Route/date: `/bifurcation/2`, 2026-09-30. Baseline: `/1` and the
+`attractor/3` particle field. `/1` is preserved unchanged.
+
+- **Tested relation:** a participant should read "one answer splits into two,
+  four, then none" without labels. `/1` showed one fixed `r` at a time, so the
+  split itself was never visible; its rings did not say what changed.
+- **Changed variable:** every one of 48,000 particles owns a fixed parameter,
+  stratified across the window, and iterates the real map on the GPU. The
+  population therefore holds every `r` at once, and the invariant sets appear
+  side by side as random dust collapses onto them.
+- **Space:** `(r, x[n], x[n-1])`. From the front this is the bifurcation
+  diagram; turned sideways it is the map's own graph, because every settled
+  point lies on `x[n] = f(x[n-1])`. `/1`'s rejection of an `r`–`x` chart
+  concerned a drawn chart; here nothing is drawn, and each point is a
+  particle's actual current and previous state.
+- **Motion and colour:** the map is applied once per 0.2 s tick. Each particle
+  glides to its new state in the first 40 % of the tick, so fixed points rest,
+  period-two particles hop between branches, and chaotic ones never land
+  twice. Warm = no hop (`|x[n]-x[n-1]|` ≈ 0), cool = large hop. Particles are
+  re-dropped after 180–540 ticks and stay faint for 24 ticks, so convergence
+  keeps happening. Slow convergence near each split (critical slowing down)
+  shows as warm haze at the branch points.
+- **Selector:** logistic `r∈[2.6,4]`, sine `r sin(πx)`, Ricker `x e^{r(1-x)}`,
+  and Gauss `e^{-6.2x²}+β`. The same doubling route recurs in each map;
+  Gauss also runs it backwards.
+- **Invariants:** exact map per tick; fixed parameter per particle; no axes,
+  labels, trails, or post-processing; the attractor/3 selector, palette, and
+  sprite grammar.
+- **Evidence:** `model/maps.test.ts` checks each window's periods (1 at the
+  left edge, 2, 4, chaos; Gauss back to 2 and 1) and that settled orbits stay
+  in view. 2026-09-30 HTTPS Chrome: all four maps rendered, and logistic ran
+  for 30 s with no console, WGSL, or device-loss messages. That tab was
+  hidden, so frames were driven by an injected page-side scheduler capped
+  near 60 Hz: the rate reflects that cap, not measured device headroom.
+- **Budget:** 48,000 sprites, one compute dispatch per 0.2 s tick, no
+  post-processing. This exceeds the 8,192 default. It is the `attractor/3`
+  architecture with 1.6× its count, observed under the scheduler above only.
+- **Open:** whether a foreground Mac observation holds at DPR 2.
+
+**Review of `/2` (2026-09-30, user):** rejected. Spending a spatial axis on
+`r` only re-draws the known 2D diagram as a 3D deformation, and it did not
+run well. The route is kept as a record of that failure.
+
+## bifurcation/3 — living through a bifurcation
+
+Route/date: `/bifurcation/3`, 2026-09-30. Baseline: `attractor/3`.
+
+- **Tested relation:** a participant should feel what a bifurcation is,
+  namely a qualitative change in how everything moves as one quantity slowly
+  changes, without any axis standing for that quantity.
+- **Ontology:** the same as `attractor/3`. Particle positions are states of
+  a 3D flow integrated on the GPU, and time is only the animation. The single
+  difference is that the flow's parameter drifts slowly as the animation
+  runs, so the one ensemble is carried through each bifurcation.
+- **Flows and routes** (selector; each flow restarts its sweep when chosen):
+  - Thomas, `b` 1.05 → 0.18: one resting cloud → pitchfork into two
+    (b = 1) → each becomes a loop (Hopf, b ≈ 0.329) → period doubling →
+    chaos (b ≈ 0.208).
+  - Lorenz, `ρ` 0.5 → 32: one resting cloud → two (ρ = 1) → the butterfly
+    erupts past ρ ≈ 24.74. On the way down, chaos lingers well below that
+    value before collapsing (transient chaos and hysteresis).
+  - Rössler (b = 2, c = 4), `a` 0.05 → 0.39: a resting focus → a loop
+    grows out of it (Hopf) → doubling → a folded chaotic band.
+- **Sweep:** rest 12 %, drift 32 %, rest 24 %, drift back 32 % of each cycle,
+  on smooth ramps. The drift follows model time, not wall time, so a slow
+  frame rate slows the drift and the flow together. Cycles last 360, 150 and
+  420 model-time units: about 75, 83 and 70 s at 60 Hz.
+- **Noise:** each step adds uniform noise of amplitude `noise·√dt` per axis
+  (0.06, 0.3, 0.05). Without it, particles sitting exactly on an equilibrium
+  stay there after it turns unstable. The CPU check showed Lorenz never
+  leaving its equilibria even at ρ = 28. With it, a resting state is a small
+  cloud that stretches as a bifurcation approaches.
+- **Readout and colour:** a small readout shows the drifting parameter,
+  nothing else. Colour is flow speed: warm = resting, cool = carried.
+- **Evidence:** `model/flows.test.ts` checks that each flow rests at its sweep
+  start, keeps moving at its far end, that Thomas has symmetric pitchfork
+  equilibria, and that the sweep profile is continuous. 2026-09-30 HTTPS
+  Chrome (hidden tab, injected ~60 Hz scheduler as for `/2`):
+  - Thomas: point, then a stretched diagonal, then two states at b 0.27,
+    then chaos at 0.18.
+  - Lorenz: point, then two, then the butterfly lingering at ρ 27.9 on the
+    way down.
+  - Rössler: a resting cloud, a ring pulling out at a 0.344, a chaotic band
+    at 0.39.
+  - No console or GPU errors.
+- **Budget:** 30,000 sprites (the `attractor/3` count), one compute dispatch
+  per frame with 3–5 RK4 steps.
+- **Open:** Rössler's doubled loops are brief within the sweep; a longer rest
+  near a ≈ 0.36 may make period two and four easier to see.

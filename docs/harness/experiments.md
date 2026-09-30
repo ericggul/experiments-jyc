@@ -7,14 +7,17 @@ filesystem route groups never change public URLs.
 | SCC family | Route root | Component root |
 | --- | --- | --- |
 | Single-device | `app/(standalone)/[group]` | `components/standalone/[group]` |
-| Small socket experiments | `app/(realtime)/[group]` | `components/realtime/[group]` |
 | Workstations | `app/(dashboard)/[group]` | `components/dashboard/[group]` |
 | Mobile experiments | `app/mobile` | `components/mobile` |
 | `dj`, `finger-skating`, `network-system`, `sns` | `app/[group]` | `components/[group]` |
 
-Within a family, a minimal `page.tsx` index links registered variants;
-`[experiment]/page.tsx` selects the variant from the matching
-`components/.../experiments.ts`. Use dynamic variants, not literal numbered
+Within a family, `page.tsx` renders the shared SCC navigation
+(`components/navigation`) scoped to that family; `[experiment]/page.tsx`
+selects the variant from the matching `components/.../experiments.ts`. Every
+SCC variant also needs an entry with its ISO creation date and one-line phrase
+in `components/navigation/experiments.ts`, which drives the home, area and
+family indexes (date-grouped, searchable, modelled on Goldfishes); its pure
+test flags registry slugs missing from that index. Use dynamic variants, not literal numbered
 route directories. Keep implementation in `components/.../[experiment]/`.
 SCC route links in the main catalogue, family indexes, and route navigation open
 their destination in a new tab so the catalogue stays available. In-screen

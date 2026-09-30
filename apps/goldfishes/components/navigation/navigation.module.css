@@ -1,0 +1,43 @@
+.root {
+  --gf-fg: #ffffff;
+  --gf-bg: #000000;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  .root:not([data-theme="dark"]) {
+    --gf-fg: #0a0a0a;
+    --gf-bg: #ffffff;
+    color-scheme: light;
+  }
+}
+
+.root[data-theme="light"] {
+  --gf-fg: #0a0a0a;
+  --gf-bg: #ffffff;
+  color-scheme: light;
+}
+
+/* The active colour mode is filled, including when it follows the system. */
+.darkOption,
+.root[data-theme="light"] .lightOption {
+  background: var(--gf-fg);
+  color: var(--gf-bg) !important;
+}
+
+.root[data-theme="light"] .darkOption {
+  background: transparent;
+  color: inherit !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .root:not([data-theme="dark"]) .lightOption {
+    background: var(--gf-fg);
+    color: var(--gf-bg) !important;
+  }
+
+  .root:not([data-theme="dark"]) .darkOption {
+    background: transparent;
+    color: inherit !important;
+  }
+}

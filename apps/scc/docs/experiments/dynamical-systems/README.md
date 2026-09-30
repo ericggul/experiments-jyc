@@ -10,9 +10,9 @@ permission to inherit that family’s routes, visual language, or model claims.
 - A group owns `components/dynamical-systems/[group]/`, its registry, a thin
   `app/(dynamical-systems)/[group]/[experiment]/page.tsx` dispatcher, and its
   matching documentation folder.
-- `components/dynamical-systems/navigation/model/` reads registered valid
-  variants from this family so `/dynamical-systems` remains a live index as
-  bounded trials are added. A registry remains the executable source of truth.
+- `/dynamical-systems` is the shared SCC navigation scoped to this family; add
+  each new variant with its creation date to `components/navigation/experiments.ts`.
+  A family registry remains the executable source of truth.
 - A numbered trial is a preserved implementation. Fork a working variant before
   changing a model, numerical method, parameter, or perceptual mapping; do not
   couple a later variation back into an earlier route through a shared mutable
@@ -32,10 +32,13 @@ permission to inherit that family’s routes, visual language, or model claims.
   trajectories, relocated intact from the former complex-systems ownership.
 - [three-body](./three-body/README.md): Burrau's unequal-mass Pythagorean
   initial-value problem, integrated as a single field-first orbit study.
-- [duffing](./duffing/README.md): a driven, damped nonlinear oscillator with
-  an editable coefficient surface and stroboscopic phase observations.
-- [bifurcation](./bifurcation/README.md): a supercritical Hopf normal-form
-  particle field whose parameter-state geometry reveals an attracting point
-  becoming a stable cycle.
-- [potential-field](./potential-field/README.md): WebGPU portrait spheres move
-  and collide inside one closed, analytically deformed field container.
+- [duffing](./duffing/README.md): a driven, damped double-well oscillator;
+  `/1` is an editable coefficient surface, `/2` a GPU particle ring of balls
+  rolling in the drive-tilted well, `/3` the same ring under a drifting drive.
+- [bifurcation](./bifurcation/README.md): `/1` holds the logistic parameter in
+  stages; `/2` gives every map particle its own parameter (a rejected,
+  diagram-shaped trial); `/3` carries particles through 3D flows whose
+  parameter drifts, so splits, loops and chaos are lived through in time.
+- [orbital-resonance](./orbital-resonance/README.md): test particles around a
+  star and one planet in the planet's rotating frame, where period-matched
+  orbits trace standing figures.

@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import StatisticalModellingNavigation from "@/components/statistical-modelling/navigation";
-import { getStatisticalModellingExperiments } from "@/components/statistical-modelling/navigation/model";
-
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
+import SccNavigation from "@/components/navigation";
+import { getSccNavigationItems } from "@/components/navigation/experiments";
 
 export const metadata: Metadata = {
   title: "statistical-modelling",
-  description: "A live index of runnable SCC statistical-modelling experiments.",
+  description: "A dated index of SCC statistical-modelling experiments.",
 };
 
-export default async function StatisticalModellingIndexPage() {
-  const experiments = await getStatisticalModellingExperiments();
-  return <StatisticalModellingNavigation experiments={experiments} />;
+export default function StatisticalModellingIndexPage() {
+  return (
+    <SccNavigation
+      experiments={getSccNavigationItems({ area: "statistical-modelling" })}
+      scope="statistical-modelling"
+      scopeKey="statistical-modelling"
+    />
+  );
 }

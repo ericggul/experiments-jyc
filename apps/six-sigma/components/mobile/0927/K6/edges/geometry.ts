@@ -43,19 +43,34 @@ export function edgeCurve(edge: Edge, style: LineStyle): Cubic {
   };
 }
 
-export function edgePath(edge: Edge, style: LineStyle) {
-  const curve = edgeCurve(edge, style);
-  const mark = style === "cubic-directional" ? directionMark(curve) : null;
-  return mark
-    ? `${path(curve)} M ${mark.left.x} ${mark.left.y} L ${mark.tip.x} ${mark.tip.y} L ${mark.right.x} ${mark.right.y}`
-    : path(curve);
+/**
+ * Directional edges carry two lanes. Each lane bends to the right of its own
+ * travel, so outgoing and returning curves mirror each other across the chord
+ * and the whole graph keeps the symmetry of its vertex layout.
+ */
+export function laneCurves(edge: Edge): [Cubic, Cubic] {
+  return [
+    edgeCurve(edge, "cubic-directional"),
+    edgeCurve({ id: edge.id, from: edge.to, to: edge.from }, "cubic-directional"),
+  ];
 }
 
+const markPath = (curve: Cubic) => {
+  const mark = directionMark(curve);
+  return mark ? ` M ${mark.left.x} ${mark.left.y} L ${mark.tip.x} ${mark.tip.y} L ${mark.right.x} ${mark.right.y}` : "";
+};
+
+export function edgePath(edge: Edge, style: LineStyle) {
+  if (style !== "cubic-directional") return path(edgeCurve(edge, style));
+  return laneCurves(edge).map((curve) => path(curve) + markPath(curve)).join(" ");
+}
+
+/** Arrow at the lane's midpoint, so both lanes' marks mirror across the chord. */
 function directionMark(curve: Cubic) {
   const distance = Math.hypot(curve.to.x - curve.from.x, curve.to.y - curve.from.y);
   if (distance < 1e-6) return null;
-  const tip = point(curve, 0.84);
-  const before = point(curve, 0.83);
+  const tip = point(curve, 0.52);
+  const before = point(curve, 0.51);
   const dx = tip.x - before.x;
   const dy = tip.y - before.y;
   const tangentLength = Math.hypot(dx, dy);
@@ -71,18 +86,19 @@ function directionMark(curve: Cubic) {
 }
 
 export function appendEdgeToPath(path2d: Path2D, edge: Edge, style: LineStyle) {
-  path2d.moveTo(edge.from.x, edge.from.y);
-  if (style === "straight") path2d.lineTo(edge.to.x, edge.to.y);
-  else {
-    const curve = edgeCurve(edge, style);
+  if (style === "straight") {
+    path2d.moveTo(edge.from.x, edge.from.y);
+    path2d.lineTo(edge.to.x, edge.to.y);
+    return;
+  }
+  for (const curve of style === "cubic-directional" ? laneCurves(edge) : [edgeCurve(edge, style)]) {
+    path2d.moveTo(curve.from.x, curve.from.y);
     path2d.bezierCurveTo(curve.control1.x, curve.control1.y, curve.control2.x, curve.control2.y, curve.to.x, curve.to.y);
-    if (style === "cubic-directional") {
-      const mark = directionMark(curve);
-      if (mark) {
-        path2d.moveTo(mark.left.x, mark.left.y);
-        path2d.lineTo(mark.tip.x, mark.tip.y);
-        path2d.lineTo(mark.right.x, mark.right.y);
-      }
+    const mark = style === "cubic-directional" ? directionMark(curve) : null;
+    if (mark) {
+      path2d.moveTo(mark.left.x, mark.left.y);
+      path2d.lineTo(mark.tip.x, mark.tip.y);
+      path2d.lineTo(mark.right.x, mark.right.y);
     }
   }
 }
@@ -90,7 +106,10 @@ export function appendEdgeToPath(path2d: Path2D, edge: Edge, style: LineStyle) {
 /** Arc-length table is created only for the at-most-48 active signals. */
 export function travelingEdge(edge: Edge, style: LineStyle, reverse: boolean) {
   const original = edgeCurve(edge, style);
-  const curve = reverse
+  // A directional return travels its own mirrored lane, not the outgoing curve backwards.
+  const curve = style === "cubic-directional"
+    ? laneCurves(edge)[reverse ? 1 : 0]
+    : reverse
     ? { from: original.to, control1: original.control2, control2: original.control1, to: original.from }
     : original;
   const steps = style === "straight" ? 1 : 24;

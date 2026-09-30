@@ -67,20 +67,6 @@ export const parametricInterfaceExperiments: readonly ParametricInterfaceExperim
   },
 ];
 
-export const parametricInterfaceIndexEntries = [
-  { slug: "whole", label: "parametric-interface/whole" },
-  { slug: "1", label: "parametric-interface/1" },
-  { slug: "2", label: "parametric-interface/2" },
-  { slug: "3", label: "parametric-interface/3" },
-  { slug: "4", label: "parametric-interface/4" },
-  { slug: "5", label: "parametric-interface/5" },
-  { slug: "6", label: "parametric-interface/6" },
-  { slug: "7", label: "parametric-interface/7" },
-] as const;
-
-export type ParametricInterfaceExperimentSlug =
-  (typeof parametricInterfaceIndexEntries)[number]["slug"];
-
 export const parametricInterfaceExperimentDateKeys = Array.from(
   new Set(
     parametricInterfaceExperiments
