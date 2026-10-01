@@ -3,68 +3,98 @@
 Mobile surface at `/mobile/0930/network-instability`, owned by
 `components/mobile/0930/network-instability`. Standalone; imports nothing from `0927/`.
 
-## Goal
+## What it shows
 
-Replay Bardoscia et al. 2017, Fig. 3 as a working network. A shock should fade
-in a–b–d–e and circulate until banks default in c. The figure's point is that
-rewiring alone, with no change in leverage, moves λmax across 1 and back.
-Distress is shown per bank, after DebtRank (Battiston et al. 2012, Fig. 3).
-The style is taken from K6 only: black field, white hairlines, bottom-right
-`edit`. Not K6's topology.
+A financial network after DebtRank (Battiston et al. 2012, Fig. 3) under many
+shocks at once.
 
-## Source figures
+- **Institutions and links:** rings are institutions, and ring area is size. A
+  link `A → B` means B loses when A is in distress.
+- **Shocks overlap:**
+  - Idiosyncratic hits land on random institutions: 1.4/s across the system,
+    size 0.1–0.3.
+  - Every 6–11 s a common shock hits all of them at once: size 0.03–0.11. A
+    common shock of 0.10 or more cascades on its own.
+  - A tap adds a 0.3 hit to that institution.
+- **Propagation:** each round, every institution's *new* distress moves one link
+  onward, all at once. Pulses show the round in flight, and rings fill with
+  distress h (0–1).
+- **Default:** reaching h = 1 releases a further 0.5 onto the defaulter's
+  creditors, and the ring's outline thickens. This non-linearity is what lets
+  overlapping shocks do more together than apart. Institutions recover with a
+  1.8 s half-life.
+- **Loop gain:** the paper's impact weights are scaled so the loop gain λmax is
+  0.85. Below 1, any single shock fades; close enough to 1 that overlapping
+  shocks pile up.
 
-Both figures were downloaded and inspected on 2026-09-30:
+**Bottom strip:**
 
-- [Bardoscia et al., *Pathways towards instability in financial networks*, Nat. Commun. 2017, Fig. 3](https://www.nature.com/articles/ncomms14416#Fig3)
-  - Transcribed link by link in `model/configurations.ts`: eight banks, weights
-    ω, 2ω/3, ω/2, panels a–e.
-  - New links (blue in the figure) and reweighted links (red) are derived by
-    comparing each panel with the previous one. A test checks them against the
-    figure.
-  - The recomputed spectral radii reproduce the printed λmax (0, 0.8165,
-    1.1242, 0.8907, 0.8927 ω) to 5 × 10⁻⁴.
-- [Battiston et al., *DebtRank*, Sci. Rep. 2012, Fig. 3](https://pmc.ncbi.nlm.nih.gov/articles/PMC3412322/figure/f3/)
-  - Taken: distress per institution as node weight.
-  - Here each ring fills with area ∝ h, and a full disc means default.
+- Letters a–l choose a placement.
+- The shuffle button on the right changes placement every 5 s until pressed again.
+- Below them, **system distress** is the value-weighted mean of h over the last
+  24 s (0 at the line, 1 = all in default). Ticks under the line mark common shocks.
 
-## Surface
+## Measured on the pure model (10 simulated minutes, `debtrank/stress.ts`)
 
-- **Graph:** nodes keep the figure's places, made exactly mirror-symmetric.
-  - A reciprocal pair (1↔3, 3↔4) is two lanes. Each bends to the right of its
-    own travel, so the pair mirrors across the chord.
-  - A single link bows away from the centre. A link on a line through the
-    centre bows toward the vertical axis. These rules commute with the layout's
-    mirrors (tested).
-  - Midpoint chevrons. Weight labels sit on each curve's outer side.
-  - New and reweighted links are at full opacity, the rest at 0.38.
-  - Changing panel draws links in and out over 0.9 s.
-- **Axis:** panel f.
-  - Every configuration's λmax, with a dashed 1. Letters spread apart with
-    leaders where d and e collide.
-  - Tap a letter, or use the arrow keys, to select that configuration. λmax is
-    absolute, so ω moves the marks.
-- **Dynamics:** `model/distress.ts`.
-  - New distress passes on each round, scaled by ω · weight, and h is capped at 1.
-  - When the network is quiet, banks recover and a shock of 0.08 arrives at 5 or
-    6, alternating. Tapping a bank shocks it.
-  - At ω = 1, a, b, d and e stay at or below 0.4. In c, banks 3 and 4 reach default.
-- **edit:** ω 0.6–1.4 (initial 1); tempo 1–8 rounds/s (initial 3).
+- Median system distress is 0.32, and the 95th percentile is 0.54.
+- 15 cascade episodes (any default), about one every 40 s.
+- Only 8 of the 71 common shocks were large enough to cascade alone, so at
+  least 7 of the 15 cascades came from overlap.
+- Tested: a 0.06 common shock and two 0.3 hits each fade alone, but together
+  they cascade.
+
+## Panels a–l: one network, twelve placements
+
+Only positions change. Most panels trade places on shared slots, the same
+circle or the same rings, ordered by different quantities. Between ring panels,
+nodes slide along the rings. Spring and grid move in straight lines. A change
+mid-morph continues from where the nodes are.
+
+| Panel | Placement |
+| --- | --- |
+| a | circle by number (DebtRank Fig. 3a) |
+| b | DebtRank radial: closer to the centre = higher DebtRank; dashed rings at 0, 0.1 … 0.5 (Fig. 3b) |
+| c | circle by DebtRank |
+| d | circle by size |
+| e | circle by impact on others |
+| f | circle by exposure to others |
+| g | core on an inner ring inside the periphery |
+| h | each core member at the mean angle of the peripheral institutions most exposed to it |
+| i | circle in spring-layout angular order (neighbours adjacent) |
+| j | spring (deterministic Fruchterman–Reingold) |
+| k | grid by DebtRank |
+| l | three rings by DebtRank tier (5 / 8 / 9) |
+
+**DebtRank** is the share of the system's value that one institution's default
+puts into distress. It sets b, c, k and l.
+
+## Model notes
+
+- **Data:** the paper's cross-holding matrix is not published, so
+  `debtrank/network.ts` is a synthetic, seeded, unnamed network. It has the
+  figure's scale and core–periphery form: 22 institutions, 5 core, 76 links.
+- **DebtRank ranking:** `debtrank/debtrank.ts` is the paper's U/D/I DebtRank,
+  used only to rank the placements. The live dynamics are in
+  `debtrank/stress.ts`.
+- **Curves:** `geometry/curves.ts`. A reciprocal pair is two lanes, each bent
+  to the right of its travel, so the pair mirrors across the chord. A single
+  link bows away from the centre.
+- **edit:** tempo, 1–8 rounds/s.
 - **Restyle:** colours, opacities and fonts are CSS variables at the top of
-  `style/network-instability.module.css`. New and reweighted links have their
-  own variables (`--link-added` / `--link-changed`), which can take the
-  figure's blue and red later. Sizes are in `style/tokens.ts`.
+  `style/network-instability.module.css`; sizes are in `style/tokens.ts`.
 
 ## Verification boundary
 
-Five pure tests cover:
+Eight pure tests cover:
 
-- λmax reproduction
-- blue/red link sets
-- stable vs. unstable propagation
-- lens mirroring
-- mirror equivariance
+- DebtRank
+- loop-gain scaling
+- overlap vs. isolation
+- the strong common shock cascading on its own
+- twelve panels in bounds without overlap
+- ring panels as permutations of the same slots
+- ring sliding vs. straight morphs
 
-six-sigma typecheck and scoped ESLint pass. Static renders of a–e were
-compared with the figure. Browser animation, transitions, tapping and device
-layout have not been checked.
+six-sigma typecheck and ESLint pass. Static renders of all panels and several
+morph midpoints were inspected. Browser animation, shuffle timing, tapping and
+device layout have not been checked.

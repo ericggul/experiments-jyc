@@ -1,15 +1,7 @@
 import { useRef, useState } from "react";
 import styles from "../style/network-instability.module.css";
 
-type Props = {
-  id: string;
-  omega: number;
-  setOmega: (value: number) => void;
-  tempo: number;
-  setTempo: (value: number) => void;
-};
-
-export default function Controls({ id, omega, setOmega, tempo, setTempo }: Props) {
+export default function Controls({ id, tempo, setTempo }: { id: string; tempo: number; setTempo: (value: number) => void }) {
   const [editing, setEditing] = useState(false);
   const editRef = useRef<HTMLButtonElement>(null);
 
@@ -25,16 +17,6 @@ export default function Controls({ id, omega, setOmega, tempo, setTempo }: Props
     >
       {editing && (
         <div id={`${id}-settings`} className={styles.panel} role="group" aria-label="Network settings">
-          <div className={styles.adjustment}>
-            <label className={styles.controlLabel} htmlFor={`${id}-omega`}>ω <strong>{omega.toFixed(2)}</strong></label>
-            <input
-              id={`${id}-omega`} className={styles.slider} type="range"
-              min="0.6" max="1.4" step="0.01" value={omega}
-              aria-valuetext={`Link weight scale ω ${omega.toFixed(2)}`}
-              onChange={(event) => setOmega(Number(event.target.value))}
-            />
-            <div className={styles.range}><span>0.6</span><span>1.4</span></div>
-          </div>
           <div className={styles.adjustment}>
             <label className={styles.controlLabel} htmlFor={`${id}-tempo`}>Tempo <strong>{tempo} rounds/s</strong></label>
             <input

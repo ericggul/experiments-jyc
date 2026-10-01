@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { assignRoles, buildPose, endpointsFor, type Endpoints, type Point, type Role, type RoleIds } from "./model/rig";
+import { anchorPoint, buildPose, continueBinding, solveFigure, type Anchor, type Binding, type Figure, type Point, type Role } from "./model/rig";
+import { describeBody } from "./screen/readout";
 import { drawFigure, drawNetwork } from "./screen/renderer";
 import styles from "./screen.module.css";
 
 const roles: Role[] = ["head", "leftHand", "rightHand", "leftFoot", "rightFoot"];
 const maximumPixelRatio = 1.5;
+const readoutInterval = 80;
 
 export default function MobileFingerNetworkTwo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const readoutRef = useRef<HTMLParagraphElement>(null);
   const [hasFingers, setHasFingers] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const readout = readoutRef.current;
+    if (!canvas || !readout) return;
     const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
     if (!context) return;
 
@@ -25,11 +29,15 @@ export default function MobileFingerNetworkTwo() {
     let height = 1;
     let frame: number | null = null;
     let previousTime = 0;
-    let roleIds: RoleIds | null = null;
-    let animatedEndpoints: Endpoints | null = null;
+    let binding: Binding | null = null;
+    let heldAnchors: Anchor[] = [];
+    let lockedScale: number | null = null;
+    let animated: Figure | null = null;
     let figureOpacity = 0;
     let skinTexture: CanvasPattern | null = null;
-    let lastFiveTime = -Infinity;
+    let lastFigureTime = -Infinity;
+    let lastReadoutTime = -Infinity;
+    let readoutOpacity = "0";
     let instructionTimer: number | null = null;
 
     const paint = (time: number) => {
@@ -38,30 +46,41 @@ export default function MobileFingerNetworkTwo() {
       previousTime = time;
       const contacts = touchFingers.size > 0 ? touchFingers : pointerFingers;
       const points = [...contacts.values()];
-      const fiveFingers = contacts.size === 5;
-      if (fiveFingers) lastFiveTime = time;
-      const briefDropout = contacts.size === 0 && roleIds !== null && time - lastFiveTime < 180;
+      const briefDropout = contacts.size === 0 && binding !== null && time - lastFigureTime < 180;
 
-      if (fiveFingers) {
-        if (!roleIds || !endpointsFor(contacts, roleIds)) {
-          roleIds = assignRoles(contacts);
-          animatedEndpoints = roleIds ? endpointsFor(contacts, roleIds) : null;
+      if (!briefDropout) {
+        const next = continueBinding(binding, contacts);
+        if (next && next !== binding) {
+          lockedScale = animated && figureOpacity > 0 ? animated.frame.scale : null;
+          heldAnchors = [...next.values()];
         }
-        const target = roleIds ? endpointsFor(contacts, roleIds) : null;
-        if (target && animatedEndpoints) {
-          const follow = 1 - Math.exp(-dt * 19);
-          for (const role of roles) {
-            animatedEndpoints[role] = {
-              x: animatedEndpoints[role].x + (target[role].x - animatedEndpoints[role].x) * follow,
-              y: animatedEndpoints[role].y + (target[role].y - animatedEndpoints[role].y) * follow,
+        binding = next;
+        const target = binding ? solveFigure(binding, contacts, lockedScale) : null;
+        if (target) {
+          lastFigureTime = time;
+          if (!animated || figureOpacity === 0) {
+            animated = { frame: { ...target.frame }, endpoints: { ...target.endpoints } };
+          } else {
+            const follow = 1 - Math.exp(-dt * 19);
+            const current = animated.frame;
+            const turn = Math.atan2(Math.sin(target.frame.angle - current.angle), Math.cos(target.frame.angle - current.angle));
+            animated.frame = {
+              x: current.x + (target.frame.x - current.x) * follow,
+              y: current.y + (target.frame.y - current.y) * follow,
+              angle: current.angle + turn * follow,
+              scale: current.scale + (target.frame.scale - current.scale) * follow,
             };
+            for (const role of roles) {
+              animated.endpoints[role] = {
+                x: animated.endpoints[role].x + (target.endpoints[role].x - animated.endpoints[role].x) * follow,
+                y: animated.endpoints[role].y + (target.endpoints[role].y - animated.endpoints[role].y) * follow,
+              };
+            }
           }
         }
-      } else if (!briefDropout) {
-        roleIds = null;
       }
 
-      const figureActive = fiveFingers || briefDropout;
+      const figureActive = binding !== null;
       const fadeRate = figureActive ? 10 : 14;
       figureOpacity += ((figureActive ? 1 : 0) - figureOpacity) * (1 - Math.exp(-dt * fadeRate));
       if (figureOpacity < 0.003) figureOpacity = 0;
@@ -69,7 +88,26 @@ export default function MobileFingerNetworkTwo() {
       context.fillStyle = "#000";
       context.fillRect(0, 0, width, height);
       drawNetwork(context, points, time, 1 - figureOpacity * 0.88);
-      if (animatedEndpoints && figureOpacity > 0) drawFigure(context, buildPose(animatedEndpoints), time, figureOpacity, skinTexture);
+      if (animated && figureOpacity > 0) {
+        const { frame: body, endpoints } = animated;
+        context.save();
+        context.translate(body.x, body.y);
+        context.rotate(body.angle);
+        context.scale(body.scale, body.scale);
+        const rings = heldAnchors.map((anchor) => anchorPoint(endpoints, anchor));
+        const pose = buildPose(endpoints);
+        drawFigure(context, pose, time, figureOpacity, skinTexture, rings);
+        context.restore();
+        if (time - lastReadoutTime >= readoutInterval) {
+          lastReadoutTime = time;
+          readout.textContent = describeBody(body, pose, heldAnchors, time, figureOpacity);
+        }
+      }
+      const nextOpacity = figureOpacity.toFixed(3);
+      if (nextOpacity !== readoutOpacity) {
+        readoutOpacity = nextOpacity;
+        readout.style.opacity = nextOpacity;
+      }
 
       if (contacts.size > 0 || figureOpacity > 0) frame = window.requestAnimationFrame(paint);
       else previousTime = 0;
@@ -187,8 +225,9 @@ export default function MobileFingerNetworkTwo() {
 
   return (
     <main className={styles.field}>
-      <canvas ref={canvasRef} className={styles.canvas} aria-label="Five fingertips form a moving human figure: top for head, two sides for hands, two below for feet" role="img" />
-      {!hasFingers && <p className={styles.instruction}>다섯 손가락을 화면에 올려 보세요</p>}
+      <canvas ref={canvasRef} className={styles.canvas} aria-label="Two to five fingertips form a moving human figure: two fingers place, turn, and size the whole body; more fingers take hold of the head, hands, and feet" role="img" />
+      <p ref={readoutRef} className={styles.readout} aria-hidden="true" />
+      {!hasFingers && <p className={styles.instruction}>손가락을 두 개 이상 화면에 올려 보세요</p>}
     </main>
   );
 }

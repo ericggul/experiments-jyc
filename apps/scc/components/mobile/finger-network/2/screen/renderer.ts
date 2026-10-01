@@ -2,9 +2,23 @@ import type { Point, Pose } from "../model/rig";
 
 const TAU = Math.PI * 2;
 
+export const breathAt = (time: number) => Math.sin(time * 0.0023);
+export const eyesOpenAt = (time: number) => {
+  const blinkPhase = time % 3900;
+  return blinkPhase <= 3150 || blinkPhase >= 3320;
+};
+
 function oval(context: CanvasRenderingContext2D, point: Point, rx: number, ry: number, rotation = 0) {
   context.beginPath();
   context.ellipse(point.x, point.y, rx, ry, rotation, 0, TAU);
+}
+
+// Glow only reads at the silhouette; interior details skip the costly shadow blur.
+function interior(context: CanvasRenderingContext2D, draw: () => void) {
+  const blur = context.shadowBlur;
+  context.shadowBlur = 0;
+  draw();
+  context.shadowBlur = blur;
 }
 
 function fleshGradient(context: CanvasRenderingContext2D, x: number, width: number) {
@@ -58,12 +72,14 @@ function limb(context: CanvasRenderingContext2D, a: Point, b: Point, startWidth:
   context.fill();
   skinDetail(context, texture, Math.min(a.x, b.x) - radius, Math.min(a.y, b.y) - radius, Math.abs(dx) + radius * 2, Math.abs(dy) + radius * 2);
 
-  context.beginPath();
-  context.moveTo(a.x - nx * startWidth * 0.17, a.y - ny * startWidth * 0.17);
-  context.quadraticCurveTo(mx - nx * (startWidth + endWidth) * 0.12, my - ny * (startWidth + endWidth) * 0.12, b.x - nx * endWidth * 0.15, b.y - ny * endWidth * 0.15);
-  context.strokeStyle = "rgba(255, 255, 250, 0.3)";
-  context.lineWidth = Math.max(1, Math.min(startWidth, endWidth) * 0.075);
-  context.stroke();
+  interior(context, () => {
+    context.beginPath();
+    context.moveTo(a.x - nx * startWidth * 0.17, a.y - ny * startWidth * 0.17);
+    context.quadraticCurveTo(mx - nx * (startWidth + endWidth) * 0.12, my - ny * (startWidth + endWidth) * 0.12, b.x - nx * endWidth * 0.15, b.y - ny * endWidth * 0.15);
+    context.strokeStyle = "rgba(255, 255, 250, 0.3)";
+    context.lineWidth = Math.max(1, Math.min(startWidth, endWidth) * 0.075);
+    context.stroke();
+  });
 }
 
 function joint(context: CanvasRenderingContext2D, point: Point, radius: number) {
@@ -78,7 +94,7 @@ function joint(context: CanvasRenderingContext2D, point: Point, radius: number) 
 
 function torso(context: CanvasRenderingContext2D, pose: Pose, time: number, texture: CanvasPattern | null) {
   const s = pose.scale;
-  const breath = Math.sin(time * 0.0023) * 2.1 * s;
+  const breath = breathAt(time) * 2.1 * s;
   const { leftShoulder: ls, rightShoulder: rs, leftHip: lh, rightHip: rh, chest, pelvis } = pose;
   const gradient = fleshGradient(context, chest.x, (rs.x - ls.x) * 0.8);
   context.beginPath();
@@ -92,6 +108,8 @@ function torso(context: CanvasRenderingContext2D, pose: Pose, time: number, text
   context.fill();
   skinDetail(context, texture, Math.min(ls.x, lh.x) - 26 * s, ls.y - 30 * s, Math.max(rs.x, rh.x) - Math.min(ls.x, lh.x) + 52 * s, pelvis.y - ls.y + 56 * s);
 
+  const blur = context.shadowBlur;
+  context.shadowBlur = 0;
   context.globalAlpha *= 0.34;
   const pectoral = context.createRadialGradient(chest.x, chest.y - 13 * s, 2 * s, chest.x, chest.y, 42 * s);
   pectoral.addColorStop(0, "#fffdf5");
@@ -117,6 +135,7 @@ function torso(context: CanvasRenderingContext2D, pose: Pose, time: number, text
     context.strokeStyle = "rgba(54, 52, 53, 0.14)";
     context.stroke();
   }
+  context.shadowBlur = blur;
 }
 
 function face(context: CanvasRenderingContext2D, pose: Pose, time: number, texture: CanvasPattern | null) {
@@ -148,8 +167,9 @@ function face(context: CanvasRenderingContext2D, pose: Pose, time: number, textu
   context.lineWidth = 1.2 * s;
   context.stroke();
 
-  const blinkPhase = time % 3900;
-  const eyeHeight = (blinkPhase > 3150 && blinkPhase < 3320 ? 0.7 : 3.4) * s;
+  const blur = context.shadowBlur;
+  context.shadowBlur = 0;
+  const eyeHeight = (eyesOpenAt(time) ? 3.4 : 0.7) * s;
   for (const side of [-1, 1]) {
     const ex = head.x + side * 11.2 * s;
     context.beginPath();
@@ -186,6 +206,7 @@ function face(context: CanvasRenderingContext2D, pose: Pose, time: number, textu
   oval(context, { x: head.x - 11 * s, y: head.y - 10 * s }, 1.5 * s, 1 * s);
   context.fillStyle = "rgba(255, 255, 255, 0.8)";
   context.fill();
+  context.shadowBlur = blur;
 }
 
 function hand(context: CanvasRenderingContext2D, palm: Point, elbow: Point, scale: number) {
@@ -225,6 +246,7 @@ function foot(context: CanvasRenderingContext2D, point: Point, knee: Point, scal
   oval(context, { x: 0, y: 0 }, 13 * scale, 22 * scale);
   context.fillStyle = gradient;
   context.fill();
+  context.shadowBlur = 0;
   for (let toe = 0; toe < 4; toe += 1) {
     oval(context, { x: (toe - 1.5) * 5.6 * scale, y: -18 * scale }, (3.2 - toe * 0.28) * scale, 3.8 * scale);
     context.fillStyle = "#c6c2ba";
@@ -262,7 +284,7 @@ export function drawNetwork(context: CanvasRenderingContext2D, points: readonly 
   context.restore();
 }
 
-export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: number, opacity: number, texture: CanvasPattern | null) {
+export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: number, opacity: number, texture: CanvasPattern | null, rings: readonly Point[]) {
   if (opacity <= 0) return;
   const s = pose.scale;
   context.save();
@@ -274,8 +296,10 @@ export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: 
   limb(context, pose.leftKnee, pose.leftFoot, 19 * s, 11 * s, texture);
   limb(context, pose.rightHip, pose.rightKnee, 28 * s, 19 * s, texture);
   limb(context, pose.rightKnee, pose.rightFoot, 19 * s, 11 * s, texture);
-  joint(context, pose.leftKnee, 10 * s);
-  joint(context, pose.rightKnee, 10 * s);
+  interior(context, () => {
+    joint(context, pose.leftKnee, 10 * s);
+    joint(context, pose.rightKnee, 10 * s);
+  });
   foot(context, pose.leftFoot, pose.leftKnee, s);
   foot(context, pose.rightFoot, pose.rightKnee, s);
 
@@ -286,10 +310,12 @@ export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: 
   limb(context, pose.leftElbow, pose.leftHand, 17 * s, 10 * s, texture);
   limb(context, pose.rightShoulder, pose.rightElbow, 24 * s, 17 * s, texture);
   limb(context, pose.rightElbow, pose.rightHand, 17 * s, 10 * s, texture);
-  joint(context, pose.leftShoulder, 12 * s);
-  joint(context, pose.rightShoulder, 12 * s);
-  joint(context, pose.leftElbow, 9 * s);
-  joint(context, pose.rightElbow, 9 * s);
+  interior(context, () => {
+    joint(context, pose.leftShoulder, 12 * s);
+    joint(context, pose.rightShoulder, 12 * s);
+    joint(context, pose.leftElbow, 9 * s);
+    joint(context, pose.rightElbow, 9 * s);
+  });
   hand(context, pose.leftHand, pose.leftElbow, s);
   hand(context, pose.rightHand, pose.rightElbow, s);
   face(context, pose, time, texture);
@@ -297,7 +323,7 @@ export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: 
   context.shadowBlur = 0;
   context.strokeStyle = "rgba(255, 255, 255, 0.28)";
   context.lineWidth = 1;
-  for (const point of [pose.head, pose.leftHand, pose.rightHand, pose.leftFoot, pose.rightFoot]) {
+  for (const point of rings) {
     oval(context, point, 17 * s, 17 * s);
     context.stroke();
   }

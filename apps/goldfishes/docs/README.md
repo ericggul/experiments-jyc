@@ -2,7 +2,7 @@
 
 Browser collage: `/maximalist-collage` → `/maximalist-collage/0915` → `/maximalist-collage/0915/1`. Implementation: `components/maximalist-collage/0915/1/`; linked in the shared navigation header and registry. [Family index](./maximalist-collage/README.md) · [art references](./maximalist-collage/references.md).
 
-Phone keyword grid: `/mobile` → `/mobile/0930` → `/mobile/0930/1`. Implementation: `components/mobile/0930/1/`. [Family index](./mobile/README.md).
+Phone bubbles: `/mobile` → `/mobile/0930` → `/mobile/0930/1` (keyword grid), `/mobile/0930/2` (configure, collide and shrink). Implementation: `components/mobile/0930/{1,2}/`. [Family index](./mobile/README.md).
 
 Local macOS control: `/desktop` → `/desktop/0915` → independent versions [1](./desktop/0915/1.md), [2](./desktop/0915/2.md), [3](./desktop/0915/3.md). Implementation: `components/desktop/0915/{1,2,3}/`; all appear in the shared experiment registry and home navigation. [Original fixed-score history](./pc/0915-desktop-a.md).
 
@@ -13,7 +13,8 @@ For a route change, read its document, the specific modules being changed, and t
 | Route | Date | Proposition |
 | --- | --- | --- |
 | `/maximalist-collage/0915/1` | 2026-09-15 | Initial interface cut-up trial; visual result rejected by user. [doc](./maximalist-collage/0915/1.md) |
-| `/mobile/0930/1` | 2026-09-30 | Tap a grid cross to place and configure a keyword bubble. [doc](./mobile/0930/1.md) |
+| `/mobile/0930/1` | 2026-09-30 | Configure a keyword, place it on a map point; bubbles decay unless finger-skated. [doc](./mobile/0930/1.md) |
+| `/mobile/0930/2` | 2026-09-30 | + opens word and color pickers; bubbles collide and shrink over 30 seconds. [doc](./mobile/0930/2.md) |
 | `/desktop/0915/1` | 2026-09-15 | Preserved configurable native-app baseline. [doc](./desktop/0915/1.md) |
 | `/desktop/0915/2` | 2026-09-15 | Accumulating native windows, unequal sizes and continuous drift. [doc](./desktop/0915/2.md) |
 | `/desktop/0915/3` | 2026-09-15 | New pages mixed with random tab revisits; bounded turnover and scrolling. [doc](./desktop/0915/3.md) |

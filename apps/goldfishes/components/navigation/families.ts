@@ -127,6 +127,6 @@ export const goldfishFamilies: readonly GoldfishFamily[] = [
     key: "mobile:keyword-grid",
     area: "mobile",
     label: "keyword grid",
-    members: ["mobile/0930/1"],
+    members: ["mobile/0930/1", "mobile/0930/2"],
   },
 ];

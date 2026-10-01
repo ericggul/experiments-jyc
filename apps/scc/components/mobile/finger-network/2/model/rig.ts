@@ -56,7 +56,7 @@ export function buildPose(endpoints: Endpoints): Pose {
   const axisX = head.x * 0.48 + handMid.x * 0.2 + footMid.x * 0.32;
   const shoulderX = mix(head.x, axisX, 0.42);
   const hipX = mix(axisX, footMid.x, 0.3);
-  const shoulderY = head.y + height * 0.28;
+  const shoulderY = head.y + 66 * scale;
   const hipY = Math.min(head.y + height * 0.62, Math.max(shoulderY + 46 * scale, footMid.y - 45 * scale));
   const shoulderHalf = clamp((rightHand.x - leftHand.x) * 0.11, 24 * scale, 53 * scale);
   const hipHalf = shoulderHalf * 0.54;
@@ -80,4 +80,129 @@ export function buildPose(endpoints: Endpoints): Pose {
     pelvis: { x: hipX, y: hipY },
     scale,
   };
+}
+
+export type Anchor = Role | "feet";
+export type Binding = ReadonlyMap<number, Anchor>;
+export type Frame = { x: number; y: number; angle: number; scale: number };
+export type Figure = { frame: Frame; endpoints: Endpoints };
+
+const roles: Role[] = ["head", "leftHand", "rightHand", "leftFoot", "rightFoot"];
+const restEndpoints: Endpoints = {
+  head: { x: 0, y: 0 },
+  leftHand: { x: -135, y: 250 },
+  rightHand: { x: 135, y: 250 },
+  leftFoot: { x: -62, y: 470 },
+  rightFoot: { x: 62, y: 470 },
+};
+const restShoulder = { x: 31, y: 66 };
+const restArmAngle = Math.atan2(restEndpoints.rightHand.x - restShoulder.x, restEndpoints.rightHand.y - restShoulder.y);
+const restArmLength = Math.hypot(restEndpoints.rightHand.x - restShoulder.x, restEndpoints.rightHand.y - restShoulder.y);
+const raisedArmAngle = (150 / 180) * Math.PI;
+
+const copyEndpoints = (endpoints: Endpoints): Endpoints =>
+  Object.fromEntries(roles.map((role) => [role, { ...endpoints[role] }])) as Endpoints;
+const idsByX = (entries: readonly (readonly [number, Point])[]) => [...entries].sort((a, b) => a[1].x - b[1].x).map((entry) => entry[0]);
+
+export function anchorPoint(endpoints: Endpoints, anchor: Anchor): Point {
+  return anchor === "feet" ? midpoint(endpoints.leftFoot, endpoints.rightFoot) : endpoints[anchor];
+}
+
+export function toWorld(frame: Frame, point: Point): Point {
+  const cos = Math.cos(frame.angle) * frame.scale;
+  const sin = Math.sin(frame.angle) * frame.scale;
+  return { x: frame.x + cos * point.x - sin * point.y, y: frame.y + sin * point.x + cos * point.y };
+}
+
+function toLocal(frame: Frame, point: Point): Point {
+  const cos = Math.cos(frame.angle);
+  const sin = Math.sin(frame.angle);
+  const dx = point.x - frame.x;
+  const dy = point.y - frame.y;
+  return { x: (cos * dx + sin * dy) / frame.scale, y: (cos * dy - sin * dx) / frame.scale };
+}
+
+// Fresh contacts read top to bottom: 2 = head + both feet, 3 = head + feet, 4 = hands + feet, 5 = full body.
+export function defaultBinding(contacts: ReadonlyMap<number, Point>): Binding | null {
+  const ranked = [...contacts.entries()].sort((a, b) => a[1].y - b[1].y || a[1].x - b[1].x);
+  if (contacts.size === 2) return new Map<number, Anchor>([[ranked[0]![0], "head"], [ranked[1]![0], "feet"]]);
+  if (contacts.size === 3) {
+    const [leftFoot, rightFoot] = idsByX(ranked.slice(1));
+    return new Map<number, Anchor>([[ranked[0]![0], "head"], [leftFoot!, "leftFoot"], [rightFoot!, "rightFoot"]]);
+  }
+  if (contacts.size === 4) {
+    const [leftHand, rightHand] = idsByX(ranked.slice(0, 2));
+    const [leftFoot, rightFoot] = idsByX(ranked.slice(2));
+    return new Map<number, Anchor>([[leftHand!, "leftHand"], [rightHand!, "rightHand"], [leftFoot!, "leftFoot"], [rightFoot!, "rightFoot"]]);
+  }
+  const ids = assignRoles(contacts);
+  return ids ? new Map<number, Anchor>(roles.map((role) => [ids[role], role])) : null;
+}
+
+// Lifting fingers keeps the body parts still held; adding a finger rereads the whole hand.
+export function continueBinding(binding: Binding | null, contacts: ReadonlyMap<number, Point>): Binding | null {
+  if (contacts.size < 2 || contacts.size > 5) return null;
+  if (binding && contacts.size <= binding.size && [...contacts.keys()].every((id) => binding.has(id))) {
+    return contacts.size === binding.size ? binding : new Map([...binding].filter(([id]) => contacts.has(id)));
+  }
+  return defaultBinding(contacts);
+}
+
+export function solveFigure(binding: Binding, contacts: ReadonlyMap<number, Point>, lockedScale: number | null): Figure | null {
+  const pairs: { anchor: Anchor; rest: Point; target: Point }[] = [];
+  for (const [id, anchor] of binding) {
+    const target = contacts.get(id);
+    if (!target) return null;
+    pairs.push({ anchor, rest: anchorPoint(restEndpoints, anchor), target });
+  }
+  if (pairs.length < 2) return null;
+
+  if (pairs.length === 5) {
+    const endpoints = Object.fromEntries(pairs.map(({ anchor, target }) => [anchor, target])) as Endpoints;
+    return { frame: { x: 0, y: 0, angle: 0, scale: 1 }, endpoints };
+  }
+
+  const count = pairs.length;
+  const restCenter = pairs.reduce((sum, { rest }) => ({ x: sum.x + rest.x / count, y: sum.y + rest.y / count }), { x: 0, y: 0 });
+  const targetCenter = pairs.reduce((sum, { target }) => ({ x: sum.x + target.x / count, y: sum.y + target.y / count }), { x: 0, y: 0 });
+  let real = 0;
+  let imaginary = 0;
+  let spread = 0;
+  for (const { rest, target } of pairs) {
+    const qx = rest.x - restCenter.x;
+    const qy = rest.y - restCenter.y;
+    const px = target.x - targetCenter.x;
+    const py = target.y - targetCenter.y;
+    real += px * qx + py * qy;
+    imaginary += py * qx - px * qy;
+    spread += qx * qx + qy * qy;
+  }
+  const angle = Math.atan2(imaginary, real);
+  const fittedScale = clamp(Math.hypot(real, imaginary) / Math.max(1, spread), 0.25, 2.4);
+  const scale = count === 2 ? fittedScale : (lockedScale ?? fittedScale);
+  const origin = toWorld({ x: 0, y: 0, angle, scale }, restCenter);
+  const frame = { x: targetCenter.x - origin.x, y: targetCenter.y - origin.y, angle, scale };
+  const endpoints = copyEndpoints(restEndpoints);
+  if (count === 2) return { frame, endpoints };
+
+  const held = new Set<Anchor>();
+  for (const { anchor, target } of pairs) {
+    if (anchor === "feet") continue;
+    endpoints[anchor] = toLocal(frame, target);
+    held.add(anchor);
+  }
+  const handsFree = !held.has("leftHand") && !held.has("rightHand");
+  if (handsFree && held.has("leftFoot") && held.has("rightFoot")) {
+    const stance = endpoints.rightFoot.x - endpoints.leftFoot.x - (restEndpoints.rightFoot.x - restEndpoints.leftFoot.x);
+    const armAngle = mix(restArmAngle, raisedArmAngle, clamp(stance / 210, 0, 1));
+    const reach = { x: Math.sin(armAngle) * restArmLength, y: Math.cos(armAngle) * restArmLength };
+    const shoulderY = endpoints.head.y + restShoulder.y;
+    endpoints.leftHand = { x: endpoints.head.x - restShoulder.x - reach.x, y: shoulderY + reach.y };
+    endpoints.rightHand = { x: endpoints.head.x + restShoulder.x + reach.x, y: shoulderY + reach.y };
+  }
+  if (!held.has("head") && held.has("leftHand") && held.has("rightHand")) {
+    const hands = midpoint(endpoints.leftHand, endpoints.rightHand);
+    endpoints.head = { x: hands.x * 0.35, y: clamp((hands.y - restEndpoints.leftHand.y) * 0.2, -40, 40) };
+  }
+  return { frame, endpoints };
 }

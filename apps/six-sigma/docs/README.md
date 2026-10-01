@@ -7,8 +7,8 @@ Every graph can use Straight, Cubic Bezier, or Cubic Bezier directional edges.
 [Local optimum](./0927/local-optimum.md) at `/mobile/0927/local-optimum` forks that grammar into six
 coupled maps, with 1D (ray, logistic) and 2D (disc, Ikeda) planes in `edit`. Dragging one node outward demands more from it, and past a threshold the other five move.
 [Network instability](./0930/network-instability.md) at `/mobile/0930/network-instability`
-replays Bardoscia et al. 2017 Fig. 3a–f: five rewirings of one eight-bank network, with λmax
-on panel f's axis. Shocks fade below 1 and circulate to default above it.
+puts a DebtRank-style network (after Battiston et al. 2012 Fig. 3) under overlapping and
+common shocks, and morphs it between twelve placements, a–l, with a shuffle.
 Browse `/mobile`, `/mobile/0927`, and `/mobile/0930`.
 
 The first dated experiment is [`/screen/0923/hello-world`](./0923/hello-world.md):

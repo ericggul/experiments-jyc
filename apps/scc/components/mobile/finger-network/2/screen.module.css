@@ -30,3 +30,18 @@
   text-align: center;
   pointer-events: none;
 }
+
+.readout {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  margin: 0;
+  color: #fff;
+  font: 400 10px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: pre;
+  opacity: 0;
+  pointer-events: none;
+}
