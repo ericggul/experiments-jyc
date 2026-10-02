@@ -2,6 +2,7 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #1c1d1b;
 }
 
@@ -13,6 +14,29 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.skating {
+  pointer-events: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.performance {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top));
+  left: 16px;
+  z-index: 1;
+  margin: 0;
+  color: rgba(240, 234, 223, 0.76);
+  font: 0.68rem/1.5 var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.performance[hidden] {
+  display: none;
 }
 
 .controlDock {

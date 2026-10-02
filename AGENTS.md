@@ -4,7 +4,7 @@
 
 - Complete the requested work without unrelated redesigns or cleanup. Later requests are additive unless explicitly replacing earlier work. Make routine decisions; ask only when a missing choice materially changes scope or outcome.
 - Inspect `git status`; preserve others' modified/untracked work. Re-read shared files before surgical edits. Never revert, relocate, or finish another task's work unasked.
-- `apps/scc`, `apps/goldfishes`, and `apps/six-sigma` are experimental archives: use bounded, reversible trials and preserve baselines, stable routes, and useful failures. `apps/c-val` and `apps/ddong-meong` are finished projects: maintain established behavior and presentation unless the user requests an extension.
+- `apps/scc`, `apps/goldfishes`, and `apps/six-sigma` are experimental archives: use bounded, reversible trials and preserve baselines, stable routes, and useful failures. In `apps/scc`, prefer merging a variant into an existing experiment or exposing it as an option (original behavior as the default) over adding another numbered experiment; this is a preference, not a hard rule. `apps/c-val` and `apps/ddong-meong` are finished projects: maintain established behavior and presentation unless the user requests an extension.
 - Keep five independent app roots. Routes stay thin; implementation/data/registries belong in the owning `components/` family, sockets in `apps/<owner>/socket/experiments/`, and notes in `apps/<owner>/docs/`.
 
 ## Model and token policy

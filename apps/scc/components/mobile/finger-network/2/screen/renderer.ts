@@ -321,11 +321,24 @@ export function drawFigure(context: CanvasRenderingContext2D, pose: Pose, time: 
   face(context, pose, time, texture);
 
   context.shadowBlur = 0;
+  strokeRings(context, rings, s);
+  context.restore();
+}
+
+function strokeRings(context: CanvasRenderingContext2D, rings: readonly Point[], scale: number) {
   context.strokeStyle = "rgba(255, 255, 255, 0.28)";
   context.lineWidth = 1;
   for (const point of rings) {
-    oval(context, point, 17 * s, 17 * s);
+    oval(context, point, 17 * scale, 17 * scale);
     context.stroke();
   }
+}
+
+// The held-part rings alone, for bodies drawn elsewhere (the 3D model layer).
+export function drawRings(context: CanvasRenderingContext2D, rings: readonly Point[], scale: number, opacity: number) {
+  if (opacity <= 0) return;
+  context.save();
+  context.globalAlpha *= opacity;
+  strokeRings(context, rings, scale);
   context.restore();
 }

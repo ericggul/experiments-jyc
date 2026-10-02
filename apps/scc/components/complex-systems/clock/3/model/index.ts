@@ -1,16 +1,19 @@
-/** clock/2's cell: the child clocks keep exactly this size. */
+/** clock/2's cell, the unit for the parent cell. */
 export const MOBILE_CLOCK_CELL = 50;
 export const MAXIMUM_CLOCK_CELL = 72;
 export const VIEWPORT_CELLS_ON_SHORT_SIDE = 14;
 export const CLOCK_RADIUS_IN_CELL = 0.44;
 export const HOUR_HAND_LENGTH = 0.53;
 export const MINUTE_HAND_LENGTH = 0.74;
-/** Nominal child radius relative to its parent; sets the parent cell size. */
-export const CHILD_RADIUS_RATIO = 0.25;
-/** Largest child that still fits inside the parent rim at the minute-hand tip. */
-export const MAXIMUM_CHILD_RADIUS_RATIO = 1 - MINUTE_HAND_LENGTH;
-/** Child slot order: 0 rides the hour-hand tip, 1 the minute-hand tip. */
-export const CHILDREN_PER_CLOCK = 2;
+export const SECOND_HAND_LENGTH = 0.9;
+/** Each second the hand eases from the previous mark to the current one over this long. */
+export const SECOND_TICK_SECONDS = 0.35;
+/** A parent cell is 3× clock/2's cell. */
+export const PARENT_CELL_SCALE = 3;
+/** A parent clock's radius is 2× its children's. */
+export const PARENT_TO_CHILD_SCALE = 2;
+/** Child slot order: 0 rides the hour-hand tip, 1 the minute-hand tip, 2 the second-hand tip. */
+export const CHILDREN_PER_CLOCK = 3;
 
 const TAU = Math.PI * 2;
 const HOUR_SECONDS = 3600;
@@ -71,6 +74,22 @@ export function handAngles(seconds: number) {
   };
 }
 
+/** Whether the second hand is still easing into the current second's mark. */
+export function secondHandTicking(realSeconds: number) {
+  return unitFraction(realSeconds) < SECOND_TICK_SECONDS;
+}
+
+/**
+ * The second hand ignores a clock's offset and follows real time. At each
+ * whole second it eases (in-out) from the previous mark to the new one.
+ */
+export function secondAngle(realSeconds: number) {
+  const progress = Math.min(1, unitFraction(realSeconds) / SECOND_TICK_SECONDS);
+  const eased = progress * progress * (3 - 2 * progress);
+  const mark = (Math.floor(realSeconds) - 1 + eased) % 60;
+  return -Math.PI / 2 + (TAU * mark) / 60;
+}
+
 /**
  * The time on a 12-hour dial whose minute hand points exactly at
  * `minuteAngle` and whose hour hand is nearest `hourAngle`.
@@ -94,7 +113,7 @@ export function localClockSeconds(date: Date) {
   );
 }
 
-/** clock/2's cell size, used for each child clock. */
+/** clock/2's cell size, the unit for the parent cell. */
 export function childCellForViewport(width: number, height: number) {
   const shortest = Math.max(0, Math.min(width, height));
   return clamp(
@@ -104,9 +123,8 @@ export function childCellForViewport(width: number, height: number) {
   );
 }
 
-/** Parent cell large enough that its children are clock/2-sized. */
 export function parentCellForViewport(width: number, height: number) {
-  return childCellForViewport(width, height) / CHILD_RADIUS_RATIO;
+  return childCellForViewport(width, height) * PARENT_CELL_SCALE;
 }
 
 export function clockCenter(grid: ClockGrid, index: number): Point {
@@ -144,10 +162,7 @@ export function createClockGrid(width: number, height: number): ClockGrid {
     cellWidth,
     cellHeight,
     radius,
-    childRadius: Math.min(
-      childCellForViewport(safeWidth, safeHeight) * CLOCK_RADIUS_IN_CELL,
-      radius * MAXIMUM_CHILD_RADIUS_RATIO,
-    ),
+    childRadius: radius / PARENT_TO_CHILD_SCALE,
     parents: createTimes(count),
     children: createTimes(count * CHILDREN_PER_CLOCK),
     childX: new Float64Array(count * CHILDREN_PER_CLOCK),
@@ -159,6 +174,9 @@ export function createClockGrid(width: number, height: number): ClockGrid {
 export function updateChildCenters(grid: ClockGrid, realSeconds: number) {
   const hourLength = grid.radius * HOUR_HAND_LENGTH;
   const minuteLength = grid.radius * MINUTE_HAND_LENGTH;
+  const second = secondAngle(realSeconds);
+  const secondX = Math.cos(second) * grid.radius * SECOND_HAND_LENGTH;
+  const secondY = Math.sin(second) * grid.radius * SECOND_HAND_LENGTH;
   for (let index = 0; index < grid.columns * grid.rows; index += 1) {
     const center = clockCenter(grid, index);
     const { hour, minute } = handAngles(realSeconds + grid.parents.offset[index]!);
@@ -167,6 +185,8 @@ export function updateChildCenters(grid: ClockGrid, realSeconds: number) {
     grid.childY[child] = center.y + Math.sin(hour) * hourLength;
     grid.childX[child + 1] = center.x + Math.cos(minute) * minuteLength;
     grid.childY[child + 1] = center.y + Math.sin(minute) * minuteLength;
+    grid.childX[child + 2] = center.x + secondX;
+    grid.childY[child + 2] = center.y + secondY;
   }
 }
 
@@ -261,10 +281,12 @@ export function applyStroke(
   realSeconds: number,
 ) {
   const { radius, columns, rows, cellWidth, cellHeight } = grid;
-  const firstColumn = clamp(Math.floor((Math.min(from.x, to.x) - radius) / cellWidth), 0, columns - 1);
-  const lastColumn = clamp(Math.floor((Math.max(from.x, to.x) + radius) / cellWidth), 0, columns - 1);
-  const firstRow = clamp(Math.floor((Math.min(from.y, to.y) - radius) / cellHeight), 0, rows - 1);
-  const lastRow = clamp(Math.floor((Math.max(from.y, to.y) + radius) / cellHeight), 0, rows - 1);
+  // Children reach past their parent's rim, so search parents that far away.
+  const reach = Math.max(radius, radius * SECOND_HAND_LENGTH + grid.childRadius);
+  const firstColumn = clamp(Math.floor((Math.min(from.x, to.x) - reach) / cellWidth), 0, columns - 1);
+  const lastColumn = clamp(Math.floor((Math.max(from.x, to.x) + reach) / cellWidth), 0, columns - 1);
+  const firstRow = clamp(Math.floor((Math.min(from.y, to.y) - reach) / cellHeight), 0, rows - 1);
+  const lastRow = clamp(Math.floor((Math.max(from.y, to.y) + reach) / cellHeight), 0, rows - 1);
   let changed = false;
   for (let row = firstRow; row <= lastRow; row += 1) {
     for (let column = firstColumn; column <= lastColumn; column += 1) {

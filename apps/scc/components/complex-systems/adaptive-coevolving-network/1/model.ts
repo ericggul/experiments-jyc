@@ -17,7 +17,8 @@ export type CoevolvingTie = {
 };
 
 export type CoevolvingNetwork = {
-  readonly size: number;
+  /** Voters are indexed 0…size−1; newcomers are appended. */
+  size: number;
   readonly opinions: number[];
   readonly ties: CoevolvingTie[];
   /** Tie ids incident to each voter. */
@@ -49,7 +50,10 @@ export type CoevolutionMeasure = {
   livingOpinions: number;
 };
 
-export const DEFAULT_VOTERS = 240;
+export const DEFAULT_VOTERS = 500;
+export const MAX_VOTERS = 800;
+/** Pair keys stay valid as the population grows up to MAX_VOTERS. */
+const PAIR_STRIDE = 1 << 16;
 export const DEFAULT_MEAN_DEGREE = 4;
 export const DEFAULT_PARAMETERS: CoevolutionParameters = {
   rewiring: 0.5,
@@ -77,10 +81,10 @@ function randomIndex(value: number, length: number) {
   return Math.min(length - 1, Math.floor(value * length));
 }
 
-function pairKey(network: CoevolvingNetwork, first: number, second: number) {
+function pairKey(first: number, second: number) {
   return first < second
-    ? first * network.size + second
-    : second * network.size + first;
+    ? first * PAIR_STRIDE + second
+    : second * PAIR_STRIDE + first;
 }
 
 function removeIncident(network: CoevolvingNetwork, voter: number, tie: number) {
@@ -111,7 +115,7 @@ export function createCoevolvingNetwork(
   }
   const addTie = (a: number, b: number) => {
     if (a === b) return false;
-    const key = pairKey(network, a, b);
+    const key = pairKey(a, b);
     if (network.pairs.has(key)) return false;
     const id = network.ties.length;
     network.pairs.add(key);
@@ -144,7 +148,7 @@ function likeMindedTarget(
   const candidates: number[] = [];
   for (let candidate = 0; candidate < network.size; candidate += 1) {
     if (candidate === voter || network.opinions[candidate] !== opinion) continue;
-    if (network.pairs.has(pairKey(network, voter, candidate))) continue;
+    if (network.pairs.has(pairKey(voter, candidate))) continue;
     candidates.push(candidate);
   }
   if (candidates.length === 0) return null;
@@ -183,11 +187,11 @@ export function stepCoevolvingNetwork(
     if (random() < rewiring) {
       const target = likeMindedTarget(network, voter, random);
       if (target === null) continue;
-      network.pairs.delete(pairKey(network, voter, neighbour));
+      network.pairs.delete(pairKey(voter, neighbour));
       removeIncident(network, neighbour, tie.id);
       tie.a = voter;
       tie.b = target;
-      network.pairs.add(pairKey(network, voter, target));
+      network.pairs.add(pairKey(voter, target));
       network.incident[target]!.push(tie.id);
       events.push({ kind: "rewire", voter, from: neighbour, to: target, tie: tie.id });
     } else {
@@ -197,6 +201,33 @@ export function stepCoevolvingNetwork(
     }
   }
   return events;
+}
+
+/**
+ * Appends a voter holding `opinion`, tied to each listed acquaintance.
+ * Returns the newcomer's index, or null at MAX_VOTERS.
+ */
+export function addVoter(
+  network: CoevolvingNetwork,
+  opinion: number,
+  acquaintances: Iterable<number>,
+) {
+  if (network.size >= MAX_VOTERS) return null;
+  const voter = network.size;
+  network.size += 1;
+  network.opinions.push(((Math.round(opinion) % OPINION_COUNT) + OPINION_COUNT) % OPINION_COUNT);
+  network.incident.push([]);
+  for (const other of acquaintances) {
+    if (other < 0 || other >= voter) continue;
+    const key = pairKey(voter, other);
+    if (network.pairs.has(key)) continue;
+    const id = network.ties.length;
+    network.pairs.add(key);
+    network.ties.push({ id, a: voter, b: other });
+    network.incident[voter]!.push(id);
+    network.incident[other]!.push(id);
+  }
+  return voter;
 }
 
 /** The opinion held by the fewest voters; extinct opinions come first. */

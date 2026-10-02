@@ -12,6 +12,7 @@ import {
   type Pair,
 } from "./layout";
 import {
+  addPerson,
   createSelfEvolvingNetwork,
   DEFAULT_PARAMETERS,
   forEachTie,
@@ -47,6 +48,11 @@ function layoutFrame(size: Frame): Frame {
 function tenure(network: SelfEvolvingNetwork, person: number, turnover: number) {
   const expectedLife = network.size / Math.max(turnover, 1e-3);
   return 1 - Math.exp(-(network.updates - network.bornAt[person]!) / expectedLife);
+}
+
+function personRadius(network: SelfEvolvingNetwork, size: Frame, person: number) {
+  const base = Math.max(1.8, Math.min(4, idealLength(size, network.size) * 0.08));
+  return base * (1 + Math.sqrt(network.neighbours[person]!.size) * 0.42);
 }
 
 function line(context: CanvasRenderingContext2D, a: Body, b: Body) {
@@ -120,14 +126,12 @@ function draw(
     }
   }
 
-  const base = Math.max(1.8, Math.min(4, idealLength(size, bodies.length) * 0.08));
   for (let person = 0; person < bodies.length; person += 1) {
     const body = bodies[person]!;
-    const degree = network.neighbours[person]!.size;
     const shade = Math.round(205 - tenure(network, person, turnover) * 190);
     context.fillStyle = `rgb(${shade}, ${shade}, ${Math.max(0, shade - 4)})`;
     context.beginPath();
-    context.arc(body.x, body.y, base * (1 + Math.sqrt(degree) * 0.42), 0, Math.PI * 2);
+    context.arc(body.x, body.y, personRadius(network, size, person), 0, Math.PI * 2);
     context.fill();
   }
 }
@@ -247,23 +251,58 @@ export default function SelfEvolvingNetworkOne() {
     };
   }, [recordDeparture]);
 
-  const retireNearest = useCallback((x: number, y: number, reach: number) => {
+  // Tapping a person makes them leave; tapping empty space brings a newcomer in
+  // there who already knows the nearest person.
+  const tapAt = useCallback((x: number, y: number) => {
     const bodies = bodiesRef.current;
+    const network = networkRef.current;
     if (!bodies) return;
     let nearest = -1;
-    let best = reach;
+    let best = Infinity;
     bodies.forEach((body, person) => {
       const distance = Math.hypot(body.x - x, body.y - y);
-      if (distance <= best) {
+      if (distance < best) {
         best = distance;
         nearest = person;
       }
     });
-    if (nearest < 0) return;
-    const event = retirePerson(networkRef.current, nearest);
-    if (event) recordDeparture(event);
     setTouched(true);
+    if (nearest >= 0 && best <= personRadius(network, sizeRef.current, nearest) + 6) {
+      const event = retirePerson(network, nearest);
+      if (event) recordDeparture(event);
+      return;
+    }
+    const person = addPerson(network, nearest >= 0 ? nearest : null);
+    if (person === null) return;
+    bodies[person] = { x, y, vx: 0, vy: 0 };
+    const acquaintance = [...network.neighbours[person]!][0];
+    if (acquaintance !== undefined) {
+      marksRef.current.push({
+        event: { kind: "reach", person, stranger: acquaintance },
+        at: timeRef.current,
+      });
+    }
   }, [recordDeparture]);
+
+  const addAtCentre = useCallback(() => {
+    const frame = layoutFrame(sizeRef.current);
+    const bodies = bodiesRef.current;
+    if (!bodies) return;
+    const network = networkRef.current;
+    let nearest: number | null = null;
+    let best = Infinity;
+    bodies.forEach((body, person) => {
+      const distance = Math.hypot(body.x - frame.width / 2, body.y - frame.height / 2);
+      if (distance < best) {
+        best = distance;
+        nearest = person;
+      }
+    });
+    const person = addPerson(network, nearest);
+    if (person === null) return;
+    bodies[person] = { x: frame.width / 2, y: frame.height / 2, vx: 0, vy: 0 };
+    setTouched(true);
+  }, []);
 
   const retireMostConnected = useCallback(() => {
     const network = networkRef.current;
@@ -284,12 +323,16 @@ export default function SelfEvolvingNetworkOne() {
         role="application"
         tabIndex={0}
         aria-describedby="self-evolving-description"
-        aria-label="A fixed population that rewires itself: people introduce two of their acquaintances to each other, people without acquaintances reach a stranger, and people leave and are replaced by newcomers. Darker means longer tenure; larger means more acquaintances. Press someone to make them leave; press Enter to remove the most connected person."
+        aria-label="A fixed population that rewires itself: people introduce two of their acquaintances to each other, people without acquaintances reach a stranger, and people leave and are replaced by newcomers. Darker means longer tenure; larger means more acquaintances. Tap someone to make them leave; tap empty space to bring in a newcomer who knows the nearest person. Press Enter to remove the most connected person, N to add a newcomer at the centre."
         onPointerDown={(event) => {
           const bounds = event.currentTarget.getBoundingClientRect();
-          retireNearest(event.clientX - bounds.left, event.clientY - bounds.top, 24);
+          tapAt(event.clientX - bounds.left, event.clientY - bounds.top);
         }}
         onKeyDown={(event) => {
+          if (event.key === "n" || event.key === "N") {
+            addAtCentre();
+            return;
+          }
           if (event.key !== "Enter" && event.key !== " ") return;
           event.preventDefault();
           retireMostConnected();
@@ -302,7 +345,7 @@ export default function SelfEvolvingNetworkOne() {
 
       <div className={styles.control}>
         <p className={styles.hint} data-hidden={touched}>
-          press someone to make them leave
+          tap someone to make them leave, empty space to bring someone in
         </p>
         <label className={styles.balance}>
           <span>stay</span>

@@ -1,101 +1,141 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  createGridAdaptiveNetwork,
-  DEFAULT_GRID_DIMENSION,
-  DEFAULT_GRID_PARAMETERS,
-  introduceGridSusceptibility,
-  stepGridAdaptiveNetwork,
+  createCooperationNetwork,
+  DEFAULT_PARAMETERS,
+  flipPlayer,
+  leadingCooperator,
+  measureCooperation,
+  stepCooperationNetwork,
+  type CooperationNetwork,
+  type CooperationParameters,
 } from "./model.ts";
 
-function assertNetworkIsConsistent(network: ReturnType<typeof createGridAdaptiveNetwork>) {
-  assert.equal(network.sites.length, network.dimension ** 2);
-  const sites = new Map(network.sites.map((site) => [site.id, site]));
+const SEED = 0x3c6ef372;
+const PLAYERS = 240;
+
+function assertConsistent(network: CooperationNetwork) {
   const keys = new Set<string>();
-  for (const relation of network.relations) {
-    const source = sites.get(relation.source);
-    const target = sites.get(relation.target);
-    assert.ok(source && target);
-    assert.notEqual(source.state, "inactive");
-    assert.notEqual(target.state, "inactive");
-    const key = [relation.source, relation.target].sort((left, right) => left - right).join(":");
+  const degree = new Array<number>(network.size).fill(0);
+  const cooperative = new Array<number>(network.size).fill(0);
+  for (const tie of network.ties) {
+    assert.notEqual(tie.a, tie.b);
+    const key = [tie.a, tie.b].sort((left, right) => left - right).join(":");
     assert.ok(!keys.has(key));
     keys.add(key);
+    degree[tie.a]! += 1;
+    degree[tie.b]! += 1;
+    if (network.strategy[tie.b] === "C") cooperative[tie.a]! += 1;
+    if (network.strategy[tie.a] === "C") cooperative[tie.b]! += 1;
   }
-  for (const site of network.sites) {
-    assert.ok(site.row >= 0 && site.row < network.dimension);
-    assert.ok(site.column >= 0 && site.column < network.dimension);
-    assert.equal(site.id, site.row * network.dimension + site.column + 1);
-  }
+  assert.equal(network.pairs.size, network.ties.length);
+  network.incident.forEach((list, player) => assert.equal(list.length, degree[player]));
+  assert.deepEqual(network.cooperativeNeighbours, cooperative);
 }
 
-test("the default lattice seeds 648 active vertices and a denser local graph", () => {
-  const network = createGridAdaptiveNetwork();
-  assert.equal(network.dimension, DEFAULT_GRID_DIMENSION);
-  const active = network.sites.filter((site) => site.state !== "inactive").length;
-  assert.equal(active, 648);
-  assert.ok(network.relations.length > active * 2);
-});
+/** Runs `sweeps` updates per player and returns the network. */
+function run(parameters: Partial<CooperationParameters>, sweeps: number, seed = SEED) {
+  const network = createCooperationNetwork(PLAYERS, 8, seed, 0.5);
+  stepCooperationNetwork(network, PLAYERS * sweeps, { ...DEFAULT_PARAMETERS, ...parameters });
+  return network;
+}
 
-test("all possible vertices stay on a deterministic N by N grid", () => {
-  let first = createGridAdaptiveNetwork(30, 41);
-  let second = createGridAdaptiveNetwork(30, 41);
-  for (let step = 0; step < 1_200; step += 1) {
-    first = stepGridAdaptiveNetwork(first, 0.04, DEFAULT_GRID_PARAMETERS).network;
-    second = stepGridAdaptiveNetwork(second, 0.04, DEFAULT_GRID_PARAMETERS).network;
-    assertNetworkIsConsistent(first);
-  }
-  assert.deepEqual(first, second);
-  assert.ok(first.sites.some((site) => site.state === "inactive"));
-  assert.ok(first.sites.some((site) => site.state !== "inactive"));
-});
-
-test("entry and departure change which fixed grid sites are active", () => {
-  let network = createGridAdaptiveNetwork(32, 93);
-  const initialActive = new Set(network.sites.filter((site) => site.state !== "inactive").map((site) => site.id));
-  let activated = 0;
-  let deactivated = 0;
-  for (let step = 0; step < 1_800; step += 1) {
-    const result = stepGridAdaptiveNetwork(network, 0.04, DEFAULT_GRID_PARAMETERS);
-    network = result.network;
-    activated += result.events.activated;
-    deactivated += result.events.deactivated;
-    assertNetworkIsConsistent(network);
-  }
-  assert.ok(activated > 0);
-  assert.ok(deactivated > 0);
-  assert.ok(network.sites.some((site) => site.state !== "inactive" && !initialActive.has(site.id)));
-});
-
-test("state-dependent rewiring changes grid-edge endpoints", () => {
-  let fixed = createGridAdaptiveNetwork(30, 311);
-  let adaptive = fixed;
-  let rewired = 0;
-  for (let step = 0; step < 900; step += 1) {
-    fixed = stepGridAdaptiveNetwork(fixed, 0.04, {
-      ...DEFAULT_GRID_PARAMETERS,
-      rewiring: 0,
-      activation: 0,
-      turnover: 0,
-    }).network;
-    const result = stepGridAdaptiveNetwork(adaptive, 0.04, {
-      ...DEFAULT_GRID_PARAMETERS,
-      activation: 0,
-      turnover: 0,
-    });
-    adaptive = result.network;
-    rewired += result.events.rewired;
-  }
-  assert.ok(rewired > 0);
-  assert.notDeepEqual(
-    adaptive.relations.map((relation) => [relation.source, relation.target]),
-    fixed.relations.map((relation) => [relation.source, relation.target]),
+test("replays deterministically from a seed", () => {
+  const first = createCooperationNetwork(120, 6, 7);
+  const second = createCooperationNetwork(120, 6, 7);
+  assert.deepEqual(
+    stepCooperationNetwork(first, 3_000, DEFAULT_PARAMETERS),
+    stepCooperationNetwork(second, 3_000, DEFAULT_PARAMETERS),
   );
+  assert.deepEqual(first.strategy, second.strategy);
+  assert.deepEqual(first.ties, second.ties);
 });
 
-test("a direct grid intervention activates or sensitizes one candidate site", () => {
-  const network = createGridAdaptiveNetwork(30, 7);
-  const next = introduceGridSusceptibility(network, 15, 15);
-  const target = next.sites.find((site) => site.row === 15 && site.column === 15);
-  assert.equal(target?.state, "S");
+test("switching only leaves defectors, conserves ties and keeps payoffs in step", () => {
+  const network = createCooperationNetwork(PLAYERS, 8, SEED, 0.5);
+  const ties = network.ties.length;
+  for (let round = 0; round < 40; round += 1) {
+    const strategies = [...network.strategy];
+    const events = stepCooperationNetwork(network, 1, { ...DEFAULT_PARAMETERS, switching: 1 });
+    for (const event of events) {
+      if (event.kind !== "switch") continue;
+      assert.equal(strategies[event.from], "D");
+      assert.notEqual(event.to, event.player);
+    }
+  }
+  stepCooperationNetwork(network, PLAYERS * 30, DEFAULT_PARAMETERS);
+  assert.equal(network.ties.length, ties);
+  assertConsistent(network);
+});
+
+test("imitation only copies a neighbour who earns more", () => {
+  const network = createCooperationNetwork(PLAYERS, 8, SEED, 0.5);
+  for (let round = 0; round < 2_000; round += 1) {
+    const before = [...network.cooperativeNeighbours];
+    const strategies = [...network.strategy];
+    const [event] = stepCooperationNetwork(network, 1, { ...DEFAULT_PARAMETERS, mutation: 0 });
+    if (event?.kind !== "imitate") continue;
+    const earned = (player: number) => (strategies[player] === "C" ? 1 : DEFAULT_PARAMETERS.temptation) * before[player]!;
+    assert.ok(earned(event.model) > earned(event.player));
+    assert.equal(network.strategy[event.player], strategies[event.model]);
+  }
+});
+
+test("on a static network cooperation collapses; with switching it takes over", () => {
+  for (const seed of [SEED, 2, 3]) {
+    assert.ok(measureCooperation(run({ switching: 0 }, 120, seed)).cooperators < 0.15);
+    assert.ok(measureCooperation(run({ switching: 0.6 }, 120, seed)).cooperators > 0.85);
+  }
+});
+
+test("higher temptation needs more switching", () => {
+  // At b = 2.5, p = .1 is not enough, while p = .6 still is.
+  assert.ok(measureCooperation(run({ temptation: 2.5, switching: 0.1 }, 120)).cooperators < 0.2);
+  assert.ok(measureCooperation(run({ temptation: 2.5, switching: 0.6 }, 120)).cooperators > 0.8);
+});
+
+test("switching makes cooperators into hubs", () => {
+  const still = measureCooperation(run({ switching: 0 }, 120));
+  const moving = run({ switching: 0.3 }, 200);
+  const measure = measureCooperation(moving);
+  assert.ok(still.hubRatio < 2.5);
+  assert.ok(measure.hubRatio > 4);
+  const leader = leadingCooperator(moving)!;
+  const most = Math.max(...moving.incident.map((list) => list.length));
+  assert.equal(moving.incident[leader]!.length, most);
+});
+
+test("a fallen leader sets off a larger cascade than an ordinary cooperator", () => {
+  const drop = (pick: (network: CooperationNetwork) => number) => {
+    let total = 0;
+    for (const seed of [SEED, 5, 6, 7]) {
+      const network = run({ switching: 0.3 }, 200, seed);
+      const before = measureCooperation(network).cooperators;
+      flipPlayer(network, pick(network));
+      let lowest = before;
+      for (let sweep = 0; sweep < 40; sweep += 1) {
+        stepCooperationNetwork(network, PLAYERS, DEFAULT_PARAMETERS);
+        lowest = Math.min(lowest, measureCooperation(network).cooperators);
+      }
+      total += before - lowest;
+    }
+    return total / 4;
+  };
+  const leader = drop((network) => leadingCooperator(network)!);
+  const ordinary = drop((network) => network.strategy.indexOf("C"));
+  assert.ok(leader > 0.1);
+  assert.ok(leader > ordinary * 1.5);
+});
+
+test("flipping respects bounds and keeps payoffs in step", () => {
+  const network = createCooperationNetwork(60, 6, 3, 0.5);
+  const before = network.strategy[0];
+  assert.equal(flipPlayer(network, 0), before === "C" ? "D" : "C");
+  assert.equal(flipPlayer(network, -1), null);
+  assert.equal(flipPlayer(network, 60), null);
+  assertConsistent(network);
+  for (let player = 0; player < network.size; player += 1) {
+    if (network.strategy[player] === "C") flipPlayer(network, player);
+  }
+  assert.equal(leadingCooperator(network), null);
 });

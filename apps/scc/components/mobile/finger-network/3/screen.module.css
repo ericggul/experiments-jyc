@@ -22,11 +22,42 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(32px + env(safe-area-inset-bottom));
+  bottom: calc(64px + env(safe-area-inset-bottom));
   margin: 0;
   color: #fff;
   font: 400 12px/1.4 Arial, Helvetica, sans-serif;
   letter-spacing: 0.01em;
   text-align: center;
   pointer-events: none;
+}
+
+.controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.control {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: #fff;
+  font: 400 12px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control[aria-expanded="false"],
+.control[aria-expanded="true"] {
+  opacity: 0.55;
 }

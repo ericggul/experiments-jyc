@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  addVoter,
   createCoevolvingNetwork,
+  MAX_VOTERS,
   measureCoevolution,
   plantOpinion,
   rarestOpinion,
@@ -99,4 +101,24 @@ test("planting sets only the chosen voters and picks the rarest opinion", () => 
   assert.deepEqual(changed, [3, 4]);
   assert.equal(network.opinions[3], 5);
   assert.equal(network.opinions[5], 0);
+});
+
+test("a newcomer joins with the given ties and stays consistent under updates", () => {
+  const network = createCoevolvingNetwork(100, 4, 13);
+  const ties = network.ties.length;
+  const voter = addVoter(network, 2, [4, 9, 9, 100, -1]);
+  assert.equal(voter, 100);
+  assert.equal(network.size, 101);
+  assert.equal(network.opinions[100], 2);
+  assert.equal(network.ties.length, ties + 2);
+  assert.equal(network.incident[100]!.length, 2);
+  stepCoevolvingNetwork(network, 20_000, { rewiring: 0.6, drift: 0.002 });
+  assertConsistent(network);
+  assert.equal(network.opinions.length, network.size);
+});
+
+test("growth stops at the population cap", () => {
+  const network = createCoevolvingNetwork(MAX_VOTERS, 1, 17);
+  assert.equal(addVoter(network, 0, [0]), null);
+  assert.equal(network.size, MAX_VOTERS);
 });

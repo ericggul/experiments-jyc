@@ -10,7 +10,8 @@
 // interactions", PRL 88, 128701 (2002). Positions are not part of this model.
 
 export type SelfEvolvingNetwork = {
-  readonly size: number;
+  /** People are indexed 0…size−1; arrivals are appended. */
+  size: number;
   /** Acquaintances of each person, by person index. */
   readonly neighbours: Set<number>[];
   /** Update count at which each person (or their replacement) arrived. */
@@ -41,7 +42,8 @@ export type SelfEvolvingMeasure = {
   isolated: number;
 };
 
-export const DEFAULT_PEOPLE = 200;
+export const DEFAULT_PEOPLE = 500;
+export const MAX_PEOPLE = 800;
 export const MIN_TURNOVER = 0.02;
 export const MAX_TURNOVER = 0.3;
 export const DEFAULT_PARAMETERS: SelfEvolvingParameters = { turnover: 0.06 };
@@ -96,6 +98,22 @@ export function retirePerson(network: SelfEvolvingNetwork, person: number) {
   network.neighbours[person]!.clear();
   network.bornAt[person] = network.updates;
   return { kind: "retire", person, former } as const;
+}
+
+/**
+ * Appends a newcomer who already knows `acquaintance` (if given), so they enter
+ * through someone rather than at random. Returns their index, or null at MAX_PEOPLE.
+ */
+export function addPerson(network: SelfEvolvingNetwork, acquaintance: number | null) {
+  if (network.size >= MAX_PEOPLE) return null;
+  const person = network.size;
+  network.size += 1;
+  network.neighbours.push(new Set());
+  network.bornAt.push(network.updates);
+  if (acquaintance !== null && acquaintance >= 0 && acquaintance < person) {
+    connect(network, person, acquaintance);
+  }
+  return person;
 }
 
 export function stepSelfEvolvingNetwork(

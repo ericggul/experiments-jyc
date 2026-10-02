@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { anchorPoint, buildPose, continueBinding, solveFigure, type Anchor, type Binding, type Endpoints, type Figure, type Point, type Role } from "./model/rig";
 import { describeBody } from "./screen/readout";
-import { drawFigure, drawNetwork } from "./screen/renderer";
+import type { ModelFigure } from "./screen/model-figure";
+import { drawFigure, drawNetwork, drawRings } from "./screen/renderer";
 import styles from "./screen.module.css";
 
 const roles: Role[] = ["head", "leftHand", "rightHand", "leftFoot", "rightFoot"];
@@ -15,15 +16,35 @@ const morphRate = 4;
 const trackRate = 19;
 const releaseFadeSeconds = 3;
 
+type Character = "default" | "elon";
+const characters: { id: Character; label: string }[] = [
+  { id: "default", label: "기본" },
+  { id: "elon", label: "일론 머스크" },
+];
+// The rigged model is fetched, with three.js, only once its option is chosen.
+const modelUrls: Partial<Record<Character, string>> = { elon: "/assets/finger-network/elon-musk.glb" };
+
 export default function MobileFingerNetworkTwo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const modelCanvasRef = useRef<HTMLCanvasElement>(null);
   const readoutRef = useRef<HTMLParagraphElement>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
   const [hasFingers, setHasFingers] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [character, setCharacter] = useState<Character>("default");
+  const characterRef = useRef(character);
+  const scheduleRef = useRef<() => void>(() => undefined);
+
+  useEffect(() => {
+    characterRef.current = character;
+    scheduleRef.current();
+  }, [character]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    const modelCanvas = modelCanvasRef.current;
     const readout = readoutRef.current;
-    if (!canvas || !readout) return;
+    if (!canvas || !modelCanvas || !readout) return;
     const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
     if (!context) return;
 
@@ -46,6 +67,30 @@ export default function MobileFingerNetworkTwo() {
     let lastReadoutTime = -Infinity;
     let readoutOpacity = "0";
     let instructionTimer: number | null = null;
+    let disposed = false;
+    let pixelRatio = 1;
+    const models = new Map<Character, ModelFigure | null>();
+    const created: ModelFigure[] = [];
+    let shownModel: ModelFigure | null = null;
+
+    // null while loading or after a failed load; either way the 2D body stands in.
+    const modelFor = (id: Character) => {
+      const url = modelUrls[id];
+      if (!url) return null;
+      if (!models.has(id)) {
+        models.set(id, null);
+        void import("./screen/model-figure").then(({ createModelFigure }) => {
+          if (disposed) return;
+          const model = createModelFigure(modelCanvas, url, () => {
+            models.set(id, model);
+            schedule();
+          }, () => model.dispose());
+          created.push(model);
+          model.resize(width, height, pixelRatio);
+        });
+      }
+      return models.get(id) ?? null;
+    };
 
     const paint = (time: number) => {
       frame = null;
@@ -119,12 +164,20 @@ export default function MobileFingerNetworkTwo() {
         context.scale(body.scale, body.scale);
         const rings = heldAnchors.map((anchor) => anchorPoint(endpoints, anchor));
         const pose = buildPose(endpoints);
-        drawFigure(context, pose, time, figureOpacity, skinTexture, rings);
+        const model = modelFor(characterRef.current);
+        if (model) drawRings(context, rings, pose.scale, figureOpacity);
+        else drawFigure(context, pose, time, figureOpacity, skinTexture, rings);
         context.restore();
+        if (model !== shownModel) shownModel?.hide();
+        shownModel = model;
+        model?.draw(body, pose, figureOpacity);
         if (time - lastReadoutTime >= readoutInterval) {
           lastReadoutTime = time;
           readout.textContent = describeBody(body, pose, heldAnchors, time, figureOpacity);
         }
+      } else if (shownModel) {
+        shownModel.hide();
+        shownModel = null;
       }
       const nextOpacity = figureOpacity.toFixed(3);
       if (nextOpacity !== readoutOpacity) {
@@ -139,6 +192,7 @@ export default function MobileFingerNetworkTwo() {
     const schedule = () => {
       if (frame === null) frame = window.requestAnimationFrame(paint);
     };
+    scheduleRef.current = schedule;
 
     const textureImage = new Image();
     textureImage.onload = () => {
@@ -152,9 +206,11 @@ export default function MobileFingerNetworkTwo() {
       const ratio = Math.min(window.devicePixelRatio || 1, maximumPixelRatio);
       width = Math.max(1, bounds.width);
       height = Math.max(1, bounds.height);
+      pixelRatio = ratio;
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      for (const model of created) model.resize(width, height, ratio);
       schedule();
     };
 
@@ -175,10 +231,14 @@ export default function MobileFingerNetworkTwo() {
       }
     };
 
+    // Touches on the option controls stay native so their taps still click; every other touch is a finger.
+    const onControls = (touch: Touch) => touch.target instanceof Node && (controlsRef.current?.contains(touch.target) ?? false);
     const syncTouches = (event: TouchEvent) => {
+      const touches = Array.from(event.changedTouches).filter((touch) => !onControls(touch));
+      if (touches.length === 0) return;
       event.preventDefault();
       const bounds = canvas.getBoundingClientRect();
-      for (const touch of Array.from(event.changedTouches)) {
+      for (const touch of touches) {
         if (event.type === "touchend" || event.type === "touchcancel") touchFingers.delete(touch.identifier);
         else touchFingers.set(touch.identifier, position(touch.clientX, touch.clientY, bounds));
       }
@@ -241,6 +301,9 @@ export default function MobileFingerNetworkTwo() {
       canvas.removeEventListener("pointercancel", onEnd);
       canvas.removeEventListener("lostpointercapture", onEnd);
       textureImage.onload = null;
+      disposed = true;
+      scheduleRef.current = () => undefined;
+      for (const model of created) model.dispose();
       if (instructionTimer !== null) window.clearTimeout(instructionTimer);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
@@ -249,8 +312,23 @@ export default function MobileFingerNetworkTwo() {
   return (
     <main className={styles.field}>
       <canvas ref={canvasRef} className={styles.canvas} aria-label="Two to five fingertips form a moving human figure: two fingers place, turn, and size the whole body; more fingers take hold of the head, hands, and feet" role="img" />
-      <p ref={readoutRef} className={styles.readout} aria-hidden="true" />
-      {!hasFingers && <p className={styles.instruction}>손가락을 두 개 이상 화면에 올려 보세요</p>}
+      <canvas ref={modelCanvasRef} className={styles.model} aria-hidden="true" />
+      <p ref={readoutRef} className={styles.readout} data-raised={optionsOpen || undefined} aria-hidden="true" />
+      {!hasFingers && <p className={styles.instruction} data-raised={optionsOpen || undefined}>손가락을 두 개 이상 화면에 올려 보세요</p>}
+      <div ref={controlsRef} className={styles.controls}>
+        {optionsOpen && (
+          <div id="finger-network-options" className={styles.options}>
+            {characters.map(({ id, label }) => (
+              <button key={id} type="button" className={styles.control} aria-pressed={character === id} onClick={() => setCharacter(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+        <button type="button" className={styles.control} aria-expanded={optionsOpen} aria-controls="finger-network-options" onClick={() => setOptionsOpen((value) => !value)}>
+          {optionsOpen ? "닫기" : "옵션"}
+        </button>
+      </div>
     </main>
   );
 }

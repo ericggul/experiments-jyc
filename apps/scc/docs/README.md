@@ -2,7 +2,7 @@
 
 Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `components/navigation`, grouped by creation date. Register each new variant's date and phrase in `components/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
 
-- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate and substitution transforms.
+- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field and curve-to-formula plane, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate and substitution transforms.
 
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.

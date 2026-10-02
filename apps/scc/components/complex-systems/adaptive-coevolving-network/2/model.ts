@@ -1,78 +1,64 @@
-export type Point = { readonly x: number; readonly y: number };
+// Adaptive SIS epidemic: infection spreads along ties, and susceptible people
+// cut ties to infected neighbours and reconnect to someone healthy. Each
+// process changes the conditions of the other: avoidance reshapes the network,
+// and the reshaped network decides how the next outbreak travels.
+//
+// Per tie between a susceptible S and an infected I, in continuous time:
+//   infection  at rate `infection`  — S becomes infected;
+//   avoidance  at rate `avoidance`  — S drops the tie and links to a random
+//                                     susceptible it does not already know.
+// Each infected person recovers at rate `recovery`. A small import rate infects
+// a random susceptible from outside, so the epidemic can return after dying out.
+//
+// Source: Gross, D'Lima & Blasius, "Epidemic dynamics on an adaptive network",
+// PRL 96, 208701 (2006). Positions are not part of this model.
 
-export type RecruitmentState = "N" | "S" | "R";
+export type Health = "S" | "I";
 
-export type RecruitmentAgent = Point & {
-  readonly id: number;
-  state: RecruitmentState;
-  bornAt: number;
-};
+export type EpidemicTie = { readonly id: number; a: number; b: number };
 
-export type RecruitmentRelation = {
-  readonly id: number;
-  source: number;
-  target: number;
-  bornAt: number;
-  changedAt: number;
-};
-
-export type OpenAdaptiveNetwork = {
-  agents: readonly RecruitmentAgent[];
-  relations: readonly RecruitmentRelation[];
+export type EpidemicNetwork = {
+  size: number;
+  readonly health: Health[];
+  readonly ties: EpidemicTie[];
+  readonly incident: number[][];
+  readonly pairs: Set<number>;
   randomState: number;
   time: number;
-  nextAgentId: number;
-  nextRelationId: number;
 };
 
-export type CoevolutionParameters = {
-  recruitment: number;
-  rewiring: number;
-  entry: number;
-  turnover: number;
+export type EpidemicParameters = {
+  infection: number;
+  recovery: number;
+  avoidance: number;
+  importation: number;
 };
 
-export type CoevolutionEvents = {
-  entries: number;
-  exits: number;
-  susceptible: number;
-  resistant: number;
-  recruited: number;
-  rewires: number;
+export type EpidemicEvent =
+  | { kind: "infect"; person: number; source: number | null }
+  | { kind: "recover"; person: number }
+  | { kind: "avoid"; person: number; from: number; to: number; tie: number };
+
+export type EpidemicMeasure = {
+  infected: number;
+  /** Share of ties joining a susceptible and an infected person. */
+  exposedTies: number;
+  meanDegreeSusceptible: number;
+  meanDegreeInfected: number;
 };
 
-export type CoevolutionStep = {
-  network: OpenAdaptiveNetwork;
-  events: CoevolutionEvents;
+export const DEFAULT_PEOPLE = 300;
+export const MAX_PEOPLE = 600;
+export const DEFAULT_MEAN_DEGREE = 8;
+export const AVOIDANCE_RANGE = [0, 1] as const;
+export const DEFAULT_PARAMETERS: EpidemicParameters = {
+  infection: 0.08,
+  recovery: 0.25,
+  avoidance: 0.3,
+  importation: 0.0004,
 };
-
-export type CoevolutionMeasure = {
-  components: number;
-  meanDegree: number;
-  nonSusceptible: number;
-  susceptible: number;
-  recruiters: number;
-};
-
-export const DEFAULT_COEVOLUTION_PARAMETERS: CoevolutionParameters = {
-  recruitment: 0.64,
-  rewiring: 0.72,
-  entry: 0.64,
-  turnover: 0.6,
-};
-
-const INITIAL_AGENTS = 78;
-const MIN_AGENTS = 28;
-const MAX_AGENTS = 136;
-const ENTRY_DEGREE = 2;
-
-function clamp(value: number, minimum: number, maximum: number) {
-  return Math.min(maximum, Math.max(minimum, value));
-}
-
-function relationKey(source: number, target: number) {
-  return source < target ? `${source}:${target}` : `${target}:${source}`;
-}
+const PAIR_STRIDE = 1 << 16;
+const MAX_STEP = 0.05;
 
 function nextRandom(state: number): readonly [number, number] {
   let next = state | 0;
@@ -83,355 +69,191 @@ function nextRandom(state: number): readonly [number, number] {
   return [unsigned / 4_294_967_296, unsigned || 0x9e3779b9];
 }
 
+function randomFor(network: EpidemicNetwork) {
+  return () => {
+    const [value, next] = nextRandom(network.randomState);
+    network.randomState = next;
+    return value;
+  };
+}
+
 function randomIndex(value: number, length: number) {
   return Math.min(length - 1, Math.floor(value * length));
 }
 
-function eventOccurs(rate: number, delta: number, random: () => number) {
-  return random() < 1 - Math.exp(-Math.max(0, rate) * delta);
+function pairKey(first: number, second: number) {
+  return first < second ? first * PAIR_STRIDE + second : second * PAIR_STRIDE + first;
 }
 
-function randomStateFor(index: number) {
-  if (index < 8) return "R" as const;
-  if (index < 24) return "S" as const;
-  return "N" as const;
+function chance(rate: number, delta: number) {
+  return 1 - Math.exp(-Math.max(0, rate) * delta);
 }
 
-function makeAgent(
-  id: number,
-  state: RecruitmentState,
-  width: number,
-  height: number,
-  time: number,
-  random: () => number,
-  anchor?: Point,
-): RecruitmentAgent {
-  const margin = Math.max(28, Math.min(width, height) * 0.075);
-  const radius = 26 + random() * 56;
-  const angle = random() * Math.PI * 2;
-  const x = anchor
-    ? clamp(anchor.x + Math.cos(angle) * radius, margin, Math.max(margin, width - margin))
-    : margin + random() * Math.max(1, width - margin * 2);
-  const y = anchor
-    ? clamp(anchor.y + Math.sin(angle) * radius, margin, Math.max(margin, height - margin))
-    : margin + random() * Math.max(1, height - margin * 2);
-  return { id, x, y, state, bornAt: time };
+function addTie(network: EpidemicNetwork, a: number, b: number) {
+  if (a === b) return false;
+  const key = pairKey(a, b);
+  if (network.pairs.has(key)) return false;
+  const id = network.ties.length;
+  network.pairs.add(key);
+  network.ties.push({ id, a, b });
+  network.incident[a]!.push(id);
+  network.incident[b]!.push(id);
+  return true;
 }
 
-function neighbourMap(relations: readonly RecruitmentRelation[]) {
-  const neighbours = new Map<number, number[]>();
-  for (const relation of relations) {
-    neighbours.set(relation.source, [
-      ...(neighbours.get(relation.source) ?? []),
-      relation.target,
-    ]);
-    neighbours.set(relation.target, [
-      ...(neighbours.get(relation.target) ?? []),
-      relation.source,
-    ]);
-  }
-  return neighbours;
+function removeIncident(network: EpidemicNetwork, person: number, tie: number) {
+  const list = network.incident[person]!;
+  const index = list.indexOf(tie);
+  if (index < 0) return;
+  list[index] = list[list.length - 1]!;
+  list.pop();
 }
 
-function countComponents(
-  agents: readonly RecruitmentAgent[],
-  relations: readonly RecruitmentRelation[],
-) {
-  const neighbours = neighbourMap(relations);
-  const seen = new Set<number>();
-  let components = 0;
-  for (const agent of agents) {
-    if (seen.has(agent.id)) continue;
-    components += 1;
-    const pending = [agent.id];
-    seen.add(agent.id);
-    while (pending.length > 0) {
-      const current = pending.pop();
-      if (current === undefined) continue;
-      for (const neighbour of neighbours.get(current) ?? []) {
-        if (seen.has(neighbour)) continue;
-        seen.add(neighbour);
-        pending.push(neighbour);
-      }
-    }
-  }
-  return components;
-}
-
-export function measureCoevolution(network: OpenAdaptiveNetwork): CoevolutionMeasure {
-  let nonSusceptible = 0;
-  let susceptible = 0;
-  let recruiters = 0;
-  for (const agent of network.agents) {
-    if (agent.state === "N") nonSusceptible += 1;
-    if (agent.state === "S") susceptible += 1;
-    if (agent.state === "R") recruiters += 1;
-  }
-  return {
-    components: countComponents(network.agents, network.relations),
-    meanDegree: (network.relations.length * 2) / Math.max(1, network.agents.length),
-    nonSusceptible,
-    susceptible,
-    recruiters,
-  };
-}
-
-export function createCoevolvingExchangeNetwork(
-  width: number,
-  height: number,
-  seed = 0x582a74d1,
-): OpenAdaptiveNetwork {
-  let randomState = seed >>> 0 || 1;
-  const random = () => {
-    const [value, next] = nextRandom(randomState);
-    randomState = next;
-    return value;
-  };
-  const agents = Array.from({ length: INITIAL_AGENTS }, (_, index) =>
-    makeAgent(index + 1, randomStateFor(index), width, height, 0, random),
-  );
-  const keys = new Set<string>();
-  const relations: RecruitmentRelation[] = [];
-  const addRelation = (source: number, target: number) => {
-    const key = relationKey(source, target);
-    if (source === target || keys.has(key)) return false;
-    keys.add(key);
-    relations.push({
-      id: relations.length + 1,
-      source,
-      target,
-      bornAt: 0,
-      changedAt: -6,
-    });
-    return true;
-  };
-
-  for (let index = 0; index < agents.length; index += 1) {
-    addRelation(agents[index]!.id, agents[(index + 1) % agents.length]!.id);
-    addRelation(agents[index]!.id, agents[(index + 4) % agents.length]!.id);
-  }
-  while (relations.length < 182) {
-    const source = agents[randomIndex(random(), agents.length)]!;
-    const target = agents[randomIndex(random(), agents.length)]!;
-    addRelation(source.id, target.id);
-  }
-
-  return {
-    agents,
-    relations,
-    randomState,
+/** A random graph with every person tied at least once, and a few initial cases. */
+export function createEpidemicNetwork(
+  size = DEFAULT_PEOPLE,
+  meanDegree = DEFAULT_MEAN_DEGREE,
+  seed = 0x1b873593,
+  initialInfected = 0.05,
+): EpidemicNetwork {
+  const network: EpidemicNetwork = {
+    size,
+    health: Array.from({ length: size }, () => "S" as Health),
+    ties: [],
+    incident: Array.from({ length: size }, () => []),
+    pairs: new Set(),
+    randomState: seed >>> 0 || 1,
     time: 0,
-    nextAgentId: agents.length + 1,
-    nextRelationId: relations.length + 1,
   };
-}
-
-export function resizeCoevolvingExchangeNetwork(
-  network: OpenAdaptiveNetwork,
-  previous: { width: number; height: number },
-  next: { width: number; height: number },
-): OpenAdaptiveNetwork {
-  if (previous.width <= 0 || previous.height <= 0) return network;
-  return {
-    ...network,
-    agents: network.agents.map((agent) => ({
-      ...agent,
-      x: agent.x * (next.width / previous.width),
-      y: agent.y * (next.height / previous.height),
-    })),
-  };
-}
-
-function selectRandom<T>(choices: readonly T[], random: () => number) {
-  if (choices.length === 0) return null;
-  return choices[randomIndex(random(), choices.length)] ?? null;
-}
-
-function countRecruiterNeighbours(
-  agentId: number,
-  agentsById: ReadonlyMap<number, RecruitmentAgent>,
-  neighbours: ReadonlyMap<number, readonly number[]>,
-) {
-  return (neighbours.get(agentId) ?? []).reduce((count, neighbourId) =>
-    count + (agentsById.get(neighbourId)?.state === "R" ? 1 : 0), 0);
-}
-
-export function stepCoevolvingExchangeNetwork(
-  network: OpenAdaptiveNetwork,
-  deltaSeconds: number,
-  parameters: CoevolutionParameters,
-): CoevolutionStep {
-  const delta = clamp(deltaSeconds, 0, 0.05);
-  const time = network.time + delta;
-  let randomState = network.randomState;
-  const random = () => {
-    const [value, next] = nextRandom(randomState);
-    randomState = next;
-    return value;
-  };
-  const events: CoevolutionEvents = {
-    entries: 0,
-    exits: 0,
-    susceptible: 0,
-    resistant: 0,
-    recruited: 0,
-    rewires: 0,
-  };
-  const entryRate = 0.18 + parameters.entry * 0.9;
-  const deathRate = 0.002 + parameters.turnover * 0.012;
-  const recruitmentRate = 0.025 + parameters.recruitment * 0.2;
-  const rewiringRate = parameters.rewiring * 0.58;
-  const nonSusceptibleToSusceptibleRate = 0.045;
-  const susceptibleToNonSusceptibleRate = 0.018;
-
-  const departing = new Set<number>();
-  for (const agent of network.agents) {
-    if (network.agents.length - departing.size <= MIN_AGENTS) break;
-    if (eventOccurs(deathRate, delta, random)) departing.add(agent.id);
+  const random = randomFor(network);
+  for (let person = 0; person < size; person += 1) {
+    while (!addTie(network, person, randomIndex(random(), size)));
   }
-  events.exits = departing.size;
-  let agents = network.agents
-    .filter((agent) => !departing.has(agent.id))
-    .map((agent) => ({ ...agent }));
-  let relations = network.relations
-    .filter((relation) => !departing.has(relation.source) && !departing.has(relation.target))
-    .map((relation) => ({ ...relation }));
-  let nextAgentId = network.nextAgentId;
-  let nextRelationId = network.nextRelationId;
-
-  if (
-    agents.length < MAX_AGENTS &&
-    eventOccurs(entryRate, delta, random)
-  ) {
-    const anchor = selectRandom(agents, random);
-    const entrant = makeAgent(
-      nextAgentId,
-      "N",
-      Math.max(...agents.map((agent) => agent.x), 1),
-      Math.max(...agents.map((agent) => agent.y), 1),
-      time,
-      random,
-      anchor ?? undefined,
-    );
-    nextAgentId += 1;
-    agents.push(entrant);
-    const attachments = agents
-      .filter((agent) => agent.id !== entrant.id)
-      .sort(() => random() - 0.5)
-      .slice(0, ENTRY_DEGREE);
-    for (const target of attachments) {
-      relations.push({
-        id: nextRelationId,
-        source: entrant.id,
-        target: target.id,
-        bornAt: time,
-        changedAt: time,
-      });
-      nextRelationId += 1;
-    }
-    events.entries += 1;
+  const tieCount = Math.round((size * meanDegree) / 2);
+  while (network.ties.length < tieCount) {
+    addTie(network, randomIndex(random(), size), randomIndex(random(), size));
   }
+  for (let person = 0; person < size; person += 1) {
+    if (random() < initialInfected) network.health[person] = "I";
+  }
+  return network;
+}
 
-  const neighboursBeforeStates = neighbourMap(relations);
-  const agentsByIdBeforeStates = new Map(agents.map((agent) => [agent.id, agent]));
-  agents = agents.map((agent) => {
-    if (agent.state === "N") {
-      if (!eventOccurs(nonSusceptibleToSusceptibleRate, delta, random)) return agent;
-      events.susceptible += 1;
-      return { ...agent, state: "S" };
-    }
-    if (agent.state === "S") {
-      if (eventOccurs(susceptibleToNonSusceptibleRate, delta, random)) {
-        events.resistant += 1;
-        return { ...agent, state: "N" };
+export function otherEnd(tie: EpidemicTie, person: number) {
+  return tie.a === person ? tie.b : tie.a;
+}
+
+function healthyStranger(network: EpidemicNetwork, person: number, random: () => number) {
+  const candidates: number[] = [];
+  for (let other = 0; other < network.size; other += 1) {
+    if (other === person || network.health[other] !== "S") continue;
+    if (network.pairs.has(pairKey(person, other))) continue;
+    candidates.push(other);
+  }
+  return candidates.length === 0 ? null : candidates[randomIndex(random(), candidates.length)]!;
+}
+
+/** Advances by `duration` in steps of at most MAX_STEP; returns every change. */
+export function stepEpidemicNetwork(
+  network: EpidemicNetwork,
+  duration: number,
+  parameters: EpidemicParameters,
+): EpidemicEvent[] {
+  const random = randomFor(network);
+  const events: EpidemicEvent[] = [];
+  let remaining = Math.max(0, duration);
+  while (remaining > 1e-9) {
+    const delta = Math.min(MAX_STEP, remaining);
+    remaining -= delta;
+    network.time += delta;
+    const infectChance = chance(parameters.infection, delta);
+    const avoidChance = chance(parameters.avoidance, delta);
+    const newlyInfected = new Map<number, number | null>();
+
+    // Tie processes read the health at the start of the step.
+    for (const tie of network.ties) {
+      const healthA = network.health[tie.a];
+      if (healthA === network.health[tie.b]) continue;
+      const susceptible = healthA === "S" ? tie.a : tie.b;
+      const infected = otherEnd(tie, susceptible);
+      if (random() < infectChance) {
+        if (!newlyInfected.has(susceptible)) newlyInfected.set(susceptible, infected);
+        continue;
       }
-      const recruiterNeighbours = countRecruiterNeighbours(
-        agent.id,
-        agentsByIdBeforeStates,
-        neighboursBeforeStates,
-      );
-      if (!eventOccurs(recruitmentRate * recruiterNeighbours, delta, random)) return agent;
-      events.recruited += 1;
-      return { ...agent, state: "R" };
+      if (random() >= avoidChance) continue;
+      const stranger = healthyStranger(network, susceptible, random);
+      if (stranger === null || newlyInfected.has(stranger)) continue;
+      network.pairs.delete(pairKey(susceptible, infected));
+      removeIncident(network, infected, tie.id);
+      tie.a = susceptible;
+      tie.b = stranger;
+      network.pairs.add(pairKey(susceptible, stranger));
+      network.incident[stranger]!.push(tie.id);
+      events.push({ kind: "avoid", person: susceptible, from: infected, to: stranger, tie: tie.id });
     }
-    return agent;
-  });
 
-  const agentsById = new Map(agents.map((agent) => [agent.id, agent]));
-  const neighboursAfterStates = neighbourMap(relations);
-  const relationKeys = new Set<string>();
-  const rewiredRelations: RecruitmentRelation[] = [];
-  for (const relation of relations) {
-    const source = agentsById.get(relation.source);
-    const target = agentsById.get(relation.target);
-    if (!source || !target) continue;
-    const recruiter = source.state === "R"
-      ? source
-      : target.state === "R"
-        ? target
-        : null;
-    const nonSusceptible = source.state === "N"
-      ? source
-      : target.state === "N"
-        ? target
-        : null;
-    if (!recruiter || !nonSusceptible || !eventOccurs(rewiringRate, delta, random)) {
-      relationKeys.add(relationKey(relation.source, relation.target));
-      rewiredRelations.push(relation);
-      continue;
+    const recoverChance = chance(parameters.recovery, delta);
+    const importChance = chance(parameters.importation, delta);
+    for (let person = 0; person < network.size; person += 1) {
+      if (network.health[person] === "I") {
+        if (random() < recoverChance) {
+          network.health[person] = "S";
+          events.push({ kind: "recover", person });
+        }
+      } else if (!newlyInfected.has(person) && random() < importChance) {
+        newlyInfected.set(person, null);
+      }
     }
-    const connected = new Set(neighboursAfterStates.get(recruiter.id) ?? []);
-    connected.add(recruiter.id);
-    const candidates = agents.filter((agent) =>
-      agent.state === "S" && !connected.has(agent.id),
-    );
-    const replacement = selectRandom(candidates, random);
-    if (!replacement) {
-      relationKeys.add(relationKey(relation.source, relation.target));
-      rewiredRelations.push(relation);
-      continue;
+    for (const [person, source] of newlyInfected) {
+      network.health[person] = "I";
+      events.push({ kind: "infect", person, source });
     }
-    const key = relationKey(recruiter.id, replacement.id);
-    if (relationKeys.has(key)) {
-      relationKeys.add(relationKey(relation.source, relation.target));
-      rewiredRelations.push(relation);
-      continue;
-    }
-    relationKeys.add(key);
-    rewiredRelations.push({
-      ...relation,
-      source: recruiter.id,
-      target: replacement.id,
-      changedAt: time,
-    });
-    events.rewires += 1;
   }
-
-  return {
-    network: {
-      agents,
-      relations: rewiredRelations,
-      randomState,
-      time,
-      nextAgentId,
-      nextRelationId,
-    },
-    events,
-  };
+  return events;
 }
 
-export function introduceSusceptibility(
-  network: OpenAdaptiveNetwork,
-  point: Point,
-  radius = 112,
-): OpenAdaptiveNetwork {
+/** Infects one person from outside; returns false if they were already ill. */
+export function infectPerson(network: EpidemicNetwork, person: number) {
+  if (person < 0 || person >= network.size || network.health[person] === "I") return false;
+  network.health[person] = "I";
+  return true;
+}
+
+/** Appends a susceptible person tied to the given acquaintances. */
+export function addPerson(network: EpidemicNetwork, acquaintances: Iterable<number>) {
+  if (network.size >= MAX_PEOPLE) return null;
+  const person = network.size;
+  network.size += 1;
+  network.health.push("S");
+  network.incident.push([]);
+  for (const other of acquaintances) {
+    if (other >= 0 && other < person) addTie(network, person, other);
+  }
+  return person;
+}
+
+export function measureEpidemic(network: EpidemicNetwork): EpidemicMeasure {
+  let infected = 0;
+  let degreeS = 0;
+  let degreeI = 0;
+  for (let person = 0; person < network.size; person += 1) {
+    const degree = network.incident[person]!.length;
+    if (network.health[person] === "I") {
+      infected += 1;
+      degreeI += degree;
+    } else {
+      degreeS += degree;
+    }
+  }
+  let exposed = 0;
+  for (const tie of network.ties) {
+    if (network.health[tie.a] !== network.health[tie.b]) exposed += 1;
+  }
+  const susceptible = network.size - infected;
   return {
-    ...network,
-    agents: network.agents.map((agent) => {
-      if (agent.state !== "N" || Math.hypot(agent.x - point.x, agent.y - point.y) > radius) {
-        return agent;
-      }
-      return { ...agent, state: "S" };
-    }),
+    infected: infected / Math.max(1, network.size),
+    exposedTies: exposed / Math.max(1, network.ties.length),
+    meanDegreeSusceptible: degreeS / Math.max(1, susceptible),
+    meanDegreeInfected: degreeI / Math.max(1, infected),
   };
 }

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  addPerson,
   createSelfEvolvingNetwork,
+  MAX_PEOPLE,
   forEachTie,
   measureSelfEvolvingNetwork,
   retirePerson,
@@ -76,4 +78,22 @@ test("lower turnover yields a denser network with larger hubs", () => {
   assert.ok(staying.meanDegree > leaving.meanDegree * 3);
   assert.ok(staying.maxDegree > leaving.maxDegree * 2);
   assert.ok(staying.isolated < leaving.isolated);
+});
+
+test("a newcomer enters through one acquaintance and is then introduced onward", () => {
+  const network = settle(0.06);
+  const person = addPerson(network, 3);
+  assert.equal(person, 200);
+  assert.equal(network.size, 201);
+  assert.deepEqual([...network.neighbours[200]!], [3]);
+  assert.equal(network.bornAt[200], network.updates);
+  stepSelfEvolvingNetwork(network, 20_000, { turnover: 0.06 });
+  assertSymmetricSimple(network);
+  assert.equal(network.bornAt.length, network.size);
+});
+
+test("arrivals stop at the population cap", () => {
+  const network = createSelfEvolvingNetwork(MAX_PEOPLE, 21);
+  assert.equal(addPerson(network, 0), null);
+  assert.equal(network.size, MAX_PEOPLE);
 });

@@ -5,6 +5,7 @@ import styles from "./clock-grid.module.css";
 import {
   HOUR_HAND_LENGTH,
   MINUTE_HAND_LENGTH,
+  SECOND_HAND_LENGTH,
   aimMinutes,
   applyStroke,
   clockCenter,
@@ -12,6 +13,8 @@ import {
   handAngles,
   localClockSeconds,
   resizeClockGrid,
+  secondAngle,
+  secondHandTicking,
   stepClockGrid,
   updateChildCenters,
   type ClockGrid,
@@ -19,10 +22,10 @@ import {
 } from "./model";
 
 const MAXIMUM_PIXEL_RATIO = 2;
-const IDLE_REDRAW_MS = 1000;
 const RIM = "#e7dfd2";
 const HOUR = "#d2a64c";
 const MINUTE = "#f0eadf";
+const SECOND = "#c96a58";
 
 /** clock/1's per-generation fade: depth 0 parents, depth 1 children. */
 const faceOpacity = (depth: number) => Math.max(0.22, 0.72 - depth * 0.1);
@@ -83,12 +86,16 @@ function drawHands(
   realSeconds: number,
   radius: number,
   depth: number,
-  widths: { hour: number; minute: number; dot: number },
+  widths: { hour: number; minute: number; second: number; dot: number },
 ) {
   const hourLength = radius * HOUR_HAND_LENGTH;
   const minuteLength = radius * MINUTE_HAND_LENGTH;
+  const second = secondAngle(realSeconds);
+  const secondX = Math.cos(second) * radius * SECOND_HAND_LENGTH;
+  const secondY = Math.sin(second) * radius * SECOND_HAND_LENGTH;
   const hours = new Path2D();
   const minutes = new Path2D();
+  const seconds = new Path2D();
   const dots = new Path2D();
   centers.forEach((center, index) => {
     const { hour, minute } = handAngles(realSeconds + offsets[index]!);
@@ -96,6 +103,8 @@ function drawHands(
     hours.lineTo(center.x + Math.cos(hour) * hourLength, center.y + Math.sin(hour) * hourLength);
     minutes.moveTo(center.x, center.y);
     minutes.lineTo(center.x + Math.cos(minute) * minuteLength, center.y + Math.sin(minute) * minuteLength);
+    seconds.moveTo(center.x, center.y);
+    seconds.lineTo(center.x + secondX, center.y + secondY);
     dots.moveTo(center.x + widths.dot, center.y);
     dots.arc(center.x, center.y, widths.dot, 0, Math.PI * 2);
   });
@@ -108,9 +117,22 @@ function drawHands(
   context.strokeStyle = MINUTE;
   context.lineWidth = widths.minute;
   context.stroke(minutes);
+  context.strokeStyle = SECOND;
+  context.lineWidth = widths.second;
+  context.stroke(seconds);
   context.fillStyle = MINUTE;
   context.fill(dots);
   context.restore();
+}
+
+/** clock/2's hand widths, so a parent's hands stay heavier than its children's. */
+function handWidths(radius: number) {
+  return {
+    hour: Math.max(1.2, radius * 0.052),
+    minute: Math.max(0.8, radius * 0.035),
+    second: Math.max(0.6, radius * 0.018),
+    dot: Math.max(1.1, Math.min(2.8, radius * 0.05)),
+  };
 }
 
 function parentCenters(grid: ClockGrid) {
@@ -127,16 +149,8 @@ function drawFrame(
   const { radius, childRadius } = grid;
   context.clearRect(0, 0, grid.width, grid.height);
   drawFaces(context, children, childRadius, 1);
-  drawHands(context, parents, grid.parents.offset, realSeconds, radius, 0, {
-    hour: Math.max(0.55, Math.min(3.4, radius * 0.035)),
-    minute: Math.max(0.55, Math.min(3.4, radius * 0.023)),
-    dot: Math.max(0.8, Math.min(2.8, radius * 0.02)),
-  });
-  drawHands(context, children, grid.children.offset, realSeconds, childRadius, 1, {
-    hour: Math.max(1.2, childRadius * 0.052),
-    minute: Math.max(0.8, childRadius * 0.035),
-    dot: Math.max(1.1, Math.min(2.8, childRadius * 0.05)),
-  });
+  drawHands(context, parents, grid.parents.offset, realSeconds, radius, 0, handWidths(radius));
+  drawHands(context, children, grid.children.offset, realSeconds, childRadius, 1, handWidths(childRadius));
 }
 
 export default function FractalSkatingClockGrid() {
@@ -168,12 +182,12 @@ export default function FractalSkatingClockGrid() {
       const moving = stepClockGrid(grid, lastFrame ? (now - lastFrame) / 1000 : 1 / 60);
       updateChildCenters(grid, real);
       drawFrame(context, grid, parents, real);
-      if (moving || pointers.size > 0) {
+      if (moving || pointers.size > 0 || secondHandTicking(real)) {
         lastFrame = now;
         frame = window.requestAnimationFrame(render);
       } else {
         lastFrame = 0;
-        idleTimer = window.setTimeout(schedule, IDLE_REDRAW_MS);
+        idleTimer = window.setTimeout(schedule, 1000 - (Date.now() % 1000));
       }
     };
     const schedule = () => {

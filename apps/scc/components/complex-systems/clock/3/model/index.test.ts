@@ -4,7 +4,9 @@ import {
   CHILDREN_PER_CLOCK,
   CLOCK_RADIUS_IN_CELL,
   HOUR_HAND_LENGTH,
+  SECOND_HAND_LENGTH,
   MOBILE_CLOCK_CELL,
+  PARENT_TO_CHILD_SCALE,
   aimMinutes,
   angleDelta,
   applyStroke,
@@ -12,20 +14,24 @@ import {
   createClockGrid,
   handAngles,
   resizeClockGrid,
+  secondAngle,
+  secondHandTicking,
   stepClockGrid,
   updateChildCenters,
 } from "./index.ts";
 
 const at = (hours: number, minutes: number) => hours * 3600 + minutes * 60;
 
-test("a phone keeps clock/2-sized children inside edge-to-edge parents", () => {
+test("a phone fills edge to edge with parents 2× their children", () => {
   const grid = createClockGrid(390, 844);
-  assert.equal(grid.columns * grid.cellWidth, 390);
-  assert.equal(grid.rows * grid.cellHeight, 844);
-  assert.equal(grid.childRadius, MOBILE_CLOCK_CELL * CLOCK_RADIUS_IN_CELL);
+  assert.ok(Math.abs(grid.columns * grid.cellWidth - 390) < 1e-9);
+  assert.ok(Math.abs(grid.rows * grid.cellHeight - 844) < 1e-9);
+  assert.ok(grid.columns * grid.rows >= 15);
+  assert.ok(Math.abs(grid.radius / grid.childRadius - PARENT_TO_CHILD_SCALE) < 1e-9);
+  assert.ok(grid.childRadius > MOBILE_CLOCK_CELL * CLOCK_RADIUS_IN_CELL);
 });
 
-test("children ride the parent hand tips and stay inside its rim", () => {
+test("children ride the parent hand tips", () => {
   const grid = createClockGrid(390, 844);
   const real = at(3, 0);
   updateChildCenters(grid, real);
@@ -33,10 +39,6 @@ test("children ride the parent hand tips and stay inside its rim", () => {
   const { hour } = handAngles(real);
   const hourTip = { x: center.x + Math.cos(hour) * grid.radius * HOUR_HAND_LENGTH, y: center.y + Math.sin(hour) * grid.radius * HOUR_HAND_LENGTH };
   assert.ok(Math.abs(grid.childX[0]! - hourTip.x) < 1e-9 && Math.abs(grid.childY[0]! - hourTip.y) < 1e-9);
-  for (let slot = 0; slot < CHILDREN_PER_CLOCK; slot += 1) {
-    const reach = Math.hypot(grid.childX[slot]! - center.x, grid.childY[slot]! - center.y) + grid.childRadius;
-    assert.ok(reach <= grid.radius + 1e-9);
-  }
 });
 
 test("leaving only a child sets that child, not its parent", () => {
@@ -46,7 +48,7 @@ test("leaving only a child sets that child, not its parent", () => {
   const child = { x: grid.childX[0]!, y: grid.childY[0]! };
   const parent = clockCenter(grid, 0);
   const away = Math.atan2(child.y - parent.y, child.x - parent.x) + Math.PI / 2;
-  const reach = grid.childRadius * 1.2;
+  const reach = grid.childRadius * 1.05;
   applyStroke(grid, child, { x: child.x + Math.cos(away) * reach, y: child.y + Math.sin(away) * reach }, real);
   assert.notEqual(grid.children.offsetTarget[0], 0);
   assert.equal(grid.children.offsetTarget[1], 0);
@@ -90,4 +92,27 @@ test("clocks settle and resize keeps parent and child times", () => {
   const resized = resizeClockGrid(grid, 1000, 700, real);
   assert.equal(resized.parents.offsetTarget[0], grid.parents.offsetTarget[0]);
   assert.equal(resized.children.offsetTarget[1], grid.children.offsetTarget[1]);
+});
+
+test("the second hand eases between real-time marks, ignoring offsets", () => {
+  assert.ok(Math.abs(secondAngle(at(2, 0) + 15.7)) < 1e-9);
+  assert.ok(Math.abs(angleDelta(secondAngle(at(7, 41) + 45.5), Math.PI)) < 1e-9);
+  const start = secondAngle(at(1, 0) + 15);
+  const middle = secondAngle(at(1, 0) + 15.175);
+  assert.ok(Math.abs(angleDelta(start, secondAngle(at(1, 0) + 14.9))) < 1e-9);
+  assert.ok(Math.abs(angleDelta(start, middle) - Math.PI / 60) < 1e-9);
+  assert.ok(secondHandTicking(15.1) && !secondHandTicking(15.5));
+});
+
+test("every parent carries a third child on its second-hand tip", () => {
+  const grid = createClockGrid(390, 844);
+  const real = at(4, 10) + 30.5;
+  updateChildCenters(grid, real);
+  assert.equal(CHILDREN_PER_CLOCK, 3);
+  assert.equal(grid.childX.length, grid.columns * grid.rows * 3);
+  const center = clockCenter(grid, 1);
+  const angle = secondAngle(real);
+  const reach = grid.radius * SECOND_HAND_LENGTH;
+  assert.ok(Math.abs(grid.childX[5]! - (center.x + Math.cos(angle) * reach)) < 1e-9);
+  assert.ok(Math.abs(grid.childY[5]! - (center.y + Math.sin(angle) * reach)) < 1e-9);
 });

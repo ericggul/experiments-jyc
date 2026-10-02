@@ -1,87 +1,99 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  createCoevolvingExchangeNetwork,
-  DEFAULT_COEVOLUTION_PARAMETERS,
-  introduceSusceptibility,
-  stepCoevolvingExchangeNetwork,
+  addPerson,
+  createEpidemicNetwork,
+  DEFAULT_PARAMETERS,
+  infectPerson,
+  MAX_PEOPLE,
+  measureEpidemic,
+  stepEpidemicNetwork,
+  type EpidemicNetwork,
 } from "./model.ts";
 
-function assertNetworkIsConsistent(
-  network: ReturnType<typeof createCoevolvingExchangeNetwork>,
-) {
-  const ids = new Set(network.agents.map((agent) => agent.id));
-  const relationKeys = new Set<string>();
-  for (const relation of network.relations) {
-    assert.ok(ids.has(relation.source));
-    assert.ok(ids.has(relation.target));
-    assert.notEqual(relation.source, relation.target);
-    const key = [relation.source, relation.target].sort((left, right) => left - right).join(":");
-    assert.ok(!relationKeys.has(key));
-    relationKeys.add(key);
+function assertConsistent(network: EpidemicNetwork) {
+  const keys = new Set<string>();
+  const degree = new Array<number>(network.size).fill(0);
+  for (const tie of network.ties) {
+    assert.notEqual(tie.a, tie.b);
+    const key = [tie.a, tie.b].sort((left, right) => left - right).join(":");
+    assert.ok(!keys.has(key));
+    keys.add(key);
+    degree[tie.a]! += 1;
+    degree[tie.b]! += 1;
   }
+  assert.equal(network.pairs.size, network.ties.length);
+  network.incident.forEach((list, person) => assert.equal(list.length, degree[person]));
 }
 
-test("open adaptive network is seeded, bounded, and deterministic", () => {
-  let first = createCoevolvingExchangeNetwork(1_200, 760, 177);
-  let second = createCoevolvingExchangeNetwork(1_200, 760, 177);
-  for (let step = 0; step < 600; step += 1) {
-    first = stepCoevolvingExchangeNetwork(first, 0.04, DEFAULT_COEVOLUTION_PARAMETERS).network;
-    second = stepCoevolvingExchangeNetwork(second, 0.04, DEFAULT_COEVOLUTION_PARAMETERS).network;
-    assertNetworkIsConsistent(first);
+/** Mean infected share over the last `window` time units of a run. */
+function prevalence(avoidance: number, initialInfected: number, duration = 180, window = 60) {
+  const network = createEpidemicNetwork(300, 8, 0x1b873593, initialInfected);
+  const parameters = { ...DEFAULT_PARAMETERS, avoidance, importation: 0 };
+  stepEpidemicNetwork(network, duration - window, parameters);
+  let sum = 0;
+  for (let step = 0; step < window; step += 1) {
+    stepEpidemicNetwork(network, 1, parameters);
+    sum += measureEpidemic(network).infected;
   }
-  assert.deepEqual(first, second);
-  assert.ok(first.agents.length >= 28 && first.agents.length <= 136);
-});
+  return sum / window;
+}
 
-test("birth and death change the vertex set, carrying incident edges with them", () => {
-  let network = createCoevolvingExchangeNetwork(1_200, 760, 91);
-  const initialIds = new Set(network.agents.map((agent) => agent.id));
-  let entries = 0;
-  let exits = 0;
-  for (let step = 0; step < 1_800; step += 1) {
-    const result = stepCoevolvingExchangeNetwork(network, 0.04, DEFAULT_COEVOLUTION_PARAMETERS);
-    network = result.network;
-    entries += result.events.entries;
-    exits += result.events.exits;
-    assertNetworkIsConsistent(network);
-  }
-  assert.ok(entries > 0);
-  assert.ok(exits > 0);
-  assert.ok(network.agents.some((agent) => !initialIds.has(agent.id)));
-});
-
-test("state-dependent rewiring changes relation endpoints", () => {
-  const initial = createCoevolvingExchangeNetwork(1_200, 760, 311);
-  let fixed = initial;
-  let adaptive = initial;
-  let rewires = 0;
-  for (let step = 0; step < 600; step += 1) {
-    fixed = stepCoevolvingExchangeNetwork(fixed, 0.04, {
-      ...DEFAULT_COEVOLUTION_PARAMETERS,
-      rewiring: 0,
-      entry: 0,
-      turnover: 0,
-    }).network;
-    const result = stepCoevolvingExchangeNetwork(adaptive, 0.04, {
-      ...DEFAULT_COEVOLUTION_PARAMETERS,
-      entry: 0,
-      turnover: 0,
-    });
-    adaptive = result.network;
-    rewires += result.events.rewires;
-  }
-  assert.ok(rewires > 0);
-  assert.notDeepEqual(
-    adaptive.relations.map((relation) => [relation.source, relation.target]),
-    fixed.relations.map((relation) => [relation.source, relation.target]),
+test("replays deterministically from a seed", () => {
+  const first = createEpidemicNetwork(120, 6, 7);
+  const second = createEpidemicNetwork(120, 6, 7);
+  assert.deepEqual(
+    stepEpidemicNetwork(first, 30, DEFAULT_PARAMETERS),
+    stepEpidemicNetwork(second, 30, DEFAULT_PARAMETERS),
   );
+  assert.deepEqual(first.health, second.health);
+  assert.deepEqual(first.ties, second.ties);
 });
 
-test("participant susceptibility intervention changes only nearby non-susceptible nodes", () => {
-  const network = createCoevolvingExchangeNetwork(1_200, 760, 17);
-  const next = introduceSusceptibility(network, { x: 600, y: 380 }, 90);
-  const changed = next.agents.filter((agent, index) => agent.state !== network.agents[index]?.state);
-  assert.ok(changed.length > 0);
-  assert.ok(changed.every((agent) => Math.hypot(agent.x - 600, agent.y - 380) <= 90));
+test("avoidance moves a tie from an infected to a healthy person and keeps ties simple", () => {
+  const network = createEpidemicNetwork(200, 8, 11, 0.3);
+  const ties = network.ties.length;
+  const healthBefore = [...network.health];
+  const events = stepEpidemicNetwork(network, 0.05, { ...DEFAULT_PARAMETERS, avoidance: 5, infection: 0 });
+  const avoided = events.filter((event) => event.kind === "avoid");
+  assert.ok(avoided.length > 0);
+  for (const event of avoided) {
+    if (event.kind !== "avoid") continue;
+    assert.equal(healthBefore[event.person], "S");
+    assert.equal(healthBefore[event.from], "I");
+    assert.equal(healthBefore[event.to], "S");
+  }
+  assert.equal(network.ties.length, ties);
+  assertConsistent(network);
+});
+
+test("without avoidance the epidemic is endemic; with strong avoidance it dies out", () => {
+  assert.ok(prevalence(0, 0.05) > 0.4);
+  assert.ok(prevalence(0.8, 0.5) < 0.02);
+});
+
+test("at intermediate avoidance the outcome depends on outbreak size", () => {
+  assert.ok(prevalence(0.45, 0.02) < 0.05);
+  assert.ok(prevalence(0.45, 0.5, 100, 30) > 0.1);
+});
+
+test("avoidance leaves infected people with fewer ties", () => {
+  const network = createEpidemicNetwork(300, 8, 0x1b873593, 0.5);
+  stepEpidemicNetwork(network, 40, { ...DEFAULT_PARAMETERS, avoidance: 0.45, importation: 0 });
+  const measure = measureEpidemic(network);
+  assert.ok(measure.infected > 0);
+  assert.ok(measure.meanDegreeInfected < measure.meanDegreeSusceptible);
+});
+
+test("infecting and adding people respect bounds", () => {
+  const network = createEpidemicNetwork(MAX_PEOPLE - 1, 4, 3, 0);
+  assert.equal(infectPerson(network, 0), true);
+  assert.equal(infectPerson(network, 0), false);
+  assert.equal(infectPerson(network, -1), false);
+  const person = addPerson(network, [1, 2, 2]);
+  assert.equal(person, MAX_PEOPLE - 1);
+  assert.equal(network.health[person!], "S");
+  assert.equal(network.incident[person!]!.length, 2);
+  assert.equal(addPerson(network, [0]), null);
+  assertConsistent(network);
 });

@@ -11,6 +11,7 @@ import {
   type Frame,
 } from "./layout";
 import {
+  addVoter,
   createCoevolvingNetwork,
   DEFAULT_PARAMETERS,
   plantOpinion,
@@ -33,6 +34,9 @@ const UPDATES_PER_VOTER_PER_SECOND = 2;
 const MARK_LIFETIME = 0.9;
 const MAX_MARKS = 220;
 const CONTROL_BAND = 88;
+/** Pointer travel that turns a tap (add a voter) into a drag (paint a view). */
+const DRAG_THRESHOLD = 6;
+const NEWCOMER_TIES = 2;
 
 type Mark =
   | { kind: "rewire"; voter: number; from: number; to: number; at: number }
@@ -151,7 +155,8 @@ export default function CoevolvingVoterOne() {
   const rewiringRef = useRef(DEFAULT_PARAMETERS.rewiring);
   const brushRef = useRef<{ x: number; y: number; radius: number; opinion: number } | null>(null);
   const [rewiring, setRewiring] = useState(DEFAULT_PARAMETERS.rewiring);
-  const [planted, setPlanted] = useState(false);
+  const pressRef = useRef<{ x: number; y: number; painting: boolean } | null>(null);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     rewiringRef.current = rewiring;
@@ -238,7 +243,26 @@ export default function CoevolvingVoterOne() {
     for (const voter of changed) {
       marksRef.current.push({ kind: "turn", voter, opinion, at: timeRef.current });
     }
-    if (changed.length > 0) setPlanted(true);
+    if (changed.length > 0) setTouched(true);
+  }, []);
+
+  // A newcomer appears where the field was tapped, tied to the nearest voters,
+  // holding the least-held view.
+  const addAt = useCallback((x: number, y: number) => {
+    const bodies = bodiesRef.current;
+    const network = networkRef.current;
+    if (!bodies) return;
+    const nearest = bodies
+      .map((body, voter) => ({ voter, distance: Math.hypot(body.x - x, body.y - y) }))
+      .sort((first, second) => first.distance - second.distance)
+      .slice(0, NEWCOMER_TIES)
+      .map((candidate) => candidate.voter);
+    const opinion = rarestOpinion(network);
+    const voter = addVoter(network, opinion, nearest);
+    if (voter === null) return;
+    bodies[voter] = { x, y, vx: 0, vy: 0 };
+    marksRef.current.push({ kind: "turn", voter, opinion, at: timeRef.current });
+    setTouched(true);
   }, []);
 
   const pointFor = (target: HTMLCanvasElement, clientX: number, clientY: number) => {
@@ -253,36 +277,49 @@ export default function CoevolvingVoterOne() {
         className={styles.canvas}
         role="application"
         tabIndex={0}
-        aria-label="Coevolving voter network. Each voter disagreeing with a tie either adopts that neighbour's view or cuts the tie and reconnects to someone who already agrees. Press and drag across voters to plant the least-held view; press Enter to plant it at the centre."
+        aria-label="Coevolving voter network. Each voter disagreeing with a tie either adopts that neighbour's view or cuts the tie and reconnects to someone who already agrees. Tap to add a voter holding the least-held view, tied to the two nearest voters; drag across voters to plant that view. Press N to add a voter at the centre, Enter to plant at the centre."
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
           const point = pointFor(event.currentTarget, event.clientX, event.clientY);
-          plantAt(point.x, point.y, rarestOpinion(networkRef.current));
+          pressRef.current = { ...point, painting: false };
         }}
         onPointerMove={(event) => {
-          const brush = brushRef.current;
-          if (!brush || (event.buttons & 1) === 0) return;
+          const press = pressRef.current;
+          if (!press || (event.buttons & 1) === 0) return;
           const point = pointFor(event.currentTarget, event.clientX, event.clientY);
-          plantAt(point.x, point.y, brush.opinion);
+          if (!press.painting) {
+            if (Math.hypot(point.x - press.x, point.y - press.y) < DRAG_THRESHOLD) return;
+            press.painting = true;
+            plantAt(press.x, press.y, rarestOpinion(networkRef.current));
+          }
+          plantAt(point.x, point.y, brushRef.current?.opinion ?? rarestOpinion(networkRef.current));
         }}
         onPointerUp={() => {
+          const press = pressRef.current;
+          if (press && !press.painting) addAt(press.x, press.y);
+          pressRef.current = null;
           brushRef.current = null;
         }}
         onPointerCancel={() => {
+          pressRef.current = null;
           brushRef.current = null;
         }}
         onKeyDown={(event) => {
+          const frame = layoutFrame(sizeRef.current);
+          if (event.key === "n" || event.key === "N") {
+            addAt(frame.width / 2, frame.height / 2);
+            return;
+          }
           if (event.key !== "Enter" && event.key !== " ") return;
           event.preventDefault();
-          const frame = layoutFrame(sizeRef.current);
           plantAt(frame.width / 2, frame.height / 2, rarestOpinion(networkRef.current));
           brushRef.current = null;
         }}
       />
 
       <div className={styles.control}>
-        <p className={styles.hint} data-hidden={planted}>
-          press a crowd to plant a view
+        <p className={styles.hint} data-hidden={touched}>
+          tap to add a voter, drag to plant a view
         </p>
         <label className={styles.balance}>
           <span>adopt</span>

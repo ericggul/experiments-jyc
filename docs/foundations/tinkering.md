@@ -14,8 +14,10 @@ style to imitate.
 
 ## Working contract
 
-- Start from the closest complete baseline. Fork before changing a preserved
-  result; vary one coherent relation (or an inseparable set) and protect its
+- Start from the closest complete baseline. Keep a preserved result reachable
+  before changing it — as the default of a new option on the same experiment
+  (preferred in SCC; see [AGENTS.md](../../AGENTS.md)) or as a fork; vary one
+  coherent relation (or an inseparable set) and protect its
   visual/behavioral invariants.
 - Keep the intervention local. Avoid dependencies, migrations, broad renames,
   and shared abstractions unless the question requires them. Standalone copies

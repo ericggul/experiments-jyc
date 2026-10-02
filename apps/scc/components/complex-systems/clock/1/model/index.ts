@@ -6,7 +6,7 @@ export const SIMULATED_SECONDS_PER_SECOND = 12;
 export const ROOT_DIAMETER_RATIO = 0.8;
 
 const TAU = Math.PI * 2;
-const CLOCK_PERIOD_SECONDS = 12 * 60 * 60;
+export const CLOCK_PERIOD_SECONDS = 12 * 60 * 60;
 
 export const CLOCK_HANDS = [
   { id: "hour", length: 0.53, periodSeconds: 12 * 60 * 60 },
@@ -55,13 +55,13 @@ export type ClockTreeOptions = Readonly<{
   elapsedSeconds: number;
 }>;
 
-const CHILD_RATE_MULTIPLIER: Record<ClockHandId, number> = {
+export const CHILD_RATE_MULTIPLIER: Record<ClockHandId, number> = {
   hour: 0.86,
   minute: 1,
   second: 1.14,
 };
 
-const CHILD_PHASE_INCREMENT: Record<ClockHandId, number> = {
+export const CHILD_PHASE_INCREMENT: Record<ClockHandId, number> = {
   hour: 0.191,
   minute: 0.463,
   second: 0.787,

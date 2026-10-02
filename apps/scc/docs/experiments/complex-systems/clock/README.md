@@ -1,4 +1,4 @@
-# Recursive clock experiment
+# Clock experiments
 
 Route: `/clock/1`, owned by the filesystem-only `complex-systems` group.
 
@@ -71,6 +71,52 @@ Date: 2026-08-28.
   rule itself (for example, only minute-hand inheritance) while preserving this
   four-generation baseline?
 
+## clock/1 option — skate
+
+Added 2026-10-02. This was briefly a separate `/clock/4` route, removed the same
+day at the user's request. In the archive, a variant becomes an option on its
+existing experiment rather than a new numbered route.
+
+- **Default unchanged:** `skate off` is the default. The canvas ignores input,
+  and with every offset at zero the flat layout reproduces `createClockTree`
+  exactly. A model test checks every clock's ID, center, radius, and hand
+  angles. Faces are drawn in clock/1's order with the same styles. Rims,
+  ticks, hands, and dots are stroked separately as before; only the
+  non-overlapping ticks of one face share a stroke.
+- **Option:** `expand → skate on` turns on clock/2's finger-skating rule for
+  every clock in the tree. Each clock shows its clock/1 time plus a skated
+  offset, and its hour and minute hands are geared from that sum.
+  - **Hour hand:** when a stroke leaves a rim, the hour hand goes nearest the
+    exit direction while the minute hand points at the finger.
+  - **Minute hand:** while a finger is down, every minute hand turns each frame
+    toward the nearest finger.
+  - **Second hand:** keeps clock/1's time.
+  - **Subtrees:** because children sit on hand tips, skating a clock swings its
+    whole subtree. The exit test uses the last laid-out frame's positions.
+  - **Turning it off:** `skate off` springs every clock back to its clock/1
+    time.
+  - **Depth changes:** offsets are kept by lineage key.
+  - **Reduced motion:** simulated time stays frozen, but skating still animates
+    while a finger or spring is active.
+- **Performance:**
+  - The tree is stored in flat pre-order typed arrays (`model/skating.ts`)
+    with no per-frame clock objects.
+  - Each clock uses 7 draw calls instead of the earlier 17.
+  - The model's worst-case cost (finger down, every spring active, 4 stroke
+    samples per frame) was measured in Node 26 on the development Mac: 0.009 ms
+    per frame at depth 4 (121 clocks), 0.017 ms at depth 5 (364), and 0.048 ms
+    at depth 6 (1,093).
+  - Appending `?perf=1` shows the measured device fps and the median/p95
+    per-frame work. It is hidden otherwise.
+- **Checks:** model tests cover the equivalence with `createClockTree`, the
+  121/1,093 tree counts, hand-tip attachment under offsets, a geared root exit
+  (minute hand sweeping more than 1,000° with the hour hand within 15° of the
+  exit), the second hand ignoring the offset, nearest-finger aim with
+  settling, and lineage-preserving depth changes.
+- **Observed result:** pending an explicit browser-verification request.
+- **Unresolved question:** should skating a parent carry its offset down to its
+  subtree?
+
 ## clock/2 — finger-skated clock grid
 
 Route: `/clock/2`. Date: 2026-10-02.
@@ -130,27 +176,42 @@ Route: `/clock/3`. Date: 2026-10-02.
   ticking, motion spring, and `#0a0a09` background. clock/1 provides the
   hand-tip attachment and the per-generation fade (face `0.72 → 0.62`, hands
   `0.96 → 0.86`). This is a standalone fork that imports neither.
-- **Changed variable:** two tiers. Every grid clock (the parent) carries one
-  child clock at its hour-hand tip and one at its minute-hand tip. A child is a
+- **Changed variable:** two tiers. Every grid clock (the parent) carries a
+  child clock at each of its three hand tips: hour, minute, and second. A child is a
   full clock with its own time offset, and the skating rule applies to it
   independently.
-- **Size:** the children keep clock/2's size, a `clamp(min(w, h) / 14, 50, 72)`
-  px cell with a 0.44 rim radius, so a parent cell is `4 ×` that (child radius
-  `0.25 ×` parent). The child radius is capped at `0.26 ×` the parent radius,
-  so the minute-tip child stays inside the parent rim. On 390 × 844 that gives
-  2 × 4 parents with children exactly the size of clock/2's clocks. At
-  1440 × 900 it gives 6 × 3 parents with 27.5 px children (clock/2's would be
-  28.2 px).
+- **Size:** the parent cell is `3 ×` clock/2's
+  `clamp(min(w, h) / 14, 50, 72)` px cell, rounded to fill the viewport. A
+  parent's radius is `2 ×` its children's. That gives 3 × 6 = 18 parents
+  (radius 57 px, children 29 px) on 390 × 844, and 7 × 5 = 35 parents
+  (radius 79 px, children 40 px) at 1440 × 900. The children deliberately
+  spill past their parent's rim and over neighbouring clocks. Earlier same-day
+  drafts, each adjusted at the user's request:
+  - 4× parents with contained children were too large and too few.
+  - 1.5× parents (55 on a phone) were too small.
+  - At this parent size, children at a third of the parent radius were too
+    small. Two-thirds was tried next and reverted to half at the user's
+    request.
+- **Second hand:** every parent and child has clock/1's rust second hand
+  (`0.9 ×` radius). It shows real local seconds only, ignoring the clock's
+  offset, so a geared time jump never spins it. At each whole second it eases
+  in-out from the previous mark to the new one over 0.35 s. The first,
+  instant-tick draft was too abrupt. Frames run only during that easing (or
+  while a finger or spring is active), and the idle wake-up is aligned to the
+  second boundary. The second-hand child rides this eased real-time hand, so all
+  third children swing together each second.
 - **Motion coupling:** a child moves whenever its parent's hand turns, so the
-  exit test uses each child's center at the time of the stroke. Parent and
+  exit test uses each child's center at the time of the stroke. The search
+  around a stroke reaches `0.9 × parent radius + child radius`. Parent and
   child minute hands each aim at their own nearest finger every frame while a
   finger is down.
 - **Rendering:** parent faces use clock/1's face, drawn once per resize. Child
-  faces (with ticks), parent hands (clock/1's widths), and child hands
-  (clock/2's widths) are redrawn each frame. Clock counts are small (16
-  children on a phone), so DPR is capped at 2.
-- **Checks:** pure-model tests cover edge-to-edge parents with clock/2-sized
-  children, children on the parent hand tips and inside the rim, a child-only
+  faces (with ticks) and all hands are redrawn each frame. Both tiers use
+  clock/2's hand widths, so parent hands stay heavier than children's. DPR is
+  capped at 2. At 1440 × 900 a frame draws 35 + 105 clocks with 2D canvas
+  paths.
+- **Checks:** pure-model tests cover edge-to-edge parents at 2× their
+  children, the eased real-time-only second hand and its child, children on the parent hand tips, a child-only
   exit leaving the parent unchanged, the 2:30 → about 5:30 parent sweep, parent
   and child nearest-finger aim, settling, and resize retention. Typecheck and
   lint pass.
