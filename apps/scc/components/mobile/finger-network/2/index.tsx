@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { anchorPoint, buildPose, continueBinding, solveFigure, type Anchor, type Binding, type Figure, type Point, type Role } from "./model/rig";
+import { anchorPoint, buildPose, continueBinding, solveFigure, type Anchor, type Binding, type Endpoints, type Figure, type Point, type Role } from "./model/rig";
 import { describeBody } from "./screen/readout";
 import { drawFigure, drawNetwork } from "./screen/renderer";
 import styles from "./screen.module.css";
@@ -9,6 +9,11 @@ import styles from "./screen.module.css";
 const roles: Role[] = ["head", "leftHand", "rightHand", "leftFoot", "rightFoot"];
 const maximumPixelRatio = 1.5;
 const readoutInterval = 80;
+// After a hand change the body eases into the new fit, then tracks the fingers tightly again.
+const morphSeconds = 0.6;
+const morphRate = 4;
+const trackRate = 19;
+const releaseFadeSeconds = 3;
 
 export default function MobileFingerNetworkTwo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,6 +39,8 @@ export default function MobileFingerNetworkTwo() {
     let lockedScale: number | null = null;
     let animated: Figure | null = null;
     let figureOpacity = 0;
+    let morph = 1;
+    let frozen: Endpoints | null = null;
     let skinTexture: CanvasPattern | null = null;
     let lastFigureTime = -Infinity;
     let lastReadoutTime = -Infinity;
@@ -52,16 +59,25 @@ export default function MobileFingerNetworkTwo() {
         const next = continueBinding(binding, contacts);
         if (next && next !== binding) {
           lockedScale = animated && figureOpacity > 0 ? animated.frame.scale : null;
-          heldAnchors = [...next.values()];
+          const lifted = binding !== null && next.size < binding.size && [...next.keys()].every((id) => binding!.has(id));
+          if (lifted && animated) {
+            // A lifted finger leaves its part where it is; the remaining fingers keep hold of the rest.
+            frozen = Object.fromEntries(roles.map((role) => [role, { ...animated!.endpoints[role] }])) as Endpoints;
+          } else {
+            frozen = null;
+            morph = 0;
+          }
         }
         binding = next;
-        const target = binding ? solveFigure(binding, contacts, lockedScale) : null;
+        heldAnchors = binding ? [...binding.values()] : [];
+        const target = binding ? solveFigure(binding, contacts, lockedScale, frozen) : null;
         if (target) {
           lastFigureTime = time;
           if (!animated || figureOpacity === 0) {
             animated = { frame: { ...target.frame }, endpoints: { ...target.endpoints } };
           } else {
-            const follow = 1 - Math.exp(-dt * 19);
+            morph = Math.min(1, morph + dt / morphSeconds);
+            const follow = 1 - Math.exp(-dt * (morphRate + (trackRate - morphRate) * morph * morph));
             const current = animated.frame;
             const turn = Math.atan2(Math.sin(target.frame.angle - current.angle), Math.cos(target.frame.angle - current.angle));
             animated.frame = {
@@ -80,10 +96,17 @@ export default function MobileFingerNetworkTwo() {
         }
       }
 
-      const figureActive = binding !== null;
-      const fadeRate = figureActive ? 10 : 14;
-      figureOpacity += ((figureActive ? 1 : 0) - figureOpacity) * (1 - Math.exp(-dt * fadeRate));
-      if (figureOpacity < 0.003) figureOpacity = 0;
+      // Released, the body keeps its last shape while fading out over three seconds; returning fingers take hold of it mid-fade.
+      if (binding) {
+        figureOpacity += (1 - figureOpacity) * (1 - Math.exp(-dt * 10));
+      } else if (animated) {
+        figureOpacity = Math.max(0, figureOpacity - dt / releaseFadeSeconds);
+        if (figureOpacity === 0) {
+          animated = null;
+          frozen = null;
+          if (contacts.size === 0) setHasFingers(false);
+        }
+      }
 
       context.fillStyle = "#000";
       context.fillRect(0, 0, width, height);
@@ -146,7 +169,7 @@ export default function MobileFingerNetworkTwo() {
         setHasFingers(true);
       } else {
         instructionTimer = window.setTimeout(() => {
-          setHasFingers(false);
+          if (!animated) setHasFingers(false);
           instructionTimer = null;
         }, 400);
       }

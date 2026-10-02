@@ -148,19 +148,16 @@ export function continueBinding(binding: Binding | null, contacts: ReadonlyMap<n
   return defaultBinding(contacts);
 }
 
-export function solveFigure(binding: Binding, contacts: ReadonlyMap<number, Point>, lockedScale: number | null): Figure | null {
+// A frozen pose replaces the rest pose: parts whose fingers lifted stay exactly where they were left.
+export function solveFigure(binding: Binding, contacts: ReadonlyMap<number, Point>, lockedScale: number | null, frozen: Endpoints | null = null): Figure | null {
+  const rest = frozen ?? restEndpoints;
   const pairs: { anchor: Anchor; rest: Point; target: Point }[] = [];
   for (const [id, anchor] of binding) {
     const target = contacts.get(id);
     if (!target) return null;
-    pairs.push({ anchor, rest: anchorPoint(restEndpoints, anchor), target });
+    pairs.push({ anchor, rest: anchorPoint(rest, anchor), target });
   }
   if (pairs.length < 2) return null;
-
-  if (pairs.length === 5) {
-    const endpoints = Object.fromEntries(pairs.map(({ anchor, target }) => [anchor, target])) as Endpoints;
-    return { frame: { x: 0, y: 0, angle: 0, scale: 1 }, endpoints };
-  }
 
   const count = pairs.length;
   const restCenter = pairs.reduce((sum, { rest }) => ({ x: sum.x + rest.x / count, y: sum.y + rest.y / count }), { x: 0, y: 0 });
@@ -179,10 +176,11 @@ export function solveFigure(binding: Binding, contacts: ReadonlyMap<number, Poin
   }
   const angle = Math.atan2(imaginary, real);
   const fittedScale = clamp(Math.hypot(real, imaginary) / Math.max(1, spread), 0.25, 2.4);
-  const scale = count === 2 ? fittedScale : (lockedScale ?? fittedScale);
+  // Five fingers are fitted like the rest, so every hand count shares one body frame and morphs into the next.
+  const scale = count === 2 || count === 5 ? fittedScale : (lockedScale ?? fittedScale);
   const origin = toWorld({ x: 0, y: 0, angle, scale }, restCenter);
   const frame = { x: targetCenter.x - origin.x, y: targetCenter.y - origin.y, angle, scale };
-  const endpoints = copyEndpoints(restEndpoints);
+  const endpoints = copyEndpoints(rest);
   if (count === 2) return { frame, endpoints };
 
   const held = new Set<Anchor>();
@@ -191,6 +189,7 @@ export function solveFigure(binding: Binding, contacts: ReadonlyMap<number, Poin
     endpoints[anchor] = toLocal(frame, target);
     held.add(anchor);
   }
+  if (frozen) return { frame, endpoints };
   const handsFree = !held.has("leftHand") && !held.has("rightHand");
   if (handsFree && held.has("leftFoot") && held.has("rightFoot")) {
     const stance = endpoints.rightFoot.x - endpoints.leftFoot.x - (restEndpoints.rightFoot.x - restEndpoints.leftFoot.x);

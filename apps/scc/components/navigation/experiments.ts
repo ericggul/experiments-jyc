@@ -31,6 +31,7 @@ export type SccNavigationItem = {
 // registries stay authoritative for executable variants; add each new variant
 // here with its creation date so it appears in the archive navigation.
 export const sccExperiments: readonly SccExperiment[] = [
+  { key: "adaptive-coevolving-network/1", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-01", phrase: "Opinions and ties coevolve: adopt or rewire, consensus or fragmentation" },
   { key: "adaptive-coevolving-network/2", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-08-14", phrase: "Open N/S/R recruitment graph with entry, departure and R–S rewiring" },
   { key: "adaptive-coevolving-network/3", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-08-14", phrase: "Recruitment dynamics on a fixed N×N lattice of candidate sites" },
   { key: "adaptive-coevolving-network/polling-ecology", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-08-13", phrase: "Faction, topic and conviction field with reproduction and switching" },
@@ -65,6 +66,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "page-rank/2", area: "complex-systems", family: "page-rank", date: "2026-09-04", phrase: "Denser web whose links rewire adaptively with visible flow" },
   { key: "page-rank/3", area: "complex-systems", family: "page-rank", date: "2026-09-05", phrase: "Rank shown as territory in a diagram over the sparse web" },
   { key: "page-rank/4", area: "complex-systems", family: "page-rank", date: "2026-09-05", phrase: "GPU-rendered rank territory over the sparse directed web" },
+  { key: "self-evolving-network/1", area: "complex-systems", family: "self-evolving-network", date: "2026-10-01", phrase: "Fixed population rewiring itself through introductions and turnover" },
   { key: "tokyo-network/1", area: "complex-systems", family: "tokyo-network", date: "2026-08-13", phrase: "Long-range links between nodes snapped to central Tokyo roads" },
   { key: "void/1", area: "complex-systems", family: "void", date: "2026-09-01", phrase: "Vicsek-style flock where local coupling weight sets attractivity" },
   { key: "void/2", area: "complex-systems", family: "void", date: "2026-09-01", phrase: "Influence territories drawn in bands of relationship strength" },
@@ -181,6 +183,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "sns/linkedin/6-test", area: "sns", family: "sns/linkedin", date: "2026-09-14", phrase: "Preserved failed texture-capture cylinder renderer" },
   { key: "mobile/finger-network/1", area: "mobile", family: "mobile/finger-network", date: "2026-09-28", phrase: "Each touch as a node joined to every other touch" },
   { key: "mobile/finger-network/2", area: "mobile", family: "mobile/finger-network", date: "2026-09-28", phrase: "Five touches driving one moving 2D human figure" },
+  { key: "mobile/finger-network/3", area: "mobile", family: "mobile/finger-network", date: "2026-10-02", phrase: "Touch sessions leave fading complete graphs linked by proximity" },
   { key: "mobile/finger-skating/1", area: "mobile", family: "mobile/finger-skating", date: "2026-09-25", phrase: "Arrow field steered by a moving finger, two options" },
   { key: "mobile/lucky-ticket/1", area: "mobile", family: "mobile/lucky-ticket", date: "2026-09-28", phrase: "Scratch-off fortune with one-line text and seconds counter" },
   { key: "mobile/lucky-ticket/2", area: "mobile", family: "mobile/lucky-ticket", date: "2026-09-28", phrase: "Scratch-off fortune with a long centered scolding text" },

@@ -1,0 +1,13 @@
+# Mobile finger-network/3
+
+- **Route:** `/mobile/finger-network/3`
+- **Date:** 2026-10-02
+- **Baseline:** [`/mobile/finger-network/1`](finger-network.md): black field, every pair of nodes joined by one white edge, node dot, fixed ring, and expanding pulse ring, 1.5 DPR cap. `/1` remains independently addressable.
+
+The changed relation is node lifetime. In `/1` a node exists only while its finger touches the screen. Here every new contact adds a node, and the node follows its finger while held. When the finger lifts or the touch is cancelled, the node stays where it was left and fades linearly to nothing over 5 s, then is removed. (The first fading version used 10 s. A same-day trial that set each lifetime between 5 and 20 s by edge count, with the ring radius showing remaining life, was judged worse and reverted.) Later touches add new nodes, so the network accumulates only as long as touches keep arriving. (Earlier on 2026-10-02 left nodes stayed indefinitely.) A reused touch identifier always starts a new node and never moves an earlier one.
+
+Edges follow touch sessions. A session runs from the first finger down on an empty screen until the last finger lifts; a finger added while others are still down joins the current session. Nodes of the same session form a complete graph (three fingers give `K₃`), whether they are held or already left. Nodes of different sessions are joined only within a reach of 0.3 × the screen's shorter side (about 117 px on a 390 px-wide phone), measured live, so dragging a held node toward older ones links and unlinks them. (The first 2026-10-02 version joined every node to every other.)
+
+Held nodes keep `/1`'s expanding pulse ring; left nodes keep only the dot and fixed ring, which marks which ones are currently moving. A node's dot and ring dim with its remaining life, and each edge is as bright as its weaker end, so a session's graph fades with its nodes and a held node's links to older nodes dim as those nodes do. Edge opacity is quantized to 24 steps so each frame needs at most 24 edge strokes. The canvas redraws every frame while any node exists and stops once the last one has faded; the instruction text returns then. `/1`'s `?touch-debug` overlay is not carried over.
+
+The pure model test covers left nodes staying in place, accumulation over later touches, cancellation keeping nodes, stable node IDs across reused touch identifiers, session membership for fingers added mid-session, the same-session and reach rules, and linear fading and removal of left nodes while held nodes stay alive. Every frame checks all `n(n − 1)/2` pairs with no node cap; frame cost and whether the 0.3 reach reads well are unmeasured on device.

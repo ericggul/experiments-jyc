@@ -1,4 +1,5 @@
 export const adaptiveCoevolvingNetworkExperiments = [
+  { slug: "1", label: "coevolving voter network" },
   { slug: "2", label: "open adaptive network" },
   { slug: "3", label: "lattice adaptive network" },
   { slug: "polling-ecology", label: "polling ecology" },
