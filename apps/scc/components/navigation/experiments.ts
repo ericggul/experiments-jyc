@@ -47,6 +47,8 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "cellular-automata/grid-network/3", area: "complex-systems", family: "cellular-automata", date: "2026-09-05", phrase: "Compact 3D cellular volume to rotate and zoom" },
   { key: "circular-ownership/1", area: "complex-systems", family: "circular-ownership", date: "2026-09-01", phrase: "Directed holdings among 63 affiliates with detected return paths" },
   { key: "clock/1", area: "complex-systems", family: "clock", date: "2026-08-28", phrase: "Recursive analogue clocks held at the tips of parent hands" },
+  { key: "clock/2", area: "complex-systems", family: "clock", date: "2026-10-02", phrase: "Clock grid finger-skated: hour hands keep exit direction, minute hands follow the finger" },
+  { key: "clock/3", area: "complex-systems", family: "clock", date: "2026-10-02", phrase: "Finger-skated clock grid where each clock carries two clocks at its hand tips" },
   { key: "diffusion-graph/1", area: "complex-systems", family: "diffusion-graph", date: "2026-09-10", phrase: "Conserved value spreading over a lattice of rewired directed links" },
   { key: "erdos-renyi/1", area: "complex-systems", family: "erdos-renyi", date: "2026-09-10", phrase: "Independent-edge random graph with components set by probability p" },
   { key: "face-voronoi/1", area: "complex-systems", family: "face-voronoi", date: "2026-08-20", phrase: "Growing and dividing sites clip local portraits to Voronoi cells" },
