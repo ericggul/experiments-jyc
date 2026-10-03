@@ -8,8 +8,12 @@ import {
   type CSSProperties,
 } from "react";
 import source from "./source/document.json";
-import SourceFrame, { NATIVE_GAME_HEIGHT, NATIVE_GAME_WIDTH } from "./source-frame";
+import SourceFrame, {
+  NATIVE_GAME_HEIGHT,
+  NATIVE_GAME_WIDTH,
+} from "./source-frame";
 import styles from "./spoon-class.module.css";
+import { useGameAudio } from "../game-audio";
 
 const RUNNER_KEY_CODES = new Set([32, 38, 40, 13]);
 
@@ -44,8 +48,16 @@ type SynchronizedInput = {
 
 const INITIAL_LAYOUT: WallLayout = { columns: 1, rows: 1 };
 
-function getScale(width: number, height: number, columns: number, rows: number) {
-  return Math.min(width / columns / NATIVE_GAME_WIDTH, height / rows / NATIVE_GAME_HEIGHT);
+function getScale(
+  width: number,
+  height: number,
+  columns: number,
+  rows: number,
+) {
+  return Math.min(
+    width / columns / NATIVE_GAME_WIDTH,
+    height / rows / NATIVE_GAME_HEIGHT,
+  );
 }
 
 function getLessDenseLayout(width: number, height: number): WallLayout {
@@ -56,12 +68,22 @@ function getLessDenseLayout(width: number, height: number): WallLayout {
 }
 
 function getDenseLayout(width: number, height: number): WallLayout {
-  const maximumScale = getScale(width, height, MAX_DENSITY.columns, MAX_DENSITY.rows);
+  const maximumScale = getScale(
+    width,
+    height,
+    MAX_DENSITY.columns,
+    MAX_DENSITY.rows,
+  );
   if (maximumScale >= MAX_DENSITY_MIN_SCALE) {
     return { ...MAX_DENSITY, scale: maximumScale };
   }
 
-  const standardScale = getScale(width, height, STANDARD_DENSITY.columns, STANDARD_DENSITY.rows);
+  const standardScale = getScale(
+    width,
+    height,
+    STANDARD_DENSITY.columns,
+    STANDARD_DENSITY.rows,
+  );
   if (standardScale >= MIN_READABLE_SCALE) {
     return { ...STANDARD_DENSITY, scale: standardScale };
   }
@@ -70,17 +92,25 @@ function getDenseLayout(width: number, height: number): WallLayout {
   // count before the pixels would become unreadable.
   const columns = Math.max(
     1,
-    Math.min(STANDARD_DENSITY.columns, Math.floor(width / (NATIVE_GAME_WIDTH * MIN_READABLE_SCALE))),
+    Math.min(
+      STANDARD_DENSITY.columns,
+      Math.floor(width / (NATIVE_GAME_WIDTH * MIN_READABLE_SCALE)),
+    ),
   );
   const rows = Math.max(
     1,
-    Math.min(STANDARD_DENSITY.rows, Math.floor(height / (NATIVE_GAME_HEIGHT * MIN_READABLE_SCALE))),
+    Math.min(
+      STANDARD_DENSITY.rows,
+      Math.floor(height / (NATIVE_GAME_HEIGHT * MIN_READABLE_SCALE)),
+    ),
   );
   return { columns, rows, scale: getScale(width, height, columns, rows) };
 }
 
 function getWallLayout(density: Density, width: number, height: number) {
-  return density === "dense" ? getDenseLayout(width, height) : getLessDenseLayout(width, height);
+  return density === "dense"
+    ? getDenseLayout(width, height)
+    : getLessDenseLayout(width, height);
 }
 
 function isSynchronizedInput(value: unknown): value is SynchronizedInput {
@@ -113,6 +143,7 @@ function dispatchToRunner(
 export default function SpoonClassTwo() {
   const wallRef = useRef<HTMLElement>(null);
   const framesRef = useRef(new Map<string, HTMLIFrameElement>());
+  useGameAudio(framesRef, source.html);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [density, setDensity] = useState<Density>("less");
   const [layout, setLayout] = useState<WallLayout>(INITIAL_LAYOUT);
@@ -213,18 +244,29 @@ export default function SpoonClassTwo() {
       <div className={styles.controls}>
         {optionsOpen &&
           densities.map(({ id, label }) => (
-            <button key={id} type="button" className={styles.control} aria-pressed={density === id} onClick={(event) => {
-              // Keyboard play goes back to the wall instead of this button.
-              event.currentTarget.blur();
-              setDensity(id);
-            }}>
+            <button
+              key={id}
+              type="button"
+              className={styles.control}
+              aria-pressed={density === id}
+              onClick={(event) => {
+                // Keyboard play goes back to the wall instead of this button.
+                event.currentTarget.blur();
+                setDensity(id);
+              }}
+            >
               {label}
             </button>
           ))}
-        <button type="button" className={styles.control} aria-expanded={optionsOpen} onClick={(event) => {
+        <button
+          type="button"
+          className={styles.control}
+          aria-expanded={optionsOpen}
+          onClick={(event) => {
             event.currentTarget.blur();
             setOptionsOpen((value) => !value);
-          }}>
+          }}
+        >
           {optionsOpen ? "닫기" : "옵션"}
         </button>
       </div>

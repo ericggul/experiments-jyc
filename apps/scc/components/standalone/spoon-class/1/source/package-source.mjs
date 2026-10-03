@@ -42,8 +42,32 @@ const modulePresentation = `<script data-spoon-class-module-presentation>
   var nonChromeNotice = document.getElementById("main-frame-notchrome");
   if (nonChromeNotice) nonChromeNotice.remove();
 
+  var host = window.parent !== window ? window.parent : null;
+
+  // Sound plays in the host: one audio context for every module, so sounds
+  // from many games overlap, and the first touch, click or key in any module
+  // unlocks it. A module's own context would stay suspended unless that very
+  // frame received the gesture. Called synchronously inside the trusted
+  // event, which browsers require before audio may start.
+  function unlockHostAudio() {
+    try {
+      if (host && host.spoonClassUnlockAudio) host.spoonClassUnlockAudio();
+    } catch (error) {}
+  }
+
+  var Runner = window.Runner;
+  if (host && Runner) {
+    Runner.prototype.loadSounds = function () {
+      for (var sound in Runner.sounds) this.soundFx[sound] = sound;
+    };
+    Runner.prototype.playSound = function (sound) {
+      if (sound) host.postMessage({ channel: "spoon-class-sound", sound: sound }, "*");
+    };
+  }
+
   function syncInput(event) {
     if (!event.isTrusted || window.parent === window) return;
+    unlockHostAudio();
     var keyCode = Number(event.keyCode || event.which);
     if (keyCode !== 32 && keyCode !== 38 && keyCode !== 40 && keyCode !== 13) return;
     window.parent.postMessage({
@@ -57,6 +81,7 @@ const modulePresentation = `<script data-spoon-class-module-presentation>
   // module, this one included, exactly like the host keyboard path.
   function syncTouch(event) {
     if (window.parent === window) return;
+    unlockHostAudio();
     event.preventDefault();
     event.stopPropagation();
     window.parent.postMessage({
@@ -72,6 +97,7 @@ const modulePresentation = `<script data-spoon-class-module-presentation>
   window.addEventListener("touchstart", syncTouch, touchOptions);
   window.addEventListener("touchend", syncTouch, touchOptions);
   window.addEventListener("touchcancel", syncTouch, touchOptions);
+  window.addEventListener("pointerdown", unlockHostAudio, true);
 })(window, document);
 </script>`;
 const html = applyBrowserReplacements(

@@ -6,6 +6,8 @@ The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13
 
 `finger-skating/2` is an empty Cartesian plane: a finger-skated curve is read back as the closest closed-form function, at [`/mobile/finger-skating/2`](../../../app/mobile/finger-skating/[experiment]/page.tsx). See [finger skating /2](finger-skating-2.md).
 
+`ui-collage/` tiles the screen with faithful clones of everyday components and lets finger skating play them: `loading/1` is a grid of twelve circular phone loaders, `loading/2` stacks full-width progress bars from MS-DOS Setup onward (loading/1 restarts at 0% where a finger crosses; loading/2 jumps to the crossing position), and `sliders/1` is a row of narrow vertical sliders set to the finger's height. See [ui-collage](ui-collage/README.md).
+
 `lucky-ticket/1`–`/3` are full-viewport scratch-off fortunes with one-line, long-form, and scattered-word presentations at [`/mobile/lucky-ticket/[experiment]`](../../../app/mobile/lucky-ticket/[experiment]/page.tsx). See [lucky ticket](lucky-ticket.md).
 
 `face-trace/1` keeps the live eye and mouth cutouts inside a full-screen `face-voronoi/3` `face-gradient 3` lattice made only of those features and their short echoes. Opening the mouth swells and melts the lattice outward from the mouth. It is at [`/mobile/face-trace/1`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).

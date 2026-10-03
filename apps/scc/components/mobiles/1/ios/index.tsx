@@ -7,6 +7,8 @@ import styles from "./ios.module.css";
 
 export { Icon, type IconName } from "./icons";
 export { Swap } from "./swap";
+export { Storyboard, type Panel, type Session, type Shot, type Enter } from "./storyboard";
+export { PlaybackContext, usePlayback, type Playback } from "./playback";
 export { styles as ios };
 
 export type Tone = "light" | "dark";

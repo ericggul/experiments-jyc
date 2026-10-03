@@ -10,6 +10,7 @@ import {
 import source from "./source/document.json";
 import SourceFrame from "./source-frame";
 import styles from "./spoon-class.module.css";
+import { useGameAudio } from "../game-audio";
 
 const TILE_HEIGHT = 150;
 const MIN_TILE_WIDTH = 500;
@@ -65,6 +66,7 @@ function dispatchToRunner(
 export default function SpoonClassOne() {
   const wallRef = useRef<HTMLElement>(null);
   const framesRef = useRef(new Map<string, HTMLIFrameElement>());
+  useGameAudio(framesRef, source.html);
   const [layout, setLayout] = useState<WallLayout>(INITIAL_LAYOUT);
 
   const broadcast = useCallback(

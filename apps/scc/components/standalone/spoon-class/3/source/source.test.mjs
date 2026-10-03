@@ -6,6 +6,7 @@ import { Script, runInNewContext } from "node:vm";
 import { installRunnerCompatibility } from "./compatibility.mjs";
 import { installAudioCompatibility, restoreBrowserReplacements } from "./browser.mjs";
 import { installLifeAgeMeter } from "./life-age.mjs";
+import { installJumpCeiling } from "./jump-ceiling.mjs";
 import { installLifeGamePresentation } from "./life-game.mjs";
 
 const original = readFileSync(new URL("./dino.html", import.meta.url), "utf8");
@@ -30,7 +31,8 @@ test("packaging preserves the upstream document outside its explicit integration
     .replace(/<script data-spoon-class-compatibility>[\s\S]*?<\/script>\n/, "")
     .replace(/<script data-spoon-class-audio>[\s\S]*?<\/script>\n/, "")
     .replace(/<script data-spoon-class-life-presentation>[\s\S]*?<\/script>\n/, "")
-    .replace(/<script data-spoon-class-life-age>[\s\S]*?<\/script>\n/, "");
+    .replace(/<script data-spoon-class-life-age>[\s\S]*?<\/script>\n/, "")
+    .replace(/<script data-spoon-class-jump-ceiling>[\s\S]*?<\/script>\n/, "");
   const sourceRestored = restored.replace(
     /<script data-spoon-class-module-presentation>[\s\S]*?<\/script>\n/,
     "",
@@ -163,5 +165,35 @@ test("both sprite densities and all three original Ogg sounds are intact", () =>
   for (const [, , data] of sounds) {
     // The source labels these MPEG, but the bytes contain Ogg/Vorbis audio.
     assert.equal(Buffer.from(data, "base64").subarray(0, 4).toString(), "OggS");
+  }
+});
+
+test("a cropped row lowers only the jump apex, never below the visible edge", () => {
+  const trex = {
+    groundYPos: 93,
+    minJumpHeight: 63,
+    config: { GRAVITY: 0.6, DROP_VELOCITY: -5, INIITAL_JUMP_VELOCITY: -10, MAX_JUMP_HEIGHT: 30 },
+  };
+  const apex = ({ MAX_JUMP_HEIGHT, INIITAL_JUMP_VELOCITY }) => {
+    let y = 93;
+    let velocity = INIITAL_JUMP_VELOCITY;
+    let reached = false;
+    let highest = y;
+    while (y <= 93) {
+      y += Math.round(velocity);
+      velocity += 0.6;
+      if (y < 63) reached = true;
+      if (y < MAX_JUMP_HEIGHT && reached && velocity < -5) velocity = -5;
+      highest = Math.min(highest, y);
+    }
+    return highest;
+  };
+  for (const ceiling of [0, 12, 30, 45]) {
+    const config = { ...trex.config };
+    installJumpCeiling({ Runner: { instance_: { tRex: { ...trex, config } } }, spoonClassJumpCeiling: ceiling });
+    assert.ok(apex(config) >= ceiling, `apex ${apex(config)} above ceiling ${ceiling}`);
+    assert.equal(config.GRAVITY, 0.6);
+    assert.equal(config.DROP_VELOCITY, -5);
+    if (ceiling === 0) assert.deepEqual(config, trex.config);
   }
 });

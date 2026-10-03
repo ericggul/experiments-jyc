@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { ios } from "../ios";
+import { PlaybackContext, usePlayback } from "../ios/playback";
 import type { TransitionStyle } from "../model/settings";
 import type { Push, Scene } from "../model/types";
 import styles from "./stage.module.css";
@@ -44,6 +45,8 @@ export function Stage({ scene, transition, render }: {
   transition: TransitionSettings;
   render: (scene: Scene, frozen: boolean) => ReactNode;
 }) {
+  const playback = usePlayback();
+  const frozen = useMemo(() => ({ ...playback, frozen: true }), [playback]);
   const [shown, setShown] = useState(scene);
   const [leaving, setLeaving] = useState<Leaving | null>(null);
   const enteredAt = useRef(0);
@@ -73,7 +76,7 @@ export function Stage({ scene, transition, render }: {
     <>
       {leaving && (
         <div key={`out:${leaving.scene.id}`} className={`${styles.layer} ${classes[leaving.kind].exit}`} style={style}>
-          {render(leaving.scene, true)}
+          <PlaybackContext value={frozen}>{render(leaving.scene, true)}</PlaybackContext>
         </div>
       )}
       <div

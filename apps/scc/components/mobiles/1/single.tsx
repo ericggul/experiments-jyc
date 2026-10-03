@@ -10,6 +10,7 @@ import { timeConfig, weekdayOf } from "./model/time";
 import type { DayPlan, Owner, Scene } from "./model/types";
 import { mobilesConfig } from "./model/layout";
 import { PhoneView } from "./phone";
+import { PlaybackContext } from "./ios/playback";
 import styles from "./mobiles.module.css";
 
 const sampleOwner: Owner = {
@@ -24,6 +25,7 @@ const sampleOwner: Owner = {
 };
 
 const HOLD_MS = 1500;
+const singlePlayback = { minutesPerSecond: timeConfig.minutesPerSecond, playing: true, frozen: false };
 
 function fixturePlan(app: AppId, fixture: Fixture, index: number): DayPlan {
   const start = fixture.clock ?? 9 * 60;
@@ -88,7 +90,7 @@ export default function SingleApp({ app }: { app: AppId }) {
       <section ref={stage} className={styles.singleStage}>
         {size.width > 0 && (
           <div className={styles.singleSlot} style={{ marginLeft: (-mobilesConfig.phoneWidth * scale) / 2, marginTop: (-mobilesConfig.phoneHeight * scale) / 2 }}>
-            <PhoneView owner={sampleOwner} plan={plan} minute={start + elapsed} scale={scale} />
+            <PlaybackContext value={singlePlayback}><PhoneView owner={sampleOwner} plan={plan} minute={start + elapsed} scale={scale} /></PlaybackContext>
           </div>
         )}
       </section>

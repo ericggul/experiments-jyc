@@ -23,6 +23,7 @@ export function installLifeAgeMeter(window) {
     Y: ["101", "101", "010", "010", "010"],
   };
   const pixel = 2;
+  const SOURCE_DIGIT_HEIGHT = 13;
   const advance = 8;
   let ageMilliseconds = 0;
 
@@ -48,7 +49,9 @@ export function installLifeAgeMeter(window) {
     // installed. Clear that fixed HUD area too, so birth is legible before
     // the first animation frame.
     context.fillStyle = "#f7f7f7";
-    context.fillRect(x - 2, meter.y - 1, width + 4, glyphs[0].length * pixel + 2);
+    // Cover the source digits drawn before the first update. The source
+    // translates by y and then draws at y again, so they span 2y..2y+13.
+    context.fillRect(x - 2, meter.y - 1, width + 4, meter.y + SOURCE_DIGIT_HEIGHT + 2);
     context.fillStyle = "#535353";
     for (let index = 0; index < text.length; index += 1) {
       const glyph = glyphs[text[index]];

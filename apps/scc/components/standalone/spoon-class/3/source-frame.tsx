@@ -13,8 +13,8 @@ export const NATIVE_GAME_HEIGHT = 150;
 // and Runner lays out its own world at that width.
 const SourceFrame = forwardRef<
   HTMLIFrameElement,
-  { html: string; title: string; width: number; scale: number }
->(function SourceFrame({ html, title, width, scale }, ref) {
+  { html: string; title: string; width: number; scale: number; offset: number }
+>(function SourceFrame({ html, title, width, scale, offset }, ref) {
   return (
     <iframe
       ref={ref}
@@ -32,7 +32,7 @@ const SourceFrame = forwardRef<
         height: NATIVE_GAME_HEIGHT,
         border: 0,
         background: "#f7f7f7",
-        transform: `scale(${scale})`,
+        transform: `translateY(${offset}px) scale(${scale})`,
         transformOrigin: "0 0",
       }}
     />

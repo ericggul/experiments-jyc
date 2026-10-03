@@ -22,8 +22,11 @@ export function installLifeAgeMeter(window) {
     M: ["101", "111", "111", "101", "101"],
     Y: ["101", "101", "010", "010", "010"],
   };
-  const pixel = 2;
-  const advance = 8;
+  // /3 draws the clock at 1.5× the shared size so it reads on a phone.
+  const pixel = 3;
+  const SOURCE_DIGIT_HEIGHT = 13;
+  const clockTop = Math.max(0, Number(window.spoonClassClockTop) || 0);
+  const advance = pixel * 4;
   let ageMilliseconds = 0;
 
   function pad(value) {
@@ -41,14 +44,19 @@ export function installLifeAgeMeter(window) {
   function drawAge(meter) {
     const context = meter.canvasCtx;
     const text = ageText();
-    const width = text.length * advance - 2;
+    const width = text.length * advance - pixel;
     const x = meter.x + 55 - width;
+    const y = meter.y + clockTop;
     context.save();
     // The source runner has already painted `00000` before this adapter is
     // installed. Clear that fixed HUD area too, so birth is legible before
     // the first animation frame.
     context.fillStyle = "#f7f7f7";
-    context.fillRect(x - 2, meter.y - 1, width + 4, glyphs[0].length * pixel + 2);
+    // Cover the source digits drawn before the first update. The source
+    // translates by y and then draws at y again, so they span 2y..2y+13.
+    context.fillRect(x - 2, meter.y - 1, width + 4, meter.y + SOURCE_DIGIT_HEIGHT + 2);
+    // The host crops sky from short rows; the clock sits below the crop.
+    context.fillRect(x - 2, y - 1, width + 4, glyphs[0].length * pixel + 2);
     context.fillStyle = "#535353";
     for (let index = 0; index < text.length; index += 1) {
       const glyph = glyphs[text[index]];
@@ -56,7 +64,7 @@ export function installLifeAgeMeter(window) {
       for (let row = 0; row < glyph.length; row += 1) {
         for (let column = 0; column < glyph[row].length; column += 1) {
           if (glyph[row][column] === "1") {
-            context.fillRect(x + index * advance + column * pixel, meter.y + row * pixel, pixel, pixel);
+            context.fillRect(x + index * advance + column * pixel, y + row * pixel, pixel, pixel);
           }
         }
       }

@@ -23,3 +23,90 @@
   contain: layout paint;
   background: #f7f7f7;
 }
+
+.play {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  display: block;
+  padding: 16px;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.playGlyph {
+  display: block;
+  width: 76px;
+  height: 76px;
+  transition: transform 120ms ease-out;
+}
+
+.play:active .playGlyph {
+  transform: scale(0.94);
+}
+
+.playDisc {
+  fill: #535353;
+}
+
+.playMark {
+  fill: #f7f7f7;
+  stroke: #f7f7f7;
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
+
+.controls {
+  position: fixed;
+  right: calc(12px + env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.control {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: #535353;
+  font: 400 12px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control[aria-expanded],
+.control[aria-pressed="false"],
+.control:disabled {
+  opacity: 0.55;
+}
+
+.count {
+  min-width: 32px;
+  color: #535353;
+  font: 400 12px/1.4 Arial, Helvetica, sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.performance {
+  margin: 0 12px;
+  color: #535353;
+  font: 400 10px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}

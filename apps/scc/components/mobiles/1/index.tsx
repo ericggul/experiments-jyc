@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Controls from "./controls";
+import { PlaybackContext } from "./ios/playback";
 import { arrange } from "./model/arrange";
 import { fitPhoneGrid, mobilesConfig } from "./model/layout";
 import { planDay } from "./model/plan-day";
@@ -35,6 +36,10 @@ export default function MobilesOne() {
     () => ({ style: settings.transitionStyle, ms: settings.transitionMs, holdMs: settings.holdMs, scale: transitionScale }),
     [settings.transitionStyle, settings.transitionMs, settings.holdMs],
   );
+  const playback = useMemo(
+    () => ({ minutesPerSecond: settings.minutesPerSecond, playing: settings.playing, frozen: false }),
+    [settings.minutesPerSecond, settings.playing],
+  );
   // Elapsed-driven motion glides across one phone refresh interval.
   const tick = `${(settings.refreshMinutes / settings.minutesPerSecond) * 1000}ms`;
   const order = useMemo(() => arrange(owners, plans, settings.arrangement, settings.seed), [owners, plans, settings.arrangement, settings.seed]);
@@ -51,6 +56,7 @@ export default function MobilesOne() {
 
   return (
     <main className={styles.field} aria-label="Mobiles: a weekday on many phones" style={{ "--phone-tick": tick } as CSSProperties}>
+      <PlaybackContext value={playback}>
       <section ref={container} className={styles.stage}>
         <div className={styles.grid} style={{
           visibility: layout.width > 0 ? "visible" : "hidden",
@@ -65,6 +71,7 @@ export default function MobilesOne() {
           ))}
         </div>
       </section>
+      </PlaybackContext>
       <Controls
         settings={settings}
         day={time.day}

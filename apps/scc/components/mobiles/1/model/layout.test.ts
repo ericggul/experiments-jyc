@@ -15,3 +15,14 @@ test("the phone grid fits inside the viewport", () => {
 test("an empty viewport yields no phone size", () => {
   assert.equal(fitPhoneGrid(0, 0).width, 0);
 });
+
+test("fewer phones take fewer rows and grow", () => {
+  let previous = fitPhoneGrid(1512, 900, 150);
+  for (const count of [120, 90, 60, 30, 12]) {
+    const next = fitPhoneGrid(1512, 900, count);
+    assert.ok(next.width >= previous.width, `${count} phones should not shrink`);
+    assert.ok(next.rows <= previous.rows, `${count} phones should not add rows`);
+    previous = next;
+  }
+  assert.ok(fitPhoneGrid(1512, 900, 12).rows <= 2);
+});

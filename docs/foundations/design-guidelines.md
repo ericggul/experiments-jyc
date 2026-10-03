@@ -38,6 +38,18 @@ Hyper-real spreadsheet work retains chrome, formula bar, headers, selection,
 tabs, and grid. Détournement requires a recognizable original coupling and a
 legible transformation, not arbitrary data in a familiar-looking shell.
 
+**사칙연산** ("컨템포러리 사칙연산", "모바일 사칙연산", "웹 사칙연산") is the user's
+term for the four SNS post-action glyphs: **heart (like), comment, repost,
+share (paper plane)**. These are the arithmetic operators of social media. When the term
+appears, it refers to those four controls and their counts. Save/bookmark sits next to them but
+is not one of the four. Replicas keep the platform's own glyph geometry
+(stroke, corner, angle, proportion) for these four. Take it from the platform's
+served assets and check it against current official app frames. Never draw it
+or recall it from memory. A platform can mix icon generations: Instagram in 2026
+uses Pano heart, comment and repost with a Prism share plane.
+[Instagram /11](../../apps/scc/docs/experiments/sns/mobile/11.md) records the
+sources and measurements.
+
 For complex-systems experiments, derive form from the exact phenomenon.
 Existing routes are history, not a palette/layout template. Begin perceptual
 simulations with the field alone; add controls/text only when the participant

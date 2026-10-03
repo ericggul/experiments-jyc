@@ -1,6 +1,5 @@
 export const mobilesConfig = {
   phoneCount: 90,
-  minimumRows: 5,
   /** Outer frame size in pt; the glass inside is 390 × 844. */
   phoneWidth: 404,
   phoneHeight: 858,
@@ -8,21 +7,27 @@ export const mobilesConfig = {
   outerMarginRatio: 0.025,
 } as const;
 
-/** Largest uniform phone size whose grid fits the viewport. */
+/**
+ * Largest uniform phone size whose grid fits the viewport. Rows and columns
+ * follow the phone count and the screen's shape: fewer phones means fewer
+ * rows and bigger phones. Ties go to the layout with fewer empty seats.
+ */
 export function fitPhoneGrid(width: number, height: number, count: number = mobilesConfig.phoneCount) {
   const aspect = mobilesConfig.phoneWidth / mobilesConfig.phoneHeight;
   const margin = Math.min(width, height) * mobilesConfig.outerMarginRatio;
   const availableWidth = Math.max(0, width - margin * 2);
   const availableHeight = Math.max(0, height - margin * 2);
-  let best = { columns: 1, width: 0, height: 0, gap: 0 };
-  for (let columns = 1; columns <= count; columns++) {
-    const rows = Math.max(mobilesConfig.minimumRows, Math.ceil(count / columns));
+  let best = { columns: 1, rows: 1, width: 0, height: 0, gap: 0 };
+  for (let columns = 1; columns <= Math.max(1, count); columns++) {
+    const rows = Math.max(1, Math.ceil(count / columns));
     const phoneWidth = Math.min(
       availableWidth / (columns + (columns - 1) * mobilesConfig.gapRatio),
       availableHeight / (rows / aspect + (rows - 1) * mobilesConfig.gapRatio),
     );
-    if (phoneWidth > best.width) {
-      best = { columns, width: phoneWidth, height: phoneWidth / aspect, gap: phoneWidth * mobilesConfig.gapRatio };
+    const empty = columns * rows - count;
+    const bestEmpty = best.columns * best.rows - count;
+    if (phoneWidth > best.width + 1e-6 || (Math.abs(phoneWidth - best.width) <= 1e-6 && empty < bestEmpty)) {
+      best = { columns, rows, width: phoneWidth, height: phoneWidth / aspect, gap: phoneWidth * mobilesConfig.gapRatio };
     }
   }
   return best;
