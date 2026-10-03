@@ -42,6 +42,7 @@ function Departures({ seed, elapsed, owner }: ScreenProps) {
   const rng = createRng(seed ^ 0x7a1);
   const start = rng.int(0, stationPool.length - 1);
   const stations = [0, 1, 2].map((i) => ({
+    id: `station-${i}`,
     name: stationPool[(start + i * 3) % stationPool.length],
     walk: 3 + i * 4 + rng.int(0, 2),
     lines: [lineFor(seed, i * 2), lineFor(seed, i * 2 + 1)],
@@ -53,7 +54,7 @@ function Departures({ seed, elapsed, owner }: ScreenProps) {
       <div className={styles.subhead}>Near {owner.home}</div>
       <div className={styles.cards}>
         {stations.map((s) => (
-          <div key={s.name} className={styles.station}>
+          <div key={s.id} className={styles.station}>
             <div className={styles.stationHead}>
               <span>{s.name}</span>
               <small><Icon name="run" size={13} stroke={2} /> {s.walk} min walk</small>
@@ -91,7 +92,7 @@ function Trip({ seed, elapsed, duration, clock, owner }: ScreenProps) {
   const n = names.length;
   const pos = progress * (n - 1);
   const start = clock - elapsed;
-  const stops = names.map((name, i) => ({ name, time: Math.round(start + (i / (n - 1)) * dur) }));
+  const stops = names.map((name, i) => ({ id: `stop-${i}`, name, time: Math.round(start + (i / (n - 1)) * dur) }));
   const remaining = Math.max(0, dur - elapsed);
   const next = Math.min(n - 1, Math.ceil(pos));
   return (
@@ -112,7 +113,7 @@ function Trip({ seed, elapsed, duration, clock, owner }: ScreenProps) {
         <div className={styles.track} style={{ background: line.color }} />
         <div className={styles.trackDone} style={{ height: `${pos * 40}px` }} />
         {stops.map((s, i) => (
-          <div key={s.name} className={styles.stop} data-passed={i < Math.floor(pos)} data-end={i === 0 || i === n - 1}>
+          <div key={s.id} className={styles.stop} data-passed={i < Math.floor(pos)} data-end={i === 0 || i === n - 1}>
             <span className={styles.dot} style={{ borderColor: i < Math.floor(pos) ? "#aeb0b5" : line.color }} />
             <span className={styles.stopName}>{s.name}</span>
             <span className={styles.stopTime}>{formatTime(s.time).replace(" ", " ")}</span>

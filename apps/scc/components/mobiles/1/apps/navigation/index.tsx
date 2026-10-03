@@ -29,10 +29,13 @@ function Overview(props: ScreenProps) {
   const rng = createRng(seed ^ 0x61);
   const routes = [0, 1, 2].map((v) => makeRoute(map, v + 1));
   const base = rng.int(18, 38);
+  // Three different roads: each option's id is its role, not its display text.
+  const first = rng.int(0, roads.length - 1);
+  const via = (offset: number) => roads[(first + offset) % roads.length];
   const options = [
-    { mins: base, miles: (base * 0.27).toFixed(1), via: rng.pick(roads), note: "Fastest route", detail: "Usual traffic" },
-    { mins: base + rng.int(3, 7), miles: (base * 0.25).toFixed(1), via: rng.pick(roads), note: "Fewer tolls", detail: "Light traffic" },
-    { mins: base + rng.int(6, 12), miles: (base * 0.3).toFixed(1), via: rng.pick(roads), note: "Avoids highways", detail: "Moderate traffic" },
+    { id: "fastest", mins: base, miles: (base * 0.27).toFixed(1), via: via(0), note: "Fastest route", detail: "Usual traffic" },
+    { id: "tolls", mins: base + rng.int(3, 7), miles: (base * 0.25).toFixed(1), via: via(4), note: "Fewer tolls", detail: "Light traffic" },
+    { id: "highways", mins: base + rng.int(6, 12), miles: (base * 0.3).toFixed(1), via: via(8), note: "Avoids highways", detail: "Moderate traffic" },
   ];
   const mid = pointAt(routes[0], 0.5);
   return (
@@ -65,7 +68,7 @@ function Overview(props: ScreenProps) {
           <span><Icon name="run" size={18} stroke={2} /> {Math.round(options[0].mins * 4.4)} min</span>
         </div>
         {options.map((o, i) => (
-          <div key={o.via} className={styles.option} data-selected={i === 0}>
+          <div key={o.id} className={styles.option} data-selected={i === 0}>
             <div>
               <b>{o.mins} min</b>
               <span>{o.miles} mi · via {o.via}</span>

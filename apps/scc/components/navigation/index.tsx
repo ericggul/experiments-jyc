@@ -239,14 +239,21 @@ function GroupHeader({
 function ExperimentRow({
   experiment,
   name,
+  underDate,
 }: {
   experiment: SccNavigationItem;
   name: string;
+  /**
+   * Inside a date group the row's own date repeats the heading, so phones omit
+   * it and give the full name most of the width, the description yielding to
+   * the right. Group view names are short indices and keep the narrow column.
+   */
+  underDate: boolean;
 }) {
   const [primary, ...roles] = experiment.routes;
 
   return (
-    <div className="group relative grid min-h-11 grid-cols-[6rem_minmax(0,1fr)_4.75rem_1rem] items-center gap-3 px-3 text-[12px] focus-within:bg-(--scc-fg) focus-within:text-(--scc-bg) hover:bg-(--scc-fg) hover:text-(--scc-bg) md:grid-cols-[minmax(7rem,0.65fr)_minmax(15rem,2fr)_5.5rem_minmax(12rem,1fr)_1rem] md:gap-4">
+    <div className={`group relative grid min-h-11 ${underDate ? "grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_1rem]" : "grid-cols-[6rem_minmax(0,1fr)_4.75rem_1rem]"} items-center gap-3 px-3 text-[12px] focus-within:bg-(--scc-fg) focus-within:text-(--scc-bg) hover:bg-(--scc-fg) hover:text-(--scc-bg) md:grid-cols-[minmax(7rem,0.65fr)_minmax(15rem,2fr)_5.5rem_minmax(12rem,1fr)_1rem] md:gap-4`}>
       <Link
         href={primary.href}
         target="_blank"
@@ -257,12 +264,12 @@ function ExperimentRow({
       >
         {name}
       </Link>
-      <span className="truncate text-(--scc-fg)/58 group-focus-within:text-(--scc-bg)/65 group-hover:text-(--scc-bg)/65">
+      <span className={`${underDate ? "text-right md:text-left" : ""} truncate text-(--scc-fg)/58 group-focus-within:text-(--scc-bg)/65 group-hover:text-(--scc-bg)/65`}>
         {experiment.phrase}
       </span>
       <time
         dateTime={experiment.date}
-        className="font-mono text-[10px] text-(--scc-fg)/45 group-focus-within:text-(--scc-bg)/55 group-hover:text-(--scc-bg)/55"
+        className={`${underDate ? "hidden md:block" : ""} font-mono text-[10px] text-(--scc-fg)/45 group-focus-within:text-(--scc-bg)/55 group-hover:text-(--scc-bg)/55`}
       >
         {getDateLabel(experiment.date)}
       </time>
@@ -414,6 +421,7 @@ function NavigationScreen({
         key={experiment.key}
         experiment={experiment}
         name={getExperimentName(experiment.key, prefix)}
+        underDate={view === "date"}
       />
     ));
   }

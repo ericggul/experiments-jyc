@@ -123,7 +123,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "spoon-class/default", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Upstream Chrome dino game embedded unchanged in one viewport frame" },
   { key: "spoon-class/1", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Chrome dino repeated as a responsive field of game modules" },
   { key: "spoon-class/2", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Dino field where a pixel human ages past tests and life blocks, less dense or dense" },
-  { key: "spoon-class/3", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Working copy of the human-life dino field for the next direction" },
+  { key: "spoon-class/3", area: "standalone", family: "spoon-class", date: "2026-10-03", phrase: "Mobile stack of full-width human-life dino games, seven or eight to a screen" },
   { key: "swarm/1", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Neutral flock field with adjustable separation, alignment and cohesion" },
   { key: "swarm/2", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Flock confined to a world coastline map with a latitude-longitude graticule" },
   { key: "swarm/3", area: "standalone", family: "swarm", date: "2026-07-17", phrase: "Map clicks launch missile salvos that the flock steers away from" },

@@ -27,7 +27,7 @@ export async function generateMetadata({
         : experiment === "2"
           ? "A synchronized human-life game field with less dense and dense layouts."
           : experiment === "3"
-            ? "A working copy of the synchronized human-life game field."
+            ? "A mobile stack of full-width synchronized human-life games."
           : "The original Chrome Dino source preserved as a standalone experiment.",
   };
 }

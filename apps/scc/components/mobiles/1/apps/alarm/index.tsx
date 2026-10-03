@@ -46,7 +46,11 @@ function Snoozed(props: ScreenProps) {
 
 function AlarmList({ owner, seed }: ScreenProps) {
   const wake = owner.alarm ?? 7 * 60;
-  const extras = [wake + 10, wake + 20, 9 * 60 + 30].slice(0, 1 + (seed % 3));
+  const extras = [
+    { id: "weekdays", minute: wake + 10, label: "Alarm, weekdays" },
+    { id: "backup", minute: wake + 20, label: "Actually get up" },
+    { id: "late", minute: 9 * 60 + 30, label: "Alarm" },
+  ].slice(0, 1 + (seed % 3));
   return (
     <div className={`${styles.clock} ${ios.dark}`}>
       <NavBar title="Alarms" large leading={<span className={styles.edit}>Edit</span>} trailing={<Icon name="plus" size={24} stroke={2.2} style={{ color: "#ff9f0a" }} />} />
@@ -56,14 +60,14 @@ function AlarmList({ owner, seed }: ScreenProps) {
         <span className={styles.change}>CHANGE</span>
       </div>
       <div className={styles.sectionLabel}>Other</div>
-      {extras.map((minute, index) => {
+      {extras.map((alarm, index) => {
         const on = index === 0;
-        const [time, period] = formatTime(minute).split(" ");
+        const [time, period] = formatTime(alarm.minute).split(" ");
         return (
-          <div key={minute} className={styles.alarmRow}>
+          <div key={alarm.id} className={styles.alarmRow}>
             <span className={on ? undefined : styles.off}>
               <div className={styles.alarmTime}>{time}<small>{period}</small></div>
-              <div className={styles.alarmLabel}>{index === 0 ? "Alarm, weekdays" : index === 1 ? "Actually get up" : "Alarm"}</div>
+              <div className={styles.alarmLabel}>{alarm.label}</div>
             </span>
             <Switch on={on} />
           </div>
