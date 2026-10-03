@@ -1,229 +1,252 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import styles from "./physarum-network.module.css";
+import { useCallback, useEffect, useRef, useState } from "react";
+import styles from "./echo-chambers.module.css";
 import {
-  addFood,
-  busiestTube,
-  createMould,
-  cutTube,
+  createBodies,
+  idealLength,
+  relaxBodies,
+  rescaleBodies,
+  type Body,
+  type Frame,
+} from "./layout";
+import {
+  addActivePerson,
+  CONTACT_MEMORY,
+  CONTROVERSY_RANGE,
+  createEchoNetwork,
   DEFAULT_PARAMETERS,
-  EXPONENT_RANGE,
-  farthestFromFood,
-  LIVING,
-  MAX_FOODS,
-  MAX_JUNCTIONS,
-  MAX_STEP,
-  measureMould,
-  moveFood,
-  nearestJunction,
-  removeFood,
-  seedFood,
-  stepMould,
-  strokeAcross,
-  tubesCrossing,
-  type Mould,
+  HOMOPHILY_RANGE,
+  holdOpinion,
+  MAX_PEOPLE,
+  measureEcho,
+  stepEchoNetwork,
+  type EchoNetwork,
 } from "./model";
+import {
+  axisGeometry,
+  CONTACT_VISIBILITY,
+  opinionToUnit,
+  unitToOpinion,
+  viewLabels,
+  viewTargets,
+  VIEWS,
+  type ViewId,
+} from "./views";
 
-/** Model time units per second; a tube left without flow thins out in about 2 s. */
-const TEMPO = 1.5;
-const INK = "17, 17, 15";
-/** Protoplasm: the food and the flow it drives share one colour. */
-const FLOW = "226, 150, 0";
-const MARK_LIFETIME = 0.8;
-const MAX_MARKS = 240;
-/** At most this many pressure solves per frame, so a stalled tab cannot pile up work. */
-const MAX_SOLVES_PER_FRAME = 3;
-/** Screen area per junction; the sheet is denser on large screens up to the cap. */
-const AREA_PER_JUNCTION = 1_700;
-const MIN_JUNCTIONS = 200;
-const SHEET_MARGIN = 20;
-const DRAG_THRESHOLD = 6;
-const WIDTH_LEVELS = 14;
+/** Model time units per second; opinions relax over about 1.7 s. */
+const TEMPO = 0.6;
+const INK = [17, 17, 15] as const;
+/** The two sides: negative opinions blue, positive opinions red. */
+const LEFT = [38, 88, 178] as const;
+const RIGHT = [214, 58, 34] as const;
+/** Opinion at which a person is drawn in their side's full colour. */
+const FULL_COLOUR = 1.5;
+/** A new contact draws out from the person who reached out over this long. */
+const DRAW_OUT_SECONDS = 0.18;
+const MARK_LIFETIME = 0.9;
+const NEWCOMER_OPINION = 2;
+const TRANSITION_SECONDS = 0.9;
+/** How quickly points follow their target once a view has settled. */
+const FOLLOW_RATE = 12;
 /** Space kept clear for the collapsed options toggle. */
 const CONTROL_BAND = 56;
+/** Pointer travel that turns a press on a person into a drag. */
+const DRAG_THRESHOLD = 6;
 
-type Frame = { width: number; height: number };
+type Rgb = readonly [number, number, number];
 
-type Placement = { scale: number; left: number; top: number };
+type Mark = { person: number; at: number };
 
-type Mark =
-  | { kind: "cut"; a: number; b: number; width: number; at: number }
-  | { kind: "food"; junction: number; added: boolean; at: number };
+type Transition = {
+  from: Float64Array;
+  previous: ViewId;
+  contactsFrom: number;
+  startedAt: number;
+};
 
-type Gesture = {
-  id: number;
-  startX: number;
-  startY: number;
-  lastX: number;
-  lastY: number;
-  /** The food being carried, or null when the gesture started on bare sheet. */
-  food: number | null;
-  moved: boolean;
+type Press = {
+  x: number;
+  y: number;
+  person: number | null;
+  /** The held person's opinion axis position when the drag began. */
+  unit: number;
+  dragging: boolean;
 };
 
 function layoutFrame(size: Frame): Frame {
   return { width: size.width, height: Math.max(size.height * 0.5, size.height - CONTROL_BAND) };
 }
 
-function placementFor(mould: Mould, field: Frame): Placement {
-  const scale = Math.max(
-    1,
-    Math.min((field.width - SHEET_MARGIN * 2) / mould.width, (field.height - SHEET_MARGIN * 2) / mould.height),
-  );
-  return {
-    scale,
-    left: (field.width - mould.width * scale) / 2,
-    top: (field.height - mould.height * scale) / 2,
-  };
+function easeInOut(value: number) {
+  return value < 0.5 ? 4 * value ** 3 : 1 - (-2 * value + 2) ** 3 / 2;
 }
 
-function mouldFor(field: Frame) {
-  const inner = { width: field.width - SHEET_MARGIN * 2, height: field.height - SHEET_MARGIN * 2 };
-  const junctions = Math.round(
-    Math.min(MAX_JUNCTIONS, Math.max(MIN_JUNCTIONS, (inner.width * inner.height) / AREA_PER_JUNCTION)),
-  );
-  const mould = createMould(junctions, Math.max(0.3, inner.width / Math.max(1, inner.height)));
-  seedFood(mould);
-  return mould;
+function baseRadius(size: Frame, count: number) {
+  return Math.max(2, Math.min(4.5, idealLength(size, count) * 0.1));
 }
 
-function foodRadius(place: Placement) {
-  return Math.max(5, place.scale * 0.17);
+function personRadius(network: EchoNetwork, size: Frame, person: number) {
+  return baseRadius(size, network.size) * (0.8 + Math.sqrt(network.activity[person]!) * 0.9);
+}
+
+/** Ink near zero, the side's colour as conviction grows. */
+function opinionColour(opinion: number): Rgb {
+  const side = opinion < 0 ? LEFT : RIGHT;
+  const share = Math.min(1, Math.abs(opinion) / FULL_COLOUR);
+  return [
+    Math.round(INK[0] + (side[0] - INK[0]) * share),
+    Math.round(INK[1] + (side[1] - INK[1]) * share),
+    Math.round(INK[2] + (side[2] - INK[2]) * share),
+  ];
+}
+
+function rgba([red, green, blue]: Rgb, alpha: number) {
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
 function draw(
   context: CanvasRenderingContext2D,
   size: Frame,
-  mould: Mould,
-  place: Placement,
-  decay: number,
+  network: EchoNetwork,
+  points: Float64Array,
   marks: readonly Mark[],
   time: number,
+  modelTime: number,
+  /** Model time a new contact takes to draw out from the person who reached out. */
+  drawOut: number,
+  contactVisibility: number,
+  axisVisibility: number,
+  labels: readonly { text: string; x: number; y: number; align: CanvasTextAlign; alpha: number }[],
 ) {
   context.clearRect(0, 0, size.width, size.height);
   context.lineCap = "round";
-  const { scale, left, top } = place;
-  const px = (node: number) => left + mould.x[node]! * scale;
-  const py = (node: number) => top + mould.y[node]! * scale;
-  const widest = scale * 0.2;
+  const { opinion } = network;
+  const field = layoutFrame(size);
 
-  // The bare sheet: every intact tube as a hairline, so cuts read as gaps.
-  context.strokeStyle = `rgba(${INK}, 0.07)`;
-  context.lineWidth = 0.6;
-  context.beginPath();
-  for (const tube of mould.tubes) {
-    if (tube.cutUntil !== null) continue;
-    context.moveTo(px(tube.a), py(tube.a));
-    context.lineTo(px(tube.b), py(tube.b));
-  }
-  context.stroke();
-
-  // Tube walls in ink, width ∝ √D, batched into width levels. Thin tubes fade
-  // out as they fall below the living threshold.
-  const levels: number[][] = Array.from({ length: WIDTH_LEVELS }, () => []);
-  for (const tube of mould.tubes) {
-    if (tube.cutUntil !== null) continue;
-    const root = Math.sqrt(tube.conductance);
-    if (root < 0.04) continue;
-    levels[Math.min(WIDTH_LEVELS - 1, Math.floor(root * WIDTH_LEVELS))]!.push(tube.id);
-  }
-  levels.forEach((ids, level) => {
-    if (ids.length === 0) return;
-    const root = (level + 0.5) / WIDTH_LEVELS;
-    context.strokeStyle = `rgba(${INK}, ${0.88 * Math.min(1, root / Math.sqrt(LIVING * 2))})`;
-    context.lineWidth = 0.6 + widest * root;
+  // Zero opinion: the line between the two sides.
+  if (axisVisibility > 0.01) {
+    const { centre, top, bottom } = axisGeometry(field);
+    context.strokeStyle = rgba(INK, 0.12 * axisVisibility);
+    context.lineWidth = 1;
     context.beginPath();
-    for (const id of ids) {
-      const tube = mould.tubes[id]!;
-      context.moveTo(px(tube.a), py(tube.a));
-      context.lineTo(px(tube.b), py(tube.b));
-    }
+    context.moveTo(centre, top - 8);
+    context.lineTo(centre, bottom + 8);
     context.stroke();
-  });
-
-  // The flow inside each tube: width ∝ √(drive / γ), the thickness the flow is
-  // asking for, drawn at 55% so a settled tube shows an ink rim around it. A
-  // core wider than its wall is a tube still thickening; a bare wall is
-  // starving.
-  const cores: number[][] = Array.from({ length: WIDTH_LEVELS }, () => []);
-  for (const tube of mould.tubes) {
-    if (tube.cutUntil !== null) continue;
-    const root = Math.sqrt(Math.min(1, tube.drive / decay));
-    if (root * widest * 0.55 < 0.5) continue;
-    cores[Math.min(WIDTH_LEVELS - 1, Math.floor(root * WIDTH_LEVELS))]!.push(tube.id);
   }
-  context.strokeStyle = `rgba(${FLOW}, 0.95)`;
-  cores.forEach((ids, level) => {
-    if (ids.length === 0) return;
-    context.lineWidth = widest * 0.55 * ((level + 0.5) / WIDTH_LEVELS);
-    context.beginPath();
-    for (const id of ids) {
-      const tube = mould.tubes[id]!;
-      context.moveTo(px(tube.a), py(tube.a));
-      context.lineTo(px(tube.b), py(tube.b));
+
+  // Recent contacts bow upward between the two people; fresh ones are strong.
+  // Within a side they take the side's colour, across sides they are ink.
+  if (contactVisibility > 0.01) {
+    for (const contact of network.contacts) {
+      const age = modelTime - contact.at;
+      const freshness = 1 - age / CONTACT_MEMORY;
+      if (freshness <= 0) continue;
+      const a = opinion[contact.source]!;
+      const b = opinion[contact.target]!;
+      const across = a * b < 0;
+      const colour = across ? INK : a < 0 ? LEFT : RIGHT;
+      const x1 = points[contact.source * 2]!;
+      const y1 = points[contact.source * 2 + 1]!;
+      let x2 = points[contact.target * 2]!;
+      let y2 = points[contact.target * 2 + 1]!;
+      const reach = drawOut > 0 ? Math.min(1, age / drawOut) : 1;
+      x2 = x1 + (x2 - x1) * reach;
+      y2 = y1 + (y2 - y1) * reach;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      // Normal pointing up the screen, a quarter of the length out.
+      let nx = -dy;
+      let ny = dx;
+      if (ny > 0) {
+        nx = -nx;
+        ny = -ny;
+      }
+      context.strokeStyle = rgba(colour, (across ? 0.5 : 0.42) * freshness ** 1.5 * contactVisibility);
+      context.lineWidth = contact.mutual ? 1.1 : 0.7;
+      context.beginPath();
+      context.moveTo(x1, y1);
+      context.quadraticCurveTo((x1 + x2) / 2 + nx * 0.25, (y1 + y2) / 2 + ny * 0.25, x2, y2);
+      context.stroke();
     }
-    context.stroke();
-  });
+  }
 
   for (const mark of marks) {
     const progress = (time - mark.at) / MARK_LIFETIME;
-    if (progress < 0 || progress >= 1) continue;
-    const fade = 1 - progress;
-    if (mark.kind === "cut") {
-      // The two severed ends pull back from the cut.
-      const ax = px(mark.a);
-      const ay = py(mark.a);
-      const bx = px(mark.b);
-      const by = py(mark.b);
-      const mx = (ax + bx) / 2;
-      const my = (ay + by) / 2;
-      const reach = 1 - Math.min(1, progress * 1.4);
-      context.strokeStyle = `rgba(${INK}, ${0.8 * fade})`;
-      context.lineWidth = mark.width;
-      context.beginPath();
-      context.moveTo(ax, ay);
-      context.lineTo(ax + (mx - ax) * reach * 0.85, ay + (my - ay) * reach * 0.85);
-      context.moveTo(bx, by);
-      context.lineTo(bx + (mx - bx) * reach * 0.85, by + (my - by) * reach * 0.85);
-      context.stroke();
-    } else {
-      const radius = foodRadius(place);
-      const spread = mark.added ? radius + progress * radius * 2.4 : radius * (1 + 2.4 * fade);
-      context.strokeStyle = `rgba(${FLOW}, ${0.8 * fade})`;
-      context.lineWidth = 1.2;
-      context.beginPath();
-      context.arc(px(mark.junction), py(mark.junction), spread, 0, Math.PI * 2);
-      context.stroke();
-    }
+    if (progress < 0 || progress >= 1 || mark.person >= network.size) continue;
+    context.strokeStyle = rgba(opinionColour(opinion[mark.person]!), 0.7 * (1 - progress));
+    context.lineWidth = 1.2;
+    context.beginPath();
+    context.arc(points[mark.person * 2]!, points[mark.person * 2 + 1]!, 5 + progress * 16, 0, Math.PI * 2);
+    context.stroke();
   }
 
-  context.fillStyle = `rgb(${FLOW})`;
-  for (const food of mould.foods) {
+  for (let person = 0; person < network.size; person += 1) {
+    context.fillStyle = rgba(opinionColour(opinion[person]!), 1);
     context.beginPath();
-    context.arc(px(food), py(food), foodRadius(place), 0, Math.PI * 2);
+    context.arc(points[person * 2]!, points[person * 2 + 1]!, personRadius(network, size, person), 0, Math.PI * 2);
     context.fill();
+  }
+
+  // The person the participant holds carries a thin ring.
+  if (network.held !== null) {
+    const held = network.held;
+    context.strokeStyle = rgba(INK, 0.8);
+    context.lineWidth = 1.2;
+    context.beginPath();
+    context.arc(points[held * 2]!, points[held * 2 + 1]!, personRadius(network, size, held) + 4, 0, Math.PI * 2);
+    context.stroke();
+  }
+
+  context.font = "12px Arial, Helvetica, sans-serif";
+  context.textBaseline = "middle";
+  for (const label of labels) {
+    if (label.alpha < 0.01) continue;
+    context.fillStyle = rgba(INK, 0.55 * label.alpha);
+    context.textAlign = label.align;
+    context.fillText(label.text, label.x, label.y);
   }
 }
 
-export default function PhysarumNetworkFour() {
+export default function EchoChambersFour() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouldRef = useRef<Mould | null>(null);
+  const networkRef = useRef<EchoNetwork>(createEchoNetwork());
+  const bodiesRef = useRef<Body[] | null>(null);
+  const pointsRef = useRef(new Float64Array(MAX_PEOPLE * 2));
+  const targetsRef = useRef(new Float64Array(MAX_PEOPLE * 2));
   const sizeRef = useRef<Frame>({ width: 0, height: 0 });
   const marksRef = useRef<Mark[]>([]);
   const timeRef = useRef(0);
-  const pendingRef = useRef(0);
-  const exponentRef = useRef(DEFAULT_PARAMETERS.exponent);
-  const gestureRef = useRef<Gesture | null>(null);
   const reduceMotionRef = useRef(false);
-  const [exponent, setExponent] = useState(DEFAULT_PARAMETERS.exponent);
+  const parametersRef = useRef(DEFAULT_PARAMETERS);
+  const pressRef = useRef<Press | null>(null);
+  const heldUnitRef = useRef(0);
+  const viewRef = useRef<ViewId>("opinion");
+  const contactVisibilityRef = useRef(CONTACT_VISIBILITY.opinion);
+  const transitionRef = useRef<Transition | null>(null);
+  const [controversy, setControversy] = useState(DEFAULT_PARAMETERS.controversy);
+  const [homophily, setHomophily] = useState(DEFAULT_PARAMETERS.homophily);
+  const [view, setView] = useState<ViewId>("opinion");
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const [summary, setSummary] = useState("");
 
   useEffect(() => {
-    exponentRef.current = exponent;
-  }, [exponent]);
+    parametersRef.current = { ...DEFAULT_PARAMETERS, controversy, homophily };
+  }, [controversy, homophily]);
+
+  const changeView = useCallback((next: ViewId) => {
+    setView(next);
+    if (next === viewRef.current) return;
+    const count = networkRef.current.size;
+    transitionRef.current = {
+      from: pointsRef.current.slice(0, count * 2),
+      previous: viewRef.current,
+      contactsFrom: contactVisibilityRef.current,
+      startedAt: timeRef.current,
+    };
+    viewRef.current = next;
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -242,12 +265,19 @@ export default function PhysarumNetworkFour() {
       canvas.width = Math.round(next.width * ratio);
       canvas.height = Math.round(next.height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      // The sheet is cut once for the first screen; later resizes only rescale it.
-      if (!mouldRef.current && next.width > 0 && next.height > 0) {
-        mouldRef.current = mouldFor(layoutFrame(next));
+      if (bodiesRef.current) {
+        rescaleBodies(bodiesRef.current, layoutFrame(sizeRef.current), layoutFrame(next));
+      } else {
+        bodiesRef.current = createBodies(networkRef.current.size, layoutFrame(next));
       }
       sizeRef.current = next;
+      if (timeRef.current === 0) {
+        // Start on the live targets of the opening view.
+        viewTargets(viewRef.current, networkRef.current, bodiesRef.current, layoutFrame(next), dotSpacing(next), pointsRef.current);
+      }
     };
+
+    const dotSpacing = (size: Frame) => baseRadius(size, networkRef.current.size) * 2.4;
 
     const render = (now: number) => {
       const delta = Math.min((now - previous) / 1_000, 0.05);
@@ -255,34 +285,66 @@ export default function PhysarumNetworkFour() {
       reduceMotionRef.current = reduceMotion.matches;
       const tempo = reduceMotion.matches ? 0.3 : 1;
       timeRef.current += delta;
-      const mould = mouldRef.current;
-      if (mould) {
-        // Whole solver steps only, so the cost is about TEMPO ÷ MAX_STEP solves a second.
-        pendingRef.current = Math.min(
-          pendingRef.current + delta * tempo * TEMPO,
-          MAX_STEP * MAX_SOLVES_PER_FRAME,
-        );
-        const steps = Math.floor(pendingRef.current / MAX_STEP);
-        if (steps > 0) {
-          pendingRef.current -= steps * MAX_STEP;
-          stepMould(mould, steps * MAX_STEP, { ...DEFAULT_PARAMETERS, exponent: exponentRef.current });
-        }
-        const fresh = marksRef.current.filter((mark) => timeRef.current - mark.at < MARK_LIFETIME);
-        marksRef.current = fresh.slice(Math.max(0, fresh.length - MAX_MARKS));
+      const network = networkRef.current;
+      const bodies = bodiesRef.current;
+      if (bodies) {
+        const held = network.held;
+        if (held !== null) holdOpinion(network, held, unitToOpinion(heldUnitRef.current));
+        stepEchoNetwork(network, delta * tempo * TEMPO, parametersRef.current);
+        marksRef.current = marksRef.current.filter((mark) => timeRef.current - mark.at < MARK_LIFETIME);
 
         const size = sizeRef.current;
-        const place = placementFor(mould, layoutFrame(size));
-        draw(context, size, mould, place, DEFAULT_PARAMETERS.decay, marksRef.current, timeRef.current);
+        const field = layoutFrame(size);
+        // The force layout keeps running in every view so returning to it is continuous.
+        relaxBodies(bodies, network.contacts, network.time, CONTACT_MEMORY, field, delta * tempo);
+
+        const current = viewRef.current;
+        const points = pointsRef.current;
+        const targets = targetsRef.current;
+        viewTargets(current, network, bodies, field, dotSpacing(size), targets);
+        const transition = transitionRef.current;
+        const progress = transition
+          ? Math.min(1, (timeRef.current - transition.startedAt) / (reduceMotion.matches ? 0.01 : TRANSITION_SECONDS))
+          : 1;
+        const eased = easeInOut(progress);
+        const follow = 1 - Math.exp(-FOLLOW_RATE * delta);
+        for (let index = 0; index < network.size * 2; index += 1) {
+          points[index] = transition && progress < 1
+            ? transition.from[index]! + (targets[index]! - transition.from[index]!) * eased
+            : points[index]! + (targets[index]! - points[index]!) * follow;
+        }
+        const contactsFrom = transition?.contactsFrom ?? CONTACT_VISIBILITY[current];
+        contactVisibilityRef.current = contactsFrom + (CONTACT_VISIBILITY[current] - contactsFrom) * eased;
+        const axisNow = current === "network" ? 0 : 1;
+        const axisBefore = transition ? (transition.previous === "network" ? 0 : 1) : axisNow;
+        const labels = [
+          ...viewLabels(current, field).map((label) => ({ ...label, alpha: eased })),
+          ...(transition && progress < 1
+            ? viewLabels(transition.previous, field).map((label) => ({ ...label, alpha: 1 - eased }))
+            : []),
+        ];
+        if (transition && progress >= 1) transitionRef.current = null;
+
+        draw(
+          context,
+          size,
+          network,
+          points,
+          marksRef.current,
+          timeRef.current,
+          network.time,
+          reduceMotion.matches ? 0 : DRAW_OUT_SECONDS * TEMPO,
+          contactVisibilityRef.current,
+          axisBefore + (axisNow - axisBefore) * eased,
+          labels,
+        );
 
         sinceSummary += delta;
         if (sinceSummary > 2) {
           sinceSummary = 0;
-          const measure = measureMould(mould);
-          const foods = mould.foods.length;
+          const measure = measureEcho(network);
           setSummary(
-            foods < 2
-              ? `${foods} food source${foods === 1 ? "" : "s"}; nothing flows, so the tubes are thinning away.`
-              : `${foods} food sources${measure.connected ? " joined" : ", not yet all joined,"} by ${measure.living} living tubes with ${measure.loops} loops. ${Math.round(measure.fragile * 100)}% of those tubes would split the food apart if cut.`,
+            `${Math.round(measure.positive * 100)}% lean right, ${Math.round((1 - measure.positive) * 100)}% left; mean conviction ${measure.meanConviction.toFixed(1)}. ${Math.round(measure.crossContacts * 100)}% of recent conversations cross sides.`,
           );
         }
       }
@@ -299,113 +361,63 @@ export default function PhysarumNetworkFour() {
     };
   }, []);
 
-  const pushMark = useCallback((mark: Mark) => {
-    if (!reduceMotionRef.current) marksRef.current.push(mark);
-  }, []);
-
-  /** Cuts tubes, each leaving a mark as thick as the tube was. */
-  const sever = useCallback((mould: Mould, ids: readonly number[]) => {
-    const place = placementFor(mould, layoutFrame(sizeRef.current));
-    for (const id of ids) {
-      const tube = mould.tubes[id]!;
-      const width = 0.6 + place.scale * 0.2 * Math.sqrt(tube.conductance);
-      if (cutTube(mould, id)) pushMark({ kind: "cut", a: tube.a, b: tube.b, width, at: timeRef.current });
-    }
-  }, [pushMark]);
-
-  /** Screen point → sheet units. */
-  const toSheet = (mould: Mould, x: number, y: number) => {
-    const place = placementFor(mould, layoutFrame(sizeRef.current));
-    return { x: (x - place.left) / place.scale, y: (y - place.top) / place.scale, place };
-  };
-
-  const placeFood = useCallback((mould: Mould, junction: number) => {
-    if (addFood(mould, junction)) pushMark({ kind: "food", junction, added: true, at: timeRef.current });
-  }, [pushMark]);
-
-  const takeFood = useCallback((mould: Mould, junction: number) => {
-    if (removeFood(mould, junction)) pushMark({ kind: "food", junction, added: false, at: timeRef.current });
-  }, [pushMark]);
-
-  const pointAt = (event: PointerEvent<HTMLCanvasElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
-  };
-
-  // A press on food picks it up; a drag carries it, a tap removes it. A press
-  // on bare sheet places food on a tap, and a drag cuts every tube it crosses.
-  const onPointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
-    const mould = mouldRef.current;
-    if (!mould || gestureRef.current) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    const { x, y } = pointAt(event);
-    const sheet = toSheet(mould, x, y);
-    const reach = Math.max(18, sheet.place.scale * 0.5) / sheet.place.scale;
-    let food: number | null = null;
-    let best = reach * reach;
-    for (const junction of mould.foods) {
-      const distance = (mould.x[junction]! - sheet.x) ** 2 + (mould.y[junction]! - sheet.y) ** 2;
-      if (distance <= best) {
+  const personAt = useCallback((x: number, y: number) => {
+    const network = networkRef.current;
+    const points = pointsRef.current;
+    let nearest: number | null = null;
+    let best = Infinity;
+    for (let person = 0; person < network.size; person += 1) {
+      const distance = Math.hypot(points[person * 2]! - x, points[person * 2 + 1]! - y);
+      if (distance < best) {
         best = distance;
-        food = junction;
+        nearest = person;
       }
     }
-    gestureRef.current = { id: event.pointerId, startX: x, startY: y, lastX: x, lastY: y, food, moved: false };
+    if (nearest === null) return { nearest: null, hit: false };
+    return { nearest, hit: best <= personRadius(network, sizeRef.current, nearest) + 8 };
+  }, []);
+
+  /** Appends a person who talks every round, at `opinion`, drawn at (x, y). */
+  const addAt = useCallback((x: number, y: number, opinion: number) => {
+    const network = networkRef.current;
+    const bodies = bodiesRef.current;
+    const points = pointsRef.current;
     setTouched(true);
-  };
+    if (!bodies) return;
+    const person = addActivePerson(network, opinion);
+    if (person === null) return;
+    bodies[person] = { x, y, vx: 0, vy: 0 };
+    points[person * 2] = x;
+    points[person * 2 + 1] = y;
+    const transition = transitionRef.current;
+    if (transition) {
+      const from = new Float64Array(network.size * 2);
+      from.set(transition.from.subarray(0, Math.min(transition.from.length, from.length)));
+      from[person * 2] = x;
+      from[person * 2 + 1] = y;
+      transition.from = from;
+    }
+    if (!reduceMotionRef.current) marksRef.current.push({ person, at: timeRef.current });
+  }, []);
 
-  const onPointerMove = (event: PointerEvent<HTMLCanvasElement>) => {
-    const mould = mouldRef.current;
-    const gesture = gestureRef.current;
-    if (!mould || !gesture || gesture.id !== event.pointerId) return;
-    const { x, y } = pointAt(event);
-    if (!gesture.moved && Math.hypot(x - gesture.startX, y - gesture.startY) < DRAG_THRESHOLD) return;
-    gesture.moved = true;
-    const sheet = toSheet(mould, x, y);
-    if (gesture.food !== null) {
-      const target = nearestJunction(mould, sheet.x, sheet.y);
-      if (moveFood(mould, gesture.food, target)) gesture.food = target;
+  // A tap on empty space adds a talkative person: in the opinion and distribution
+  // views at the tapped opinion, in the conversation view at the opinion of the
+  // nearest person there.
+  const tapAt = useCallback((x: number, y: number) => {
+    const network = networkRef.current;
+    const field = layoutFrame(sizeRef.current);
+    let opinion: number;
+    if (viewRef.current === "network") {
+      const { nearest } = personAt(x, y);
+      opinion = nearest === null ? 0 : network.opinion[nearest]!;
     } else {
-      const last = toSheet(mould, gesture.lastX, gesture.lastY);
-      sever(mould, tubesCrossing(mould, last.x, last.y, sheet.x, sheet.y));
+      const { centre, half } = axisGeometry(field);
+      opinion = unitToOpinion((x - centre) / half);
     }
-    gesture.lastX = x;
-    gesture.lastY = y;
-  };
+    addAt(x, y, opinion);
+  }, [addAt, personAt]);
 
-  const endGesture = (event: PointerEvent<HTMLCanvasElement>, cancelled: boolean) => {
-    const mould = mouldRef.current;
-    const gesture = gestureRef.current;
-    if (!gesture || gesture.id !== event.pointerId) return;
-    gestureRef.current = null;
-    if (!mould || cancelled || gesture.moved) return;
-    if (gesture.food !== null) {
-      takeFood(mould, gesture.food);
-      return;
-    }
-    const sheet = toSheet(mould, gesture.startX, gesture.startY);
-    if (mould.foods.length < MAX_FOODS) placeFood(mould, nearestJunction(mould, sheet.x, sheet.y));
-  };
-
-  const onKeyDown = (event: KeyboardEvent<HTMLCanvasElement>) => {
-    const mould = mouldRef.current;
-    if (!mould) return;
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      if (mould.foods.length < MAX_FOODS) placeFood(mould, farthestFromFood(mould));
-    } else if (event.key === "Backspace" || event.key === "Delete") {
-      event.preventDefault();
-      const newest = mould.foods.at(-1);
-      if (newest !== undefined) takeFood(mould, newest);
-    } else if (event.key === "x" || event.key === "X") {
-      event.preventDefault();
-      const tube = busiestTube(mould);
-      if (tube) sever(mould, strokeAcross(mould, tube));
-    } else {
-      return;
-    }
-    setTouched(true);
-  };
+  const width = () => axisGeometry(layoutFrame(sizeRef.current)).half;
 
   return (
     <main className={styles.page}>
@@ -414,44 +426,117 @@ export default function PhysarumNetworkFour() {
         className={styles.canvas}
         role="application"
         tabIndex={0}
-        aria-describedby="physarum-network-summary"
-        aria-label="Slime-mould transport network. Amber dots are food; tubes thicken where protoplasm flows between food and thin away where it does not. Tap bare space to place food, tap food to remove it, drag food to move it, drag across tubes to cut them; cut tubes grow back after about half a minute. Press Enter to place food far from the rest, Delete to remove the newest food, X to cut across the busiest tube. The option below sets whether many parallel tubes or single paths survive."
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={(event) => endGesture(event, false)}
-        onPointerCancel={(event) => endGesture(event, true)}
-        onKeyDown={onKeyDown}
+        aria-describedby="echo-chambers-summary"
+        aria-label="Echo chambers. Each dot is a person; colour shows their side, red right and blue left, stronger with conviction. Arcs are recent conversations, coloured within a side and dark across sides. People mostly talk to those whose opinion is close, and drift toward what they hear. Drag a person sideways to move and hold their opinion; tap empty space to add a person who talks constantly. Arrow Left or Right adds such a person on that side. Options below change how controversial the topic is, how strongly people seek like minds, and the view."
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          const bounds = event.currentTarget.getBoundingClientRect();
+          const x = event.clientX - bounds.left;
+          const y = event.clientY - bounds.top;
+          const { nearest, hit } = personAt(x, y);
+          const person = hit ? nearest : null;
+          pressRef.current = {
+            x,
+            y,
+            person,
+            unit: person === null ? 0 : opinionToUnit(networkRef.current.opinion[person]!),
+            dragging: false,
+          };
+        }}
+        onPointerMove={(event) => {
+          const press = pressRef.current;
+          if (!press || press.person === null) return;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          const x = event.clientX - bounds.left;
+          const y = event.clientY - bounds.top;
+          if (!press.dragging) {
+            if (Math.hypot(x - press.x, y - press.y) < DRAG_THRESHOLD) return;
+            press.dragging = true;
+            setTouched(true);
+          }
+          // Horizontal travel moves the person along the opinion axis, so in the
+          // opinion and distribution views they follow the pointer.
+          heldUnitRef.current = Math.max(-1, Math.min(1, press.unit + (x - press.x) / width()));
+          holdOpinion(networkRef.current, press.person, unitToOpinion(heldUnitRef.current));
+        }}
+        onPointerUp={() => {
+          const press = pressRef.current;
+          pressRef.current = null;
+          if (!press) return;
+          if (press.dragging) holdOpinion(networkRef.current, null);
+          else if (press.person === null) tapAt(press.x, press.y);
+        }}
+        onPointerCancel={() => {
+          pressRef.current = null;
+          holdOpinion(networkRef.current, null);
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          const side = event.key === "ArrowLeft" ? -1 : 1;
+          const field = layoutFrame(sizeRef.current);
+          const { centre, half, top } = axisGeometry(field);
+          const x = centre + side * opinionToUnit(NEWCOMER_OPINION) * half;
+          addAt(viewRef.current === "network" ? centre + side * half * 0.5 : x, top, side * NEWCOMER_OPINION);
+        }}
       />
-      <p id="physarum-network-summary" className={styles.screenReaderOnly}>
+      <p id="echo-chambers-summary" className={styles.screenReaderOnly}>
         {summary}
       </p>
 
       <div className={styles.controls}>
         {!touched && !optionsOpen && (
-          <p className={styles.hint}>누르면 먹이를 놓고, 그으면 관을 자릅니다</p>
+          <p className={styles.hint}>사람을 좌우로 끌면 의견이 바뀌고, 빈 곳을 누르면 말 많은 사람이 생깁니다</p>
         )}
         {optionsOpen && (
-          <div id="physarum-network-options" className={styles.options}>
+          <div id="echo-chambers-options" className={styles.options}>
             <p className={styles.about}>
-              먹이 사이로 원형질이 흐르고, 많이 흐르는 관은 굵어지며 적게 흐르는 관은 가늘어져
-              사라집니다. 굵어진 관은 다음 흐름을 더 끌어오기 때문에, 흐름과 관의 굵기가 서로를
-              바꾸며 먹이를 잇는 짧고도 끊김에 강한 그물을 남깁니다. 지수가 높으면 가장 센 길만,
-              낮으면 여러 갈래가 함께 살아남습니다. (점균 수송망 모델, Tero·Kobayashi·Nakagaki 2007;
-              Tero 외 2010)
+              사람마다 의견이 있고, 부호는 편을, 크기는 확신을 뜻합니다. 말을 거는 사람은 의견이
+              가까운 상대를 더 자주 고르고, 각자는 들은 의견 쪽으로 움직이며, 주제가 논쟁적일수록
+              확신을 더 세게 전합니다. 의견이 대화 상대를 정하고 대화 상대가 다시 의견을 정하므로,
+              비슷한 사람만 찾을수록 두 진영이 각자의 반향실에 갇힙니다.
+              (Baumann·Lorenz-Spreen·Sokolov·Starnini 2020)
             </p>
+            <div className={styles.views} role="group" aria-label="보기">
+              {VIEWS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={styles.control}
+                  aria-pressed={view === option.id}
+                  onClick={() => changeView(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
             <label className={styles.balance}>
-              <span>여러 갈래</span>
+              <span>온건</span>
               <input
-                aria-label="센 흐름의 관만 남기는 정도 (흐름 지수)"
-                aria-valuetext={`지수 ${exponent.toFixed(2)}`}
-                max={EXPONENT_RANGE[1]}
-                min={EXPONENT_RANGE[0]}
-                step="0.01"
+                aria-label="주제가 얼마나 논쟁적인지"
+                aria-valuetext={`논쟁성 ${controversy.toFixed(2)}`}
+                max={CONTROVERSY_RANGE[1]}
+                min={CONTROVERSY_RANGE[0]}
+                step="0.05"
                 type="range"
-                value={exponent}
-                onChange={(event) => setExponent(Number(event.target.value))}
+                value={controversy}
+                onChange={(event) => setControversy(Number(event.target.value))}
               />
-              <span>한 길</span>
+              <span>논쟁</span>
+            </label>
+            <label className={styles.balance}>
+              <span>아무나</span>
+              <input
+                aria-label="의견이 비슷한 사람을 골라 대화하는 정도"
+                aria-valuetext={`동질성 ${homophily.toFixed(2)}`}
+                max={HOMOPHILY_RANGE[1]}
+                min={HOMOPHILY_RANGE[0]}
+                step="0.05"
+                type="range"
+                value={homophily}
+                onChange={(event) => setHomophily(Number(event.target.value))}
+              />
+              <span>비슷한 사람만</span>
             </label>
           </div>
         )}
@@ -459,7 +544,7 @@ export default function PhysarumNetworkFour() {
           type="button"
           className={`${styles.control} ${styles.toggle}`}
           aria-expanded={optionsOpen}
-          aria-controls="physarum-network-options"
+          aria-controls="echo-chambers-options"
           onClick={() => setOptionsOpen((open) => !open)}
         >
           {optionsOpen ? "닫기" : "옵션"}

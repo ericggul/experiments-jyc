@@ -1,41 +1,24 @@
-// Browser-side geometry for the conversation view. Position encodes nothing but
-// who has talked recently: a spring along every recent contact, weakening with
-// its age, repulsion between every pair and a weak pull toward the centre.
-// When homophily confines conversations to each side, the drawing splits.
-
-import type { EchoContact } from "./model";
-
-const GRAVITY = 0.9;
-const REPULSION = 0.4;
-const SPRING = 2.2;
+// Browser-side geometry. Springs along links (direction ignored), repulsion
+// between every pair, a weak pull toward the centre, and a collision pass so
+// rank-sized discs never overlap. Position never feeds back into the model.
 
 export type Body = { x: number; y: number; vx: number; vy: number };
-
 export type Frame = { width: number; height: number };
+export type Pair = { readonly from: number; readonly to: number };
+
+const GRAVITY = 0.9;
+const REPULSION = 0.35;
+const SPRING = 1.6;
+const GAP = 4;
 
 export function idealLength(frame: Frame, count: number) {
   return Math.sqrt((frame.width * frame.height * 0.42) / Math.max(1, count));
 }
 
-export function createBodies(count: number, frame: Frame, seed = 0x2f6b31d9): Body[] {
-  let state = seed >>> 0 || 1;
-  const random = () => {
-    state ^= state << 13;
-    state ^= state >>> 17;
-    state ^= state << 5;
-    return (state >>> 0) / 4_294_967_296;
-  };
-  const radius = Math.min(frame.width, frame.height) * 0.32;
-  return Array.from({ length: count }, () => {
-    const angle = random() * Math.PI * 2;
-    const distance = Math.sqrt(random()) * radius;
-    return {
-      x: frame.width / 2 + Math.cos(angle) * distance,
-      y: frame.height / 2 + Math.sin(angle) * distance,
-      vx: 0,
-      vy: 0,
-    };
-  });
+export function bodyAt(frame: Frame, random: () => number): Body {
+  const angle = random() * Math.PI * 2;
+  const distance = Math.sqrt(random()) * Math.min(frame.width, frame.height) * 0.3;
+  return { x: frame.width / 2 + Math.cos(angle) * distance, y: frame.height / 2 + Math.sin(angle) * distance, vx: 0, vy: 0 };
 }
 
 export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
@@ -47,18 +30,8 @@ export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   }
 }
 
-/**
- * One relaxation step; `delta` in seconds. A contact made at model time `at`
- * pulls with weight 1 − (time − at) / memory. O(n²) repulsion is fine at n ≤ 400.
- */
-export function relaxBodies(
-  bodies: Body[],
-  contacts: readonly EchoContact[],
-  time: number,
-  memory: number,
-  frame: Frame,
-  delta: number,
-) {
+/** One relaxation step; `radii` are the drawn disc radii. */
+export function relaxBodies(bodies: Body[], links: readonly Pair[], radii: ArrayLike<number>, frame: Frame, delta: number) {
   const count = bodies.length;
   const length = idealLength(frame, count);
   const forceX = new Float64Array(count);
@@ -72,8 +45,7 @@ export function relaxBodies(
       const b = bodies[second]!;
       const dx = a.x - b.x;
       const dy = a.y - b.y;
-      const squared = dx * dx + dy * dy + softening;
-      const push = repulsion / squared;
+      const push = repulsion / (dx * dx + dy * dy + softening);
       forceX[first]! += dx * push;
       forceY[first]! += dy * push;
       forceX[second]! -= dx * push;
@@ -81,43 +53,63 @@ export function relaxBodies(
     }
   }
 
-  for (const contact of contacts) {
-    const freshness = 1 - (time - contact.at) / memory;
-    if (freshness <= 0) continue;
-    const a = bodies[contact.source]!;
-    const b = bodies[contact.target]!;
+  for (const link of links) {
+    const a = bodies[link.from]!;
+    const b = bodies[link.to]!;
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const distance = Math.max(1e-3, Math.hypot(dx, dy));
-    const pull = ((distance - length * 0.62) / distance) * SPRING * freshness;
-    forceX[contact.source]! += dx * pull;
-    forceY[contact.source]! += dy * pull;
-    forceX[contact.target]! -= dx * pull;
-    forceY[contact.target]! -= dy * pull;
+    // Rest length includes both discs, so big pages keep their neighbours at the rim.
+    const rest = length * 0.6 + radii[link.from]! + radii[link.to]!;
+    const pull = ((distance - rest) / distance) * SPRING;
+    forceX[link.from]! += dx * pull;
+    forceY[link.from]! += dy * pull;
+    forceX[link.to]! -= dx * pull;
+    forceY[link.to]! -= dy * pull;
   }
 
-  const centreX = frame.width / 2;
-  const centreY = frame.height / 2;
   const short = Math.min(frame.width, frame.height);
   const gravityX = GRAVITY * (short / frame.width);
   const gravityY = GRAVITY * (short / frame.height);
   const step = Math.min(delta, 1 / 30);
   const damping = Math.exp(-6 * step);
   const maxSpeed = length * 6;
-  const margin = Math.min(frame.width, frame.height) * 0.04;
-
   for (let index = 0; index < count; index += 1) {
     const body = bodies[index]!;
-    const fx = forceX[index]! - (body.x - centreX) * gravityX;
-    const fy = forceY[index]! - (body.y - centreY) * gravityY;
-    body.vx = (body.vx + fx * step) * damping;
-    body.vy = (body.vy + fy * step) * damping;
+    body.vx = (body.vx + (forceX[index]! - (body.x - frame.width / 2) * gravityX) * step) * damping;
+    body.vy = (body.vy + (forceY[index]! - (body.y - frame.height / 2) * gravityY) * step) * damping;
     const speed = Math.hypot(body.vx, body.vy);
     if (speed > maxSpeed) {
       body.vx *= maxSpeed / speed;
       body.vy *= maxSpeed / speed;
     }
-    body.x = Math.min(frame.width - margin, Math.max(margin, body.x + body.vx * step));
-    body.y = Math.min(frame.height - margin, Math.max(margin, body.y + body.vy * step));
+    body.x += body.vx * step;
+    body.y += body.vy * step;
+  }
+
+  // Collision: separate overlapping discs half each way.
+  for (let first = 0; first < count; first += 1) {
+    const a = bodies[first]!;
+    for (let second = first + 1; second < count; second += 1) {
+      const b = bodies[second]!;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.hypot(dx, dy) || 1e-3;
+      const overlap = radii[first]! + radii[second]! + GAP - distance;
+      if (overlap <= 0) continue;
+      const shiftX = (dx / distance) * overlap * 0.5;
+      const shiftY = (dy / distance) * overlap * 0.5;
+      a.x -= shiftX;
+      a.y -= shiftY;
+      b.x += shiftX;
+      b.y += shiftY;
+    }
+  }
+
+  for (let index = 0; index < count; index += 1) {
+    const body = bodies[index]!;
+    const r = radii[index]!;
+    body.x = Math.min(frame.width - r - 2, Math.max(r + 2, body.x));
+    body.y = Math.min(frame.height - r - 2, Math.max(r + 2, body.y));
   }
 }

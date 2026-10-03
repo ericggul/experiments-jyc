@@ -1,9 +1,9 @@
-// Browser-side geometry. Position encodes nothing but the current physical ties:
-// springs along every contact, repulsion between every pair, weak pull toward
-// the centre. When aware people rewire away from the infected, the drawing
-// reorganizes. The virtual layer is drawn on the same positions and never moves them.
+// Browser-side geometry for the conversation view. Position encodes nothing but
+// who has talked recently: a spring along every recent contact, weakening with
+// its age, repulsion between every pair and a weak pull toward the centre.
+// When homophily confines conversations to each side, the drawing splits.
 
-import type { Tie } from "./model";
+import type { EchoContact } from "./model";
 
 const GRAVITY = 0.9;
 const REPULSION = 0.4;
@@ -47,10 +47,15 @@ export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   }
 }
 
-/** One relaxation step; `delta` in seconds. O(n²) repulsion is fine at n ≈ 240. */
+/**
+ * One relaxation step; `delta` in seconds. A contact made at model time `at`
+ * pulls with weight 1 − (time − at) / memory. O(n²) repulsion is fine at n ≤ 400.
+ */
 export function relaxBodies(
   bodies: Body[],
-  ties: readonly Tie[],
+  contacts: readonly EchoContact[],
+  time: number,
+  memory: number,
   frame: Frame,
   delta: number,
 ) {
@@ -76,17 +81,19 @@ export function relaxBodies(
     }
   }
 
-  for (const tie of ties) {
-    const a = bodies[tie.a]!;
-    const b = bodies[tie.b]!;
+  for (const contact of contacts) {
+    const freshness = 1 - (time - contact.at) / memory;
+    if (freshness <= 0) continue;
+    const a = bodies[contact.source]!;
+    const b = bodies[contact.target]!;
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const distance = Math.max(1e-3, Math.hypot(dx, dy));
-    const pull = ((distance - length * 0.62) / distance) * SPRING;
-    forceX[tie.a]! += dx * pull;
-    forceY[tie.a]! += dy * pull;
-    forceX[tie.b]! -= dx * pull;
-    forceY[tie.b]! -= dy * pull;
+    const pull = ((distance - length * 0.62) / distance) * SPRING * freshness;
+    forceX[contact.source]! += dx * pull;
+    forceY[contact.source]! += dy * pull;
+    forceX[contact.target]! -= dx * pull;
+    forceY[contact.target]! -= dy * pull;
   }
 
   const centreX = frame.width / 2;

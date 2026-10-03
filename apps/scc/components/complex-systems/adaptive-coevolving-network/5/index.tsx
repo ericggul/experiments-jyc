@@ -1,61 +1,57 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
-import styles from "./structural-balance.module.css";
-import { createBodies, relaxBodies, rescaleBodies, type Body, type Frame } from "./layout";
+import { useCallback, useEffect, useRef, useState } from "react";
+import styles from "./threshold-network.module.css";
 import {
-  addPerson,
-  createSignedNetwork,
+  createBodies,
+  idealLength,
+  relaxBodies,
+  rescaleBodies,
+  type Body,
+  type Frame,
+} from "./layout";
+import {
+  createThresholdNetwork,
+  DEFAULT_MEAN_INPUTS,
+  DEFAULT_NODES,
   DEFAULT_PARAMETERS,
-  factions,
-  flipRelation,
-  isolatePerson,
-  MAX_PEOPLE,
-  measureBalance,
-  pairTension,
-  RECONCILE_RANGE,
-  relation,
-  stepSignedNetwork,
-  UNREST_RANGE,
-  type SignedNetwork,
+  flipNode,
+  isActive,
+  isDamaged,
+  MEAN_INPUT_RANGE,
+  measureThreshold,
+  setMeanInputs,
+  stepThresholdNetwork,
+  type ThresholdEvent,
+  type ThresholdNetwork,
 } from "./model";
-import {
-  CELL_VISIBILITY,
-  LINE_VISIBILITY,
-  matrixGeometry,
-  viewTargets,
-  VIEWS,
-  type ViewId,
-} from "./views";
+import { LINK_VISIBILITY, viewLabels, viewTargets, VIEWS, type ViewId } from "./views";
 
-/** Model time units per second; one wrong relationship among 30 heals in ≈ .4 s. */
-const TEMPO = 1;
+/** Parallel updates per second; the frozen window is then two seconds. */
+const UPDATES_PER_SECOND = 8;
+const REDUCED_UPDATES_PER_SECOND = 3;
 const INK = "17, 17, 15";
-const ENEMY = "214, 58, 34";
-const MARK_LIFETIME = 0.8;
-const MAX_MARKS = 120;
+const ACTIVE = "214, 58, 34";
+const MARK_LIFETIME = 0.9;
+const MAX_MARKS = 160;
 const TRANSITION_SECONDS = 0.9;
 /** How quickly points follow their target once a view has settled. */
 const FOLLOW_RATE = 12;
 /** Space kept clear for the collapsed options toggle. */
 const CONTROL_BAND = 56;
-/** Pointer travel that turns a press into a drag. */
-const DRAG_THRESHOLD = 6;
-/** Tension buckets for drawing: share of a pair's triangles that are unbalanced. */
-const TENSION_STEPS = [0, 0.15, 0.4, 0.7] as const;
+/** How often the connectivity slider catches up with the network. */
+const SLIDER_REFRESH = 0.4;
 
 type Mark =
-  | { kind: "flip"; a: number; b: number; sign: 1 | -1; triangle: readonly [number, number, number] | null; at: number }
-  | { kind: "person"; person: number; sign: 1 | -1; at: number };
+  | { kind: "gain" | "lose"; source: number; target: number; at: number }
+  | { kind: "flip"; node: number; at: number };
 
 type Transition = {
   from: Float64Array;
-  linesFrom: number;
-  cellsFrom: number;
+  previous: ViewId;
+  linksFrom: number;
   startedAt: number;
 };
-
-type Drag = { from: number; x: number; y: number; startX: number; startY: number; moved: boolean };
 
 function layoutFrame(size: Frame): Frame {
   return { width: size.width, height: Math.max(size.height * 0.5, size.height - CONTROL_BAND) };
@@ -65,202 +61,189 @@ function easeInOut(value: number) {
   return value < 0.5 ? 4 * value ** 3 : 1 - (-2 * value + 2) ** 3 / 2;
 }
 
-function personRadius(size: Frame) {
-  return Math.max(3, Math.min(5, Math.min(size.width, size.height) * 0.009));
+function nodeRadius(network: ThresholdNetwork, size: Frame, node: number) {
+  const base = Math.max(2.5, Math.min(5, idealLength(size, network.size) * 0.1));
+  return base * (0.8 + Math.sqrt(network.inputs[node]!.length) * 0.16);
 }
 
-function tensionStep(tension: number) {
-  let step = 0;
-  while (step < TENSION_STEPS.length - 1 && tension > TENSION_STEPS[step + 1]!) step += 1;
-  return tension > 0 ? Math.max(1, step) : 0;
-}
-
-function nearestPerson(points: Float64Array, count: number, x: number, y: number, except = -1) {
-  let nearest = -1;
-  let best = Infinity;
-  for (let person = 0; person < count; person += 1) {
-    if (person === except) continue;
-    const distance = Math.hypot(points[person * 2]! - x, points[person * 2 + 1]! - y);
-    if (distance < best) {
-      best = distance;
-      nearest = person;
-    }
-  }
-  return { person: nearest, distance: best };
+function roundInputs(value: number) {
+  return Math.round(value * 20) / 20;
 }
 
 function draw(
   context: CanvasRenderingContext2D,
   size: Frame,
-  field: Frame,
-  network: SignedNetwork,
+  network: ThresholdNetwork,
+  active: Uint8Array,
   points: Float64Array,
-  tension: Float32Array,
   marks: readonly Mark[],
   time: number,
-  lines: number,
-  cells: number,
-  drag: Drag | null,
+  linkVisibility: number,
+  labels: readonly { text: string; x: number; y: number; align: CanvasTextAlign; alpha: number }[],
 ) {
   context.clearRect(0, 0, size.width, size.height);
   context.lineCap = "round";
-  const count = network.size;
-  const x = (person: number) => points[person * 2]!;
-  const y = (person: number) => points[person * 2 + 1]!;
-  const line = (a: number, b: number) => {
-    context.moveTo(x(a), y(a));
-    context.lineTo(x(b), y(b));
-  };
+  const radii = new Float64Array(network.size);
+  for (let node = 0; node < network.size; node += 1) radii[node] = nodeRadius(network, size, node);
 
-  // Friendship in ink, enmity in red. A relationship that sits in unbalanced
-  // triangles is drawn stronger: those are the only places where the next
-  // change can happen.
-  if (lines > 0.01) {
-    for (const sign of [1, -1] as const) {
-      for (let step = 0; step < TENSION_STEPS.length; step += 1) {
-        const strain = step === 0 ? 0 : TENSION_STEPS[step]! + 0.15;
-        const alpha = ((sign > 0 ? 0.13 : 0.1) + 0.45 * strain) * lines;
-        context.strokeStyle = `rgba(${sign > 0 ? INK : ENEMY}, ${Math.min(0.85, alpha)})`;
-        context.lineWidth = step === 0 ? 0.7 : 1;
-        context.beginPath();
-        for (let a = 0; a < count; a += 1) {
-          for (let b = a + 1; b < count; b += 1) {
-            if (relation(network, a, b) !== sign) continue;
-            if (tensionStep(tension[a * network.stride + b]!) === step) line(a, b);
-          }
-        }
-        context.stroke();
-      }
-    }
-  }
-
-  // Matrix cells sit at (x of column person, y of row person), so they follow
-  // the people as camps reorder.
-  const { cell } = matrixGeometry(field, count);
-  if (cells > 0.01) {
-    const box = cell * 0.86;
-    for (const sign of [1, -1] as const) {
-      context.fillStyle = `rgba(${sign > 0 ? INK : ENEMY}, ${(sign > 0 ? 0.78 : 0.62) * cells})`;
-      context.beginPath();
-      for (let a = 0; a < count; a += 1) {
-        for (let b = a + 1; b < count; b += 1) {
-          if (relation(network, a, b) !== sign) continue;
-          context.rect(x(b) - box / 2, y(a) - box / 2, box, box);
-          context.rect(x(a) - box / 2, y(b) - box / 2, box, box);
+  // Links from still nodes quietly in ink; links from blinking nodes in red,
+  // because only they pass change on. Excitation ends in an arrow, inhibition
+  // in a bar, just short of the target.
+  for (const [colour, alpha, fromActive] of [
+    [INK, 0.16, 0],
+    [ACTIVE, 0.42, 1],
+  ] as const) {
+    const strength = alpha * linkVisibility;
+    if (strength < 0.01) continue;
+    context.strokeStyle = `rgba(${colour}, ${strength})`;
+    context.lineWidth = 0.8;
+    context.beginPath();
+    for (const list of network.inputs) {
+      for (const link of list) {
+        if (active[link.source] !== fromActive) continue;
+        const sx = points[link.source * 2]!;
+        const sy = points[link.source * 2 + 1]!;
+        const tx = points[link.target * 2]!;
+        const ty = points[link.target * 2 + 1]!;
+        const distance = Math.hypot(tx - sx, ty - sy);
+        const gap = radii[link.target]! + 2;
+        if (distance <= gap + 2) continue;
+        const ux = (tx - sx) / distance;
+        const uy = (ty - sy) / distance;
+        const ex = tx - ux * gap;
+        const ey = ty - uy * gap;
+        context.moveTo(sx, sy);
+        context.lineTo(ex, ey);
+        if (link.weight > 0) {
+          context.moveTo(ex - ux * 4 - uy * 2.4, ey - uy * 4 + ux * 2.4);
+          context.lineTo(ex, ey);
+          context.lineTo(ex - ux * 4 + uy * 2.4, ey - uy * 4 - ux * 2.4);
+        } else {
+          context.moveTo(ex - uy * 3, ey + ux * 3);
+          context.lineTo(ex + uy * 3, ey - ux * 3);
         }
       }
-      context.fill();
     }
+    context.stroke();
   }
 
   for (const mark of marks) {
     const progress = (time - mark.at) / MARK_LIFETIME;
     if (progress < 0 || progress >= 1) continue;
     const fade = 1 - progress;
-    if (mark.kind === "person") {
-      context.strokeStyle = `rgba(${mark.sign > 0 ? INK : ENEMY}, ${0.7 * fade})`;
+    if (mark.kind === "flip") {
+      context.strokeStyle = `rgba(${ACTIVE}, ${0.7 * fade})`;
       context.lineWidth = 1.2;
       context.beginPath();
-      context.arc(x(mark.person), y(mark.person), 6 + progress * 16, 0, Math.PI * 2);
+      context.arc(points[mark.node * 2]!, points[mark.node * 2 + 1]!, 5 + progress * 16, 0, Math.PI * 2);
       context.stroke();
       continue;
     }
-    const colour = mark.sign > 0 ? INK : ENEMY;
-    if (lines > 0.01) {
-      // The unbalanced triangle that forced the change flashes thinly; the
-      // changed relationship is drawn heavy in its new sign.
-      if (mark.triangle) {
-        const [first, second, third] = mark.triangle;
-        context.strokeStyle = `rgba(${INK}, ${0.4 * fade * lines})`;
-        context.lineWidth = 0.9;
-        context.beginPath();
-        context.moveTo(x(first), y(first));
-        context.lineTo(x(second), y(second));
-        context.lineTo(x(third), y(third));
-        context.closePath();
-        context.stroke();
-      }
-      context.strokeStyle = `rgba(${colour}, ${0.9 * fade * lines})`;
-      context.lineWidth = 2.4;
+    const sx = points[mark.source * 2]!;
+    const sy = points[mark.source * 2 + 1]!;
+    const tx = points[mark.target * 2]!;
+    const ty = points[mark.target * 2 + 1]!;
+    if (mark.kind === "lose") {
+      // A blinking node drops an input: the cut link lingers dashed in red.
+      context.setLineDash([2, 4]);
+      context.strokeStyle = `rgba(${ACTIVE}, ${0.6 * fade})`;
+      context.lineWidth = 1;
       context.beginPath();
-      line(mark.a, mark.b);
+      context.moveTo(sx, sy);
+      context.lineTo(tx, ty);
+      context.stroke();
+      context.setLineDash([]);
+    } else {
+      // A still node gains an input: the new link is drawn out toward it.
+      const reach = Math.min(1, progress * 3);
+      context.strokeStyle = `rgba(${INK}, ${0.2 + 0.6 * fade})`;
+      context.lineWidth = 1.6;
+      context.beginPath();
+      context.moveTo(sx, sy);
+      context.lineTo(sx + (tx - sx) * reach, sy + (ty - sy) * reach);
       context.stroke();
     }
-    if (cells > 0.01) {
-      const box = cell * 1.5;
-      context.strokeStyle = `rgba(${colour}, ${0.9 * fade * cells})`;
-      context.lineWidth = 1.4;
-      context.strokeRect(x(mark.b) - box / 2, y(mark.a) - box / 2, box, box);
-      context.strokeRect(x(mark.a) - box / 2, y(mark.b) - box / 2, box, box);
+  }
+
+  // Nodes: on is filled, off is an open ring; red while blinking, ink while
+  // still. A second red ring marks nodes a flip has changed (the damage).
+  for (let node = 0; node < network.size; node += 1) {
+    const x = points[node * 2]!;
+    const y = points[node * 2 + 1]!;
+    const radius = radii[node]!;
+    const colour = active[node] ? ACTIVE : INK;
+    if (isDamaged(network, node)) {
+      context.strokeStyle = `rgba(${ACTIVE}, 0.75)`;
+      context.lineWidth = 1.2;
+      context.beginPath();
+      context.arc(x, y, radius + 3.5, 0, Math.PI * 2);
+      context.stroke();
+    }
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    if (network.state[node]! > 0) {
+      context.fillStyle = `rgb(${colour})`;
+      context.fill();
+    } else {
+      context.fillStyle = "#ffffff";
+      context.fill();
+      context.strokeStyle = `rgb(${colour})`;
+      context.lineWidth = 1.3;
+      context.beginPath();
+      context.arc(x, y, radius - 0.65, 0, Math.PI * 2);
+      context.stroke();
     }
   }
 
-  if (drag?.moved) {
-    const target = nearestPerson(points, count, drag.x, drag.y, drag.from);
-    const snapped = target.person >= 0 && target.distance <= personRadius(size) + 12;
-    // While dragging, the line previews the sign the relationship will take.
-    const next = snapped ? -relation(network, drag.from, target.person) : 0;
-    context.setLineDash(snapped ? [] : [3, 4]);
-    context.strokeStyle = `rgba(${next < 0 ? ENEMY : INK}, ${snapped ? 0.9 : 0.5})`;
-    context.lineWidth = snapped ? 2.4 : 1.2;
-    context.beginPath();
-    context.moveTo(x(drag.from), y(drag.from));
-    context.lineTo(snapped ? x(target.person) : drag.x, snapped ? y(target.person) : drag.y);
-    context.stroke();
-    context.setLineDash([]);
+  context.font = "12px Arial, Helvetica, sans-serif";
+  context.textBaseline = "middle";
+  for (const label of labels) {
+    if (label.alpha < 0.01) continue;
+    context.fillStyle = `rgba(${INK}, ${0.55 * label.alpha})`;
+    context.textAlign = label.align;
+    context.fillText(label.text, label.x, label.y);
   }
-
-  const radius = Math.min(personRadius(size), Math.max(1.5, cell * 0.42 + (1 - cells) * 5));
-  context.fillStyle = `rgb(${INK})`;
-  context.beginPath();
-  for (let person = 0; person < count; person += 1) {
-    context.moveTo(x(person) + radius, y(person));
-    context.arc(x(person), y(person), radius, 0, Math.PI * 2);
-  }
-  context.fill();
 }
 
-export default function StructuralBalanceFive() {
+export default function ThresholdNetworkFive() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const networkRef = useRef<SignedNetwork>(createSignedNetwork());
+  const networkRef = useRef<ThresholdNetwork>(createThresholdNetwork());
   const bodiesRef = useRef<Body[] | null>(null);
-  const pointsRef = useRef(new Float64Array(MAX_PEOPLE * 2));
-  const targetsRef = useRef(new Float64Array(MAX_PEOPLE * 2));
-  const tensionRef = useRef(new Float32Array(MAX_PEOPLE * MAX_PEOPLE));
-  const campsRef = useRef<Int8Array>(new Int8Array(0));
+  const pointsRef = useRef(new Float64Array(DEFAULT_NODES * 2));
+  const targetsRef = useRef(new Float64Array(DEFAULT_NODES * 2));
   const sizeRef = useRef<Frame>({ width: 0, height: 0 });
   const marksRef = useRef<Mark[]>([]);
   const timeRef = useRef(0);
-  const dragRef = useRef<Drag | null>(null);
-  const reconcileRef = useRef(DEFAULT_PARAMETERS.reconcile);
-  const unrestRef = useRef(DEFAULT_PARAMETERS.unrest);
   const reduceMotionRef = useRef(false);
   const viewRef = useRef<ViewId>("network");
-  const linesRef = useRef(LINE_VISIBILITY.network);
-  const cellsRef = useRef(CELL_VISIBILITY.network);
+  const linkVisibilityRef = useRef(LINK_VISIBILITY.network);
   const transitionRef = useRef<Transition | null>(null);
-  const [reconcile, setReconcile] = useState(DEFAULT_PARAMETERS.reconcile);
-  const [unrest, setUnrest] = useState(DEFAULT_PARAMETERS.unrest);
+  const draggingRef = useRef(false);
+  const [meanInputs, setMeanInputsValue] = useState(DEFAULT_MEAN_INPUTS);
   const [view, setView] = useState<ViewId>("network");
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const [summary, setSummary] = useState("");
 
-  useEffect(() => {
-    reconcileRef.current = reconcile;
-  }, [reconcile]);
-
-  useEffect(() => {
-    unrestRef.current = unrest;
-  }, [unrest]);
+  const pushMarks = useCallback((events: readonly ThresholdEvent[]) => {
+    if (reduceMotionRef.current) return;
+    for (const event of events) {
+      marksRef.current.push({
+        kind: event.kind,
+        source: event.link.source,
+        target: event.link.target,
+        at: timeRef.current,
+      });
+    }
+  }, []);
 
   const changeView = useCallback((next: ViewId) => {
     setView(next);
     if (next === viewRef.current) return;
     transitionRef.current = {
-      from: pointsRef.current.slice(0, networkRef.current.size * 2),
-      linesFrom: linesRef.current,
-      cellsFrom: cellsRef.current,
+      from: pointsRef.current.slice(),
+      previous: viewRef.current,
+      linksFrom: linkVisibilityRef.current,
       startedAt: timeRef.current,
     };
     viewRef.current = next;
@@ -274,7 +257,9 @@ export default function StructuralBalanceFive() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let previous = performance.now();
+    let clock = 0;
     let sinceSummary = 0;
+    let sinceSlider = 0;
 
     const sizeCanvas = () => {
       const bounds = canvas.getBoundingClientRect();
@@ -287,9 +272,9 @@ export default function StructuralBalanceFive() {
         rescaleBodies(bodiesRef.current, layoutFrame(sizeRef.current), layoutFrame(next));
       } else {
         bodiesRef.current = createBodies(networkRef.current.size, layoutFrame(next));
-        bodiesRef.current.forEach((body, person) => {
-          pointsRef.current[person * 2] = body.x;
-          pointsRef.current[person * 2 + 1] = body.y;
+        bodiesRef.current.forEach((body, node) => {
+          pointsRef.current[node * 2] = body.x;
+          pointsRef.current[node * 2 + 1] = body.y;
         });
       }
       sizeRef.current = next;
@@ -299,42 +284,30 @@ export default function StructuralBalanceFive() {
       const delta = Math.min((now - previous) / 1_000, 0.05);
       previous = now;
       reduceMotionRef.current = reduceMotion.matches;
-      const tempo = reduceMotion.matches ? 0.3 : 1;
       timeRef.current += delta;
       const network = networkRef.current;
       const bodies = bodiesRef.current;
       if (bodies) {
-        const events = stepSignedNetwork(network, delta * tempo * TEMPO, {
-          ...DEFAULT_PARAMETERS,
-          reconcile: reconcileRef.current,
-          unrest: unrestRef.current,
-        });
-        const marks = marksRef.current;
-        if (!reduceMotion.matches) {
-          for (const event of events) {
-            marks.push({
-              kind: "flip",
-              a: event.a,
-              b: event.b,
-              sign: event.sign,
-              triangle: event.kind === "resolve" ? event.triangle : null,
-              at: timeRef.current,
-            });
-          }
+        // The displayed trajectory is the model's trajectory: one parallel
+        // update per tick, each followed by its topology changes.
+        clock += delta * (reduceMotion.matches ? REDUCED_UPDATES_PER_SECOND : UPDATES_PER_SECOND);
+        while (clock >= 1) {
+          clock -= 1;
+          pushMarks(stepThresholdNetwork(network, DEFAULT_PARAMETERS));
         }
-        const fresh = marks.filter((mark) => timeRef.current - mark.at < MARK_LIFETIME);
+        const fresh = marksRef.current.filter((mark) => timeRef.current - mark.at < MARK_LIFETIME);
         marksRef.current = fresh.slice(Math.max(0, fresh.length - MAX_MARKS));
-        pairTension(network, tensionRef.current);
-        campsRef.current = factions(network, campsRef.current);
         // The force layout keeps running in every view so returning to it is continuous.
+        relaxBodies(bodies, network.inputs, layoutFrame(sizeRef.current), delta * (reduceMotion.matches ? 0.3 : 1));
+
         const size = sizeRef.current;
         const field = layoutFrame(size);
-        relaxBodies(bodies, network, field, delta * tempo);
-
         const current = viewRef.current;
         const points = pointsRef.current;
         const targets = targetsRef.current;
-        viewTargets(current, network.size, campsRef.current, bodies, field, targets);
+        const active = new Uint8Array(network.size);
+        for (let node = 0; node < network.size; node += 1) active[node] = isActive(network, node) ? 1 : 0;
+        viewTargets(current, network, active, bodies, field, targets);
         const transition = transitionRef.current;
         const progress = transition
           ? Math.min(1, (timeRef.current - transition.startedAt) / (reduceMotion.matches ? 0.01 : TRANSITION_SECONDS))
@@ -346,34 +319,31 @@ export default function StructuralBalanceFive() {
             ? transition.from[index]! + (targets[index]! - transition.from[index]!) * eased
             : points[index]! + (targets[index]! - points[index]!) * follow;
         }
-        const linesFrom = transition?.linesFrom ?? LINE_VISIBILITY[current];
-        const cellsFrom = transition?.cellsFrom ?? CELL_VISIBILITY[current];
-        linesRef.current = linesFrom + (LINE_VISIBILITY[current] - linesFrom) * eased;
-        cellsRef.current = cellsFrom + (CELL_VISIBILITY[current] - cellsFrom) * eased;
+        const linksFrom = transition?.linksFrom ?? LINK_VISIBILITY[current];
+        linkVisibilityRef.current = linksFrom + (LINK_VISIBILITY[current] - linksFrom) * eased;
+        const labels = [
+          ...viewLabels(current, field).map((label) => ({ ...label, alpha: eased })),
+          ...(transition && progress < 1
+            ? viewLabels(transition.previous, field).map((label) => ({ ...label, alpha: 1 - eased }))
+            : []),
+        ];
         if (transition && progress >= 1) transitionRef.current = null;
 
-        draw(
-          context,
-          size,
-          field,
-          network,
-          points,
-          tensionRef.current,
-          marksRef.current,
-          timeRef.current,
-          linesRef.current,
-          cellsRef.current,
-          dragRef.current,
-        );
+        draw(context, size, network, active, points, marksRef.current, timeRef.current, linkVisibilityRef.current, labels);
 
+        // The slider shows the network's own K whenever nobody is holding it.
+        sinceSlider += delta;
+        if (sinceSlider > SLIDER_REFRESH && !draggingRef.current) {
+          sinceSlider = 0;
+          setMeanInputsValue(roundInputs(network.linkCount / network.size));
+        }
         sinceSummary += delta;
         if (sinceSummary > 2) {
           sinceSummary = 0;
-          const measure = measureBalance(network);
-          const camps = measure.minority === 0
-            ? "Everyone is in one camp."
-            : `Two camps of ${network.size - measure.minority} and ${measure.minority}.`;
-          setSummary(`${measure.balanced ? "Balanced." : `${measure.unbalanced} unbalanced triangles.`} ${camps} ${Math.round(measure.friendly * 100)}% of pairs are friends.`);
+          const measure = measureThreshold(network);
+          setSummary(
+            `Nodes have ${measure.meanInputs.toFixed(1)} inputs on average; ${Math.round(measure.activeShare * 100)}% are blinking and the rest are still.${measure.damage > 0 ? ` A flip has changed ${measure.damage} nodes so far.` : ""}`,
+          );
         }
       }
       frame = requestAnimationFrame(render);
@@ -387,60 +357,53 @@ export default function StructuralBalanceFive() {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [pushMarks]);
 
-  const markPerson = (person: number, sign: 1 | -1) => {
-    if (reduceMotionRef.current) return;
-    marksRef.current.push({ kind: "person", person, sign, at: timeRef.current });
-  };
-
-  const markFlip = (a: number, b: number, sign: 1 | -1) => {
-    if (reduceMotionRef.current) return;
-    marksRef.current.push({ kind: "flip", a, b, sign, triangle: null, at: timeRef.current });
-  };
-
-  const isolate = useCallback((person: number) => {
-    if (isolatePerson(networkRef.current, person)) markPerson(person, -1);
+  const flip = useCallback((node: number) => {
+    if (!flipNode(networkRef.current, node)) return;
+    if (!reduceMotionRef.current) marksRef.current.push({ kind: "flip", node, at: timeRef.current });
     setTouched(true);
   }, []);
 
-  const flip = useCallback((a: number, b: number) => {
-    const sign = flipRelation(networkRef.current, a, b);
-    if (sign !== null) markFlip(a, b, sign);
-    setTouched(true);
-  }, []);
-
-  // A newcomer arrives as everyone's friend at the tapped point.
-  const welcome = useCallback((x: number, y: number) => {
+  // Tapping a node flips it; the unflipped twin then shows what the flip changed.
+  const tapAt = useCallback((x: number, y: number) => {
     const network = networkRef.current;
-    const bodies = bodiesRef.current;
     const points = pointsRef.current;
-    if (!bodies) return;
-    const person = addPerson(network);
-    setTouched(true);
-    if (person === null) return;
-    bodies[person] = { x, y, vx: 0, vy: 0 };
-    points[person * 2] = x;
-    points[person * 2 + 1] = y;
-    const transition = transitionRef.current;
-    if (transition) {
-      const from = new Float64Array(network.size * 2);
-      from.set(transition.from.subarray(0, Math.min(transition.from.length, from.length)));
-      from[person * 2] = x;
-      from[person * 2 + 1] = y;
-      transition.from = from;
+    let nearest = -1;
+    let best = Infinity;
+    for (let node = 0; node < network.size; node += 1) {
+      const distance = Math.hypot(points[node * 2]! - x, points[node * 2 + 1]! - y);
+      if (distance < best) {
+        best = distance;
+        nearest = node;
+      }
     }
-    markPerson(person, 1);
-  }, []);
+    if (nearest >= 0 && best <= nodeRadius(network, sizeRef.current, nearest) + 10) flip(nearest);
+  }, [flip]);
 
-  const centrePerson = () => {
+  const flipCentre = useCallback(() => {
     const { width, height } = layoutFrame(sizeRef.current);
-    return nearestPerson(pointsRef.current, networkRef.current.size, width / 2, height / 2).person;
-  };
+    const network = networkRef.current;
+    const points = pointsRef.current;
+    let nearest = 0;
+    let best = Infinity;
+    for (let node = 0; node < network.size; node += 1) {
+      const distance = Math.hypot(points[node * 2]! - width / 2, points[node * 2 + 1]! - height / 2);
+      if (distance < best) {
+        best = distance;
+        nearest = node;
+      }
+    }
+    flip(nearest);
+  }, [flip]);
 
-  const pointer = (event: PointerEvent<HTMLCanvasElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+  const imposeInputs = useCallback((value: number) => {
+    setMeanInputsValue(value);
+    pushMarks(setMeanInputs(networkRef.current, value).slice(-MAX_MARKS));
+  }, [pushMarks]);
+
+  const release = () => {
+    draggingRef.current = false;
   };
 
   return (
@@ -450,92 +413,34 @@ export default function StructuralBalanceFive() {
         className={styles.canvas}
         role="application"
         tabIndex={0}
-        aria-describedby="structural-balance-summary"
-        aria-label="Structural balance. Every pair of people are friends, drawn in ink, or enemies, drawn in red. A triangle with one or three enmities is unbalanced, and one of its relationships changes until no unbalanced triangle is left. Drag from one person to another to flip their relationship; tap a person to make them everyone's enemy; tap empty space to add a newcomer who is everyone's friend. Keys: Enter makes the person nearest the centre everyone's enemy, F flips the relationship between that person and the person farthest from them, N adds a newcomer. Options below change how unbalanced triangles are resolved, how often relationships change by themselves, and the view."
+        aria-describedby="threshold-network-summary"
+        aria-label="Self-organizing threshold network. Each node is on (filled) or off (open) according to the signed sum of its inputs; red nodes have changed in the last two seconds, ink nodes have stayed still. Still nodes gain an input and blinking nodes lose one, so the network settles where about half the nodes blink. Tap a node to flip it; nodes the flip has changed get a red ring. Press Enter to flip the node nearest the centre. Options below set the number of links and the view."
         onPointerDown={(event) => {
-          const { x, y } = pointer(event);
-          const network = networkRef.current;
-          const nearest = nearestPerson(pointsRef.current, network.size, x, y);
-          event.currentTarget.setPointerCapture(event.pointerId);
-          dragRef.current = {
-            from: nearest.distance <= personRadius(sizeRef.current) + 8 ? nearest.person : -1,
-            x,
-            y,
-            startX: x,
-            startY: y,
-            moved: false,
-          };
-        }}
-        onPointerMove={(event) => {
-          const drag = dragRef.current;
-          if (!drag) return;
-          const { x, y } = pointer(event);
-          drag.x = x;
-          drag.y = y;
-          if (Math.hypot(x - drag.startX, y - drag.startY) > DRAG_THRESHOLD) drag.moved = drag.from >= 0;
-        }}
-        onPointerUp={(event) => {
-          const drag = dragRef.current;
-          dragRef.current = null;
-          if (!drag) return;
-          const { x, y } = pointer(event);
-          const travelled = Math.hypot(x - drag.startX, y - drag.startY) > DRAG_THRESHOLD;
-          if (drag.from < 0) {
-            if (!travelled) welcome(x, y);
-            return;
-          }
-          if (!travelled) {
-            isolate(drag.from);
-            return;
-          }
-          const target = nearestPerson(pointsRef.current, networkRef.current.size, x, y, drag.from);
-          if (target.person >= 0 && target.distance <= personRadius(sizeRef.current) + 12) {
-            flip(drag.from, target.person);
-          }
-        }}
-        onPointerCancel={() => {
-          dragRef.current = null;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          tapAt(event.clientX - bounds.left, event.clientY - bounds.top);
         }}
         onKeyDown={(event) => {
-          const key = event.key.toLowerCase();
-          if (key === "enter" || key === " ") {
-            event.preventDefault();
-            isolate(centrePerson());
-          } else if (key === "f") {
-            const person = centrePerson();
-            const points = pointsRef.current;
-            let farthest = -1;
-            let best = -1;
-            for (let other = 0; other < networkRef.current.size; other += 1) {
-              const distance = Math.hypot(points[other * 2]! - points[person * 2]!, points[other * 2 + 1]! - points[person * 2 + 1]!);
-              if (other !== person && distance > best) {
-                best = distance;
-                farthest = other;
-              }
-            }
-            if (farthest >= 0) flip(person, farthest);
-          } else if (key === "n") {
-            const { width, height } = layoutFrame(sizeRef.current);
-            welcome(width / 2, height / 2);
-          }
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          flipCentre();
         }}
       />
-      <p id="structural-balance-summary" className={styles.screenReaderOnly}>
+      <p id="threshold-network-summary" className={styles.screenReaderOnly}>
         {summary}
       </p>
 
       <div className={styles.controls}>
         {!touched && !optionsOpen && (
-          <p className={styles.hint}>사람에서 사람으로 끌면 관계가 뒤집히고, 누르면 모두의 적</p>
+          <p className={styles.hint}>점을 누르면 켜짐과 꺼짐이 뒤바뀜</p>
         )}
         {optionsOpen && (
-          <div id="structural-balance-options" className={styles.options}>
+          <div id="threshold-network-options" className={styles.options}>
             <p className={styles.about}>
-              모든 두 사람은 친구이거나 적입니다. 세 사람 중 적대가 하나 또는 셋이면 그 삼각형은
-              불균형이고, 적인 두 사람이 화해하거나 가운데 사람이 나머지 관계와 더 잘 맞는 쪽의 편을
-              듭니다. 바뀐 관계는 그 관계를 공유하는 다른 삼각형의 균형을 다시 바꾸므로, 이 연쇄는
-              모두가 친구가 되거나 서로 적대하는 두 편으로 갈라질 때에만 멈춥니다.
-              (구조적 균형, Heider 1946; Antal·Krapivsky·Redner 2005)
+              각 점은 들어오는 연결(흥분은 화살표, 억제는 막대)의 합에 따라 매 순간 켜지거나
+              꺼집니다. 이따금 한 점을 골라, 한동안 멈춰 있었으면 입력 연결을 하나 얻고
+              깜빡이고 있었으면 하나를 잃습니다. 그래서 너무 고요한 네트워크는 연결이 늘고 너무
+              요란한 네트워크는 연결이 줄어, 질서와 혼돈의 경계로 스스로 모입니다.
+              (Bornholdt·Rohlf 2000)
             </p>
             <div className={styles.views} role="group" aria-label="보기">
               {VIEWS.map((option) => (
@@ -551,32 +456,24 @@ export default function StructuralBalanceFive() {
               ))}
             </div>
             <label className={styles.balance}>
-              <span>편 가르기</span>
+              <span>성김</span>
               <input
-                aria-label="불균형한 삼각형에서 적인 두 사람이 화해할 확률"
-                aria-valuetext={`화해 확률 ${reconcile.toFixed(2)}`}
-                max={RECONCILE_RANGE[1]}
-                min={RECONCILE_RANGE[0]}
-                step="0.01"
+                aria-label="점 하나당 평균 입력 연결 수. 바꾸면 무작위 연결이 더해지거나 지워지고, 이후 네트워크가 스스로 조정합니다"
+                aria-valuetext={`평균 입력 ${meanInputs.toFixed(1)}개`}
+                max={MEAN_INPUT_RANGE[1]}
+                min={MEAN_INPUT_RANGE[0]}
+                step="0.05"
                 type="range"
-                value={reconcile}
-                onChange={(event) => setReconcile(Number(event.target.value))}
+                value={Math.min(MEAN_INPUT_RANGE[1], Math.max(MEAN_INPUT_RANGE[0], meanInputs))}
+                onPointerDown={() => {
+                  draggingRef.current = true;
+                }}
+                onPointerUp={release}
+                onPointerCancel={release}
+                onBlur={release}
+                onChange={(event) => imposeInputs(Number(event.target.value))}
               />
-              <span>화해</span>
-            </label>
-            <label className={styles.balance}>
-              <span>고요</span>
-              <input
-                aria-label="관계가 저절로 바뀌는 빈도"
-                aria-valuetext={`초당 ${unrest.toFixed(2)}번`}
-                max={UNREST_RANGE[1]}
-                min={UNREST_RANGE[0]}
-                step="0.01"
-                type="range"
-                value={unrest}
-                onChange={(event) => setUnrest(Number(event.target.value))}
-              />
-              <span>소란</span>
+              <span>빽빽함</span>
             </label>
           </div>
         )}
@@ -584,7 +481,7 @@ export default function StructuralBalanceFive() {
           type="button"
           className={`${styles.control} ${styles.toggle}`}
           aria-expanded={optionsOpen}
-          aria-controls="structural-balance-options"
+          aria-controls="threshold-network-options"
           onClick={() => setOptionsOpen((open) => !open)}
         >
           {optionsOpen ? "닫기" : "옵션"}

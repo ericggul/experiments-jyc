@@ -1,9 +1,9 @@
-// Browser-side geometry. Position encodes nothing but the current ties: springs
-// along every tie, repulsion between every pair, weak pull toward the centre.
-// When intolerant ties are cut and moved, the drawing therefore separates into
-// the groups that still talk to each other.
+// Browser-side geometry. Position encodes nothing but the current physical ties:
+// springs along every contact, repulsion between every pair, weak pull toward
+// the centre. When aware people rewire away from the infected, the drawing
+// reorganizes. The virtual layer is drawn on the same positions and never moves them.
 
-import type { OpinionTie } from "./model";
+import type { Tie } from "./model";
 
 const GRAVITY = 0.9;
 const REPULSION = 0.4;
@@ -47,10 +47,10 @@ export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   }
 }
 
-/** One relaxation step; `delta` in seconds. O(n²) repulsion is fine at n ≤ 480. */
+/** One relaxation step; `delta` in seconds. O(n²) repulsion is fine at n ≈ 240. */
 export function relaxBodies(
   bodies: Body[],
-  ties: readonly OpinionTie[],
+  ties: readonly Tie[],
   frame: Frame,
   delta: number,
 ) {

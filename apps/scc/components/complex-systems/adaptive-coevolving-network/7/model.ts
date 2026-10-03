@@ -1,89 +1,77 @@
-// Echo chambers: people hold an opinion whose sign is a side and whose size is
-// conviction. Who talks to whom depends on opinions, and what people hear moves
-// their opinions, so the conversation network and the opinions shape each other.
+// A living web ranked by PageRank, in continuous time. Every page spreads its
+// outgoing attention over a few candidate links with weights w_ij ≥ 0; a
+// random surfer on page i follows link j with probability w_ij / Σ_k w_ik
+// (with probability d), otherwise jumps to a uniformly random page:
 //
-// Each person i has an opinion x_i and a fixed activity a_i (how often they
-// reach out). The network is temporary: in each round of length `ROUND`,
-// person i is active with probability a_i and contacts m others, choosing j
-// with probability ∝ |x_i − x_j|^(−β) (homophily β). The active person hears
-// each contact; with probability r the contact also hears them. Opinions follow
-//   dx_i/dt = −x_i + K Σ_j A_ij(t) tanh(α x_j),
-// where A_ij(t) = 1 while i hears j in the current round and α is how
-// controversial the topic is. Activities follow a power law a ∈ [ε, 1] with
-// exponent γ, so a few people talk far more than everyone else.
+//   PR(i) = (1 − d)/N + d Σ_j PR(j) · w_ji / W_j + d Σ_{dangling j} PR(j)/N
 //
-// Source: Baumann, Lorenz-Spreen, Sokolov & Starnini, "Modeling echo chambers
-// and polarization dynamics in social networks", PRL 124, 048301 (2020).
-// Positions are not part of this model.
+// Attention adapts continuously toward appeal: each weight relaxes as
+//   dw_ij/dt = λ (a_j / Σ_{k ∈ C_i} a_k − w_ij),  a_j = (PR_j + floor/N) · e^{q_j},
+// where C_i is page i's candidate set and q_j is page j's hidden quality,
+// which drifts as a mean-reverting random walk. Candidates are discovered by
+// appeal and enter at weight 0; the weakest candidate of a full set fades out
+// before it is dropped. Rank shapes attention and attention shapes rank, and
+// nothing changes in a jump. New pages arrive at a set rate.
+//
+// Sources: Brin & Page, Comput. Netw. ISDN Syst. 30, 107 (1998); Fortunato,
+// Flammini & Menczer, PRL 96, 218701 (2006) "Scale-free network growth by
+// ranking"; Bianconi & Barabási, Europhys. Lett. 54, 436 (2001) for fitness.
+// The continuous attention weights and drifting quality are this route's
+// extension. Positions are not part of this model.
 
-export type EchoContact = {
-  readonly id: number;
-  /** The active person who reached out. */
-  readonly source: number;
-  readonly target: number;
-  /** Whether the contact also heard the active person. */
-  readonly mutual: boolean;
-  readonly at: number;
-};
+export const MAX_PAGES = 300;
+export const DEFAULT_PAGES = 100;
+export const DEFAULT_DAMPING = 0.85;
+export const DAMPING_RANGE = [0.5, 0.95] as const;
+/** New pages per second. */
+export const GROWTH_RANGE = [0, 2] as const;
+export const VOLATILITY_RANGE = [0, 1.5] as const;
+/** Uniform floor in appeal, in units of 1/N: small favours high rank, large is even. */
+export const FLOOR_RANGE = [0.05, 20] as const;
+/** Candidate links one page keeps. */
+export const MAX_CANDIDATES = 5;
+/** Candidates a new page starts with. */
+export const NEW_PAGE_LINKS = 2;
+/** A fading candidate is dropped below this weight. */
+const DROP_WEIGHT = 0.004;
+const QUALITY_REVERSION = 0.08;
+const TOLERANCE = 1e-9;
+const MAX_ITERATIONS = 200;
 
-export type EchoNetwork = {
+export type Candidate = { target: number; weight: number; fading: boolean };
+
+export type RankedWeb = {
   size: number;
-  readonly opinion: number[];
-  readonly activity: number[];
-  /** Contacts of the current round first, older ones after; pruned by age. */
-  contacts: EchoContact[];
-  /** How many leading entries of `contacts` belong to the current round. */
-  roundSize: number;
-  /** Person whose opinion is held by the participant, or null. */
-  held: number | null;
-  nextContact: number;
-  roundLeft: number;
+  readonly out: Candidate[][];
+  readonly rank: Float64Array;
+  /** Log of each page's hidden quality. */
+  readonly quality: Float64Array;
+  damping: number;
   randomState: number;
-  time: number;
 };
 
-export type EchoParameters = {
-  /** K: weight of what one contact says. */
-  influence: number;
-  /** α: how strongly a held view is voiced, i.e. how controversial the topic is. */
-  controversy: number;
-  /** β: preference for contacts of similar opinion. */
-  homophily: number;
+export type WebParameters = {
+  /** New pages per second. */
+  growth: number;
+  /** Volatility of log quality per √second. */
+  volatility: number;
+  /** Appeal floor, in units of 1/N. */
+  floor: number;
+  /** λ: how fast attention follows appeal, per second. */
+  adaptation: number;
+  /** Rate per page per second of discovering a new candidate. */
+  discovery: number;
 };
 
-export type EchoMeasure = {
-  /** |mean x| / mean |x|: 1 when everyone leans the same way, 0 when sides balance. */
-  alignment: number;
-  meanConviction: number;
-  /** Share of people with x > 0. */
-  positive: number;
-  /** Share of recent contacts joining people of opposite sign. */
-  crossContacts: number;
-  /** Pearson correlation of x_i with the mean opinion of i's recent contacts. */
-  echo: number;
+export const DEFAULT_PARAMETERS: WebParameters = {
+  growth: 0.3,
+  volatility: 0.6,
+  floor: 3,
+  adaptation: 0.6,
+  discovery: 0.25,
 };
 
-export const DEFAULT_PEOPLE = 200;
-export const MAX_PEOPLE = 400;
-/** Contacts per activation (m), reciprocity (r), activity floor (ε), exponent (γ). */
-export const CONTACTS_PER_ACTIVATION = 4;
-export const RECIPROCITY = 0.5;
-export const ACTIVITY_FLOOR = 0.01;
-export const ACTIVITY_EXPONENT = 2.1;
-/** Contacts are drawn once per round and held for its length. */
-export const ROUND = 0.1;
-/** How long a contact stays in the recent-contact record, in model time. */
-export const CONTACT_MEMORY = 1.6;
-export const CONTROVERSY_RANGE = [0, 4] as const;
-export const HOMOPHILY_RANGE = [0, 4] as const;
-export const DEFAULT_PARAMETERS: EchoParameters = {
-  influence: 7.5,
-  controversy: 3,
-  homophily: 3,
-};
-const MAX_STEP = 0.02;
-/** Opinion gaps below this count as this, so |Δx|^(−β) stays finite. */
-const MIN_GAP = 0.02;
+export type WebEvent = { kind: "page"; page: number; targets: number[] };
 
 function nextRandom(state: number): readonly [number, number] {
   let next = state | 0;
@@ -94,210 +82,229 @@ function nextRandom(state: number): readonly [number, number] {
   return [unsigned / 4_294_967_296, unsigned || 0x9e3779b9];
 }
 
-function randomFor(network: EchoNetwork) {
+function randomFor(web: RankedWeb) {
   return () => {
-    const [value, next] = nextRandom(network.randomState);
-    network.randomState = next;
+    const [value, next] = nextRandom(web.randomState);
+    web.randomState = next;
     return value;
   };
 }
 
-/** Inverse-CDF sample of F(a) ∝ a^(−γ) on [ε, 1]. */
-export function sampleActivity(value: number) {
-  const exponent = 1 - ACTIVITY_EXPONENT;
-  const low = ACTIVITY_FLOOR ** exponent;
-  return (low + value * (1 - low)) ** (1 / exponent);
+function randomIndex(value: number, length: number) {
+  return Math.min(length - 1, Math.floor(value * length));
 }
 
-/** People with power-law activity and opinions uniform in [−1, 1]. */
-export function createEchoNetwork(size = DEFAULT_PEOPLE, seed = 0x5bd1e995): EchoNetwork {
-  const network: EchoNetwork = {
-    size,
-    opinion: [],
-    activity: [],
-    contacts: [],
-    roundSize: 0,
-    held: null,
-    nextContact: 0,
-    roundLeft: 0,
-    randomState: seed >>> 0 || 1,
-    time: 0,
-  };
-  const random = randomFor(network);
-  for (let person = 0; person < size; person += 1) {
-    network.activity.push(sampleActivity(random()));
-    network.opinion.push(random() * 2 - 1);
-  }
-  return network;
+function gaussian(random: () => number) {
+  return Math.sqrt(-2 * Math.log(Math.max(1e-12, random()))) * Math.cos(2 * Math.PI * random());
 }
 
-/** Draws m distinct contacts for `person`, weighted by |x_i − x_j|^(−β). */
-function chooseContacts(
-  network: EchoNetwork,
-  person: number,
-  homophily: number,
-  random: () => number,
-  weights: Float64Array,
-) {
-  const { size, opinion } = network;
-  const own = opinion[person]!;
+export function candidate(web: RankedWeb, from: number, to: number) {
+  return web.out[from]?.find((entry) => entry.target === to) ?? null;
+}
+
+/** Total outgoing weight of a page. */
+export function outWeight(web: RankedWeb, page: number) {
   let total = 0;
-  for (let other = 0; other < size; other += 1) {
-    const weight = other === person ? 0 : Math.max(MIN_GAP, Math.abs(own - opinion[other]!)) ** -homophily;
-    weights[other] = weight;
-    total += weight;
-  }
-  const chosen: number[] = [];
-  const count = Math.min(CONTACTS_PER_ACTIVATION, size - 1);
-  while (chosen.length < count && total > 0) {
-    let pick = random() * total;
-    let other = 0;
-    for (; other < size - 1; other += 1) {
-      pick -= weights[other]!;
-      if (pick < 0) break;
-    }
-    if (weights[other] === 0) continue;
-    chosen.push(other);
-    total -= weights[other]!;
-    weights[other] = 0;
-  }
-  return chosen;
+  for (const entry of web.out[page]!) total += entry.weight;
+  return total;
 }
 
-function drawRound(network: EchoNetwork, parameters: EchoParameters, random: () => number) {
-  const weights = new Float64Array(network.size);
-  const fresh: EchoContact[] = [];
-  for (let person = 0; person < network.size; person += 1) {
-    if (random() >= network.activity[person]!) continue;
-    for (const target of chooseContacts(network, person, parameters.homophily, random, weights)) {
-      fresh.push({
-        id: network.nextContact,
-        source: person,
-        target,
-        mutual: random() < RECIPROCITY,
-        at: network.time,
-      });
-      network.nextContact += 1;
+/** Power iteration on the weighted web, warm-started from the current ranks. */
+export function computeRank(web: RankedWeb) {
+  const n = web.size;
+  if (n === 0) return 0;
+  const d = web.damping;
+  let current = web.rank.slice(0, n);
+  let sum = current.reduce((total, value) => total + value, 0);
+  if (!(sum > 0)) current.fill(1 / n);
+  else for (let i = 0; i < n; i += 1) current[i] = current[i]! / sum;
+  const totals = new Float64Array(n);
+  for (let i = 0; i < n; i += 1) totals[i] = outWeight(web, i);
+  const next = new Float64Array(n);
+  let iteration = 0;
+  for (; iteration < MAX_ITERATIONS; iteration += 1) {
+    let dangling = 0;
+    for (let i = 0; i < n; i += 1) if (totals[i]! <= 1e-12) dangling += current[i]!;
+    next.fill((1 - d) / n + (d * dangling) / n);
+    for (let i = 0; i < n; i += 1) {
+      if (totals[i]! <= 1e-12) continue;
+      const scale = (d * current[i]!) / totals[i]!;
+      for (const entry of web.out[i]!) next[entry.target] = next[entry.target]! + scale * entry.weight;
     }
+    let change = 0;
+    for (let i = 0; i < n; i += 1) change += Math.abs(next[i]! - current[i]!);
+    current = Float64Array.from(next);
+    if (change < TOLERANCE) break;
   }
-  const memory = network.time - CONTACT_MEMORY;
-  network.contacts = [...fresh, ...network.contacts.filter((contact) => contact.at > memory)];
-  network.roundSize = fresh.length;
-  return fresh;
+  sum = current.reduce((total, value) => total + value, 0);
+  for (let i = 0; i < n; i += 1) web.rank[i] = current[i]! / sum;
+  return iteration + 1;
 }
 
-/** Advances by `duration`; returns the contacts made in rounds that began. */
-export function stepEchoNetwork(
-  network: EchoNetwork,
-  duration: number,
-  parameters: EchoParameters,
-): EchoContact[] {
-  const random = randomFor(network);
-  const made: EchoContact[] = [];
-  const heard = new Float64Array(network.size);
-  let current = network.contacts.slice(0, network.roundSize);
-  let remaining = Math.max(0, duration);
-  while (remaining > 1e-9) {
-    if (network.roundLeft <= 1e-9) {
-      current = drawRound(network, parameters, random);
-      made.push(...current);
-      network.roundLeft = ROUND;
-    }
-    const delta = Math.min(MAX_STEP, remaining, network.roundLeft);
-    remaining -= delta;
-    network.roundLeft -= delta;
-    network.time += delta;
-
-    // Euler step of dx_i/dt = −x_i + K Σ_j A_ij tanh(α x_j).
-    heard.fill(0);
-    const { opinion } = network;
-    for (const contact of current) {
-      heard[contact.source]! += Math.tanh(parameters.controversy * opinion[contact.target]!);
-      if (contact.mutual) heard[contact.target]! += Math.tanh(parameters.controversy * opinion[contact.source]!);
-    }
-    for (let person = 0; person < network.size; person += 1) {
-      if (person === network.held) continue;
-      const x = opinion[person]!;
-      opinion[person] = x + delta * (-x + parameters.influence * heard[person]!);
+/** A random sparse web: every page starts with two settled candidates. */
+export function createRankedWeb(size = DEFAULT_PAGES, seed = 0x2545f491): RankedWeb {
+  const web: RankedWeb = {
+    size,
+    out: Array.from({ length: size }, () => []),
+    rank: new Float64Array(MAX_PAGES),
+    quality: new Float64Array(MAX_PAGES),
+    damping: DEFAULT_DAMPING,
+    randomState: seed >>> 0 || 1,
+  };
+  const random = randomFor(web);
+  for (let page = 0; page < size; page += 1) {
+    web.quality[page] = gaussian(random) * 0.5;
+    while (web.out[page]!.length < NEW_PAGE_LINKS) {
+      const target = randomIndex(random(), size);
+      if (target !== page && !candidate(web, page, target)) {
+        web.out[page]!.push({ target, weight: 1 / NEW_PAGE_LINKS, fading: false });
+      }
     }
   }
-  return made;
+  computeRank(web);
+  return web;
 }
 
-/** The participant holds a person at an opinion; null releases them. */
-export function holdOpinion(network: EchoNetwork, person: number | null, value = 0) {
-  if (person === null || person < 0 || person >= network.size) {
-    network.held = null;
-    return false;
+export function setDamping(web: RankedWeb, damping: number) {
+  web.damping = Math.min(DAMPING_RANGE[1], Math.max(DAMPING_RANGE[0], damping));
+  computeRank(web);
+}
+
+function appeal(web: RankedWeb, page: number, floor: number) {
+  return (web.rank[page]! + floor / web.size) * Math.exp(web.quality[page]!);
+}
+
+/** Picks a page with probability ∝ appeal, excluding `exclude`. */
+function pickByAppeal(web: RankedWeb, random: () => number, floor: number, exclude: (page: number) => boolean) {
+  let total = 0;
+  for (let page = 0; page < web.size; page += 1) if (!exclude(page)) total += appeal(web, page, floor);
+  if (total <= 0) return null;
+  let cursor = random() * total;
+  let last: number | null = null;
+  for (let page = 0; page < web.size; page += 1) {
+    if (exclude(page)) continue;
+    last = page;
+    cursor -= appeal(web, page, floor);
+    if (cursor <= 0) return page;
   }
-  network.held = person;
-  network.opinion[person] = value;
+  return last;
+}
+
+/** Adds `to` as a candidate of `from`, entering at `weight` (0 means it grows in). */
+export function addCandidate(web: RankedWeb, from: number, to: number, weight = 0) {
+  if (from === to || from < 0 || to < 0 || from >= web.size || to >= web.size) return false;
+  const existing = candidate(web, from, to);
+  if (existing) {
+    existing.fading = false;
+    existing.weight = Math.max(existing.weight, weight);
+    return true;
+  }
+  web.out[from]!.push({ target: to, weight, fading: false });
   return true;
 }
 
-/** Appends a person who is active in every round, at the given opinion. */
-export function addActivePerson(network: EchoNetwork, opinion: number) {
-  if (network.size >= MAX_PEOPLE) return null;
-  const person = network.size;
-  network.size += 1;
-  network.opinion.push(opinion);
-  network.activity.push(1);
-  return person;
+/** Marks a candidate to fade out; it is dropped once its weight is negligible. */
+export function fadeCandidate(web: RankedWeb, from: number, to: number) {
+  const entry = candidate(web, from, to);
+  if (!entry || entry.fading) return false;
+  entry.fading = true;
+  return true;
 }
 
-export function measureEcho(network: EchoNetwork): EchoMeasure {
-  const { size, opinion } = network;
-  let sum = 0;
-  let conviction = 0;
-  let positive = 0;
-  for (let person = 0; person < size; person += 1) {
-    const x = opinion[person]!;
-    sum += x;
-    conviction += Math.abs(x);
-    if (x > 0) positive += 1;
+/** Appends a page with no candidates; null at MAX_PAGES. */
+export function addPage(web: RankedWeb, quality = 0) {
+  if (web.size >= MAX_PAGES) return null;
+  const page = web.size;
+  web.size += 1;
+  web.out.push([]);
+  web.rank[page] = 1 / web.size;
+  web.quality[page] = quality;
+  computeRank(web);
+  return page;
+}
+
+/**
+ * Advances the web by `seconds`: quality drifts, attention relaxes toward
+ * appeal, candidates are discovered and faded, and new pages may arrive.
+ */
+export function stepRankedWeb(
+  web: RankedWeb,
+  seconds: number,
+  parameters: WebParameters,
+  pendingPages = { value: 0 },
+): WebEvent[] {
+  const events: WebEvent[] = [];
+  if (seconds <= 0) return events;
+  const random = randomFor(web);
+  const { floor, volatility } = parameters;
+
+  // Quality: Ornstein–Uhlenbeck in log space, exact over the step.
+  const keep = Math.exp(-QUALITY_REVERSION * seconds);
+  const spread = volatility * Math.sqrt((1 - keep * keep) / (2 * QUALITY_REVERSION));
+  for (let page = 0; page < web.size; page += 1) {
+    web.quality[page] = web.quality[page]! * keep + spread * gaussian(random);
   }
 
-  let cross = 0;
-  const neighbourSum = new Float64Array(size);
-  const neighbourCount = new Float64Array(size);
-  for (const contact of network.contacts) {
-    const a = opinion[contact.source]!;
-    const b = opinion[contact.target]!;
-    if (Math.sign(a) !== Math.sign(b)) cross += 1;
-    neighbourSum[contact.source]! += b;
-    neighbourCount[contact.source]! += 1;
-    neighbourSum[contact.target]! += a;
-    neighbourCount[contact.target]! += 1;
+  // Attention: each weight relaxes toward its target's share of appeal.
+  const relax = 1 - Math.exp(-parameters.adaptation * seconds);
+  const discover = 1 - Math.exp(-parameters.discovery * seconds);
+  for (let page = 0; page < web.size; page += 1) {
+    const list = web.out[page]!;
+    let total = 0;
+    for (const entry of list) if (!entry.fading) total += appeal(web, entry.target, floor);
+    for (const entry of list) {
+      const share = entry.fading || total <= 0 ? 0 : appeal(web, entry.target, floor) / total;
+      entry.weight += (share - entry.weight) * relax;
+    }
+    for (let index = list.length - 1; index >= 0; index -= 1) {
+      if (list[index]!.fading && list[index]!.weight < DROP_WEIGHT) list.splice(index, 1);
+    }
+    if (random() < discover) {
+      const target = pickByAppeal(web, random, floor, (other) => other === page || list.some((entry) => entry.target === other));
+      if (target !== null) {
+        const active = list.filter((entry) => !entry.fading);
+        if (active.length >= MAX_CANDIDATES) {
+          // A full page lets its weakest link fade to make room.
+          let weakest = active[0]!;
+          for (const entry of active) if (entry.weight < weakest.weight) weakest = entry;
+          weakest.fading = true;
+        }
+        list.push({ target, weight: 0, fading: false });
+      }
+    }
   }
 
-  // Correlation between own opinion and the mean opinion of recent contacts.
-  let n = 0;
-  let sx = 0;
-  let sy = 0;
-  let sxx = 0;
-  let syy = 0;
-  let sxy = 0;
-  for (let person = 0; person < size; person += 1) {
-    if (neighbourCount[person] === 0) continue;
-    const x = opinion[person]!;
-    const y = neighbourSum[person]! / neighbourCount[person]!;
-    n += 1;
-    sx += x;
-    sy += y;
-    sxx += x * x;
-    syy += y * y;
-    sxy += x * y;
+  // New pages arrive with fresh quality and grow their first links from zero.
+  pendingPages.value += parameters.growth * seconds;
+  while (pendingPages.value >= 1) {
+    pendingPages.value -= 1;
+    const page = addPage(web, gaussian(random) * 0.6);
+    if (page === null) break;
+    const targets: number[] = [];
+    for (let link = 0; link < NEW_PAGE_LINKS; link += 1) {
+      const target = pickByAppeal(web, random, floor, (other) => other === page || targets.includes(other));
+      if (target !== null) targets.push(target);
+    }
+    for (const target of targets) web.out[page]!.push({ target, weight: 0, fading: false });
+    events.push({ kind: "page", page, targets });
   }
-  const covariance = sxy / Math.max(1, n) - (sx / Math.max(1, n)) * (sy / Math.max(1, n));
-  const spreadX = sxx / Math.max(1, n) - (sx / Math.max(1, n)) ** 2;
-  const spreadY = syy / Math.max(1, n) - (sy / Math.max(1, n)) ** 2;
-  const echo = spreadX > 1e-12 && spreadY > 1e-12 ? covariance / Math.sqrt(spreadX * spreadY) : 0;
 
+  computeRank(web);
+  return events;
+}
+
+/** Share of rank held by the top page, and by the top 10% of pages. */
+export function concentration(web: RankedWeb) {
+  const ranks = Array.from(web.rank.subarray(0, web.size)).sort((a, b) => b - a);
+  const tenth = Math.max(1, Math.round(web.size / 10));
   return {
-    alignment: Math.abs(sum) / Math.max(1e-9, conviction),
-    meanConviction: conviction / Math.max(1, size),
-    positive: positive / Math.max(1, size),
-    crossContacts: cross / Math.max(1, network.contacts.length),
-    echo,
+    top: ranks[0] ?? 0,
+    topTenth: ranks.slice(0, tenth).reduce((sum, value) => sum + value, 0),
   };
+}
+
+export function leader(web: RankedWeb) {
+  let best = 0;
+  for (let page = 1; page < web.size; page += 1) if (web.rank[page]! > web.rank[best]!) best = page;
+  return best;
 }

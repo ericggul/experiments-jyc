@@ -1,23 +1,20 @@
-// Browser-side geometry. Position encodes nothing but the current signs:
-// friends pull toward a common distance, enemies push apart, everyone keeps a
-// little personal space and a weak pull toward the centre. A balanced network
-// therefore draws itself as one cluster or as two clusters facing each other,
-// and a person who changes camp visibly crosses over.
+// Browser-side geometry. Position encodes nothing but the current links:
+// springs along every link (direction ignored), repulsion between every pair,
+// weak pull toward the centre. A node that keeps gaining inputs is pulled into
+// the tangle; one that keeps losing them drifts outward.
 
-import type { SignedNetwork } from "./model";
+import type { ThresholdLink } from "./model";
 
-const GRAVITY = 1.1;
-const SPRING = 4;
-const ENMITY = 0.8;
-const SPACE = 0.3;
+const GRAVITY = 0.9;
+const REPULSION = 0.4;
+const SPRING = 1.6;
 
 export type Body = { x: number; y: number; vx: number; vy: number };
 
 export type Frame = { width: number; height: number };
 
-/** Typical distance between friends. */
 export function idealLength(frame: Frame, count: number) {
-  return Math.min(frame.width, frame.height) * (0.26 + 0.6 / Math.sqrt(Math.max(1, count)));
+  return Math.sqrt((frame.width * frame.height * 0.42) / Math.max(1, count));
 }
 
 export function createBodies(count: number, frame: Frame, seed = 0x2f6b31d9): Body[] {
@@ -28,7 +25,7 @@ export function createBodies(count: number, frame: Frame, seed = 0x2f6b31d9): Bo
     state ^= state << 5;
     return (state >>> 0) / 4_294_967_296;
   };
-  const radius = Math.min(frame.width, frame.height) * 0.3;
+  const radius = Math.min(frame.width, frame.height) * 0.32;
   return Array.from({ length: count }, () => {
     const angle = random() * Math.PI * 2;
     const distance = Math.sqrt(random()) * radius;
@@ -50,65 +47,47 @@ export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   }
 }
 
-/** One relaxation step; `delta` in seconds. Every pair is signed, so O(n²). */
-export function relaxBodies(bodies: Body[], network: SignedNetwork, frame: Frame, delta: number) {
-  const count = Math.min(bodies.length, network.size);
+/** One relaxation step; `delta` in seconds. O(n²) repulsion is fine at n ≈ 120. */
+export function relaxBodies(
+  bodies: Body[],
+  inputs: readonly (readonly ThresholdLink[])[],
+  frame: Frame,
+  delta: number,
+) {
+  const count = bodies.length;
   const length = idealLength(frame, count);
-  const rest = length * 0.45;
-  const friendX = new Float64Array(count);
-  const friendY = new Float64Array(count);
-  const enemyX = new Float64Array(count);
-  const enemyY = new Float64Array(count);
   const forceX = new Float64Array(count);
   const forceY = new Float64Array(count);
-  const friends = new Uint16Array(count);
-  const space = length * length * SPACE / Math.max(1, count - 1);
-  const softening = (length * 0.08) ** 2;
+  const softening = (length * 0.25) ** 2;
+  const repulsion = length * length * REPULSION;
 
   for (let first = 0; first < count; first += 1) {
     const a = bodies[first]!;
     for (let second = first + 1; second < count; second += 1) {
       const b = bodies[second]!;
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const squared = dx * dx + dy * dy;
-      const distance = Math.max(1e-3, Math.sqrt(squared));
-      if (network.signs[first * network.stride + second]! > 0) {
-        const pull = (distance - rest) / distance;
-        friendX[first]! += dx * pull;
-        friendY[first]! += dy * pull;
-        friendX[second]! -= dx * pull;
-        friendY[second]! -= dy * pull;
-        friends[first]! += 1;
-        friends[second]! += 1;
-      } else {
-        // Enmity pushes with the same strength at any distance; gravity
-        // alone decides how far apart two camps settle.
-        const push = length / (distance + length * 0.05);
-        enemyX[first]! -= dx * push;
-        enemyY[first]! -= dy * push;
-        enemyX[second]! += dx * push;
-        enemyY[second]! += dy * push;
-      }
-      const spacing = space / (squared + softening);
-      forceX[first]! -= dx * spacing;
-      forceY[first]! -= dy * spacing;
-      forceX[second]! += dx * spacing;
-      forceY[second]! += dy * spacing;
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const squared = dx * dx + dy * dy + softening;
+      const push = repulsion / squared;
+      forceX[first]! += dx * push;
+      forceY[first]! += dy * push;
+      forceX[second]! -= dx * push;
+      forceY[second]! -= dy * push;
     }
   }
 
-  // Each person averages over their own friends and enemies, so a small camp
-  // holds together as firmly as a large one.
-  for (let index = 0; index < count; index += 1) {
-    const enemies = count - 1 - friends[index]!;
-    if (friends[index]! > 0) {
-      forceX[index]! += (friendX[index]! * SPRING) / friends[index]!;
-      forceY[index]! += (friendY[index]! * SPRING) / friends[index]!;
-    }
-    if (enemies > 0) {
-      forceX[index]! += (enemyX[index]! * ENMITY) / Math.max(enemies, (count - 1) / 2);
-      forceY[index]! += (enemyY[index]! * ENMITY) / Math.max(enemies, (count - 1) / 2);
+  for (const list of inputs) {
+    for (const link of list) {
+      const a = bodies[link.source]!;
+      const b = bodies[link.target]!;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.max(1e-3, Math.hypot(dx, dy));
+      const pull = ((distance - length * 0.7) / distance) * SPRING;
+      forceX[link.source]! += dx * pull;
+      forceY[link.source]! += dy * pull;
+      forceX[link.target]! -= dx * pull;
+      forceY[link.target]! -= dy * pull;
     }
   }
 
@@ -118,8 +97,8 @@ export function relaxBodies(bodies: Body[], network: SignedNetwork, frame: Frame
   const gravityX = GRAVITY * (short / frame.width);
   const gravityY = GRAVITY * (short / frame.height);
   const step = Math.min(delta, 1 / 30);
-  const damping = Math.exp(-5 * step);
-  const maxSpeed = length * 4;
+  const damping = Math.exp(-6 * step);
+  const maxSpeed = length * 6;
   const margin = Math.min(frame.width, frame.height) * 0.05;
 
   for (let index = 0; index < count; index += 1) {

@@ -2,7 +2,6 @@ export const pageRankExperiments = [
   { slug: "1", label: "page-rank/1" },
   { slug: "2", label: "page-rank/2" },
   { slug: "3", label: "page-rank/3" },
-  { slug: "4", label: "page-rank/4" },
 ] as const;
 
 export type PageRankExperimentSlug =

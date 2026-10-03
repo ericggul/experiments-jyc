@@ -58,10 +58,13 @@ function easeInOut(value: number) {
   return value < 0.5 ? 4 * value ** 3 : 1 - (-2 * value + 2) ** 3 / 2;
 }
 
-/** Area grows with payoff: the players most likely to be copied are the largest. */
+/**
+ * Area grows with payoff above a floor, so the players most likely to be copied
+ * are the largest while an exploited-out defector (payoff 0) stays visible.
+ */
 function playerRadius(network: CooperationNetwork, size: Frame, player: number, temptation: number) {
-  const base = Math.max(2, Math.min(4.5, idealLength(size, network.size) * 0.1));
-  return base * (0.6 + Math.sqrt(payoff(network, player, temptation)) * 0.2);
+  const base = Math.max(2.6, Math.min(4.5, idealLength(size, network.size) * 0.1));
+  return base * (1 + Math.sqrt(payoff(network, player, temptation)) * 0.16);
 }
 
 function draw(
@@ -89,7 +92,7 @@ function draw(
   for (const [colour, alpha, width, match] of [
     [INK, 0.16 * tieVisibility, 0.8, (a: string, b: string) => a === "C" && b === "C"],
     [DEFECT, 0.2 * tieVisibility, 0.8, (a: string, b: string) => a === "D" && b === "D"],
-    [DEFECT, 0.55 * Math.max(0.3, tieVisibility), 1.1, (a: string, b: string) => a !== b],
+    [DEFECT, 0.32 * Math.max(0.3, tieVisibility), 1, (a: string, b: string) => a !== b],
   ] as const) {
     if (alpha < 0.01) continue;
     context.strokeStyle = `rgba(${colour}, ${alpha})`;
@@ -145,11 +148,32 @@ function draw(
     }
   }
 
-  for (let player = 0; player < network.size; player += 1) {
-    context.fillStyle = strategy[player] === "D" ? `rgb(${DEFECT})` : `rgb(${INK})`;
-    context.beginPath();
-    context.arc(points[player * 2]!, points[player * 2 + 1]!, playerRadius(network, size, player, temptation), 0, Math.PI * 2);
-    context.fill();
+  // Cooperators first as plain ink discs; defectors on top, red with a white
+  // rim and an outer red ring, so a few defectors read among many cooperators.
+  for (const drawn of ["C", "D"] as const) {
+    for (let player = 0; player < network.size; player += 1) {
+      if (strategy[player] !== drawn) continue;
+      const x = points[player * 2]!;
+      const y = points[player * 2 + 1]!;
+      const radius = playerRadius(network, size, player, temptation);
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      if (drawn === "C") {
+        context.fillStyle = `rgb(${INK})`;
+        context.fill();
+        continue;
+      }
+      context.fillStyle = `rgb(${DEFECT})`;
+      context.fill();
+      context.strokeStyle = "#ffffff";
+      context.lineWidth = 1.5;
+      context.stroke();
+      context.strokeStyle = `rgba(${DEFECT}, 0.55)`;
+      context.lineWidth = 1;
+      context.beginPath();
+      context.arc(x, y, radius + 2.5, 0, Math.PI * 2);
+      context.stroke();
+    }
   }
 
   context.font = "12px Arial, Helvetica, sans-serif";
@@ -374,12 +398,12 @@ export default function AdaptiveCooperationThree() {
 
       <div className={styles.controls}>
         {!touched && !optionsOpen && (
-          <p className={styles.hint}>사람을 누르면 협력과 배신이 뒤바뀜</p>
+          <p className={styles.hint}>검은 점은 협력, 빨간 점은 배신 · 누르면 뒤바뀜</p>
         )}
         {optionsOpen && (
           <div id="adaptive-cooperation-options" className={styles.options}>
             <p className={styles.about}>
-              모두가 이웃 각각과 죄수의 딜레마를 하고, 자기보다 많이 버는 이웃의 전략을 따라
+              검은 점은 협력자, 빨간 점은 배신자이고 점이 클수록 많이 법니다. 모두가 이웃 각각과 죄수의 딜레마를 하고, 자기보다 많이 버는 이웃의 전략을 따라
               합니다. 배신자는 협력자를 이용해 더 벌지만, 누구든 배신하는 이웃을 떠나 그 이웃의 다른
               지인과 새로 연결할 수 있습니다. 아무도 협력자를 떠나지 않으니 연결이 협력자에게 모이고,
               연결이 많은 협력자가 가장 많이 벌어 따라 할 본보기가 됩니다. (적응형 죄수의 딜레마,

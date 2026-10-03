@@ -1,57 +1,31 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createBodies } from "./layout.ts";
-import { createEchoNetwork, DEFAULT_PARAMETERS, stepEchoNetwork } from "./model.ts";
-import { axisGeometry, opinionToUnit, unitToOpinion, VIEWS, viewTargets } from "./views.ts";
+import { bodyAt } from "./layout.ts";
+import { createRankedWeb, DEFAULT_PARAMETERS, stepRankedWeb } from "./model.ts";
+import { viewTargets } from "./views.ts";
 
-function polarized() {
-  const network = createEchoNetwork(200, 0x5bd1e995);
-  stepEchoNetwork(network, 20, DEFAULT_PARAMETERS);
-  return network;
-}
-
-test("the opinion axis maps back to the same opinion", () => {
-  for (const opinion of [-6, -1, -0.1, 0, 0.3, 2, 5]) {
-    assert.ok(Math.abs(unitToOpinion(opinionToUnit(opinion)) - opinion) < 1e-9);
+test("ranking view orders pages by rank, left to right then row by row", () => {
+  const web = createRankedWeb();
+  const pending = { value: 0 };
+  for (let step = 0; step < 600; step += 1) stepRankedWeb(web, 1 / 60, DEFAULT_PARAMETERS, pending);
+  for (const frame of [{ width: 1440, height: 760 }, { width: 390, height: 700 }]) {
+    let seed = 7;
+    const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const bodies = Array.from({ length: web.size }, () => bodyAt(frame, random));
+    const radii = Float64Array.from({ length: web.size }, (_, page) =>
+      Math.max(2.2, Math.sqrt((web.rank[page]! * 0.06 * frame.width * frame.height) / Math.PI)));
+    const out = new Float64Array(web.size * 2);
+    viewTargets("ranking", bodies, radii, web.rank, web.size, frame, out);
+    const order = Array.from({ length: web.size }, (_, page) => page).sort((a, b) => web.rank[b]! - web.rank[a]! || a - b);
+    for (let index = 1; index < order.length; index += 1) {
+      const before = order[index - 1]!;
+      const after = order[index]!;
+      const sameRow = Math.abs((out[after * 2 + 1]! + radii[after]!) - (out[before * 2 + 1]! + radii[before]!)) < 1e-6;
+      if (sameRow) assert.ok(out[after * 2]! > out[before * 2]!);
+      else assert.ok(out[after * 2 + 1]! > out[before * 2 + 1]! - radii[before]!);
+    }
+    for (let page = 0; page < web.size; page += 1) {
+      assert.ok(out[page * 2]! >= 0 && out[page * 2]! <= frame.width);
+    }
   }
-  assert.ok(Number.isFinite(unitToOpinion(1)) && Number.isFinite(unitToOpinion(-1)));
-});
-
-for (const frame of [{ width: 1440, height: 760 }, { width: 390, height: 640 }]) {
-  test(`opinion and distribution views put the two sides on either side of the centre (${frame.width}×${frame.height})`, () => {
-    const network = polarized();
-    const out = new Float64Array(network.size * 2);
-    const { centre } = axisGeometry(frame);
-    for (const view of ["opinion", "distribution"] as const) {
-      viewTargets(view, network, createBodies(network.size, frame), frame, 7, out);
-      for (let person = 0; person < network.size; person += 1) {
-        const opinion = network.opinion[person]!;
-        if (Math.abs(opinion) < 0.05) continue;
-        assert.equal(Math.sign(out[person * 2]! - centre), Math.sign(opinion), view);
-      }
-    }
-  });
-
-  test(`every view keeps every person inside the frame (${frame.width}×${frame.height})`, () => {
-    const network = polarized();
-    const bodies = createBodies(network.size, frame);
-    const out = new Float64Array(network.size * 2);
-    for (const view of VIEWS) {
-      viewTargets(view.id, network, bodies, frame, 7, out);
-      for (let person = 0; person < network.size; person += 1) {
-        assert.ok(out[person * 2]! >= 0 && out[person * 2]! <= frame.width, view.id);
-        assert.ok(out[person * 2 + 1]! >= 0 && out[person * 2 + 1]! <= frame.height, view.id);
-      }
-    }
-  });
-}
-
-test("opinion view puts the most active person above the least active", () => {
-  const network = polarized();
-  const frame = { width: 1000, height: 800 };
-  const out = new Float64Array(network.size * 2);
-  viewTargets("opinion", network, createBodies(network.size, frame), frame, 7, out);
-  const order = Array.from({ length: network.size }, (_, person) => person)
-    .sort((a, b) => network.activity[a]! - network.activity[b]!);
-  assert.ok(out[order.at(-1)! * 2 + 1]! < out[order[0]! * 2 + 1]!);
 });

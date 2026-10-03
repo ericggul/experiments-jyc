@@ -1,124 +1,149 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  ACTIVITY_FLOOR,
-  addActivePerson,
-  CONTACT_MEMORY,
-  CONTACTS_PER_ACTIVATION,
-  createEchoNetwork,
+  addCandidate,
+  addPage,
+  computeRank,
+  concentration,
+  createRankedWeb,
   DEFAULT_PARAMETERS,
-  holdOpinion,
-  MAX_PEOPLE,
-  measureEcho,
-  sampleActivity,
-  stepEchoNetwork,
-  type EchoNetwork,
-  type EchoParameters,
+  fadeCandidate,
+  leader,
+  MAX_CANDIDATES,
+  MAX_PAGES,
+  outWeight,
+  setDamping,
+  stepRankedWeb,
+  type RankedWeb,
+  type WebParameters,
 } from "./model.ts";
 
-const SEED = 0x5bd1e995;
-
-function run(parameters: Partial<EchoParameters>, duration = 30, seed = SEED) {
-  const network = createEchoNetwork(200, seed);
-  stepEchoNetwork(network, duration, { ...DEFAULT_PARAMETERS, ...parameters });
-  return network;
+function sum(web: RankedWeb) {
+  let total = 0;
+  for (let page = 0; page < web.size; page += 1) total += web.rank[page]!;
+  return total;
 }
 
-/** Share of people on the side that was empty before `count` talkers joined it. */
-function seededSide(homophily: number, count: number, seed: number) {
-  const network = run({ homophily: 0 }, 15, seed);
-  const side = measureEcho(network).positive > 0.5 ? -1 : 1;
-  for (let added = 0; added < count; added += 1) addActivePerson(network, side * 2);
-  stepEchoNetwork(network, 30, { ...DEFAULT_PARAMETERS, homophily });
-  const { positive } = measureEcho(network);
-  return side > 0 ? positive : 1 - positive;
+/** Runs `seconds` of screen time at 60 steps per second. */
+function run(web: RankedWeb, seconds: number, parameters: WebParameters = DEFAULT_PARAMETERS) {
+  const pending = { value: 0 };
+  for (let step = 0; step < seconds * 60; step += 1) stepRankedWeb(web, 1 / 60, parameters, pending);
 }
 
-function assertConsistent(network: EchoNetwork) {
-  assert.equal(network.opinion.length, network.size);
-  assert.equal(network.activity.length, network.size);
-  for (const value of network.opinion) assert.ok(Number.isFinite(value));
-  for (const contact of network.contacts) {
-    assert.notEqual(contact.source, contact.target);
-    assert.ok(contact.source < network.size && contact.target < network.size);
-    assert.ok(network.time - contact.at <= CONTACT_MEMORY + 0.2);
-  }
-}
-
-test("replays deterministically from a seed", () => {
-  const first = createEchoNetwork(120, 7);
-  const second = createEchoNetwork(120, 7);
-  assert.deepEqual(
-    stepEchoNetwork(first, 10, DEFAULT_PARAMETERS),
-    stepEchoNetwork(second, 10, DEFAULT_PARAMETERS),
-  );
-  assert.deepEqual(first.opinion, second.opinion);
-});
-
-test("activities follow the power law range and an active person makes m distinct contacts", () => {
-  assert.ok(Math.abs(sampleActivity(0) - ACTIVITY_FLOOR) < 1e-12);
-  assert.ok(Math.abs(sampleActivity(1) - 1) < 1e-12);
-  const network = createEchoNetwork(200, 3);
-  for (const activity of network.activity) assert.ok(activity >= ACTIVITY_FLOOR && activity <= 1);
-  const talker = addActivePerson(network, 0.5)!;
-  const contacts = stepEchoNetwork(network, 0.05, DEFAULT_PARAMETERS);
-  const own = contacts.filter((contact) => contact.source === talker).map((contact) => contact.target);
-  assert.equal(own.length, CONTACTS_PER_ACTIVATION);
-  assert.equal(new Set(own).size, own.length);
-  stepEchoNetwork(network, 10, DEFAULT_PARAMETERS);
-  assertConsistent(network);
-});
-
-test("a mild topic ends in neutral consensus", () => {
-  const { meanConviction } = measureEcho(run({ controversy: 0.05 }));
-  assert.ok(meanConviction < 0.01);
-});
-
-test("a controversial topic without homophily radicalizes everyone to one side", () => {
-  const measure = measureEcho(run({ homophily: 0 }));
-  assert.ok(measure.alignment > 0.98);
-  assert.ok(measure.meanConviction > 1);
-});
-
-test("homophily turns radicalization into two camps that talk mostly to themselves", () => {
-  const open = measureEcho(run({ homophily: 0 }));
-  const closed = measureEcho(run({ homophily: 3 }));
-  assert.ok(closed.alignment < 0.6);
-  assert.ok(closed.positive > 0.2 && closed.positive < 0.8);
-  assert.ok(closed.crossContacts < 0.12);
-  assert.ok(closed.echo > 0.3);
-  assert.ok(open.alignment - closed.alignment > 0.4);
-});
-
-test("dropping homophily lets one camp absorb the other", () => {
-  const network = run({ homophily: 3 }, 20);
-  assert.ok(measureEcho(network).alignment < 0.6);
-  stepEchoNetwork(network, 20, { ...DEFAULT_PARAMETERS, homophily: 0 });
-  assert.ok(measureEcho(network).alignment > 0.98);
-});
-
-test("three talkers grow a new camp only when people seek like minds", () => {
-  for (const seed of [1, 2, 3]) {
-    assert.ok(seededSide(0, 3, seed) < 0.05);
-    assert.ok(seededSide(3, 3, seed) > 0.3);
+test("rank satisfies the weighted PageRank equation and sums to 1", () => {
+  const web = createRankedWeb();
+  run(web, 5);
+  assert.ok(Math.abs(sum(web) - 1) < 1e-9);
+  const n = web.size;
+  const d = web.damping;
+  let dangling = 0;
+  for (let i = 0; i < n; i += 1) if (outWeight(web, i) <= 1e-12) dangling += web.rank[i]!;
+  for (let i = 0; i < n; i += 1) {
+    let incoming = 0;
+    for (let j = 0; j < n; j += 1) {
+      const total = outWeight(web, j);
+      if (total <= 1e-12) continue;
+      for (const entry of web.out[j]!) if (entry.target === i) incoming += (web.rank[j]! * entry.weight) / total;
+    }
+    assert.ok(Math.abs(web.rank[i]! - ((1 - d) / n + d * incoming + (d * dangling) / n)) < 1e-7);
   }
 });
 
-test("a held opinion stays put until it is released", () => {
-  const network = run({}, 20);
-  holdOpinion(network, 0, -3);
-  stepEchoNetwork(network, 5, DEFAULT_PARAMETERS);
-  assert.equal(network.opinion[0], -3);
-  holdOpinion(network, null);
-  assert.equal(network.held, null);
-  assert.equal(holdOpinion(network, network.size, 1), false);
+test("a symmetric cycle ranks every page equally", () => {
+  const web = createRankedWeb(6, 1);
+  for (let page = 0; page < 6; page += 1) {
+    web.out[page]!.length = 0;
+    web.out[page]!.push({ target: (page + 1) % 6, weight: 1, fading: false });
+  }
+  computeRank(web);
+  for (let page = 0; page < 6; page += 1) assert.ok(Math.abs(web.rank[page]! - 1 / 6) < 1e-9);
 });
 
-test("adding talkers respects the population cap", () => {
-  const network = createEchoNetwork(MAX_PEOPLE - 1, 5);
-  assert.equal(addActivePerson(network, 1), MAX_PEOPLE - 1);
-  assert.equal(network.activity[MAX_PEOPLE - 1], 1);
-  assert.equal(addActivePerson(network, 1), null);
-  stepEchoNetwork(network, 2, DEFAULT_PARAMETERS);
-  assertConsistent(network);
+test("rank changes continuously: no page jumps by more than half a point per frame", () => {
+  const web = createRankedWeb();
+  const pending = { value: 0 };
+  for (let step = 0; step < 60 * 60; step += 1) {
+    const before = web.rank.slice(0, web.size);
+    stepRankedWeb(web, 1 / 60, DEFAULT_PARAMETERS, pending);
+    for (let page = 0; page < before.length; page += 1) {
+      assert.ok(Math.abs(web.rank[page]! - before[page]!) < 0.005);
+    }
+  }
+});
+
+test("drifting quality keeps the leadership changing; frozen quality changes it less", () => {
+  const leaderChanges = (volatility: number) => {
+    const web = createRankedWeb();
+    const pending = { value: 0 };
+    let last = leader(web);
+    let changes = 0;
+    for (let step = 0; step < 60 * 120; step += 1) {
+      stepRankedWeb(web, 1 / 60, { ...DEFAULT_PARAMETERS, volatility }, pending);
+      if (step % 60 === 0) {
+        const now = leader(web);
+        if (now !== last) changes += 1;
+        last = now;
+      }
+    }
+    return changes;
+  };
+  const lively = leaderChanges(DEFAULT_PARAMETERS.volatility);
+  assert.ok(lively >= 8);
+  assert.ok(lively > leaderChanges(0));
+});
+
+test("attention following rank concentrates rank more than even attention", () => {
+  const share = (floor: number) => {
+    const web = createRankedWeb();
+    run(web, 90, { ...DEFAULT_PARAMETERS, floor, volatility: 0.3 });
+    return concentration(web).topTenth;
+  };
+  assert.ok(share(0.05) > share(20) + 0.05);
+});
+
+test("candidates enter at zero, fade out before removal, and stay bounded", () => {
+  const web = createRankedWeb();
+  run(web, 30);
+  for (let page = 0; page < web.size; page += 1) {
+    const list = web.out[page]!;
+    assert.ok(list.filter((entry) => !entry.fading).length <= MAX_CANDIDATES);
+    assert.equal(new Set(list.map((entry) => entry.target)).size, list.length);
+    assert.ok(list.every((entry) => entry.target !== page && entry.weight >= 0));
+  }
+  const page = 3;
+  const target = web.out[page]![0]!.target;
+  const weight = web.out[page]![0]!.weight;
+  fadeCandidate(web, page, target);
+  stepRankedWeb(web, 1 / 60, DEFAULT_PARAMETERS);
+  const fading = web.out[page]!.find((entry) => entry.target === target);
+  assert.ok(fading && fading.weight < weight && fading.weight > 0);
+  run(web, 20);
+  assert.ok(!web.out[page]!.some((entry) => entry.target === target && entry.fading));
+});
+
+test("a hand-drawn link from the leader lifts a new page more than one from a minor page", () => {
+  const lift = (fromLeader: boolean) => {
+    const web = createRankedWeb();
+    run(web, 10, { ...DEFAULT_PARAMETERS, growth: 0, volatility: 0 });
+    const order = Array.from({ length: web.size }, (_, page) => page).sort((a, b) => web.rank[b]! - web.rank[a]!);
+    const page = addPage(web)!;
+    addCandidate(web, fromLeader ? order[0]! : order.at(-1)!, page, 0.5);
+    computeRank(web);
+    return web.rank[page]!;
+  };
+  assert.ok(lift(true) > lift(false) * 2);
+});
+
+test("growth and damping stay within bounds; replay is deterministic", () => {
+  const web = createRankedWeb();
+  run(web, 30, { ...DEFAULT_PARAMETERS, growth: 20 });
+  assert.equal(web.size, MAX_PAGES);
+  assert.equal(addPage(web), null);
+  setDamping(web, 2);
+  assert.equal(web.damping, 0.95);
+  const first = createRankedWeb();
+  const second = createRankedWeb();
+  run(first, 10);
+  run(second, 10);
+  assert.deepEqual(first.rank, second.rank);
 });
