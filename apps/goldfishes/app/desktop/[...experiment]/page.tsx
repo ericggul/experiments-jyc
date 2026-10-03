@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import GoldfishesNavigation from '@/components/navigation';
+import GoldfishesNavigation from '@/foundations/navigation';
 import { findGoldfishExperiment, getGoldfishExperimentsForDate } from '@/components/experiments';
 
 export default async function DesktopExperiment({ params }: { params: Promise<{ experiment: string[] }> }) {

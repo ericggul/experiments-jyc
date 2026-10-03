@@ -1,4 +1,29 @@
 .screen { position: absolute; inset: 0; overflow: hidden; background: #f1ede4; color: #000; font-family: var(--ios-font); }
+.live { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.eta { position: absolute; left: 16px; right: 16px; height: 34px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+.eta b { font: 700 22px/28px var(--ios-display); }
+.progressLive { position: absolute; left: 16px; right: 16px; top: 600px; height: 26px; }
+.trackLive { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 2px; background: #e5e5ea; overflow: hidden; }
+.trackLive i { display: block; height: 100%; background: #111; }
+.chat { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
+.chat span { max-width: 260px; padding: 9px 14px; border-radius: 18px; font: 400 16px/21px var(--ios-font); }
+.them { align-self: flex-start; background: #e9e9eb; }
+.me { align-self: flex-end; background: #111; color: #fff; }
+.chatBar { position: absolute; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 14px 0; display: flex; align-items: center; gap: 10px; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); font: 600 17px/22px var(--ios-font); }
+.chatBar small { margin-left: auto; color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
+.sheetPanel { background: transparent; }
+.sheetPanel::before { content: ""; position: absolute; inset: 140px 0 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 30px rgb(0 0 0 / 25%); }
+.sheetHead { position: absolute; top: 152px; left: 0; right: 0; height: 40px; text-align: center; font: 600 17px/40px var(--ios-font); }
+.detailBody { padding: 52px 16px 0; }
+.ratePanel { background: #fff; }
+.rate { padding: 150px 24px 0; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.rate h1 { margin: 0; font: 700 26px/32px var(--ios-display); }
+.rate > span { color: var(--ios-secondary); font: 400 15px/20px var(--ios-font); }
+.stars { display: flex; gap: 8px; color: #111; }
+.tips { display: flex; gap: 10px; }
+.tips b { width: 64px; height: 48px; display: grid; place-items: center; border-radius: 24px; background: #f2f2f7; font: 600 17px/20px var(--ios-font); }
+.tips b[data-on="true"] { background: #111; color: #fff; }
+.cta2 { margin-top: 20px; width: 342px; height: 52px; display: grid; place-items: center; border-radius: 10px; background: #111; color: #fff; font: 600 17px/22px var(--ios-font); }
 .map { position: absolute; top: 0; left: 0; right: 0; height: 520px; }
 .close { position: absolute; top: 60px; left: 16px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: 0 2px 10px rgb(0 0 0 / 20%); }
 .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 500px; padding: 6px 16px 0; border-radius: 18px 18px 0 0; background: #fff; box-shadow: 0 -4px 20px rgb(0 0 0 / 16%); }

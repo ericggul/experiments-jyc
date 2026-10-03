@@ -1,6 +1,23 @@
 .screen { position: absolute; inset: 0; overflow: hidden; background: #f1ede4; color: var(--ios-label); font-family: var(--ios-font); }
 .mapTop { position: absolute; top: 0; left: 0; right: 0; height: 560px; }
-.mapFull { position: absolute; inset: 0; }
+.drivePanel { background: #1b1f25; }
+.live { position: absolute; inset: 0; z-index: 30; overflow: hidden; background: #1b1f25; }
+.sheetPanel { background: transparent; }
+.sheetPanel::before { content: ""; position: absolute; inset: 140px 0 0; border-radius: 16px 16px 0 0; background: #fff; box-shadow: 0 -10px 30px rgb(0 0 0 / 25%); }
+.sheetHead { position: absolute; top: 152px; left: 0; right: 0; height: 46px; text-align: center; font: 600 17px/46px var(--ios-font); }
+.stepList { padding: 56px 16px 120px; margin-top: 0; }
+.stepRow { display: flex; align-items: center; gap: 14px; height: 60px; box-shadow: 0 -0.5px 0 var(--ios-separator); font: 500 16px/20px var(--ios-font); }
+.stepRow small { display: block; color: var(--ios-secondary); font: 400 13px/17px var(--ios-font); }
+.speed { position: absolute; left: 14px; bottom: 126px; width: 58px; height: 58px; display: grid; place-content: center; border-radius: 50%; background: #1c1c1e; box-shadow: 0 2px 8px rgb(0 0 0 / 40%); text-align: center; font: 700 22px/22px var(--ios-font); color: #fff; }
+.speed small { font: 500 10px/12px var(--ios-font); color: var(--ios-secondary); }
+.arrived { padding: 150px 24px 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.arrived h1 { margin: 10px 0 0; font: 700 32px/38px var(--ios-display); }
+.arrived > b { font: 600 22px/28px var(--ios-font); }
+.arrived > span { color: var(--ios-secondary); font: 400 16px/22px var(--ios-font); }
+.arrivedPin { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: #ff3b30; color: #fff !important; }
+.arrivedStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 26px 0; }
+.arrivedStats b { display: block; font: 600 22px/26px var(--ios-font); }
+.arrivedStats span { color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
 .search { position: absolute; top: 56px; left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: #fff; box-shadow: 0 2px 12px rgb(0 0 0 / 18%); }
 .fields { flex: 1; display: grid; gap: 2px; font: 500 15px/22px var(--ios-font); }
 .fields span { display: flex; align-items: center; gap: 8px; }

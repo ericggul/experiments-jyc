@@ -23,7 +23,7 @@ export type Session = {
   duration: number;
   shots: readonly Shot[];
   panels: Readonly<Record<string, Panel>>;
-  /** Drawn over every panel, e.g. a live ETA that re-renders each tick. */
+  /** Drawn over every panel; static (built once). For per-tick values use the `live` prop. */
   overlay?: ReactNode;
 };
 
@@ -42,13 +42,19 @@ const SIM_MS = 1000;
  * rate follows the simulation speed, so a ten-minute scene at 10 min/s is a
  * one-second burst of real use.
  */
-export function Storyboard({ id, elapsed, build }: {
+export function Storyboard({ id, elapsed, build, live }: {
   /** Changes whenever the session should be rebuilt (scene seed, view, duration). */
   id: string;
   /** Simulated minutes since the scene started (re-sync point). */
   elapsed: number;
   /** Builds the session; called once per `id`. Must be pure. */
   build: () => Session;
+  /**
+   * Per-panel live content (ETA, timers, meters) that re-renders every tick.
+   * It is drawn inside its panel, so it moves with that panel's transitions.
+   * Return null for panels without live values.
+   */
+  live?: (panel: string) => ReactNode;
 }) {
   // The session is built once per id (derived state), never on ordinary ticks.
   const [built, setBuilt] = useState(() => ({ id, session: build() }));
@@ -148,6 +154,7 @@ export function Storyboard({ id, elapsed, build }: {
               </div>
             </div>
             {panel.chrome}
+            {live?.(key)}
           </div>
         );
       })}

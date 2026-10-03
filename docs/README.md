@@ -36,14 +36,14 @@ history when their subject affects the task, not for every code change.
 
 ## Experiment map
 
-- [six-sigma mobile / K6](../apps/six-sigma/docs/0927/K6.md): regular-hexagon complete graph, `mobile/0927/K6`.
-- [six-sigma mobile / local optimum](../apps/six-sigma/docs/0927/local-optimum.md): coupled 1D/2D maps on K6, `mobile/0927/local-optimum`.
+- [six-sigma mobile / K6](../apps/six-sigma/docs/mobile/k6/1.md): regular-hexagon complete graph, `mobile/k6/1`.
+- [six-sigma mobile / local optimum](../apps/six-sigma/docs/mobile/k6/2.md): coupled 1D/2D maps on K6, `mobile/k6/2`.
 
 - [SNS mobile surfaces 1–13](../apps/scc/docs/experiments/sns/mobile/README.md): mobile services and Instagram, TikTok and X replicas.
 
-- [Goldfishes maximalist collage](../apps/goldfishes/docs/maximalist-collage/README.md): independent browser interface cut-ups and accumulated prints.
 - [Splice](../apps/scc/docs/experiments/standalone/splice/README.md): two-deck audio collage practice; a separate instrument for the later native application collage direction.
 
+- [xyzt city](../apps/scc/docs/experiments/dimensions/xyzt-city/README.md): Lower Manhattan in (x, y, t) with height as the swept threshold, variant `1`.
 - [Aerodynamics](../apps/scc/docs/experiments/standalone/aerodynamics/README.md): standalone 3D ABC Euler flow, variants `1`–`2`.
 
 | Code family | Registered variants | Documentation |
@@ -79,10 +79,9 @@ history when their subject affects the task, not for every code change.
 | `apps/scc/components/standalone/spoon-class` | `default`, `1`, `2`, `3` | [spoon-class baseline, module field, human-life fork and dense scaled wall](../apps/scc/docs/experiments/standalone/spoon-class/README.md) |
 | `apps/scc/components/standalone/grid` | `1`, `2`, `3`, `4`, `5` | [grid](../apps/scc/docs/experiments/standalone/grid/README.md) |
 | `apps/scc/components/parametric-interface` | `1`, `2`, `0815/flight`, `0815/stock`, `0815/apollo`, `0815/led-text` | [parametric-interface](../apps/scc/docs/experiments/parametric-interface/README.md) |
-| `apps/goldfishes/components/screen` | `default`, `2d/1`, `0804/tube`, `0804/html`, `0804/node-edge`, `0804/pillars`, `0806/side-view`, `0806/compositional-grid`, `0806/duration`, `0806/temporal-decay`, `0908/*` | [archive](../apps/goldfishes/docs/README.md), [agent onboarding](../apps/goldfishes/docs/agent-onboarding.md) |
-| `apps/goldfishes/components/pc` | `0908` | [archive](../apps/goldfishes/docs/README.md) |
+| `apps/goldfishes/components/screen` | `default`, `2d/1`, `attraction-targets`, `pillars`, `media-grid`, `keyword-field`, `overlay-3d`, `overlay-2d`, `attention-print`, `tech-eyes` (`<family>/<serial>`, serials by date) | [archive](../apps/goldfishes/docs/README.md), [agent onboarding](../apps/goldfishes/docs/agent-onboarding.md) |
+| `apps/goldfishes/components/pc` | `news-phones`, `image-search` | [archive](../apps/goldfishes/docs/README.md) |
 | `apps/scc/components/dj` | `1` | [dj](../apps/scc/docs/experiments/dj/README.md) |
-| `apps/scc/components/finger-skating` | `1`, `2` | [finger-skating](../apps/scc/docs/experiments/finger-skating/README.md) |
 | `apps/c-val/components` | Unversioned finished app; numbered records are history | [c-val](../apps/c-val/docs/README.md) |
 | `apps/scc/components/network-system` | `default`, `macro-economy`, `cycle`, `population`, `competitive-firms` | [network-system index](../apps/scc/docs/experiments/network-system/README.md) |
 | `apps/scc/components/sns` | `feed/1`, `navigation/default`, `navigation/1`, `navigation/2`, `youtube/1`, `youtube/2`, `linkedin/1` | [sns index](../apps/scc/docs/experiments/sns/README.md) |

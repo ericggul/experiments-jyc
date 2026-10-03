@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import GoldfishesNavigation from "@/components/navigation";
+import GoldfishesNavigation from "@/foundations/navigation";
 import {
   findGoldfishExperiment,
   getGoldfishExperimentsForDate,

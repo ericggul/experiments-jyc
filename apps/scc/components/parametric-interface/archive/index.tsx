@@ -1,4 +1,4 @@
-import SccNavigation from "@/components/navigation";
+import SccNavigation from "@/foundations/navigation";
 import type { ParametricInterfaceExperiment } from "../experiments";
 
 export default function ParametricInterfaceArchive({

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import GoldfishesNavigation from "@/components/navigation";
+import { notFound } from "next/navigation";
+import GoldfishesNavigation from "@/foundations/navigation";
 import {
   findGoldfishExperiment,
   getGoldfishExperimentsForDate,
@@ -31,7 +31,6 @@ export default async function GoldfishesPcExperimentPage({
   params: Promise<{ experiment: string[] }>;
 }) {
   const { experiment: path } = await params;
-  if (path.join("/") === "0915/maximalist-collage") redirect("/maximalist-collage/0915/1");
   const dateExperiments =
     path.length === 1 ? getGoldfishExperimentsForDate(path[0], "pc") : [];
 

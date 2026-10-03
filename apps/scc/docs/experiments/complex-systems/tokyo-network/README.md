@@ -47,3 +47,5 @@ data for central Tokyo, retrieved through Overpass on 2026-08-13. It retains
 the required visible `© OpenStreetMap contributors` attribution and is available
 under the Open Database License (ODbL):
 <https://www.openstreetmap.org/copyright>.
+
+Removed 2026-10-03: the route, component and registry entry. These notes stay as history.

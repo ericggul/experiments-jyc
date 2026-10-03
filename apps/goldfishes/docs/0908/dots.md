@@ -1,7 +1,0 @@
-# 0908 dots
-
-Route: `/0908/dots`. Standalone preservation experiment, separate from `0908/aggregated`.
-
-Question: retain the exact Instagram/4 visual and behavior inside the independently deployed Goldfishes app. Baseline: `apps/scc/components/sns/instagram/4`. Mutation: app/route ownership only. All six component files are copied byte-for-byte; model, timing, DOM/SVG, CSS and controls are unchanged. The CSS-referenced IDF Voyageur font is copied to the same public URL in Goldfishes. The relevant global font variables match between apps.
-
-Verification: recursive source/destination comparison, Goldfishes typecheck, scoped lint and asset audit. Browser appearance and interaction have not been tested. Future edits belong only to this local copy.

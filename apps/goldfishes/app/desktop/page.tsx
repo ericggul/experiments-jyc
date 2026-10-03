@@ -1,4 +1,4 @@
-import GoldfishesNavigation from '@/components/navigation';
+import GoldfishesNavigation from '@/foundations/navigation';
 import { goldfishExperiments } from '@/components/experiments';
 
 export default function DesktopIndex() {

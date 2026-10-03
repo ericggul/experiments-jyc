@@ -277,3 +277,43 @@ The goal is met when all of the following hold.
 | Images | Local curated webp set, downloaded once | Remote hotlinks (like clone/11) |
 | Short video | Still frames with swipe transitions | Real video |
 | Day length | 12 real minutes at the default speed | — |
+
+## Phase 2 — sessions in simulated time (implemented 2026-10-03, browser-unverified)
+
+**Goal.** Inside every app, information, navigation, interaction and
+transitions run at simulation speed, not real time.
+
+At 10 min/s, a ten-minute scene is one real second of compressed use: several
+flicks, a tap into a detail, a sheet, a back, a different item. Doubling the
+speed doubles the tempo.
+
+**Mechanism.** Each view builds a `Session` and plays it with `Storyboard`
+(`ios/storyboard.tsx`).
+- A session is panels (pages of the app) plus shots (when the person goes
+  where, how far they scroll, where they tap).
+- React renders a session once per scene.
+- The Web Animations API plays it at full frame rate, with
+  `playbackRate = minutesPerSecond`. Pausing pauses it; an outgoing screen
+  freezes it.
+- Live values may use a small `overlay` that re-renders per tick (ETA, clock,
+  typing). Discrete changes paced by beats or timers are retired.
+- Reference: `apps/photo-feed` feed view.
+
+**Acceptance per app.**
+
+| Criterion | Requirement |
+| --- | --- |
+| Shots | At least one per 2.5 simulated minutes for interactive views (feeds, chat, mail, browse). Slow-by-nature views (navigation, ride, run, baby monitor) must still change information at least every 3 simulated minutes. |
+| Panels | Three or more distinct panels where the real app navigates. |
+| Content | At least 40 distinct items per app, generated combinatorially from the seed, so neighbouring phones differ. |
+| Realism | Flows follow how people use the app: open, skim, act, back. Taps precede navigation. |
+| Timing | No fixed real-time durations anywhere; the contract test enforces this. |
+| Budget | At most 700 DOM nodes per fixture render (`tools/bench-screens.mjs`). |
+| Keys | No duplicate keys (`tools/bench-keys.mjs`). |
+| Purity | Screens stay pure; the contract and model tests pass. |
+
+**Tools.** Static and server-side only; no browser or server.
+- `node components/mobiles/1/tools/bench-build.mjs <out>` builds the bench, then:
+  - `node …/bench-screens.mjs <out>` reports nodes per fixture;
+  - `node …/bench-keys.mjs <out>` reports duplicate keys and render errors over many seeds and days;
+  - `node …/bench-field.mjs <out> 3` reports field cost per tick.

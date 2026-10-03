@@ -27,8 +27,7 @@
 .tx small { display: block; color: var(--ios-secondary); font: 400 13px/17px var(--ios-font); }
 .tx b { font: 500 16px/20px var(--ios-font); }
 .plus { color: #1a8a3c; }
-.alert { position: absolute; inset: 0; padding: 54px 16px 0; background: var(--ios-background); }
-.close { display: flex; justify-content: space-between; height: 44px; align-items: center; color: var(--ios-blue); }
+.alert { padding: 0 16px 40px; }
 .merchant { margin-top: 16px; text-align: center; }
 .logo { width: 72px; height: 72px; margin: 0 auto 12px; display: grid; place-items: center; border-radius: 50%; color: #fff; font: 700 30px/1 var(--ios-rounded); }
 .name { font: 600 20px/25px var(--ios-font); }
@@ -43,3 +42,35 @@
 .yes, .no { height: 50px; margin-bottom: 10px; display: grid; place-items: center; border-radius: 14px; font: 600 17px/22px var(--ios-font); }
 .yes { background: #0b6e4f; color: #fff; }
 .no { background: var(--ios-fill); color: var(--ios-red); }
+.grouped { background: var(--ios-grouped); }
+.actions { display: flex; gap: 8px; margin-top: 12px; }
+.actions span { flex: 1; padding: 9px 0; border-radius: 10px; background: rgb(255 255 255 / 16%); text-align: center; font: 600 14px/18px var(--ios-font); }
+.subHead { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 12px 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background: #0b6e4f; color: #fff; font: 400 17px/22px var(--ios-font); }
+.subHead span { display: flex; align-items: center; gap: 2px; }
+.subHead span:last-child { justify-content: flex-end; }
+.subHead b { font-weight: 600; }
+.sheetPanel { background: #3a3a3c; }
+.review { min-height: 790px; margin-top: 54px; box-sizing: border-box; padding: 8px 16px 40px; border-radius: 12px 12px 0 0; background: var(--ios-background); }
+.grabber { width: 36px; height: 5px; margin: 0 auto 14px; border-radius: 3px; background: var(--ios-tertiary); }
+.reviewTitle { margin: 6px 0 4px; text-align: center; font: 600 20px/25px var(--ios-font); }
+.review .typed { margin: 8px 0 18px; }
+.review .facts { margin-bottom: 18px; }
+.people { padding: 12px 16px 40px; }
+.searchField { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 8px; border-radius: 10px; background: var(--ios-fill); color: var(--ios-secondary); }
+.recentLabel { margin: 18px 0 6px; color: var(--ios-secondary); font: 600 13px/18px var(--ios-font); text-transform: uppercase; }
+.person { display: flex; align-items: center; gap: 12px; padding: 9px 0; box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.person div { font: 500 16px/20px var(--ios-font); }
+.person small { display: block; color: var(--ios-secondary); font: 400 13px/17px var(--ios-font); }
+.face { width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: rgb(11 110 79 / 14%); color: #0b6e4f; font: 600 15px/1 var(--ios-rounded); }
+.amountPanel { padding: 24px 16px 0; text-align: center; }
+.toLine { color: var(--ios-secondary); font: 400 15px/20px var(--ios-font); }
+.toLine b { color: var(--ios-label); }
+.typed { margin: 30px 0 8px; font: 700 64px/72px var(--ios-rounded); letter-spacing: 0.3px; text-align: center; }
+.from { display: inline-block; padding: 5px 12px; border-radius: 14px; background: var(--ios-fill); font: 500 14px/18px var(--ios-font); }
+.keypad { position: absolute; left: 0; right: 0; top: 386px; display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 20px; font: 400 30px/44px var(--ios-rounded); }
+.cta { position: absolute; left: 16px; right: 16px; top: 640px; height: 50px; display: grid; place-items: center; border-radius: 14px; background: var(--ios-fill); color: var(--ios-secondary); font: 600 17px/22px var(--ios-font); }
+.cta[data-on="true"] { background: #0b6e4f; color: #fff; }
+.sent { display: flex; flex-direction: column; align-items: center; padding: 220px 24px 0; text-align: center; }
+.sentCheck { width: 88px; height: 88px; display: grid; place-items: center; border-radius: 50%; background: #0b6e4f; color: #fff; }
+.sent p { margin: 6px 0 120px; color: var(--ios-secondary); font: 400 16px/22px var(--ios-font); }
+.sent .yes { align-self: stretch; }

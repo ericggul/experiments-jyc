@@ -8,7 +8,7 @@ import { fitPhoneGrid, mobilesConfig } from "./model/layout";
 import { planDay } from "./model/plan-day";
 import { createPopulation } from "./model/population";
 import { defaultSettings, transitionScale, type FieldSettings } from "./model/settings";
-import { phoneMinute } from "./model/time";
+import { phoneMinute, simToMs } from "./model/time";
 import { PhoneView } from "./phone";
 import { useSimClock } from "./use-sim-clock";
 import styles from "./mobiles.module.css";
@@ -33,8 +33,14 @@ export default function MobilesOne() {
     [owners, time.day, settings.sameness, settings.notificationRate, settings.synchrony, settings.seed, settings.screenTime],
   );
   const transition = useMemo(
-    () => ({ style: settings.transitionStyle, ms: settings.transitionMs, holdMs: settings.holdMs, scale: transitionScale }),
-    [settings.transitionStyle, settings.transitionMs, settings.holdMs],
+    // Transitions are authored in simulated minutes, so they speed up with the simulation.
+    () => ({
+      style: settings.transitionStyle,
+      ms: simToMs(settings.transitionMinutes, settings.minutesPerSecond),
+      holdMs: simToMs(settings.holdMinutes, settings.minutesPerSecond),
+      scale: transitionScale,
+    }),
+    [settings.transitionStyle, settings.transitionMinutes, settings.holdMinutes, settings.minutesPerSecond],
   );
   const playback = useMemo(
     () => ({ minutesPerSecond: settings.minutesPerSecond, playing: settings.playing, frozen: false }),

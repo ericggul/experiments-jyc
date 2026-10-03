@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import GoldfishesNavigation from "@/components/navigation";
+import GoldfishesNavigation from "@/foundations/navigation";
 import {
   findGoldfishExperiment,
   getGoldfishExperimentsForDate,
@@ -18,9 +18,9 @@ export function generateStaticParams() {
       experiment: [dateKey],
     })),
     ...goldfishExperiments.flatMap((experiment) =>
-      (experiment.legacyKeys ?? []).map((key) => ({
-        experiment: key.split("/"),
-      })),
+      (experiment.legacyKeys ?? [])
+        .filter((key) => !key.startsWith(`${experiment.area}/`))
+        .map((key) => ({ experiment: key.split("/") })),
     ),
   ];
 }

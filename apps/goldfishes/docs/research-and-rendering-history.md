@@ -10,9 +10,9 @@ The exact-top view preserves comparison; orbit must reveal real height, volume, 
 
 ## Field and media facts
 
-`0804/tube` uses a 2026-08-04 local TfL snapshot of all 11 line route sequences. The same projected station coordinates draw and attract; 100 stable targets are selected by farthest-point ordering across 272 stations. The 46 schematic route branches use 50-unit per-line height layers and interchange connectors, making orbit operational. A review of 76 Wikimedia Tube-map images retained sparse coloured routes/high-contrast nodes and rejected labels; there is no runtime API, tile, official map copy, or transit chrome.
+`attraction-targets/1` uses a 2026-08-04 local TfL snapshot of all 11 line route sequences. The same projected station coordinates draw and attract; 100 stable targets are selected by farthest-point ordering across 272 stations. The 46 schematic route branches use 50-unit per-line height layers and interchange connectors, making orbit operational. A review of 76 Wikimedia Tube-map images retained sparse coloured routes/high-contrast nodes and rejected labels; there is no runtime API, tile, official map copy, or transit chrome.
 
-`0804/pillars` stores one extent per selected cell (0–1,080 above and below; 0–2,160 total) until that cell is removed. Top view retains the default footprint; orbit reveals the vertical relation. Its field, frustum, pointer mapping, fish scale, and model coordinates remain baseline; current camera-distance and vertical-extent multipliers are both 6. Media occupies top and sides through a shared atlas sampler, not per-cell materials.
+`pillars/1` stores one extent per selected cell (0–1,080 above and below; 0–2,160 total) until that cell is removed. Top view retains the default footprint; orbit reveals the vertical relation. Its field, frustum, pointer mapping, fish scale, and model coordinates remain baseline; current camera-distance and vertical-extent multipliers are both 6. Media occupies top and sides through a shared atlas sampler, not per-cell materials.
 
 The 3D selector includes `WHITE`, `COMPANY`, `CAT`, `KISS`, and `POLITICIAN`; White is default except Pillars/Side View start Cat. The July 2026 company atlas holds 64 technology-company SVG marks (including OpenAI, Anthropic, and SK hynix) in a local 8×8 atlas. Cat/KISS/Politician use local sets of 20/62/60 images (about 0.6/1.9/2.6 MB). Atlases decode up to four sources concurrently, are lazy, 1024²/8×8, and are cached; each RGBA atlas is about 4 MiB (5.33 MiB with mipmaps), or roughly 16 MiB for all used photo atlases. This avoids `/grid/2`'s 80 DOM images and potential 1,920 `src` changes/s. One instanced media mesh adds one draw call; White hides it. Playback is hard-cut, independently staggered, defaults to 24, spans 0–40 changes/s (0 freezes each cell), and uses bounded scheduling: 2D caps combined draws at 960/s. These are workload bounds, not FPS claims.
 
@@ -22,7 +22,7 @@ At HTTPS 1470×695 with two selected cells, collision off, and three warm two-se
 
 Historical Node 22.3.0 isolated model steps (1920×1080, one cell; not current Node 26.5.1/Node 24 deployment runtime) measured protected collision off/on: 200 fish 0.122/0.495 ms, 500 0.420/1.289 ms, 1,000 1.149/2.488 ms. A later 1536×900 run found protected/open perimeter: 200 0.139/0.119 ms; 500 0.464/0.447 ms, and confirmed identical open/protected state away from a cell but changed protected state inside it. These exclude rendering, React, media, and browser scheduling.
 
-Natural/minimal-model comparison at 100 fish, scale 2 recorded 13 calls, two textures, 224,002 triangles, and a 60 FPS browser cadence for both toggle states. It shows no additional renderer structure, not universal performance. `0804/node-edge` has its separate verification record.
+Natural/minimal-model comparison at 100 fish, scale 2 recorded 13 calls, two textures, 224,002 triangles, and a 60 FPS browser cadence for both toggle states. It shows no additional renderer structure, not universal performance. `attraction-targets/3` has its separate verification record.
 
 ## Decisions, sources, and failures
 

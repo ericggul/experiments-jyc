@@ -1,6 +1,5 @@
 .root { position: absolute; inset: 0; background: var(--ios-background); color: var(--ios-label); }
-.rootDark { background: #1a1d21; }
-.header { padding: 54px 16px 8px; display: flex; align-items: center; gap: 10px; background: var(--ios-background); }
+.header { position: absolute; top: 0; left: 0; right: 0; box-sizing: border-box; height: 98px; padding: 54px 16px 8px; display: flex; align-items: center; gap: 10px; background: var(--ios-background); }
 .ws { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: #4a154b; color: #fff; font: 700 17px/22px var(--ios-display); }
 .wsName { flex: 1; font: 700 20px/25px var(--ios-display); letter-spacing: 0.2px; }
 .wsName small { display: block; color: var(--ios-secondary); font: 400 13px/16px var(--ios-font); }
@@ -17,15 +16,14 @@
 .avatar { width: 100%; height: 100%; border-radius: 8px; display: grid; place-items: center; color: #fff; font: 600 12px/14px var(--ios-font); letter-spacing: 0; }
 .presence { position: absolute; right: -3px; bottom: -3px; width: 11px; height: 11px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--ios-background); background: var(--ios-tertiary); }
 .presence[data-on="true"] { background: #2eb67d; }
-.banner { position: absolute; z-index: 15; top: 54px; left: 0; right: 0; height: 30px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #ffcc00; color: #3a2e00; font: 600 13px/18px var(--ios-font); }
+.banner { position: absolute; z-index: 15; top: 98px; left: 0; right: 0; height: 30px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #ffcc00; color: #3a2e00; font: 600 13px/18px var(--ios-font); }
 .grey { opacity: 0.45; }
 .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; }
 
-.thHead { padding: 54px 12px 8px; display: flex; align-items: center; gap: 4px; box-shadow: 0 0.5px 0 var(--ios-separator); }
+.thHead { position: absolute; top: 0; left: 0; right: 0; height: 112px; box-sizing: border-box; padding: 58px 12px 8px; background: var(--ios-background); display: flex; align-items: center; gap: 4px; box-shadow: 0 0.5px 0 var(--ios-separator); }
 .thTitle { flex: 1; font: 700 17px/22px var(--ios-font); }
 .thTitle small { display: block; color: var(--ios-secondary); font: 400 12px/14px var(--ios-font); }
 .thBack { color: var(--ios-blue); display: flex; align-items: center; }
-.feed { position: absolute; top: 112px; left: 0; right: 0; bottom: 126px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; padding-bottom: 4px; }
 .day { align-self: center; margin: 6px 0; padding: 2px 12px; border-radius: 12px; box-shadow: inset 0 0 0 0.5px var(--ios-separator); font: 600 12px/18px var(--ios-font); color: var(--ios-secondary); }
 .msg { display: flex; gap: 10px; padding: 5px 16px; }
 .msg .avatar { width: 36px; height: 36px; border-radius: 8px; font-size: 14px; flex-shrink: 0; }
@@ -42,8 +40,9 @@
 .composerTools { display: flex; align-items: center; gap: 16px; color: var(--ios-secondary); }
 .composerTools :last-child { margin-left: auto; color: var(--ios-tertiary); }
 
-.huddle { position: absolute; inset: 0; background: #1a1d21; color: #fff; }
-.huTop { position: absolute; top: 60px; left: 0; right: 0; text-align: center; font: 700 17px/22px var(--ios-font); }
+.huddle.huddle { background: #1a1d21; color: #fff; }
+.huddleRoot { position: absolute; inset: 0; background: #1a1d21; color: #fff; }
+.huTop { position: absolute; z-index: 50; pointer-events: none; top: 60px; left: 0; right: 0; text-align: center; font: 700 17px/22px var(--ios-font); }
 .huTop small { display: block; color: rgb(255 255 255 / 60%); font: 400 13px/18px var(--ios-font); }
 .tiles { position: absolute; top: 120px; left: 16px; right: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tile { position: relative; height: 164px; border-radius: 16px; display: grid; place-items: center; background: #2b2f36; box-shadow: inset 0 0 0 3px transparent; }
@@ -55,3 +54,40 @@
 .ctl { width: 64px; height: 64px; border-radius: 32px; display: grid; place-items: center; background: #2b2f36; }
 .ctl[data-active="true"] { background: #fff; color: #1a1d21; }
 .ctl[data-end="true"] { background: #e01e5a; }
+
+.banner[data-ok="true"] { background: #2eb67d; color: #fff; }
+.stale { opacity: 0.6; }
+.msg[data-pending="true"] .text { color: var(--ios-secondary); }
+.dayRow { display: flex; justify-content: center; }
+.file { display: flex; align-items: center; gap: 10px; margin-top: 6px; padding: 8px 10px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--ios-separator); font: 600 14px/18px var(--ios-font); overflow: hidden; white-space: nowrap; }
+.file small { display: block; color: var(--ios-secondary); font: 400 12px/16px var(--ios-font); }
+.fileIcon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 7px; display: grid; place-items: center; color: #fff; font: 700 9px/12px var(--ios-font); letter-spacing: 0; }
+.code { margin: 6px 0 0; padding: 8px 10px; border-radius: 8px; background: #f6f6f8; box-shadow: inset 0 0 0 1px var(--ios-separator); color: #c01343; font: 400 12px/16px ui-monospace, Menlo, monospace; white-space: pre; overflow: hidden; }
+.unfurl { margin-top: 6px; padding: 2px 0 2px 10px; border-left: 4px solid #d1d1d6; color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
+.unfurl small { display: block; font: 600 12px/16px var(--ios-font); color: var(--ios-label); }
+.unfurl b { display: block; color: #1264a3; font: 600 14px/19px var(--ios-font); }
+.replies { margin-top: 4px; color: #1264a3; font: 600 13px/18px var(--ios-font); }
+.divider { margin: 4px 16px; padding: 6px 0; border-top: 0.5px solid var(--ios-separator); border-bottom: 0.5px solid var(--ios-separator); color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
+.composerText[data-draft="true"] { color: var(--ios-label); height: auto; min-height: 24px; }
+.caret { display: inline-block; width: 2px; height: 18px; margin-left: 1px; vertical-align: -3px; background: #1264a3; }
+.composerTools[data-ready="true"] :last-child { color: #fff; background: #007a5a; border-radius: 6px; padding: 3px; }
+.act { display: flex; gap: 10px; padding: 9px 16px; height: 72px; box-sizing: border-box; overflow: hidden; }
+.act .avatar { width: 36px; height: 36px; flex-shrink: 0; font-size: 14px; }
+.actBody { flex: 1; min-width: 0; }
+.actWho { display: block; font: 700 15px/20px var(--ios-font); }
+.actWho small { margin-left: 6px; color: var(--ios-secondary); font: 400 12px/20px var(--ios-font); }
+.act .text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.huChat { position: absolute; top: 60px; right: 16px; width: 40px; height: 40px; border-radius: 20px; display: grid; place-items: center; background: #2b2f36; color: #fff; }
+.shareStage { position: absolute; top: 120px; left: 16px; right: 16px; height: 340px; box-sizing: border-box; padding: 12px; border-radius: 16px; background: #fff; color: #1a1d21; overflow: hidden; box-shadow: inset 0 0 0 3px #2eb67d; }
+.shareStage small { display: block; margin-bottom: 6px; color: #616061; font: 600 12px/16px var(--ios-font); }
+.shareStrip { position: absolute; top: 476px; left: 16px; right: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.shareStrip .tile { height: 84px; }
+.shareStrip .tile .avatar { width: 40px; height: 40px; font-size: 14px; }
+.huSheetPanel.huSheetPanel { background: transparent; color: #fff; }
+.huSheetPanel::before { content: ""; position: absolute; inset: 108px 0 0; border-radius: 14px 14px 0 0; background: #222529; }
+.huSheetHead { position: absolute; top: 108px; left: 0; right: 0; height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; box-shadow: 0 0.5px 0 rgb(255 255 255 / 12%); font: 600 16px/20px var(--ios-font); }
+.huLine { padding: 7px 18px; font: 400 15px/20px var(--ios-font); }
+.huLine b { display: block; font: 700 14px/18px var(--ios-font); }
+.huLine .text { color: rgb(255 255 255 / 85%); }
+.huLine .at { background: rgb(29 155 209 / 30%); color: #8fd3f4; }
+.huSheetComposer { position: absolute; left: 12px; right: 12px; bottom: 46px; height: 46px; display: flex; align-items: center; padding: 0 14px; border-radius: 12px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 18%); color: rgb(255 255 255 / 50%); font: 400 15px/20px var(--ios-font); }

@@ -9,13 +9,13 @@ filesystem route groups never change public URLs.
 | Single-device | `app/(standalone)/[group]` | `components/standalone/[group]` |
 | Workstations | `app/(dashboard)/[group]` | `components/dashboard/[group]` |
 | Mobile experiments | `app/mobile` | `components/mobile` |
-| `dj`, `finger-skating`, `network-system`, `sns` | `app/[group]` | `components/[group]` |
+| `dj`, `network-system`, `sns` | `app/[group]` | `components/[group]` |
 
 Within a family, `page.tsx` renders the shared SCC navigation
-(`components/navigation`) scoped to that family; `[experiment]/page.tsx`
+(`foundations/navigation`) scoped to that family; `[experiment]/page.tsx`
 selects the variant from the matching `components/.../experiments.ts`. Every
 SCC variant also needs an entry with its ISO creation date and one-line phrase
-in `components/navigation/experiments.ts`, which drives the home, area and
+in `foundations/navigation/experiments.ts`, which drives the home, area and
 family indexes (date-grouped, searchable, modelled on Goldfishes); its pure
 test flags registry slugs missing from that index. Use dynamic variants, not literal numbered
 route directories. Keep implementation in `components/.../[experiment]/`.

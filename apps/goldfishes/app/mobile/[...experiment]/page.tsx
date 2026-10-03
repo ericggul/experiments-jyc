@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import GoldfishesNavigation from "@/components/navigation";
+import GoldfishesNavigation from "@/foundations/navigation";
 import { findGoldfishExperiment, getGoldfishExperimentsForDate } from "@/components/experiments";
 
 type Props = { params: Promise<{ experiment: string[] }> };

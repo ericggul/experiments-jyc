@@ -1,3 +1,3 @@
-import { helloWorldExperiment } from "./0923/hello-world.mjs";
+import { helloWorldExperiment } from "./hello-world.mjs";
 
 export const sixSigmaExperiments = Object.freeze([helloWorldExperiment]);

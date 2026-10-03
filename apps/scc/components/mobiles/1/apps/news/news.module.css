@@ -2,24 +2,24 @@
 .masthead { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 100px; box-sizing: border-box; padding: 54px 16px 0; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; }
 .logo { text-align: center; font: 700 30px/36px Georgia, "Times New Roman", serif; letter-spacing: -0.5px; }
 .date { text-align: center; color: var(--ios-secondary); font: 400 11px/14px var(--ios-font); letter-spacing: 0.4px; text-transform: uppercase; }
-.viewport { position: absolute; top: 100px; left: 0; right: 0; bottom: 83px; overflow: hidden; }
-.sections { display: flex; gap: 20px; padding: 10px 16px; overflow: hidden; white-space: nowrap; font: 600 14px/18px var(--ios-font); color: var(--ios-secondary); box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.sections { position: absolute; z-index: 5; top: 100px; left: 0; right: 0; height: 38px; box-sizing: border-box; background: #fff; display: flex; gap: 20px; padding: 10px 16px; overflow: hidden; white-space: nowrap; font: 600 14px/18px var(--ios-font); color: var(--ios-secondary); box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
 .sections .on { color: #121212; box-shadow: 0 5px 0 -3px #e0002a; }
+.hero { height: 400px; overflow: hidden; }
 .hero img { display: block; width: 390px; height: 219px; object-fit: cover; }
-.heroBody { padding: 12px 16px 16px; }
+.heroBody { height: 181px; box-sizing: border-box; padding: 12px 16px 12px; overflow: hidden; }
+.heroBlank { height: 219px; display: grid; place-items: center; background: linear-gradient(135deg, #f4efe6, #e2d9c8); color: #8a7f6c; font: italic 700 40px/1 Georgia, "Times New Roman", serif; }
 .kicker { color: #e0002a; font: 700 11.5px/14px var(--ios-font); letter-spacing: 0.6px; text-transform: uppercase; }
 .kicker span { color: var(--ios-secondary); font-weight: 500; letter-spacing: 0.2px; text-transform: none; margin-left: 6px; }
 .headline { margin-top: 5px; font: 700 25px/29px Georgia, "Times New Roman", serif; letter-spacing: -0.3px; }
 .dek { margin-top: 6px; color: #3c3c43; font: 400 15px/20px Georgia, "Times New Roman", serif; }
-.item { display: grid; grid-template-columns: 1fr 104px; gap: 14px; margin: 0 16px; padding: 14px 0; box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.item { height: 132px; box-sizing: border-box; overflow: hidden; display: grid; grid-template-columns: 1fr 104px; gap: 14px; margin: 0 16px; padding: 14px 0; box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
 .item .headline { margin-top: 4px; font-size: 17.5px; line-height: 21px; }
 .item img { width: 104px; height: 104px; object-fit: cover; border-radius: 2px; }
-.live { display: flex; align-items: center; gap: 8px; margin: 12px 16px 0; padding: 10px 12px; background: #fdecee; color: #b3001f; font: 600 13px/17px var(--ios-font); border-radius: 4px; }
-.live i { width: 8px; height: 8px; border-radius: 50%; background: #e0002a; }
+.live { height: 40px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; margin: 12px 16px 0; padding: 0 12px; white-space: nowrap; overflow: hidden; background: #fdecee; color: #b3001f; font: 600 13px/17px var(--ios-font); border-radius: 4px; }
+.live::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #e0002a; }
 .articleBar { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 16px 0; display: flex; align-items: center; justify-content: space-between; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); }
 .articleBar .logo { font-size: 24px; }
 .barIcons { display: flex; gap: 18px; }
-.articleViewport { position: absolute; top: 98px; left: 0; right: 0; bottom: 0; overflow: hidden; }
 .articleHead { padding: 18px 20px 0; }
 .articleHead .headline { font-size: 31px; line-height: 35px; letter-spacing: -0.5px; }
 .articleHead .dek { font-size: 18px; line-height: 24px; margin-top: 10px; }
@@ -28,6 +28,18 @@
 .figure { margin: 16px 0 0; }
 .figure img { display: block; width: 390px; height: 219px; object-fit: cover; }
 .figure figcaption { padding: 6px 20px 0; color: var(--ios-secondary); font: 400 12px/16px var(--ios-font); }
-.body { padding: 18px 20px 120px; }
+.body { padding: 18px 20px 4px; }
 .body p { margin: 0 0 20px; font: 400 19px/28px Georgia, "Times New Roman", serif; letter-spacing: -0.1px; }
 .body p:first-child::first-letter { float: left; padding: 3px 6px 0 0; font: 700 56px/48px Georgia, "Times New Roman", serif; }
+.initials { width: 104px; height: 104px; display: grid; place-items: center; border-radius: 50%; background: #f1ece4; color: #6b5f4d; font: italic 700 30px/1 Georgia, "Times New Roman", serif; }
+.related { margin: 0 20px; padding: 14px 0 120px; border-top: 2px solid #121212; }
+.relatedHead { font: 700 13px/17px var(--ios-font); letter-spacing: 0.5px; text-transform: uppercase; }
+.relatedItem { padding: 12px 0; box-shadow: inset 0 -0.5px 0 var(--ios-separator); font: 700 18px/22px Georgia, "Times New Roman", serif; }
+.relatedItem span { display: block; margin-top: 4px; color: var(--ios-secondary); font: 400 12px/16px var(--ios-font); }
+.liveHead { padding: 18px 20px 10px; font: 700 28px/32px Georgia, "Times New Roman", serif; letter-spacing: -0.4px; }
+.liveTag { display: inline-block; margin-right: 10px; padding: 3px 7px; border-radius: 3px; background: #e0002a; color: #fff; font: 700 13px/16px var(--ios-font); letter-spacing: 0.6px; text-transform: uppercase; vertical-align: 5px; }
+.entry { margin: 0 20px; padding: 14px 0 16px 14px; box-shadow: inset 2px 0 0 #e0002a, inset 0 -0.5px 0 var(--ios-separator); font: 400 16px/23px Georgia, "Times New Roman", serif; }
+.entry span { display: block; color: #e0002a; font: 600 12px/16px var(--ios-font); }
+.entry b { display: block; margin: 4px 0; font: 700 19px/24px Georgia, "Times New Roman", serif; }
+.breaking { position: absolute; z-index: 30; top: 58px; left: 8px; right: 8px; padding: 10px 14px; border-radius: 12px; background: #e0002a; color: #fff; font: 600 15px/20px var(--ios-font); box-shadow: 0 8px 24px rgb(0 0 0 / 22%); }
+.breaking::before { content: "Breaking News"; display: block; font: 800 11.5px/15px var(--ios-font); letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.9; }

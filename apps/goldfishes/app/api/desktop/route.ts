@@ -1,3 +1,4 @@
-export { GET, POST } from '@/components/desktop/control-server';
+// Original unversioned endpoint; its score is identical to version 1.
+export { GET, POST } from '@/components/desktop/native-windows/1/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

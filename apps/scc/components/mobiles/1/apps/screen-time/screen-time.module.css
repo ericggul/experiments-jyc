@@ -1,6 +1,13 @@
 .screen { position: absolute; inset: 0; overflow: hidden; background: var(--ios-grouped); color: var(--ios-label); }
-.body { position: absolute; top: 54px; left: 0; right: 0; bottom: 34px; padding: 0 16px; }
-.nav { height: 44px; display: flex; align-items: center; justify-content: space-between; color: var(--ios-blue); font: 400 17px/22px var(--ios-font); }
+.pad { padding: 0 16px 24px; }
+.panelGrouped.panelGrouped { background: var(--ios-grouped); color: var(--ios-label); }
+.header { position: absolute; z-index: 5; top: 54px; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--ios-grouped); font: 600 17px/22px var(--ios-font); }
+.back { position: absolute; left: 8px; display: flex; align-items: center; color: var(--ios-blue); font: 400 17px/22px var(--ios-font); }
+.chev { color: var(--ios-tertiary); }
+.detailHead { display: flex; align-items: center; gap: 12px; margin: 4px 0 6px; }
+.detailHead .title { margin: 0; }
+.pickup { display: grid; grid-template-columns: 76px 1fr 128px; align-items: center; gap: 8px; padding: 7px 0; font: 400 14px/18px var(--ios-font); }
+.pickTime { color: var(--ios-secondary); }
 .title { margin: 2px 0 10px; font: 700 34px/41px var(--ios-display); letter-spacing: 0.37px; }
 .lead { margin: 0 0 14px; font: 400 15px/20px var(--ios-font); color: var(--ios-secondary); }
 .card { margin-bottom: 14px; padding: 14px 16px; border-radius: 12px; background: var(--ios-cell); }
@@ -33,6 +40,6 @@
 .appName small { color: var(--ios-secondary); font-size: 13px; line-height: 17px; }
 .appTrack { height: 4px; margin-top: 4px; border-radius: 2px; background: var(--ios-fill); overflow: hidden; }
 .appTime { color: var(--ios-secondary); font-variant-numeric: tabular-nums; }
-.hours { height: 96px; margin-top: 10px; display: flex; align-items: flex-end; gap: 2px; padding-bottom: 16px; position: relative; }
+.hours { height: 80px; margin-top: 10px; display: flex; align-items: flex-end; gap: 2px; padding-bottom: 0; position: relative; }
 .hour { flex: 1; border-radius: 2px 2px 0 0; background: #5ac8fa; min-height: 1px; }
 .hourTick { position: absolute; bottom: 0; font: 400 11px/13px var(--ios-font); color: var(--ios-secondary); }

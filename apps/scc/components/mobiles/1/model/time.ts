@@ -9,6 +9,12 @@ export const timeConfig = {
   tickMinutes: 1,
   startMinute: 6 * 60,
   startDay: 0,
+  /**
+   * Screen transitions and the still hold after them, in simulated minutes:
+   * at 10 min/s a 3.6-minute transition plays in 360 ms, at 30 min/s in 120 ms.
+   */
+  transitionMinutes: 3.6,
+  holdMinutes: 4,
   /** iOS snooze length in simulated minutes. */
   snoozeMinutes: 9,
   /**
@@ -35,6 +41,9 @@ export function phoneMinute(minute: number, index: number, refresh: number = tim
   const shown = Math.floor((minute - offset) / refresh) * refresh + offset;
   return shown < 0 ? 0 : shown;
 }
+
+/** Real milliseconds a span of simulated minutes takes at a given speed. */
+export const simToMs = (minutes: number, minutesPerSecond: number) => (minutes / Math.max(0.001, minutesPerSecond)) * 1000;
 
 /** Absolute simulated time: day index plus minute of that day. */
 export type SimTime = { day: number; minute: number };

@@ -20,7 +20,7 @@
 .back { display: flex; align-items: center; padding-top: 6px; }
 .back b { margin-left: 2px; padding: 0 6px; border-radius: 10px; background: var(--ios-blue); color: #fff; font: 500 13px/20px var(--ios-font); }
 .who { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--ios-label); font: 400 11px/14px var(--ios-font); letter-spacing: 0.06px; }
-.who .avatar { width: 50px; height: 50px; font-size: 20px; }
+.who > .avatar { width: 50px; height: 50px; font-size: 20px; }
 .who span { display: flex; align-items: center; gap: 2px; }
 .video { justify-self: end; padding-top: 10px; }
 .thread { position: absolute; left: 0; right: 0; top: 144px; bottom: 90px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; padding: 0 14px 6px; overflow: hidden; }
@@ -47,3 +47,29 @@
 .inputBar { position: absolute; left: 0; right: 0; bottom: 34px; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 12px; }
 .plus { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--ios-fill); color: var(--ios-secondary); }
 .field { flex: 1; height: 36px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 14px; border-radius: 18px; box-shadow: inset 0 0 0 0.5px rgb(60 60 67 / 30%); color: rgb(60 60 67 / 30%); }
+.threadBody { display: flex; flex-direction: column; gap: 2px; padding: 0 14px 12px; }
+.lineWrap { display: flex; flex-direction: column; }
+.lineWrap > .receipt { align-self: flex-end; }
+.photo { position: relative; width: 210px; height: 180px; border-radius: 18px; }
+.photo .tapback { right: -12px; background: var(--ios-blue); color: #fff; }
+.line[data-from="me"] .photo .tapback { left: -12px; right: auto; background: #e9e9eb; color: #000; }
+.link { width: 250px; overflow: hidden; border-radius: 18px; background: #e9e9eb; color: #000; }
+.linkArt { display: block; height: 140px; }
+.link b { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; padding: 8px 12px 0; font: 600 15px/20px var(--ios-font); letter-spacing: -0.24px; }
+.link small { display: block; padding: 2px 12px 9px; color: var(--ios-secondary); font: 400 13px/16px var(--ios-font); }
+.voice { display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.voice i { width: 110px; height: 18px; background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px); mask: linear-gradient(90deg, #000 0 10%, rgb(0 0 0 / 40%) 10% 20%, #000 20% 45%, rgb(0 0 0 / 50%) 45% 60%, #000 60% 80%, rgb(0 0 0 / 40%) 80%); opacity: 0.7; }
+.viewer { background: #000; }
+.viewerHead { position: absolute; top: 0; left: 0; right: 0; padding: 54px 16px 10px; display: flex; align-items: center; justify-content: space-between; color: #fff; }
+.viewerHead span { display: flex; flex-direction: column; align-items: center; font: 600 15px/18px var(--ios-font); }
+.viewerHead small { font: 400 12px/15px var(--ios-font); opacity: 0.7; }
+.viewerPhoto { margin-top: 190px; height: 440px; }
+.composer { position: absolute; z-index: 30; left: 0; right: 0; bottom: 0; }
+.composerBar { height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--ios-background); }
+.typed { flex: 1; min-height: 36px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 3px 0 14px; border-radius: 18px; box-shadow: inset 0 0 0 0.5px rgb(60 60 67 / 30%); font: 400 17px/22px var(--ios-font); letter-spacing: -0.41px; white-space: nowrap; overflow: hidden; }
+.sendDot { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--ios-blue); color: #fff; }
+.keyboard { height: 260px; box-sizing: border-box; padding: 8px 3px 0; display: flex; flex-direction: column; gap: 11px; background: #d1d3d9; }
+.keys { display: flex; justify-content: center; gap: 6px; }
+.keys span { width: 32px; height: 42px; display: grid; place-items: center; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 #898a8d; font: 400 22px/1 var(--ios-font); }
+.keys .wide { width: 88px; background: #abb0ba; font-size: 16px; }
+.keys .space { flex: 1; max-width: 180px; font-size: 16px; }

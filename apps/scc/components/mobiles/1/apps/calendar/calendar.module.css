@@ -10,11 +10,9 @@
 .num[data-today="true"] { background: #ff3b30; color: #fff; font-weight: 600; }
 .dayTitle { padding: 8px 16px 6px; font: 700 15px/20px var(--ios-font); border-top: 0.5px solid var(--ios-separator); }
 .dayTitle small { margin-left: 4px; color: var(--ios-secondary); font-weight: 400; }
-.viewport { position: absolute; top: 172px; left: 0; right: 0; bottom: 83px; overflow: hidden; }
-.sheet { position: absolute; left: 0; right: 0; top: 0; }
-.hour { position: absolute; left: 0; right: 0; height: 0; }
-.hour span { position: absolute; left: 6px; width: 40px; top: -8px; text-align: right; color: var(--ios-secondary); font: 400 11px/16px var(--ios-font); letter-spacing: 0; }
-.hour i { position: absolute; left: 54px; right: 0; top: 0; height: 0.5px; background: var(--ios-separator); }
+.sheet { position: relative; }
+.lines { position: absolute; left: 54px; right: 0; top: 8px; height: 1344px; background-image: linear-gradient(var(--ios-separator) 0 0.5px, transparent 0.5px); }
+.hourLabel { position: absolute; left: 6px; width: 40px; text-align: right; color: var(--ios-secondary); font: 400 11px/16px var(--ios-font); letter-spacing: 0; }
 .event { position: absolute; box-sizing: border-box; padding: 3px 6px; overflow: hidden; border-radius: 5px; border-left: 3px solid; font: 600 12px/15px var(--ios-font); letter-spacing: 0; }
 .event small { display: block; font-weight: 400; font-size: 11px; line-height: 14px; opacity: 0.75; }
 .now { position: absolute; left: 0; right: 0; height: 0; z-index: 4; }
@@ -22,3 +20,62 @@
 .now b { position: absolute; left: 47px; top: -4.5px; width: 9px; height: 9px; border-radius: 50%; background: #ff3b30; }
 .now span { position: absolute; left: 4px; top: -8px; width: 40px; text-align: right; color: #ff3b30; font: 600 11px/16px var(--ios-font); background: var(--ios-background); }
 .toolbar { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; box-sizing: border-box; padding: 10px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; background: rgb(249 249 249 / 96%); box-shadow: 0 -0.5px 0 rgb(0 0 0 / 30%); color: #ff3b30; font-size: 17px; }
+.event[data-fresh="true"] { box-shadow: 0 0 0 2px #34c759; }
+
+.detailNav { position: absolute; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 16px 0; display: flex; align-items: center; justify-content: space-between; color: #ff3b30; font-size: 17px; background: var(--ios-grouped); }
+.detailNav .back { display: flex; align-items: center; margin-left: -8px; }
+.detail { min-height: 746px; padding: 8px 16px 24px; background: var(--ios-grouped); }
+.evTitle { margin: 4px 0 2px; font: 700 24px/30px var(--ios-display); letter-spacing: 0.3px; }
+.evPlace { color: var(--ios-secondary); font: 400 15px/20px var(--ios-font); }
+.evWhen { margin: 12px 0 14px; font: 400 15px/21px var(--ios-font); }
+.evLink { display: flex; align-items: center; gap: 10px; padding: 12px; margin-bottom: 14px; border-radius: 12px; background: var(--ios-cell); color: #007aff; font: 600 15px/20px var(--ios-font); }
+.evLink small { display: block; color: var(--ios-secondary); font: 400 12px/16px var(--ios-font); }
+.evMap { position: relative; height: 120px; margin-bottom: 14px; border-radius: 12px; }
+.evMap b { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px; border-radius: 50%; box-shadow: 0 0 0 3px #fff; }
+.evGroup { margin-bottom: 14px; border-radius: 12px; background: var(--ios-cell); overflow: hidden; }
+.evRow { display: flex; justify-content: space-between; padding: 11px 14px; font: 400 16px/22px var(--ios-font); }
+.evRow + .evRow, .person { box-shadow: inset 0 0.5px 0 var(--ios-separator); }
+.evDetailRight { display: flex; align-items: center; gap: 6px; color: var(--ios-secondary); }
+.evDetailRight i { width: 10px; height: 10px; border-radius: 50%; }
+.person { display: flex; align-items: center; gap: 10px; padding: 8px 14px; font: 400 15px/20px var(--ios-font); }
+.person small { margin-left: auto; color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
+.person small[data-status="accepted"] { color: #1d9b4a; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 600 11px/14px var(--ios-font); letter-spacing: 0; }
+.evNotes { padding: 12px 14px; border-radius: 12px; background: var(--ios-cell); font: 400 15px/20px var(--ios-font); }
+.evNotes b { display: block; margin-bottom: 4px; font-weight: 600; }
+.evDelete { margin-top: 14px; padding: 12px; border-radius: 12px; background: var(--ios-cell); color: #ff3b30; text-align: center; font: 400 17px/22px var(--ios-font); }
+
+.weekTitle { padding: 0 16px 4px; font: 700 28px/34px var(--ios-display); }
+.weekDays { display: grid; grid-template-columns: 44px repeat(5, 1fr); padding: 0 4px 6px; color: var(--ios-secondary); font: 500 11px/14px var(--ios-font); text-align: center; border-bottom: 0.5px solid var(--ios-separator); }
+.weekDays::before { content: ""; }
+.weekDays span b { display: block; margin: 2px auto 0; width: 28px; height: 28px; border-radius: 14px; color: var(--ios-label); font: 400 17px/28px var(--ios-font); }
+.weekDays span[data-today="true"] b { background: #ff3b30; color: #fff; font-weight: 600; }
+.week { position: relative; height: 560px; margin-top: 8px; background-image: linear-gradient(var(--ios-separator) 0 0.5px, transparent 0.5px); background-size: 100% 50px; background-position: 0 0; }
+.weekHour { position: absolute; left: 4px; width: 40px; margin-top: -7px; text-align: right; color: var(--ios-secondary); font: 400 10px/14px var(--ios-font); background: var(--ios-background); }
+.weekEvent { position: absolute; box-sizing: border-box; padding: 2px 3px; overflow: hidden; border-radius: 4px; border-left: 2px solid; font: 600 10px/12px var(--ios-font); letter-spacing: 0; }
+.weekEvent[data-past="true"] { opacity: 0.55; }
+
+.sheetPanel { background: transparent; }
+.card { position: absolute; top: 60px; left: 0; right: 0; bottom: 0; border-radius: 12px 12px 0 0; background: var(--ios-grouped); overflow: hidden; }
+.cardBar { height: 52px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px; color: #ff3b30; font-size: 17px; }
+.cardBar b { color: var(--ios-label); font-weight: 600; }
+.cardBar > :last-child { justify-self: end; font-weight: 600; }
+.cardBar > [data-on="false"] { color: var(--ios-tertiary); }
+.inviteHead { padding: 6px 16px; color: var(--ios-secondary); font: 600 13px/18px var(--ios-font); text-transform: uppercase; }
+.invite { margin: 0 16px 10px; padding: 12px 14px; border-radius: 12px; background: var(--ios-cell); }
+.invite b { display: block; font: 600 16px/21px var(--ios-font); }
+.invite small { display: block; margin-top: 2px; color: var(--ios-secondary); font: 400 13px/18px var(--ios-font); }
+.inviteActions { display: flex; gap: 22px; margin-top: 8px; color: #ff3b30; font: 600 15px/20px var(--ios-font); }
+.inviteDone { display: block; margin-top: 8px; color: #1d9b4a; font: 600 15px/20px var(--ios-font); }
+.form { margin: 0 16px 14px; border-radius: 12px; background: var(--ios-cell); overflow: hidden; }
+.field { display: flex; align-items: center; min-height: 44px; padding: 0 14px; font: 400 17px/22px var(--ios-font); }
+.field + .field { box-shadow: inset 0 0.5px 0 var(--ios-separator); }
+.field i { color: var(--ios-tertiary); font-style: normal; }
+.caret { display: inline-block; width: 2px; height: 20px; margin-left: 1px; background: #ff3b30; }
+.toggle { margin-left: auto; width: 51px; height: 31px; border-radius: 16px; background: var(--ios-fill); }
+.pill { margin-left: auto; padding: 4px 10px; border-radius: 8px; background: var(--ios-fill); font-size: 15px; }
+.keys { position: absolute; left: 0; right: 0; bottom: 0; height: 270px; box-sizing: border-box; padding: 10px 3px 0; background: #d1d3d9; }
+.keyRow { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+.key { width: 33px; height: 42px; display: grid; place-items: center; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 rgb(0 0 0 / 30%); font: 400 22px/26px var(--ios-font); }
+.keySpace { width: 260px; height: 42px; display: grid; place-items: center; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 rgb(0 0 0 / 30%); font-size: 15px; }
+.keyGo { width: 84px; height: 42px; display: grid; place-items: center; border-radius: 5px; background: #acb0b9; font-size: 15px; }

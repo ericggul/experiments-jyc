@@ -1,6 +1,6 @@
 # SCC experiment records
 
-Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `components/navigation`, grouped by creation date. Register each new variant's date and phrase in `components/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
+Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `foundations/navigation`, grouped by creation date. Register each new variant's date and phrase in `foundations/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
 
 - [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field and curve-to-formula plane, ui-collage loaders, progress bars and sliders played by finger skating, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
 
@@ -11,6 +11,8 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 
 - [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
+
+- [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 
@@ -32,7 +34,7 @@ This tree is an archive of route-specific contracts, evidence, parameters, usefu
 - [flight-visualisation/1](experiments/complex-systems/flight-visualisation/README.md): browser port of viz1090 — live ADS-B aircraft, trails and force-directed labels over baked Natural Earth tiles.
 - `experiments/dynamical-systems/`, `statistical-modelling/`: equations, integrator/performance boundaries and evidence.
 - `experiments/dashboard/`: reference-faithful workstation contracts and density checks.
-- `experiments/network-system/`, `finger-skating/`: transport, multi-device and socket-state contracts.
+- `experiments/network-system/`: transport, multi-device and socket-state contracts. `finger-skating/` keeps notes for the removed multi-device routes.
 - `experiments/sns/`, `ui/`, `standalone/`, `parametric-interface/`: found-interface and single-route preservation records.
 - [spoon-class/default–3](experiments/standalone/spoon-class/README.md): preserved legacy browser-runner baseline, synchronized module field, pixel human-life fork and dense scaled wall.
 

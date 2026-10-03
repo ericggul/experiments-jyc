@@ -12,10 +12,10 @@ export type FieldSettings = {
   refreshMinutes: number;
   /** zoom: grow/shrink cross-fade after market-economy; ios: launch, swipe and push motions. */
   transitionStyle: TransitionStyle;
-  /** Real-time length of a screen transition. */
-  transitionMs: number;
-  /** Real time each screen stays still after its transition before the next may start. */
-  holdMs: number;
+  /** Length of a screen transition, in simulated minutes (scales with speed). */
+  transitionMinutes: number;
+  /** Simulated minutes each screen stays still after its transition before the next may start. */
+  holdMinutes: number;
   phoneCount: number;
   arrangement: Arrangement;
   sameness: number;
@@ -31,9 +31,9 @@ export const defaultSettings: FieldSettings = {
   minutesPerSecond: timeConfig.minutesPerSecond,
   refreshMinutes: timeConfig.phoneRefreshMinutes,
   transitionStyle: "zoom",
-  transitionMs: 360,
-  holdMs: 400,
-  phoneCount: 90,
+  transitionMinutes: timeConfig.transitionMinutes,
+  holdMinutes: timeConfig.holdMinutes,
+  phoneCount: 60,
   arrangement: "random",
   sameness: defaultPlanOptions.sameness,
   screenTime: defaultPlanOptions.screenTime,
@@ -45,8 +45,8 @@ export const defaultSettings: FieldSettings = {
 export const settingRanges = {
   minutesPerSecond: { min: 1, max: 30, step: 1 },
   refreshMinutes: { min: 1, max: 10, step: 1 },
-  transitionMs: { min: 100, max: 1500, step: 20 },
-  holdMs: { min: 0, max: 2000, step: 50 },
+  transitionMinutes: { min: 0.5, max: 15, step: 0.1 },
+  holdMinutes: { min: 0, max: 20, step: 0.5 },
   phoneCount: { min: 12, max: 150, step: 6 },
   sameness: { min: 0, max: 1, step: 0.05 },
   screenTime: { min: 0, max: 0.95, step: 0.05 },

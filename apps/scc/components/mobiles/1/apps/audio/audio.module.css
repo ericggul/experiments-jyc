@@ -1,4 +1,40 @@
-.screen { position: absolute; inset: 0; overflow: hidden; color: #fff; font-family: var(--ios-font); }
+.screen { position: absolute; inset: 0; overflow: hidden; background: #000; color: #fff; font-family: var(--ios-font); }
+.panelDark { color: #fff; font-family: var(--ios-font); background: #000; }
+.npBg { background: linear-gradient(180deg, #34313f 0%, #17161d 70%, #000 100%); }
+.podBg { background: linear-gradient(180deg, #2b2438 0%, #14111c 65%, #000 100%); }
+.live { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.swatch { display: block; flex: none; border-radius: 6px; }
+.sheetPanel { background: transparent; }
+.sheetPanel::before { content: ""; position: absolute; inset: 140px 0 0; border-radius: 16px 16px 0 0; background: #1c1c1e; box-shadow: 0 -10px 30px rgb(0 0 0 / 45%); }
+.sheetHead { position: absolute; top: 148px; left: 0; right: 0; height: 44px; text-align: center; font: 600 17px/44px var(--ios-font); }
+.sheetGrab { position: absolute; top: 0; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: rgb(255 255 255 / 30%); }
+.list { padding: 56px 16px 120px; }
+.listHead { padding-bottom: 8px; font: 700 20px/26px var(--ios-display); }
+.track { display: flex; align-items: center; gap: 12px; height: 60px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 12%); font: 500 16px/20px var(--ios-font); }
+.trackBody { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.trackBody small { color: rgb(255 255 255 / 55%); font: 400 13px/17px var(--ios-font); }
+.trackTime { color: rgb(255 255 255 / 55%); font: 400 13px/17px var(--ios-font); font-variant-numeric: tabular-nums; }
+.lyrics { padding: 24px 28px 200px; }
+.lyrics p { margin: 0 0 22px; color: rgb(255 255 255 / 45%); font: 700 28px/34px var(--ios-display); }
+.lyrics p[data-on="true"] { color: #fff; }
+.lyricsBar { position: absolute; top: 0; left: 0; right: 0; height: 120px; box-sizing: border-box; padding: 62px 20px 0; display: flex; align-items: center; gap: 12px; background: #17161d; font: 600 16px/20px var(--ios-font); }
+.lyricsBar small { display: block; color: rgb(255 255 255 / 55%); font: 400 13px/17px var(--ios-font); }
+.libraryBody { padding: 62px 16px 120px; }
+.libraryBody h1 { margin: 0 0 14px; font: 700 34px/40px var(--ios-display); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
+.tile b { display: block; margin-top: 6px; font: 600 15px/19px var(--ios-font); }
+.tile small { color: rgb(255 255 255 / 55%); font: 400 13px/17px var(--ios-font); }
+.tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; padding: 14px 40px 0; box-sizing: border-box; display: flex; justify-content: space-between; background: #000; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 15%); }
+.plHead { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 12px; text-align: center; }
+.plHead b { margin-top: 8px; font: 700 22px/28px var(--ios-display); }
+.plHead small { color: rgb(255 255 255 / 55%); font: 400 14px/18px var(--ios-font); }
+.back { position: absolute; top: 0; left: 0; right: 0; height: 96px; box-sizing: border-box; padding: 58px 12px 0; }
+.episodeBody { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 110px 24px 0; }
+.episodeBody h1 { margin: 0; font: 700 26px/32px var(--ios-display); }
+.episodeBody small { color: rgb(255 255 255 / 55%); font: 400 14px/18px var(--ios-font); }
+.episodeBody p { margin: 6px 0 0; color: rgb(255 255 255 / 75%); font: 400 16px/22px var(--ios-font); }
+.playBtn { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px 26px; border-radius: 22px; background: #bf5af2; font: 600 17px/22px var(--ios-font); }
+.chapterNow { position: absolute; top: 640px; left: 24px; right: 24px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: rgb(255 255 255 / 12%); font: 600 15px/20px var(--ios-font); }
 .grabber { position: absolute; top: 62px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: rgb(255 255 255 / 35%); }
 .art { position: absolute; top: 96px; left: 24px; box-shadow: 0 20px 40px rgb(0 0 0 / 40%); border-radius: 12px; }
 .meta { position: absolute; top: 460px; left: 24px; right: 24px; display: flex; align-items: center; justify-content: space-between; }

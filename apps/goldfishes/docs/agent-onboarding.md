@@ -28,7 +28,7 @@ Unmentioned properties are invariants. A geometry change does not authorize new 
 ## Archive workflow
 
 1. Inspect status, the registry, target date folder, and untracked files. Treat all concurrent work as owned.
-2. Copy the closest complete experiment to `components/{screen,pc}/MMDD/short-name`; make changes inside it only.
+2. Copy the closest complete experiment to the next serial of its family, `components/<area>/<family>/<n+1>` (serials rise with creation date; start a new family at `1`), and register its ISO date; make changes inside it only.
 3. Register one date, route, and concrete phrase in `experiments.ts`; add the matching concise document. A dated route is permanent. Promotion deliberately replaces `default` while retaining the dated origin.
 4. Record implementation facts, observation conditions, failed alternatives, and unresolved questions. Do not turn an inference into evidence.
 5. Re-open shared registry/index files immediately before patching. Do not reorder, normalize, adopt, delete, or report other work.

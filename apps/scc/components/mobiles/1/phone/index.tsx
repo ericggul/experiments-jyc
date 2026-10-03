@@ -4,13 +4,18 @@ import { registry } from "../apps/registry";
 import { batteryCurve, type BatteryCurve } from "../model/battery";
 import { restingScene } from "../model/rest";
 import { bannerPush, isAsleep, sceneAt, unseenPushes } from "../model/sample";
-import { timeConfig, weekdayOf } from "../model/time";
+import { simToMs, timeConfig, weekdayOf } from "../model/time";
 import type { DayPlan, Owner, Push, Scene } from "../model/types";
 import { BannerPresence, Stage, type TransitionSettings } from "./stage";
 
 const SYSTEM_APPS = new Set(["lock", "alarm"]);
 
-export const defaultTransition: TransitionSettings = { style: "zoom", ms: 360, holdMs: 400, scale: 0.86 };
+export const defaultTransition: TransitionSettings = {
+  style: "zoom",
+  ms: simToMs(timeConfig.transitionMinutes, timeConfig.minutesPerSecond),
+  holdMs: simToMs(timeConfig.holdMinutes, timeConfig.minutesPerSecond),
+  scale: 0.86,
+};
 
 /** One scene with its own status bar and home indicator, so they move with it. */
 const SceneLayer = memo(function SceneLayer({ scene, minute, day, owner, pushes, battery }: {

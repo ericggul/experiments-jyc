@@ -92,3 +92,5 @@ fictional directed circuit.
   domains. A next trial could preserve the same model but replace the six-zone
   layout with a participant-controlled cut through one return path, if that
   makes local causality more legible without reintroducing dashboard chrome.
+
+Removed 2026-10-03: the route, component and registry entry. These notes stay as history.

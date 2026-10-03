@@ -1,7 +1,0 @@
-# 0908 overlay
-
-Route: `/0908/overlay`. Separate trial of an unchanged DOM/SVG keyword field with a transparent 3D fish layer.
-
-Question: can the school attend the Instagram/4 field while preserving its native text, rings and curves? Baseline: the local `0908/dots` copy of Instagram/4. Mutation: only a transparent, pointer-transparent fish canvas sharing the field's coordinates and story state. Original keyword model, timing, controls, DOM/SVG presentation and existing routes remain unchanged. Viewpoint is locked to top orthographic; free orbit is outside this trial.
-
-Implementation and static checks pending. No browser observation is authorized.

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import SccNavigation from "@/components/navigation";
-import { getCloneNavigationItems } from "@/components/navigation/experiments";
+import SccNavigation from "@/foundations/navigation";
+import { getCloneNavigationItems } from "@/foundations/navigation/experiments";
 
 export function generateStaticParams() {
   return [{ experiment: "1" }];

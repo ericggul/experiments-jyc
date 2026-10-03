@@ -11,7 +11,7 @@ permission to inherit that family’s routes, visual language, or model claims.
   `app/(dynamical-systems)/[group]/[experiment]/page.tsx` dispatcher, and its
   matching documentation folder.
 - `/dynamical-systems` is the shared SCC navigation scoped to this family; add
-  each new variant with its creation date to `components/navigation/experiments.ts`.
+  each new variant with its creation date to `foundations/navigation/experiments.ts`.
   A family registry remains the executable source of truth.
 - A numbered trial is a preserved implementation. Fork a working variant before
   changing a model, numerical method, parameter, or perceptual mapping; do not

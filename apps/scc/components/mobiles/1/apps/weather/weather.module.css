@@ -1,26 +1,29 @@
-.sky { position: absolute; inset: 0; overflow: hidden; color: #fff; font-family: var(--ios-font); }
-.head { position: absolute; top: 62px; left: 0; right: 0; text-align: center; text-shadow: 0 1px 6px rgb(0 0 0 / 12%); }
-.headSmall { position: absolute; top: 62px; left: 0; right: 0; text-align: center; }
+.screen { position: absolute; inset: 0; overflow: hidden; background: #0a1230; color: #fff; font-family: var(--ios-font); }
+.sky { color: #fff; font-family: var(--ios-font); }
+.night { background: linear-gradient(180deg, #0a1230 0%, #1b2a5a 60%, #33467f 100%); }
+.dawn { background: linear-gradient(180deg, #3a4f8f 0%, #8c7fb0 55%, #f0a98a 100%); }
+.dusk { background: linear-gradient(180deg, #2d4f94 0%, #8a78a8 55%, #f29a6b 100%); }
+.clear { background: linear-gradient(180deg, #2a74d4 0%, #4f98e6 55%, #8cc4f3 100%); }
+.cloudy { background: linear-gradient(180deg, #5f7a99 0%, #8aa0b8 60%, #a5b6c8 100%); }
+.rain { background: linear-gradient(180deg, #59636f 0%, #75808c 60%, #8b95a0 100%); }
+.page { padding: 58px 0 110px; }
+.head { padding-bottom: 14px; text-align: center; text-shadow: 0 1px 6px rgb(0 0 0 / 12%); }
+.headSmall { padding: 38px 0 12px; text-align: center; }
 .city { font: 400 34px/41px var(--ios-display); letter-spacing: 0.4px; }
 .temp { margin-left: 14px; font: 200 96px/100px var(--ios-display); letter-spacing: -2px; }
-.cond { font: 500 20px/24px var(--ios-font); letter-spacing: 0; }
+.cond { font: 500 20px/24px var(--ios-font); }
 .hl { font: 500 20px/26px var(--ios-font); }
-.card { position: relative; margin: 0 16px 10px; padding: 10px 14px 6px; border-radius: 16px; background: rgb(255 255 255 / 17%); box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%); }
-.sky > .head + .card { margin-top: 0; }
-.head { height: 220px; }
-.head + .card { position: absolute; top: 292px; left: 0; right: 0; margin: 0 16px; }
-.head + .card + .card { position: absolute; top: 442px; left: 0; right: 0; margin: 0 16px; }
-.headSmall { height: 62px; }
-.headSmall + .card { position: absolute; top: 148px; left: 0; right: 0; margin: 0 16px; }
-.headSmall + .card + .card { position: absolute; top: 354px; left: 0; right: 0; margin: 0 16px; }
-.cardTitle { margin-bottom: 8px; padding-bottom: 8px; box-shadow: 0 0.5px 0 rgb(255 255 255 / 25%); font: 600 13px/18px var(--ios-font); letter-spacing: -0.08px; color: rgb(255 255 255 / 78%); }
-.cardTitle:not(:first-child) { margin: 0; }
+.card { margin: 0 16px 10px; padding: 10px 14px 6px; border-radius: 16px; background: rgb(255 255 255 / 17%); box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%); }
+.cardTitle { margin-bottom: 8px; padding-bottom: 8px; box-shadow: 0 0.5px 0 rgb(255 255 255 / 25%); font: 600 13px/18px var(--ios-font); color: rgb(255 255 255 / 78%); }
 .strip { display: flex; justify-content: space-between; padding-bottom: 6px; }
-.hour { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 44px; font: 500 15px/20px var(--ios-font); letter-spacing: -0.2px; }
+.hour { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 48px; font: 500 14px/20px var(--ios-font); }
 .hour b { font-weight: 500; font-size: 18px; }
-.hour span { font-size: 14px; }
-.day { display: grid; grid-template-columns: 62px 56px 34px 1fr 34px; align-items: center; height: 33px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 18px/22px var(--ios-font); }
-.dayName { font-weight: 500; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px; }
+.tile { height: 150px; padding: 10px 14px; box-sizing: border-box; border-radius: 16px; background: rgb(255 255 255 / 17%); box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%); }
+.tile span { display: block; color: rgb(255 255 255 / 70%); font: 600 12px/18px var(--ios-font); }
+.tile b { display: block; margin-top: 10px; font: 500 36px/42px var(--ios-display); }
+.tile small { display: block; margin-top: 6px; font: 500 14px/18px var(--ios-font); }
+.day { display: grid; grid-template-columns: 62px 56px 34px 1fr 34px; align-items: center; height: 40px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 18px/22px var(--ios-font); }
 .dayIcon { display: flex; flex-direction: column; align-items: center; line-height: 10px; }
 .dayIcon small { color: #9fd0ff; font: 600 11px/11px var(--ios-font); }
 .lo { text-align: right; color: rgb(255 255 255 / 62%); }
@@ -29,8 +32,26 @@
 .range i { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: linear-gradient(90deg, #7ad0e0, #f4d35e, #f59e42); }
 .bigNote { margin-bottom: 8px; font: 600 22px/28px var(--ios-display); }
 .chart { display: block; margin-bottom: 4px; }
-.hrow { display: grid; grid-template-columns: 62px 34px 1fr 62px 40px; align-items: center; height: 34px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 16px/20px var(--ios-font); }
+.hrow { display: grid; grid-template-columns: 62px 34px 1fr 62px 40px; align-items: center; height: 38px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 16px/20px var(--ios-font); }
 .hrow > svg { justify-self: center; }
 .hrRain { color: #a5d4ff; text-align: center; font-size: 14px; }
 .hrWind { color: rgb(255 255 255 / 70%); text-align: right; font-size: 14px; }
 .hrTemp { text-align: right; font-weight: 500; font-size: 18px; }
+.toolbar { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 14px 24px 0; display: flex; justify-content: space-between; background: rgb(20 30 60 / 35%); }
+.dots { display: flex; gap: 8px; padding-top: 8px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: rgb(255 255 255 / 40%); }
+.dots i[data-on="true"] { background: #fff; }
+.bar { position: absolute; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 12px 0; display: flex; align-items: center; gap: 4px; font: 600 17px/22px var(--ios-font); background: linear-gradient(180deg, rgb(0 0 0 / 30%), rgb(0 0 0 / 0%)); }
+.radarPanel { background: #1b2128; }
+.radarMap { display: block; }
+.radarLive { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.radarTime { position: absolute; left: 16px; right: 16px; bottom: 54px; height: 44px; box-sizing: border-box; padding: 6px 14px; border-radius: 14px; background: rgb(28 28 30 / 88%); font: 600 15px/20px var(--ios-font); font-variant-numeric: tabular-nums; }
+.radarTime i { display: block; height: 3px; margin-top: 6px; border-radius: 2px; background: #2fa4ff; }
+.listPanel { background: #000; }
+.listBody { padding: 12px 16px 100px; display: grid; gap: 10px; }
+.listHead { position: absolute; top: 0; left: 0; right: 0; height: 60px; padding-top: 54px; box-sizing: border-box; text-align: center; font: 700 17px/22px var(--ios-font); background: #000; }
+.place { display: flex; justify-content: space-between; align-items: flex-start; height: 86px; box-sizing: border-box; padding: 12px 16px; border-radius: 18px; color: #fff; }
+.place b { display: block; font: 600 22px/26px var(--ios-display); }
+.place small { display: block; font: 500 14px/18px var(--ios-font); }
+.place em { font: 300 40px/44px var(--ios-display); font-style: normal; text-align: right; }
+.place em small { font-weight: 500; }

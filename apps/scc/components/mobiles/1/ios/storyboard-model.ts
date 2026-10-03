@@ -111,20 +111,38 @@ export function panelFrames(script: Script, panelIds: readonly string[]): Map<st
     current.set(id, { state: to, z });
   };
   let visible = first;
+  // The page left showing beneath an open sheet.
+  let under: string | null = null;
   for (const shot of shots.slice(1)) {
     if (shot.panel === visible || !frames.has(shot.panel)) continue;
     const at = shot.at / duration;
     const enter = shot.enter ?? "push";
     const motion = motions[enter];
     const instant = enter === "cut" || enter === "tab";
+    if (under !== null && under !== shot.panel) {
+      // Leaving a sheet for anywhere but its page: drop the page beneath first.
+      const list = frames.get(under);
+      const now = current.get(under);
+      if (list && now) {
+        list.push(frame(at - EPSILON, now.state, now.z));
+        list.push(frame(at, now.state, 0));
+        list.push(frame(at + t + EPSILON, "hidden", 0));
+        current.set(under, { state: "hidden", z: 0 });
+      }
+      under = null;
+    }
     move(shot.panel, at, motion.from, "shown", motion.outgoingOnTop ? 1 : 2, instant);
     move(visible, at, "shown", motion.to, motion.outgoingOnTop ? 2 : 1, instant);
-    // An outgoing panel that stays in place under the newcomer is hidden once covered.
-    if (motion.to === "shown" || motion.to === "left") {
+    if (enter === "sheet") {
+      // The page stays visible beneath the sheet until the sheet is dismissed.
+      under = visible;
+    } else if (motion.to === "left") {
+      // A pushed-away page is hidden once covered.
       const list = frames.get(visible);
       if (list) list.push(frame(at + t + EPSILON, "hidden", 0));
       current.set(visible, { state: "hidden", z: 0 });
     }
+    if (shot.panel === under) under = null;
     visible = shot.panel;
   }
   for (const list of frames.values()) {
@@ -147,7 +165,9 @@ export function scrollFrames(script: Script, panelIds: readonly string[]): Map<s
     const list = frames.get(shot.panel);
     if (!list || shot.scroll === undefined) return;
     const from = position.get(shot.panel) ?? 0;
-    const start = shot.at + storyboardConfig.transitionMinutes;
+    // Wait out a transition only when the panel actually changes.
+    const moved = index > 0 && shots[index - 1].panel !== shot.panel;
+    const start = shot.at + (moved ? storyboardConfig.transitionMinutes : 0);
     const end = shots[index + 1]?.at ?? duration;
     if (end <= start || shot.scroll === from) return;
     const flicks = Math.max(1, Math.round(shot.flicks ?? 1));

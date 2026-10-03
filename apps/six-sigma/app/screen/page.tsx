@@ -1,5 +1,5 @@
 import { sixSigmaNavigationExperiments } from "@/components/experiments";
-import SixSigmaNavigation from "@/components/navigation";
+import SixSigmaNavigation from "@/foundations/navigation";
 
 export default function ScreenIndexPage() {
   return (

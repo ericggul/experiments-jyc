@@ -47,3 +47,19 @@ test("the feed keeps its scroll position across a visit to another panel", () =>
   assert.equal(frameAt(feed, 11 / 20).transform, "translate(0px, -1200px)");
   assert.equal(feed[feed.length - 1].transform, "translate(0px, -2400px)");
 });
+
+test("a page stays visible beneath its sheet and is dropped once the sheet leaves elsewhere", () => {
+  const frames = panelFrames(script, ids);
+  const post = monotonic(frames.get("post") ?? []);
+  // Comments sheet is open from 6.5 to 12; the post shows beneath it.
+  assert.equal(frameAt(post, 9 / 20).opacity, 1);
+  // After popping to the feed, the post is gone.
+  assert.equal(frameAt(post, 15 / 20).opacity, 0);
+});
+
+test("a same-panel shot scrolls immediately, with no transition pause", () => {
+  const still: Script = { duration: 10, shots: [{ panel: "feed", at: 0, scroll: 500 }, { panel: "feed", at: 4, scroll: 900 }] };
+  const feed = monotonic(scrollFrames(still, ["feed"]).get("feed") ?? []);
+  const second = feed.find((item) => item.transform === "translate(0px, -500px)" && item.offset >= 0.4);
+  assert.ok(second && Math.abs(second.offset - 0.4) < 1e-9, String(second?.offset));
+});

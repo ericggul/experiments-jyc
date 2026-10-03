@@ -1,5 +1,5 @@
 export const mobilesConfig = {
-  phoneCount: 90,
+  phoneCount: 60,
   /** Outer frame size in pt; the glass inside is 390 × 844. */
   phoneWidth: 404,
   phoneHeight: 858,

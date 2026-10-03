@@ -33,6 +33,16 @@ Experimental group of desktop fields made of many phones. `/mobiles` lists the v
 | 23:30 | 38 | doomscroll, 33 of them feeds |
 | 01:00 | 26 | doomscroll fading |
 
+**Sessions in simulated time (2026-10-03).**
+- Every clone view builds a `Session`: panels (pages of the app) and shots (navigation, scroll flicks, taps). `ios/storyboard.tsx` plays the session with the Web Animations API on a timeline of simulated minutes, with `playbackRate` equal to the speed. A ten-minute scene at 10 min/s is a one-second burst of use, and doubling the speed doubles its tempo.
+- React builds a session once per scene. Per-tick values (ETAs, timers, countdowns, meters) render through the storyboard's `live` prop, inside their panel, so they move with its transitions.
+- Sheets keep their page visible beneath them.
+- Interactive views take a shot at least every 2.5 simulated minutes. Long scenes are split into parts with fresh content.
+- Content is combinatorial from the seed: at least 40 items per app.
+- The grid fits rows and columns to the phone count and the screen: on 1512 × 900, 60 phones are 15 × 4 and 12 phones are 6 × 2. The default is 60 phones.
+- All motion is authored in simulated minutes: screen transitions, holds, banners and in-app transitions. `transition` and `hold` are options in minutes. A contract test forbids fixed real-time durations in clones.
+- Static checks live in `components/mobiles/1/tools/` (bench build, screens, keys, field). At 2026-10-03 the largest of 114 fixture renders was 642 DOM nodes. Browser frame rate is unmeasured.
+
 **Transitions (2026-10-03).**
 - Every change of screen animates, one at a time (`phone/stage.tsx`).
   - Default `zoom`, after market-economy: the old screen snaps away in the first 40% of `transition`; the new one then lands from 0.86 scale.

@@ -1,6 +1,7 @@
 .sheet { position: absolute; inset: 0; overflow: hidden; }
 .dim { position: absolute; inset: 0; background: rgb(0 0 0 / 40%); }
-.alert { position: absolute; top: 50%; left: 50%; width: 270px; transform: translate(-50%, -50%); border-radius: 14px; background: rgb(242 242 247 / 97%); color: #000; text-align: center; overflow: hidden; }
+.center { position: absolute; inset: 0; display: grid; place-items: center; }
+.alert { width: 270px; border-radius: 14px; background: rgb(242 242 247 / 97%); color: #000; text-align: center; overflow: hidden; }
 .text { padding: 18px 16px 16px; }
 .title { font: 600 17px/22px var(--ios-font); letter-spacing: -0.41px; }
 .message { margin-top: 2px; font: 400 13px/18px var(--ios-font); letter-spacing: -0.08px; }

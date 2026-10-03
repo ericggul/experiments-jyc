@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import SccNavigation from "@/components/navigation";
-import { getSccNavigationItems } from "@/components/navigation/experiments";
+import SccNavigation from "@/foundations/navigation";
+import { getSccNavigationItems } from "@/foundations/navigation/experiments";
 
 export const metadata: Metadata = {
   title: "mobile / ui-collage",

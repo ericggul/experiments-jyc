@@ -1,7 +1,7 @@
 .board { position: absolute; inset: 0; overflow: hidden; }
 .panel { position: absolute; inset: 0; overflow: hidden; background: var(--ios-background); }
 .scroller { position: absolute; left: 0; right: 0; overflow: hidden; }
-.content { position: relative; }
+.content { position: relative; min-height: 100%; }
 .tap {
   position: absolute;
   z-index: 40;

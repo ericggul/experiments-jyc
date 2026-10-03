@@ -53,8 +53,8 @@ export default function Controls({ settings, day, minute, onSettings, onTime }: 
               {style}
             </button>
           ))}
-          <Range label="transition" value={settings.transitionMs} display={`${settings.transitionMs} ms`} range={settingRanges.transitionMs} onChange={(value) => onSettings({ transitionMs: value })} />
-          <Range label="hold" value={settings.holdMs} display={`${settings.holdMs} ms`} range={settingRanges.holdMs} onChange={(value) => onSettings({ holdMs: value })} />
+          <Range label="transition" value={settings.transitionMinutes} display={`${settings.transitionMinutes.toFixed(1)} min`} range={settingRanges.transitionMinutes} onChange={(value) => onSettings({ transitionMinutes: value })} />
+          <Range label="hold" value={settings.holdMinutes} display={`${settings.holdMinutes.toFixed(1)} min`} range={settingRanges.holdMinutes} onChange={(value) => onSettings({ holdMinutes: value })} />
           <span className={styles.gap} />
           <Range label="phones" value={settings.phoneCount} display={String(settings.phoneCount)} range={settingRanges.phoneCount} onChange={(value) => onSettings({ phoneCount: value })} />
           {arrangements.map((arrangement) => (

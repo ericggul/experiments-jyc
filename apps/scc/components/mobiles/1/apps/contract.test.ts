@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { appIds, catalogue } from "../model/catalogue.ts";
@@ -26,5 +26,16 @@ test("every catalogue view has a fixture", () => {
 test("clone screens stay pure", () => {
   for (const app of appIds) {
     assert.doesNotMatch(source(app), /Math\.random|Date\.now|useState|useEffect|setInterval|setTimeout/, app);
+  }
+});
+
+test("clone motion follows simulated time, never fixed real-time durations", () => {
+  for (const app of appIds) {
+    const dir = path.join(root, app);
+    for (const file of readdirSync(dir).filter((name) => name.endsWith(".css"))) {
+      const css = readFileSync(path.join(dir, file), "utf8");
+      assert.doesNotMatch(css, /(animation|transition)[^;{}]*\b\d+(\.\d+)?m?s\b/, `${app}/${file} hard-codes a duration`);
+    }
+    assert.doesNotMatch(source(app), /(animation|transition)(Duration)?:\s*["'`][^"'`]*\d+m?s/, `${app} hard-codes a duration`);
   }
 });

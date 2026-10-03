@@ -1,8 +1,6 @@
 import { djExperiment } from "./dj/index.mjs";
 import { djTwoExperiment } from "./dj/2/index.mjs";
 import { djThreeExperiment } from "./dj/3/index.mjs";
-import { fingerSkatingExperiment } from "./finger-skating/index.mjs";
-import { fingerSkatingFieldOneExperiment } from "./finger-skating/field/index.mjs";
 import { networkSystemCompetitiveFirmsExperiment } from "./network-system/competitive-firms/index.mjs";
 import { networkSystemCycleExperiment } from "./network-system/cycle/index.mjs";
 import { networkSystemDefaultExperiment } from "./network-system/default/index.mjs";
@@ -11,8 +9,6 @@ import { networkSystemPopulationExperiment } from "./network-system/population/i
 import { stockExperiment } from "./stock/index.mjs";
 
 export const sccExperiments = Object.freeze([
-  fingerSkatingExperiment,
-  fingerSkatingFieldOneExperiment,
   djExperiment,
   djTwoExperiment,
   djThreeExperiment,
