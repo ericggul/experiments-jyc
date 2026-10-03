@@ -1,0 +1,50 @@
+.screen { position: absolute; inset: 0; overflow: hidden; background: #fff; color: #0f1111; font-family: var(--ios-font); }
+.header { position: absolute; z-index: 5; top: 0; left: 0; right: 0; box-sizing: border-box; padding: 54px 12px 10px; background: linear-gradient(#ffe3b3, #ffd68a); }
+.search { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 8px; background: #fff; color: #6b6f72; font: 400 15px/20px var(--ios-font); box-shadow: 0 0 0 1px rgb(0 0 0 / 12%); }
+.search b { margin-left: auto; color: #0f1111; }
+.deliver { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 400 13px/17px var(--ios-font); }
+.deliver b { font-weight: 600; }
+.viewport { position: absolute; top: 126px; left: 0; right: 0; bottom: 83px; overflow: hidden; background: #eaeded; }
+.banner { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #fff; font: 700 18px/22px var(--ios-font); }
+.timer { padding: 3px 8px; border-radius: 4px; background: #cc0c39; color: #fff; font: 600 13px/17px var(--ios-font); font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
+.tile { padding-bottom: 12px; background: #fff; border-radius: 6px; overflow: hidden; }
+.tile img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #f3f3f3; }
+.tileBody { padding: 8px 10px 0; }
+.off { display: inline-block; margin-bottom: 4px; padding: 2px 6px; border-radius: 3px; background: #cc0c39; color: #fff; font: 700 12px/16px var(--ios-font); }
+.deal { color: #cc0c39; font: 600 12px/16px var(--ios-font); }
+.name { margin-top: 2px; font: 400 13px/17px var(--ios-font); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.priceRow { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; }
+.price { font: 500 20px/24px var(--ios-font); letter-spacing: -0.3px; }
+.price sup { font-size: 12px; vertical-align: 7px; }
+.was { color: #565959; font: 400 12px/16px var(--ios-font); text-decoration: line-through; }
+.stars { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: #007185; font: 400 12px/16px var(--ios-font); }
+.starIcons { color: #f08804; letter-spacing: 1px; font-size: 13px; }
+.gallery { position: relative; background: #fff; }
+.gallery img { display: block; width: 390px; height: 340px; object-fit: cover; }
+.counter { position: absolute; right: 12px; bottom: 10px; padding: 3px 9px; border-radius: 12px; background: rgb(0 0 0 / 55%); color: #fff; font: 500 12px/16px var(--ios-font); }
+.dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 2px; background: #fff; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: #c8c8c8; }
+.dots i:first-child { background: #0f1111; }
+.detail { padding: 8px 14px 14px; background: #fff; }
+.detail .name { font-size: 16px; line-height: 21px; -webkit-line-clamp: 3; }
+.big { font: 400 30px/34px var(--ios-font); letter-spacing: -0.5px; }
+.big sup { font-size: 15px; vertical-align: 13px; }
+.save { color: #cc0c39; font: 400 30px/34px var(--ios-font); margin-right: 8px; letter-spacing: -0.5px; }
+.prime { margin-top: 6px; font: 400 14px/20px var(--ios-font); }
+.prime b { color: #067d62; font-weight: 700; }
+.stock { margin-top: 6px; color: #067d62; font: 500 17px/22px var(--ios-font); }
+.add { display: grid; place-items: center; height: 46px; margin-top: 10px; border-radius: 23px; background: #ffd814; font: 400 16px/20px var(--ios-font); box-shadow: 0 0 0 1px #fcd200; }
+.buy { background: #ffa41c; box-shadow: 0 0 0 1px #ff8f00; }
+.cartHead { position: absolute; z-index: 5; top: 0; left: 0; right: 0; padding: 54px 14px 12px; box-sizing: border-box; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); }
+.subtotal { margin-top: 10px; font: 400 18px/24px var(--ios-font); }
+.subtotal b { font-weight: 700; }
+.checkout { display: grid; place-items: center; height: 46px; margin-top: 12px; border-radius: 23px; background: #ffd814; font: 400 16px/20px var(--ios-font); box-shadow: 0 0 0 1px #fcd200; }
+.cartViewport { position: absolute; top: 190px; left: 0; right: 0; bottom: 34px; overflow: hidden; background: #eaeded; }
+.line { display: grid; grid-template-columns: 112px 1fr; gap: 12px; margin-bottom: 8px; padding: 14px; background: #fff; }
+.line img { width: 112px; height: 112px; object-fit: cover; }
+.lineName { font: 400 15px/20px var(--ios-font); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.qty { display: inline-flex; align-items: center; margin-top: 8px; border-radius: 8px; box-shadow: 0 0 0 1px #d5d9d9; font: 500 15px/20px var(--ios-font); }
+.qty span { padding: 5px 12px; }
+.qty span + span { box-shadow: -1px 0 0 #d5d9d9; }
+.lineActions { margin-top: 8px; color: #007185; font: 400 13px/17px var(--ios-font); }

@@ -1,0 +1,36 @@
+.sky { position: absolute; inset: 0; overflow: hidden; color: #fff; font-family: var(--ios-font); }
+.head { position: absolute; top: 62px; left: 0; right: 0; text-align: center; text-shadow: 0 1px 6px rgb(0 0 0 / 12%); }
+.headSmall { position: absolute; top: 62px; left: 0; right: 0; text-align: center; }
+.city { font: 400 34px/41px var(--ios-display); letter-spacing: 0.4px; }
+.temp { margin-left: 14px; font: 200 96px/100px var(--ios-display); letter-spacing: -2px; }
+.cond { font: 500 20px/24px var(--ios-font); letter-spacing: 0; }
+.hl { font: 500 20px/26px var(--ios-font); }
+.card { position: relative; margin: 0 16px 10px; padding: 10px 14px 6px; border-radius: 16px; background: rgb(255 255 255 / 17%); box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%); }
+.sky > .head + .card { margin-top: 0; }
+.head { height: 220px; }
+.head + .card { position: absolute; top: 292px; left: 0; right: 0; margin: 0 16px; }
+.head + .card + .card { position: absolute; top: 442px; left: 0; right: 0; margin: 0 16px; }
+.headSmall { height: 62px; }
+.headSmall + .card { position: absolute; top: 148px; left: 0; right: 0; margin: 0 16px; }
+.headSmall + .card + .card { position: absolute; top: 354px; left: 0; right: 0; margin: 0 16px; }
+.cardTitle { margin-bottom: 8px; padding-bottom: 8px; box-shadow: 0 0.5px 0 rgb(255 255 255 / 25%); font: 600 13px/18px var(--ios-font); letter-spacing: -0.08px; color: rgb(255 255 255 / 78%); }
+.cardTitle:not(:first-child) { margin: 0; }
+.strip { display: flex; justify-content: space-between; padding-bottom: 6px; }
+.hour { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 44px; font: 500 15px/20px var(--ios-font); letter-spacing: -0.2px; }
+.hour b { font-weight: 500; font-size: 18px; }
+.hour span { font-size: 14px; }
+.day { display: grid; grid-template-columns: 62px 56px 34px 1fr 34px; align-items: center; height: 33px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 18px/22px var(--ios-font); }
+.dayName { font-weight: 500; }
+.dayIcon { display: flex; flex-direction: column; align-items: center; line-height: 10px; }
+.dayIcon small { color: #9fd0ff; font: 600 11px/11px var(--ios-font); }
+.lo { text-align: right; color: rgb(255 255 255 / 62%); }
+.hi { text-align: right; }
+.range { position: relative; height: 4px; margin: 0 8px; border-radius: 2px; background: rgb(0 0 0 / 22%); }
+.range i { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: linear-gradient(90deg, #7ad0e0, #f4d35e, #f59e42); }
+.bigNote { margin-bottom: 8px; font: 600 22px/28px var(--ios-display); }
+.chart { display: block; margin-bottom: 4px; }
+.hrow { display: grid; grid-template-columns: 62px 34px 1fr 62px 40px; align-items: center; height: 34px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 22%); font: 500 16px/20px var(--ios-font); }
+.hrow > svg { justify-self: center; }
+.hrRain { color: #a5d4ff; text-align: center; font-size: 14px; }
+.hrWind { color: rgb(255 255 255 / 70%); text-align: right; font-size: 14px; }
+.hrTemp { text-align: right; font-weight: 500; font-size: 18px; }

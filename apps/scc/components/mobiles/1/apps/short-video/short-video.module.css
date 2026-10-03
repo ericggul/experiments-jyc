@@ -1,0 +1,33 @@
+.screen { position: absolute; inset: 0; overflow: hidden; background: #000; color: #fff; font-family: var(--ios-font); }
+.clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dim { position: absolute; inset: 0; background: rgb(0 0 0 / 56%); }
+.scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 360px; background: linear-gradient(to top, rgb(0 0 0 / 72%), rgb(0 0 0 / 0%)); }
+.top { position: absolute; z-index: 2; top: 58px; left: 0; right: 0; display: flex; justify-content: center; gap: 22px; font: 600 17px/22px var(--ios-font); text-shadow: 0 1px 3px rgb(0 0 0 / 45%); }
+.top span { opacity: 0.62; }
+.top .on { opacity: 1; box-shadow: 0 6px 0 -4px #fff; }
+.search { position: absolute; top: 58px; right: 16px; }
+.rail { position: absolute; z-index: 2; right: 8px; bottom: 112px; width: 56px; display: flex; flex-direction: column; align-items: center; gap: 18px; font: 600 12px/14px var(--ios-font); text-shadow: 0 1px 3px rgb(0 0 0 / 45%); }
+.railItem { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.avatar { position: relative; width: 48px; height: 48px; margin-bottom: 8px; border-radius: 50%; border: 1.5px solid #fff; box-sizing: border-box; display: grid; place-items: center; font: 700 19px/1 var(--ios-font); }
+.follow { position: absolute; bottom: -9px; left: 14px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #fe2c55; }
+.disc { width: 42px; height: 42px; margin-top: 2px; border-radius: 50%; background: radial-gradient(circle, #555 0 22%, #111 24% 100%); box-shadow: 0 0 0 7px #1c1c1e; border: 1px solid #333; box-sizing: border-box; }
+.caption { position: absolute; z-index: 2; left: 14px; right: 82px; bottom: 100px; text-shadow: 0 1px 3px rgb(0 0 0 / 50%); }
+.handle { font: 700 16px/20px var(--ios-font); }
+.text { margin-top: 4px; font: 400 15px/20px var(--ios-font); letter-spacing: -0.2px; }
+.text b { font-weight: 600; }
+.sound { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 400 14px/18px var(--ios-font); white-space: nowrap; overflow: hidden; }
+.progress { position: absolute; z-index: 3; left: 0; right: 0; bottom: 83px; height: 2px; background: rgb(255 255 255 / 28%); }
+.progress i { display: block; height: 100%; background: #fff; }
+.sheet { position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; top: 232px; border-radius: 12px 12px 0 0; background: #161616; overflow: hidden; }
+.grab { position: absolute; top: 6px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: rgb(255 255 255 / 25%); }
+.sheetHead { height: 48px; display: grid; place-items: center; padding-top: 6px; font: 600 14px/18px var(--ios-font); box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.sheetClose { position: absolute; top: 18px; right: 16px; color: var(--ios-secondary); }
+.list { position: absolute; top: 48px; left: 0; right: 0; bottom: 96px; overflow: hidden; }
+.comment { display: grid; grid-template-columns: 36px 1fr 40px; gap: 12px; padding: 12px 16px 0; }
+.cAvatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font: 700 14px/1 var(--ios-font); }
+.cName { color: var(--ios-secondary); font: 600 13px/17px var(--ios-font); }
+.cText { margin-top: 1px; font: 400 15px/20px var(--ios-font); letter-spacing: -0.2px; }
+.cMeta { display: flex; gap: 16px; margin-top: 4px; color: var(--ios-secondary); font: 400 12.5px/16px var(--ios-font); }
+.cLike { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 6px; color: var(--ios-secondary); font: 400 12px/14px var(--ios-font); }
+.composer { position: absolute; left: 0; right: 0; bottom: 34px; height: 62px; display: flex; align-items: center; gap: 12px; padding: 0 16px; background: #161616; box-shadow: inset 0 0.5px 0 var(--ios-separator); }
+.field { flex: 1; height: 38px; display: flex; align-items: center; padding: 0 16px; border-radius: 19px; background: var(--ios-fill); color: var(--ios-secondary); font: 400 15px/20px var(--ios-font); }

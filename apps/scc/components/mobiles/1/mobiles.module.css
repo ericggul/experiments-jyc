@@ -1,0 +1,8 @@
+.field { width: 100%; height: 100dvh; overflow: hidden; background: #101011; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.stage { min-width: 0; min-height: 0; display: grid; place-items: center; overflow: hidden; }
+.grid { display: grid; place-content: center; }
+/* Each phone is an isolated layout and paint island; one phone redrawing never touches its neighbours. */
+.slot { position: relative; min-width: 0; min-height: 0; contain: strict; }
+.single { width: 100%; height: 100dvh; overflow: hidden; background: #101011; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.singleStage { position: relative; min-height: 0; }
+.singleSlot { position: absolute; left: 50%; top: 50%; }

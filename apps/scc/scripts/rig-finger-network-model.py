@@ -189,16 +189,32 @@ bpy.data.objects.remove(proxy)
 body.parent = rig
 skin = body.modifiers.new("rig", "ARMATURE")
 skin.object = rig
-# The proxy can bridge a hanging arm to the torso; torso skin then follows the arm like a web. Below the shoulder,
-# skin inside the torso's own width drops its arm weights.
-arm_groups = [body.vertex_groups[name].index for name in body.vertex_groups.keys() if name.startswith(("upperArm_", "forearm_", "hand_"))]
-for vertex in body.data.vertices:
-    width = abs(joints["upperArm_L"].x) * 0.92
-    if vertex.co.z < joints["upperArm_L"].z - 0.02 * H and abs(vertex.co.x) < width:
-        for index in arm_groups:
-            body.vertex_groups[index].remove([vertex.index])
-        if not vertex.groups:
-            body.vertex_groups["spine"].add([vertex.index], 1.0, "REPLACE")
+# The proxy can bridge a hanging arm to the torso (and a hand to the thigh); that skin then follows the wrong part
+# like a web. In the A-pose, each height below the armpit shows a gap between arm and body: outside it is arm,
+# inside it is body, and each side drops the other's weights.
+arm_names = ("shoulder_", "upperArm_", "forearm_", "hand_")
+slab = 0.01 * H
+for side, suffix in ((1, "L"), (-1, "R")):
+    arm = [body.vertex_groups[name + suffix].index for name in arm_names[1:]]
+    other = [group.index for group in body.vertex_groups if not group.name.startswith(arm_names)]
+    top = joints["upperArm_" + suffix].z - 0.05 * H
+    z = 0.25 * H
+    while z < top:
+        members = [v for v in body.data.vertices if z <= v.co.z < z + slab and v.co.x * side > 0]
+        xs = sorted(abs(v.co.x) for v in members)
+        split, widest = None, 0.012 * H
+        for a, b in zip(xs, xs[1:]):
+            if a > 0.06 * H and b - a > widest:
+                split, widest = (a + b) / 2, b - a
+        if split is not None:
+            for vertex in members:
+                outside = abs(vertex.co.x) > split
+                for index in other if outside else arm:
+                    body.vertex_groups[index].remove([vertex.index])
+                if not vertex.groups:
+                    name = ("hand_" if vertex.co.z < joints["hand_" + suffix].z + 0.03 * H else "forearm_") + suffix if outside else "spine"
+                    body.vertex_groups[name].add([vertex.index], 1.0, "REPLACE")
+        z += slab
 bpy.ops.object.vertex_group_limit_total(group_select_mode="ALL", limit=4)
 bpy.ops.object.vertex_group_normalize_all(lock_active=False)
 

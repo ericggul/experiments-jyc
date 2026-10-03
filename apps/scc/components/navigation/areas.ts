@@ -38,6 +38,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "cv",
   "grid",
   "macos",
+  "mobiles",
   "splice",
   "spoon-class",
   "swarm",
@@ -56,4 +57,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "mobile/transform/substitution",
   "mobile/transform/substitution/1",
   "mobile/transform/substitution/2",
+  "mobile/transform/language",
+  "mobile/transform/language/1",
+  "mobile/transform/decomposition",
 ]);

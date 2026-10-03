@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { anchorPoint, buildPose, continueBinding, solveFigure, type Anchor, type Binding, type Endpoints, type Figure, type Point, type Role } from "./model/rig";
 import { describeBody } from "./screen/readout";
-import type { ModelFigure } from "./screen/model-figure";
+import type { ModelFigure, ModelSource } from "./screen/model-figure";
 import { drawFigure, drawNetwork, drawRings } from "./screen/renderer";
 import styles from "./screen.module.css";
 
@@ -16,13 +16,17 @@ const morphRate = 4;
 const trackRate = 19;
 const releaseFadeSeconds = 3;
 
-type Character = "default" | "elon";
+type Character = "default" | "elon" | "finger";
 const characters: { id: Character; label: string }[] = [
   { id: "default", label: "기본" },
   { id: "elon", label: "일론 머스크" },
+  { id: "finger", label: "퍼큐" },
 ];
 // The rigged model is fetched, with three.js, only once its option is chosen.
-const modelUrls: Partial<Record<Character, string>> = { elon: "/assets/finger-network/elon-musk.glb" };
+const modelSources: Partial<Record<Character, ModelSource>> = {
+  elon: { url: "/assets/finger-network/elon-musk.glb" },
+  finger: { url: "/assets/finger-network/hand.glb", hand: true },
+};
 
 export default function MobileFingerNetworkTwo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -75,13 +79,13 @@ export default function MobileFingerNetworkTwo() {
 
     // null while loading or after a failed load; either way the 2D body stands in.
     const modelFor = (id: Character) => {
-      const url = modelUrls[id];
-      if (!url) return null;
+      const source = modelSources[id];
+      if (!source) return null;
       if (!models.has(id)) {
         models.set(id, null);
         void import("./screen/model-figure").then(({ createModelFigure }) => {
           if (disposed) return;
-          const model = createModelFigure(modelCanvas, url, () => {
+          const model = createModelFigure(modelCanvas, source, () => {
             models.set(id, model);
             schedule();
           }, () => model.dispose());
@@ -165,12 +169,15 @@ export default function MobileFingerNetworkTwo() {
         const rings = heldAnchors.map((anchor) => anchorPoint(endpoints, anchor));
         const pose = buildPose(endpoints);
         const model = modelFor(characterRef.current);
-        if (model) drawRings(context, rings, pose.scale, figureOpacity);
-        else drawFigure(context, pose, time, figureOpacity, skinTexture, rings);
+        // The hand answers the raw touches, so its rings sit on them rather than on the body's parts.
+        const touchRings = modelSources[characterRef.current]?.hand;
+        if (!model) drawFigure(context, pose, time, figureOpacity, skinTexture, rings);
+        else if (!touchRings) drawRings(context, rings, pose.scale, figureOpacity);
         context.restore();
+        if (model && touchRings) drawRings(context, points, 1, figureOpacity);
         if (model !== shownModel) shownModel?.hide();
         shownModel = model;
-        model?.draw(body, pose, figureOpacity);
+        model?.draw(body, pose, figureOpacity, contacts, time);
         if (time - lastReadoutTime >= readoutInterval) {
           lastReadoutTime = time;
           readout.textContent = describeBody(body, pose, heldAnchors, time, figureOpacity);

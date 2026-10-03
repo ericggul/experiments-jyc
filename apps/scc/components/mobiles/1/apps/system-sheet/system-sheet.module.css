@@ -1,0 +1,12 @@
+.sheet { position: absolute; inset: 0; overflow: hidden; }
+.dim { position: absolute; inset: 0; background: rgb(0 0 0 / 40%); }
+.alert { position: absolute; top: 50%; left: 50%; width: 270px; transform: translate(-50%, -50%); border-radius: 14px; background: rgb(242 242 247 / 97%); color: #000; text-align: center; overflow: hidden; }
+.text { padding: 18px 16px 16px; }
+.title { font: 600 17px/22px var(--ios-font); letter-spacing: -0.41px; }
+.message { margin-top: 2px; font: 400 13px/18px var(--ios-font); letter-spacing: -0.08px; }
+.button { height: 44px; display: grid; place-items: center; box-shadow: inset 0 0.5px 0 rgb(60 60 67 / 36%); color: var(--ios-blue); font: 400 17px/22px var(--ios-font); }
+.bold { font-weight: 600; }
+.icon { margin: 0 auto 10px; width: 46px; height: 46px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; }
+.row .button + .button { box-shadow: inset 0.5px 0.5px 0 rgb(60 60 67 / 36%); }
+.version { margin-top: 8px; color: rgb(60 60 67 / 60%); font: 400 11px/14px var(--ios-font); }

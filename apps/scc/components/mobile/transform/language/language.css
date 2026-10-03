@@ -1,0 +1,87 @@
+/* Originals stay in layout; only their glyphs are hidden while the canvas draws the translation. */
+[data-language-text]:not([data-language-ui] *) {
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+  text-decoration-color: transparent !important;
+}
+
+[data-language-text] > :not([data-language-text]) {
+  -webkit-text-fill-color: currentcolor;
+}
+
+[data-language-field]::placeholder {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+canvas.language-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  pointer-events: none;
+  z-index: 2147483000;
+}
+
+.language-control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483001;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: #171717;
+}
+
+.language-control * { box-sizing: border-box; }
+
+.language-trigger {
+  min-width: 66px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 15px;
+  background: #171717;
+  color: #fff;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.language-panel {
+  width: min(250px, calc(100vw - 32px));
+  padding: 14px;
+  border-radius: 13px;
+  background: #fff;
+  color: #171717;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.language-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 14px; }
+
+.language-modes button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.language-modes button[aria-pressed="true"] { background: #171717; color: #fff; }
+.language-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 600; }
+.language-slider { display: block; width: 100%; margin: 0 0 14px; accent-color: #171717; cursor: pointer; }
+.language-slider:last-child { margin-bottom: 2px; }
+.language-control button:focus-visible, .language-slider:focus-visible { outline: 2px solid #1469d8; outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .language-control { bottom: calc(88px + env(safe-area-inset-bottom)); }
+}

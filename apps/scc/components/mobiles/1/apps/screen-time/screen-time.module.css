@@ -1,0 +1,38 @@
+.screen { position: absolute; inset: 0; overflow: hidden; background: var(--ios-grouped); color: var(--ios-label); }
+.body { position: absolute; top: 54px; left: 0; right: 0; bottom: 34px; padding: 0 16px; }
+.nav { height: 44px; display: flex; align-items: center; justify-content: space-between; color: var(--ios-blue); font: 400 17px/22px var(--ios-font); }
+.title { margin: 2px 0 10px; font: 700 34px/41px var(--ios-display); letter-spacing: 0.37px; }
+.lead { margin: 0 0 14px; font: 400 15px/20px var(--ios-font); color: var(--ios-secondary); }
+.card { margin-bottom: 14px; padding: 14px 16px; border-radius: 12px; background: var(--ios-cell); }
+.cardLabel { font: 400 13px/18px var(--ios-font); color: var(--ios-secondary); text-transform: uppercase; }
+.big { font: 700 34px/41px var(--ios-display); letter-spacing: 0.37px; }
+.big small { font: 400 17px/22px var(--ios-font); letter-spacing: 0; }
+.delta { font: 400 13px/18px var(--ios-font); color: var(--ios-secondary); }
+.chart { position: relative; height: 150px; margin-top: 12px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 28px 20px 0; box-sizing: border-box; }
+.avg { position: absolute; left: 0; right: 28px; border-top: 1px dashed var(--ios-tertiary); }
+.avgLabel { position: absolute; right: 0; transform: translateY(-50%); font: 400 11px/13px var(--ios-font); color: var(--ios-secondary); }
+.col { position: relative; width: 28px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.bar { width: 26px; border-radius: 4px 4px 1px 1px; background: #5ac8fa; overflow: hidden; display: flex; flex-direction: column-reverse; }
+.seg { width: 100%; }
+.dayLabel { position: absolute; bottom: -19px; font: 400 11px/13px var(--ios-font); color: var(--ios-secondary); }
+.dayLabel[data-today="true"] { color: var(--ios-label); font-weight: 600; }
+.legend { display: flex; gap: 14px; margin-top: 4px; font: 400 13px/18px var(--ios-font); color: var(--ios-secondary); }
+.dotKey { display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; }
+.cats { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.cat { display: grid; grid-template-columns: 112px 1fr 58px; align-items: center; gap: 8px; font: 400 15px/20px var(--ios-font); }
+.track { height: 8px; border-radius: 4px; background: var(--ios-fill); overflow: hidden; }
+.fill { height: 100%; border-radius: 4px; }
+.time { text-align: right; color: var(--ios-secondary); font-variant-numeric: tabular-nums; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.pair .card { margin: 0; }
+.stat { font: 600 28px/34px var(--ios-display); }
+.apps { display: flex; flex-direction: column; }
+.app { display: flex; align-items: center; gap: 12px; padding: 8px 0; font: 400 17px/22px var(--ios-font); }
+.app + .app { box-shadow: inset 0 0.5px 0 var(--ios-separator); }
+.appName { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.appName small { color: var(--ios-secondary); font-size: 13px; line-height: 17px; }
+.appTrack { height: 4px; margin-top: 4px; border-radius: 2px; background: var(--ios-fill); overflow: hidden; }
+.appTime { color: var(--ios-secondary); font-variant-numeric: tabular-nums; }
+.hours { height: 96px; margin-top: 10px; display: flex; align-items: flex-end; gap: 2px; padding-bottom: 16px; position: relative; }
+.hour { flex: 1; border-radius: 2px 2px 0 0; background: #5ac8fa; min-height: 1px; }
+.hourTick { position: absolute; bottom: 0; font: 400 11px/13px var(--ios-font); color: var(--ios-secondary); }

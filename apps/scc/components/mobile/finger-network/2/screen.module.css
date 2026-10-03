@@ -46,10 +46,10 @@
   pointer-events: none;
 }
 
-/* The two character choices stack above the options button, so the text above it moves up with them. */
+/* The three character choices stack above the options button, so the text above it moves up with them. */
 .instruction[data-raised],
 .readout[data-raised] {
-  translate: 0 -80px;
+  translate: 0 -120px;
 }
 
 .model {

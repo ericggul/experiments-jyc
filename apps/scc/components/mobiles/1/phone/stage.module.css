@@ -1,0 +1,69 @@
+/*
+ * iOS-like transitions between scenes on one phone. Only transform and
+ * opacity animate, so the compositor does the work.
+ */
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  animation-duration: var(--stage-ms, 400ms);
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.1, 1);
+  animation-fill-mode: both;
+}
+
+.top { z-index: 2; }
+
+/*
+ * zoom (default, after market-economy): out, then in — no mushy overlap.
+ * The old screen snaps away in the first 40%; the new one lands in the rest.
+ */
+.zoomOut {
+  animation-name: zoom-out;
+  animation-duration: calc(var(--stage-ms, 360ms) * 0.4);
+  animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+}
+.zoomIn {
+  z-index: 2;
+  animation-name: zoom-in;
+  animation-duration: calc(var(--stage-ms, 360ms) * 0.6);
+  animation-delay: calc(var(--stage-ms, 360ms) * 0.4);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* launch: an app opens from the home or lock screen */
+.launchIn { z-index: 2; animation-name: launch-in; }
+.launchUnder { animation-name: launch-under; }
+/* close: back to the home, lock or resting screen */
+.closeOut { z-index: 2; animation-name: close-out; }
+.closeUnder { animation-name: close-under; }
+/* switch: swipe along the home indicator to the next app */
+.switchIn { animation-name: switch-in; }
+.switchOut { animation-name: switch-out; }
+/* push: deeper into the same app */
+.pushIn { z-index: 2; animation-name: push-in; box-shadow: -12px 0 30px rgb(0 0 0 / 18%); }
+.pushOut { animation-name: push-out; }
+/* fade: lock, always-on, alarm and sleep surfaces */
+.fadeIn { z-index: 2; animation-name: fade-in; }
+.fadeOut { animation-name: none; }
+
+@keyframes zoom-in { from { transform: scale(var(--stage-scale, 0.5)); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes zoom-out { from { transform: none; opacity: 1; } to { transform: scale(var(--stage-scale, 0.5)); opacity: 0; } }
+@keyframes launch-in { from { transform: scale(0.84); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes launch-under { from { transform: none; opacity: 1; } to { transform: scale(1.08); opacity: 0.3; } }
+@keyframes close-out { from { transform: none; opacity: 1; } to { transform: scale(0.84); opacity: 0; } }
+@keyframes close-under { from { transform: scale(1.08); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@keyframes switch-in { from { transform: translateX(104%); } to { transform: none; } }
+@keyframes switch-out { from { transform: none; } to { transform: translateX(-104%); } }
+@keyframes push-in { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes push-out { from { transform: none; opacity: 1; } to { transform: translateX(-30%); opacity: 0.85; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Notification banner */
+.bannerIn { animation: banner-in var(--stage-ms, 400ms) cubic-bezier(0.32, 0.72, 0, 1) both; }
+.bannerOut { animation: banner-out calc(var(--stage-ms, 400ms) * 0.8) ease-in both; }
+@keyframes banner-in { from { transform: translateY(-130%); opacity: 0.4; } to { transform: none; opacity: 1; } }
+@keyframes banner-out { from { transform: none; opacity: 1; } to { transform: translateY(-130%); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .layer, .bannerIn, .bannerOut { animation-duration: 1ms !important; }
+}

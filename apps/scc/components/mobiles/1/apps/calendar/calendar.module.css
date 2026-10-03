@@ -1,0 +1,24 @@
+.root { position: absolute; inset: 0; background: var(--ios-background); color: var(--ios-label); }
+.head { padding: 54px 8px 0; }
+.navRow { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; color: #ff3b30; font-size: 17px; }
+.navRow .back { display: flex; align-items: center; }
+.navRow .right { display: flex; gap: 20px; }
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 2px 0 6px; color: var(--ios-secondary); font: 500 11px/14px var(--ios-font); letter-spacing: 0; }
+.strip > span { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.num { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 16px; color: var(--ios-label); font: 400 20px/24px var(--ios-font); }
+.num[data-weekend="true"] { color: var(--ios-secondary); }
+.num[data-today="true"] { background: #ff3b30; color: #fff; font-weight: 600; }
+.dayTitle { padding: 8px 16px 6px; font: 700 15px/20px var(--ios-font); border-top: 0.5px solid var(--ios-separator); }
+.dayTitle small { margin-left: 4px; color: var(--ios-secondary); font-weight: 400; }
+.viewport { position: absolute; top: 172px; left: 0; right: 0; bottom: 83px; overflow: hidden; }
+.sheet { position: absolute; left: 0; right: 0; top: 0; }
+.hour { position: absolute; left: 0; right: 0; height: 0; }
+.hour span { position: absolute; left: 6px; width: 40px; top: -8px; text-align: right; color: var(--ios-secondary); font: 400 11px/16px var(--ios-font); letter-spacing: 0; }
+.hour i { position: absolute; left: 54px; right: 0; top: 0; height: 0.5px; background: var(--ios-separator); }
+.event { position: absolute; box-sizing: border-box; padding: 3px 6px; overflow: hidden; border-radius: 5px; border-left: 3px solid; font: 600 12px/15px var(--ios-font); letter-spacing: 0; }
+.event small { display: block; font-weight: 400; font-size: 11px; line-height: 14px; opacity: 0.75; }
+.now { position: absolute; left: 0; right: 0; height: 0; z-index: 4; }
+.now i { position: absolute; left: 52px; right: 0; top: -1px; height: 1.5px; background: #ff3b30; }
+.now b { position: absolute; left: 47px; top: -4.5px; width: 9px; height: 9px; border-radius: 50%; background: #ff3b30; }
+.now span { position: absolute; left: 4px; top: -8px; width: 40px; text-align: right; color: #ff3b30; font: 600 11px/16px var(--ios-font); background: var(--ios-background); }
+.toolbar { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; box-sizing: border-box; padding: 10px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; background: rgb(249 249 249 / 96%); box-shadow: 0 -0.5px 0 rgb(0 0 0 / 30%); color: #ff3b30; font-size: 17px; }

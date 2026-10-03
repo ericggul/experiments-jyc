@@ -1,0 +1,42 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 4px;
+  padding: 4px 12px calc(8px + env(safe-area-inset-bottom));
+  color: #fff;
+  font: 400 12px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.control {
+  min-width: 36px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.control[aria-expanded],
+.control[aria-pressed="false"] { opacity: 0.55; }
+
+.control:focus-visible,
+.range input:focus-visible { outline: 1px solid #fff; outline-offset: 2px; }
+
+.range {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.range span { opacity: 0.55; }
+.range input { width: 84px; margin: 0; accent-color: #fff; cursor: ew-resize; }
+.range output { min-width: 3.4em; font-variant-numeric: tabular-nums; }
+.time input { width: 180px; }
+.gap { width: 10px; }

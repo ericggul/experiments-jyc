@@ -1,0 +1,396 @@
+/*
+ * iOS grammar at native points (1 CSS px = 1 pt). The frame is 404 × 858 with
+ * a 7 pt bezel, so the glass is exactly 390 × 844. The phone is rendered at
+ * this size and scaled by its container, so clones author in pt.
+ */
+.phone {
+  --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ios-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ios-rounded: ui-rounded, -apple-system, "SF Pro Rounded", "Helvetica Neue", sans-serif;
+  --ios-label: #000;
+  --ios-secondary: rgb(60 60 67 / 60%);
+  --ios-tertiary: rgb(60 60 67 / 30%);
+  --ios-separator: rgb(60 60 67 / 29%);
+  --ios-fill: rgb(120 120 128 / 12%);
+  --ios-background: #fff;
+  --ios-grouped: #f2f2f7;
+  --ios-cell: #fff;
+  --ios-blue: #007aff;
+  --ios-red: #ff3b30;
+  --ios-orange: #ff9500;
+  --ios-green: #34c759;
+  --ios-yellow: #ffcc00;
+  --ios-safe-top: 54px;
+  --ios-safe-bottom: 34px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 404px;
+  height: 858px;
+  transform-origin: top left;
+  box-sizing: border-box;
+  padding: 7px;
+  border-radius: 62px;
+  background: #0b0b0c;
+  box-shadow: inset 0 0 0 1.5px #3a3a3c, inset 0 0 0 3px #0b0b0c;
+  font-family: var(--ios-font);
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
+}
+
+.glass {
+  contain: strict;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 55px;
+  background: #000;
+  color: var(--ios-label);
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.41px;
+}
+
+/* Screens are laid out on the full 390 × 844 glass including safe areas. */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.dark {
+  --ios-label: #fff;
+  --ios-secondary: rgb(235 235 245 / 60%);
+  --ios-tertiary: rgb(235 235 245 / 30%);
+  --ios-separator: rgb(84 84 88 / 65%);
+  --ios-fill: rgb(118 118 128 / 24%);
+  --ios-background: #000;
+  --ios-grouped: #000;
+  --ios-cell: #1c1c1e;
+  --ios-blue: #0a84ff;
+  --ios-red: #ff453a;
+  --ios-orange: #ff9f0a;
+  --ios-green: #30d158;
+  color: #fff;
+}
+
+/*
+ * Continuous motion between ticks: an element whose transform is driven by
+ * elapsed time glides to its next value over one phone refresh interval.
+ */
+.flow {
+  transition: transform var(--phone-tick, 300ms) linear;
+}
+
+/* Status bar and Dynamic Island */
+.statusBar {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  display: grid;
+  grid-template-columns: 1fr 126px 1fr;
+  align-items: center;
+  pointer-events: none;
+  color: #000;
+}
+
+.statusBar[data-tone="light"] { color: #fff; }
+
+.statusTime {
+  justify-self: center;
+  padding-left: 14px;
+  font: 600 17px/22px var(--ios-font);
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.island {
+  width: 126px;
+  height: 37px;
+  border-radius: 20px;
+  background: #000;
+}
+
+.statusRight {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 10px;
+}
+
+.battery {
+  position: relative;
+  box-sizing: border-box;
+  width: 27px;
+  height: 13px;
+  border: 1.2px solid currentColor;
+  border-radius: 4px;
+  opacity: 1;
+}
+
+.battery::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: -3.5px;
+  width: 1.5px;
+  height: 4.5px;
+  border-radius: 0 1px 1px 0;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.batteryLevel {
+  position: absolute;
+  top: 1.5px;
+  bottom: 1.5px;
+  left: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.batteryLevel[data-state="low"] { background: #ff3b30; }
+.batteryLevel[data-state="saver"] { background: #ffcc00; }
+.batteryLevel[data-state="charging"] { background: #34c759; }
+
+.homeIndicator {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: 8px;
+  width: 134px;
+  height: 5px;
+  margin-left: -67px;
+  border-radius: 3px;
+  background: #000;
+  pointer-events: none;
+}
+
+.homeIndicator[data-tone="light"] { background: #fff; }
+
+/* Notification banner and lock-screen notification cards */
+.banner {
+  position: absolute;
+  z-index: 30;
+  top: 50px;
+  left: 8px;
+  right: 8px;
+}
+
+.notification {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  column-gap: 10px;
+  align-items: start;
+  padding: 13px 14px 13px 13px;
+  border-radius: 24px;
+  background: rgb(246 246 246 / 94%);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+  color: #000;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: -0.24px;
+}
+
+.notificationDark {
+  background: rgb(38 38 40 / 92%);
+  color: #fff;
+}
+
+.notification > :first-child { grid-row: span 3; margin-top: 1px; }
+.notificationTitle { overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.notificationAge { color: rgb(60 60 67 / 60%); font-size: 13px; line-height: 20px; white-space: nowrap; }
+.notificationDark .notificationAge { color: rgb(235 235 245 / 60%); }
+.notificationSubtitle { grid-column: 2 / 4; overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.notificationBody {
+  grid-column: 2 / 4;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* App icon: continuous-corner square with a glyph */
+.appIcon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  color: #fff;
+}
+
+/* Navigation bar */
+.navBar {
+  padding: var(--ios-safe-top) 16px 0;
+  background: var(--ios-background);
+}
+
+.navRow {
+  height: 44px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  color: var(--ios-blue);
+}
+
+.navRow > :last-child { justify-self: end; }
+.navTitle { color: var(--ios-label); font-weight: 600; }
+
+.largeTitle {
+  margin: 2px 0 8px;
+  color: var(--ios-label);
+  font: 700 34px/41px var(--ios-display);
+  letter-spacing: 0.37px;
+}
+
+.navAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Tab bar */
+.tabBar {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 83px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 7px 4px 0;
+  box-sizing: border-box;
+  background: rgb(249 249 249 / 96%);
+  box-shadow: 0 -0.5px 0 rgb(0 0 0 / 30%);
+}
+
+.dark .tabBar,
+.tabBar[data-tone="dark"] {
+  background: rgb(22 22 22 / 96%);
+  box-shadow: 0 -0.5px 0 rgb(255 255 255 / 16%);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #999;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+  letter-spacing: 0.1px;
+}
+
+.tab[data-active="true"] { color: var(--tab-tint, var(--ios-blue)); }
+
+.badge {
+  min-width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #ff3b30;
+  color: #fff;
+  font: 400 13px/18px var(--ios-font);
+  letter-spacing: 0;
+  text-align: center;
+}
+
+/* Grouped list */
+.group {
+  margin: 0 16px 35px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--ios-cell);
+}
+
+.groupHeader {
+  margin: 0 32px 7px;
+  color: var(--ios-secondary);
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  text-transform: uppercase;
+}
+
+.row {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 16px;
+}
+
+.rowBody {
+  min-height: 44px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px 11px 0;
+  box-sizing: border-box;
+}
+
+.row + .row .rowBody { box-shadow: inset 0 0.5px 0 var(--ios-separator); }
+.rowTitle { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rowDetail { color: var(--ios-secondary); white-space: nowrap; }
+.rowChevron { color: var(--ios-tertiary); }
+
+.switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: rgb(120 120 128 / 16%);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 15%), 0 3px 1px rgb(0 0 0 / 6%);
+}
+
+.switch[data-on="true"] { background: var(--ios-green); }
+.switch[data-on="true"]::after { left: 22px; }
+
+/* Neutral launch surface for an app whose clone is not built yet */
+.launch {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ios-background);
+}
+
+/*
+ * Smooth content changes inside a screen. Durations follow the phone's
+ * transition length (--stage-ms); only transform and opacity animate.
+ */
+.appear { animation: appear var(--stage-ms, 400ms) cubic-bezier(0.32, 0.72, 0, 1) both; }
+.swapLayer { position: absolute; inset: 0; animation-duration: var(--stage-ms, 400ms); animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1); animation-fill-mode: both; }
+.swapUpIn { animation-name: swap-up-in; }
+.swapUpOut { animation-name: swap-up-out; }
+.swapFadeIn { animation-name: swap-fade-in; }
+@keyframes appear { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes swap-up-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes swap-up-out { from { transform: none; } to { transform: translateY(-100%); } }
+@keyframes swap-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .appear, .swapLayer { animation-duration: 1ms !important; }
+}

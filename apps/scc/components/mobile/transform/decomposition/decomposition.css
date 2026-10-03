@@ -1,0 +1,137 @@
+[data-decomposition-source] {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+.decomposition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.decomposition-backdrop {
+  position: fixed;
+  inset: 0;
+  transition: background-color 400ms ease;
+}
+
+.decomposition-stage {
+  position: relative;
+  margin: calc(16px + env(safe-area-inset-top)) 0 calc(112px + env(safe-area-inset-bottom));
+}
+
+.decomposition-piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+/* Above the pieces: the routes are read against the interface they cross. */
+.decomposition-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.decomposition-lines path { fill: none; }
+.decomposition-route-remaining { opacity: 0.2; }
+
+.decomposition-control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483001;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: #171717;
+}
+
+.decomposition-control * { box-sizing: border-box; }
+
+.decomposition-trigger {
+  min-height: 42px;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 15px;
+  background: #171717;
+  color: #fff;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.decomposition-panel {
+  width: min(232px, calc(100vw - 32px));
+  display: grid;
+  padding: 8px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.decomposition-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.decomposition-panel button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0 10px;
+  background: transparent;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.decomposition-panel button[aria-pressed="true"] { background: #171717; color: #fff; }
+.decomposition-option + .decomposition-option { margin-top: 4px; }
+
+.decomposition-label {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.decomposition-slider {
+  display: block;
+  width: calc(100% - 12px);
+  margin: 0 6px;
+  accent-color: #171717;
+  cursor: pointer;
+}
+
+.decomposition-range {
+  display: flex;
+  justify-content: space-between;
+  margin: 7px 6px 12px;
+  font-size: 11px;
+  color: #666;
+}
+
+.decomposition-control button:focus-visible,
+.decomposition-slider:focus-visible {
+  outline: 2px solid #1469d8;
+  outline-offset: 2px;
+}

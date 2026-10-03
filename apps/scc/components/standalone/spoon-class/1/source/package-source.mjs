@@ -2,6 +2,11 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { installRunnerCompatibility } from "./compatibility.mjs";
+import {
+  applyBrowserReplacements,
+  browserStyle,
+  installAudioCompatibility,
+} from "./browser.mjs";
 
 const original = readFileSync(new URL("./dino.html", import.meta.url), "utf8");
 const policy = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; media-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">`;
@@ -27,6 +32,7 @@ html, body {
 // Install before the original bootstrap. Preserve the upstream file separately
 // so the small integration correction is reviewable without rewriting its code.
 const adapter = `<script data-spoon-class-compatibility>(${installRunnerCompatibility.toString()})(window.Runner, window);</script>`;
+const audioAdapter = `<script data-spoon-class-audio>(${installAudioCompatibility.toString()})(window);</script>`;
 const modulePresentation = `<script data-spoon-class-module-presentation>
 (function(window, document) {
   var chromeOnly = document.querySelectorAll(".onlyforchrome");
@@ -47,14 +53,33 @@ const modulePresentation = `<script data-spoon-class-module-presentation>
     }, "*");
   }
 
+  // Touch has no key to relay, so a finger is one Space press for every
+  // module, this one included, exactly like the host keyboard path.
+  function syncTouch(event) {
+    if (window.parent === window) return;
+    event.preventDefault();
+    event.stopPropagation();
+    window.parent.postMessage({
+      channel: "spoon-class-input",
+      type: event.type === "touchstart" ? "keydown" : "keyup",
+      keyCode: 32
+    }, "*");
+  }
+
   document.addEventListener("keydown", syncInput);
   document.addEventListener("keyup", syncInput);
+  var touchOptions = { capture: true, passive: false };
+  window.addEventListener("touchstart", syncTouch, touchOptions);
+  window.addEventListener("touchend", syncTouch, touchOptions);
+  window.addEventListener("touchcancel", syncTouch, touchOptions);
 })(window, document);
 </script>`;
-const html = original
-  .replace("<head>", `<head>\n${policy}`)
-  .replace("</head>", `${moduleStyles}\n${adapter}\n</head>`)
-  .replace("</body>", `${modulePresentation}\n</body>`);
+const html = applyBrowserReplacements(
+  original
+    .replace("<head>", `<head>\n${policy}`)
+    .replace("</head>", `${moduleStyles}\n${browserStyle}\n${adapter}\n${audioAdapter}\n</head>`)
+    .replace("</body>", `${modulePresentation}\n</body>`),
+);
 const packaged = {
   repository: "https://github.com/alexelzx/chrome-dino",
   revision: "6e472666cfd94e95056b7e747f46badf00e1226d",

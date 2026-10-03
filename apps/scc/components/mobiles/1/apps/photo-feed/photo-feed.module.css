@@ -1,0 +1,37 @@
+.screen { position: absolute; inset: 0; overflow: hidden; background: #fff; color: #000; font-family: var(--ios-font); }
+.header { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 16px 0; display: flex; align-items: center; justify-content: space-between; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); }
+.wordmark { font: italic 700 29px/34px Georgia, "Times New Roman", serif; letter-spacing: -0.5px; }
+.headerIcons { display: flex; gap: 20px; }
+.viewport { position: absolute; top: 98px; left: 0; right: 0; bottom: 83px; overflow: hidden; }
+.stories { height: 108px; box-sizing: border-box; padding: 12px 10px 0; display: flex; gap: 14px; overflow: hidden; }
+.story { flex: none; width: 70px; display: flex; flex-direction: column; align-items: center; gap: 5px; font: 400 12px/14px var(--ios-font); white-space: nowrap; }
+.ring { width: 68px; height: 68px; padding: 3px; box-sizing: border-box; border-radius: 50%; background: linear-gradient(45deg, #fcb045, #d62976 55%, #8a3ab9); }
+.ringSeen { background: #d4d4d8; }
+.ringInner { width: 100%; height: 100%; border-radius: 50%; border: 2.5px solid #fff; box-sizing: border-box; display: grid; place-items: center; color: #fff; font: 700 22px/1 var(--ios-font); }
+.post { height: 570px; overflow: hidden; }
+.postHead { height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+.postAvatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 14px/1 var(--ios-font); }
+.who { flex: 1; font: 600 14px/17px var(--ios-font); letter-spacing: -0.1px; }
+.who small { display: block; font: 400 12px/14px var(--ios-font); }
+.photo { display: block; width: 390px; height: 390px; object-fit: cover; background: #eee; }
+.actions { height: 46px; display: flex; align-items: center; gap: 16px; padding: 0 12px; }
+.actions :last-child { margin-left: auto; }
+.likes { padding: 0 12px; font: 600 14px/18px var(--ios-font); }
+.captionText { padding: 3px 12px 0; font: 400 14px/18px var(--ios-font); letter-spacing: -0.1px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.captionText b { font-weight: 600; }
+.muted { padding: 3px 12px 0; color: var(--ios-secondary); font: 400 14px/18px var(--ios-font); }
+.tiny { padding: 3px 12px 0; color: var(--ios-secondary); font: 400 11px/14px var(--ios-font); text-transform: uppercase; }
+.storyScreen { position: absolute; inset: 0; overflow: hidden; background: #000; color: #fff; font-family: var(--ios-font); }
+.storyImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.storyTop { position: absolute; top: 0; left: 0; right: 0; height: 150px; background: linear-gradient(rgb(0 0 0 / 45%), rgb(0 0 0 / 0%)); }
+.storyBottom { position: absolute; bottom: 0; left: 0; right: 0; height: 160px; background: linear-gradient(to top, rgb(0 0 0 / 40%), rgb(0 0 0 / 0%)); }
+.segments { position: absolute; top: 58px; left: 8px; right: 8px; display: flex; gap: 3px; }
+.segment { flex: 1; height: 2.5px; border-radius: 2px; background: rgb(255 255 255 / 35%); overflow: hidden; }
+.segment i { display: block; height: 100%; background: #fff; }
+.storyHead { position: absolute; top: 72px; left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; font: 600 14px/18px var(--ios-font); text-shadow: 0 1px 3px rgb(0 0 0 / 40%); }
+.storyHead span { font-weight: 400; opacity: 0.75; }
+.storyHead :last-child { margin-left: auto; }
+.reply { position: absolute; bottom: 44px; left: 12px; right: 12px; display: flex; align-items: center; gap: 14px; }
+.replyField { flex: 1; height: 46px; display: flex; align-items: center; padding: 0 18px; box-sizing: border-box; border: 1px solid rgb(255 255 255 / 70%); border-radius: 23px; font: 400 15px/20px var(--ios-font); }
+.track { position: relative; }
+.slot { position: absolute; left: 0; right: 0; }

@@ -1,0 +1,33 @@
+.screen { position: absolute; inset: 0; overflow: hidden; background: #fff; color: #121212; font-family: var(--ios-font); }
+.masthead { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 100px; box-sizing: border-box; padding: 54px 16px 0; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; }
+.logo { text-align: center; font: 700 30px/36px Georgia, "Times New Roman", serif; letter-spacing: -0.5px; }
+.date { text-align: center; color: var(--ios-secondary); font: 400 11px/14px var(--ios-font); letter-spacing: 0.4px; text-transform: uppercase; }
+.viewport { position: absolute; top: 100px; left: 0; right: 0; bottom: 83px; overflow: hidden; }
+.sections { display: flex; gap: 20px; padding: 10px 16px; overflow: hidden; white-space: nowrap; font: 600 14px/18px var(--ios-font); color: var(--ios-secondary); box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.sections .on { color: #121212; box-shadow: 0 5px 0 -3px #e0002a; }
+.hero img { display: block; width: 390px; height: 219px; object-fit: cover; }
+.heroBody { padding: 12px 16px 16px; }
+.kicker { color: #e0002a; font: 700 11.5px/14px var(--ios-font); letter-spacing: 0.6px; text-transform: uppercase; }
+.kicker span { color: var(--ios-secondary); font-weight: 500; letter-spacing: 0.2px; text-transform: none; margin-left: 6px; }
+.headline { margin-top: 5px; font: 700 25px/29px Georgia, "Times New Roman", serif; letter-spacing: -0.3px; }
+.dek { margin-top: 6px; color: #3c3c43; font: 400 15px/20px Georgia, "Times New Roman", serif; }
+.item { display: grid; grid-template-columns: 1fr 104px; gap: 14px; margin: 0 16px; padding: 14px 0; box-shadow: inset 0 -0.5px 0 var(--ios-separator); }
+.item .headline { margin-top: 4px; font-size: 17.5px; line-height: 21px; }
+.item img { width: 104px; height: 104px; object-fit: cover; border-radius: 2px; }
+.live { display: flex; align-items: center; gap: 8px; margin: 12px 16px 0; padding: 10px 12px; background: #fdecee; color: #b3001f; font: 600 13px/17px var(--ios-font); border-radius: 4px; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: #e0002a; }
+.articleBar { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 98px; box-sizing: border-box; padding: 54px 16px 0; display: flex; align-items: center; justify-content: space-between; background: #fff; box-shadow: 0 0.5px 0 var(--ios-separator); }
+.articleBar .logo { font-size: 24px; }
+.barIcons { display: flex; gap: 18px; }
+.articleViewport { position: absolute; top: 98px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+.articleHead { padding: 18px 20px 0; }
+.articleHead .headline { font-size: 31px; line-height: 35px; letter-spacing: -0.5px; }
+.articleHead .dek { font-size: 18px; line-height: 24px; margin-top: 10px; }
+.byline { display: flex; justify-content: space-between; margin: 14px 20px 0; padding-top: 12px; border-top: 0.5px solid var(--ios-separator); font: 600 13px/17px var(--ios-font); }
+.byline span { color: var(--ios-secondary); font-weight: 400; }
+.figure { margin: 16px 0 0; }
+.figure img { display: block; width: 390px; height: 219px; object-fit: cover; }
+.figure figcaption { padding: 6px 20px 0; color: var(--ios-secondary); font: 400 12px/16px var(--ios-font); }
+.body { padding: 18px 20px 120px; }
+.body p { margin: 0 0 20px; font: 400 19px/28px Georgia, "Times New Roman", serif; letter-spacing: -0.1px; }
+.body p:first-child::first-letter { float: left; padding: 3px 6px 0 0; font: 700 56px/48px Georgia, "Times New Roman", serif; }

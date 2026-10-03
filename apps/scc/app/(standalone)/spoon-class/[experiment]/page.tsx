@@ -25,9 +25,9 @@ export async function generateMetadata({
       experiment === "1"
         ? "A responsive field of synchronized Chrome Dino game modules."
         : experiment === "2"
-          ? "A synchronized human-life game built from the Chrome Dino engine."
+          ? "A synchronized human-life game field with less dense and dense layouts."
           : experiment === "3"
-            ? "A high-density scaled field of synchronized human-life games."
+            ? "A working copy of the synchronized human-life game field."
           : "The original Chrome Dino source preserved as a standalone experiment.",
   };
 }

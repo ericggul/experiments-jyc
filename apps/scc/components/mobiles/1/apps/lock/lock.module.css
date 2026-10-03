@@ -1,0 +1,23 @@
+.screen { position: absolute; inset: 0; color: #fff; }
+.wallpaper { position: absolute; inset: 0; }
+.dim { position: absolute; inset: 0; background: rgb(0 0 0 / 18%); }
+.header { position: absolute; top: 66px; left: 0; right: 0; text-align: center; text-shadow: 0 1px 12px rgb(0 0 0 / 12%); }
+.date { font: 600 21px/25px var(--ios-font); letter-spacing: 0.2px; opacity: 0.92; }
+.time { margin-top: -2px; font: 700 96px/106px var(--ios-rounded); letter-spacing: -2px; font-variant-numeric: tabular-nums; }
+.stack { position: absolute; left: 8px; right: 8px; bottom: 112px; display: flex; flex-direction: column; gap: 8px; }
+.collapsed { height: 10px; margin: -14px 14px 0; border-radius: 0 0 18px 18px; background: rgb(246 246 246 / 55%); }
+.more { color: rgb(255 255 255 / 82%); font: 600 13px/18px var(--ios-font); text-align: center; }
+.quick { position: absolute; left: 46px; right: 46px; bottom: 52px; display: flex; justify-content: space-between; }
+.quick span { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 50%; background: rgb(0 0 0 / 32%); }
+.sleep { position: absolute; inset: 0; background: #000; color: rgb(255 255 255 / 55%); }
+.sleep .header { opacity: 0.8; }
+.sleep .time { font-weight: 600; }
+.focus { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 6px 12px; border-radius: 16px; background: rgb(255 255 255 / 10%); font: 600 15px/20px var(--ios-font); }
+.nextAlarm { position: absolute; left: 0; right: 0; bottom: 120px; text-align: center; font: 500 15px/20px var(--ios-font); }
+.aodDim { position: absolute; inset: 0; background: rgb(0 0 0 / 74%); }
+.aod { color: rgb(255 255 255 / 78%); text-shadow: none; }
+.aodCount { position: absolute; left: 0; right: 0; bottom: 64px; text-align: center; color: rgb(255 255 255 / 55%); font: 600 13px/18px var(--ios-font); }
+.standby { position: absolute; inset: 0; background: #000; }
+.standbyFace { position: absolute; top: 50%; left: 50%; width: 844px; height: 390px; margin: -195px 0 0 -422px; display: grid; place-content: center; justify-items: center; transform: rotate(90deg); color: #b3141b; }
+.standbyTime { font: 700 210px/1 var(--ios-rounded); letter-spacing: -6px; font-variant-numeric: tabular-nums; }
+.standbyAlarm { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font: 600 22px/28px var(--ios-font); opacity: 0.8; }

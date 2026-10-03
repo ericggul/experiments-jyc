@@ -2,13 +2,15 @@
 
 Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `components/navigation`, grouped by creation date. Register each new variant's date and phrase in `components/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
 
-- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field and curve-to-formula plane, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate and substitution transforms.
+- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field and curve-to-formula plane, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
 
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
 
 - [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
 
+
+- [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 

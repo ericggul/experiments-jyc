@@ -19,7 +19,7 @@ function seededRandom(seed) {
   };
 }
 
-function createGame({ patched, seed = 0xdecafbad } = {}) {
+function createGame({ patched, seed = 0xdecafbad, rejectPrefixedKeyframes = false } = {}) {
   let now = 1;
   let id = 0;
   const frames = new Map();
@@ -55,7 +55,15 @@ function createGame({ patched, seed = 0xdecafbad } = {}) {
   const audio = { src: "data:audio/ogg;base64,T2dnUw==" };
   const document = {
     hidden: false,
-    styleSheets: [{ insertRule() {} }],
+    styleSheets: [
+      {
+        insertRule(rule) {
+          if (rejectPrefixedKeyframes && rule.startsWith("@-webkit-keyframes")) {
+            throw new SyntaxError("Failed to parse the rule");
+          }
+        },
+      },
+    ],
     querySelector: () => outer,
     createElement: element,
     getElementById: () => ({ ...element(), content: { getElementById: () => audio } }),
@@ -272,6 +280,25 @@ test("fallback completion restores the source update loop when no animation even
   assert.equal(game.runner.runningTime, runningTime);
   assert.equal(game.runner.playCount, 1);
 
+  for (let frame = 0; frame < 240 && !game.runner.horizon.obstacles.length; frame += 1) game.step();
+  const cactus = game.runner.horizon.obstacles[0];
+  assert.ok(cactus);
+  const x = cactus.xPos;
+  game.step(10);
+  assert.ok(cactus.xPos < x, `${cactus.xPos} should be less than ${x}`);
+});
+
+test("a browser that rejects the prefixed intro keyframes still runs the game", () => {
+  const source = createGame({ patched: false, rejectPrefixedKeyframes: true });
+  source.press();
+  assert.throws(() => source.step(180), SyntaxError);
+
+  const game = createGame({ patched: true, rejectPrefixedKeyframes: true });
+  game.press();
+  for (let frame = 0; frame < 180 && !game.runner.playingIntro; frame += 1) game.step();
+  assert.equal(game.runner.started, true);
+  game.step(25);
+  assert.equal(game.runner.playingIntro, false);
   for (let frame = 0; frame < 240 && !game.runner.horizon.obstacles.length; frame += 1) game.step();
   const cactus = game.runner.horizon.obstacles[0];
   assert.ok(cactus);

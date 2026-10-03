@@ -1,0 +1,39 @@
+.screen { position: absolute; inset: 0; overflow: hidden; color: #fff; font-family: var(--ios-font); }
+.grabber { position: absolute; top: 62px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: rgb(255 255 255 / 35%); }
+.art { position: absolute; top: 96px; left: 24px; box-shadow: 0 20px 40px rgb(0 0 0 / 40%); border-radius: 12px; }
+.meta { position: absolute; top: 460px; left: 24px; right: 24px; display: flex; align-items: center; justify-content: space-between; }
+.title { font: 600 22px/28px var(--ios-display); }
+.artist { color: rgb(255 255 255 / 60%); font: 400 20px/26px var(--ios-display); }
+.more { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: rgb(255 255 255 / 18%); }
+.scrub { position: absolute; top: 540px; left: 24px; right: 24px; }
+.line { position: relative; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 22%); overflow: hidden; }
+.line i { display: block; height: 100%; background: rgb(255 255 255 / 80%); }
+.times { display: flex; justify-content: space-between; margin-top: 6px; color: rgb(255 255 255 / 55%); font: 500 12px/16px var(--ios-font); font-variant-numeric: tabular-nums; }
+.controls { position: absolute; top: 590px; left: 24px; right: 24px; display: flex; align-items: center; justify-content: space-around; }
+.main { display: grid; place-items: center; width: 70px; height: 70px; }
+.skip { position: relative; display: grid; place-items: center; width: 40px; height: 40px; }
+.skip svg { position: absolute; inset: 0; }
+.skip b { position: relative; margin-top: 3px; font: 600 11px/12px var(--ios-font); }
+.volume { position: absolute; top: 696px; left: 24px; right: 24px; display: flex; align-items: center; gap: 10px; color: rgb(255 255 255 / 60%); }
+.volume .line { flex: 1; }
+.bottomIcons { position: absolute; top: 742px; left: 24px; right: 24px; display: flex; justify-content: space-around; color: rgb(255 255 255 / 60%); }
+.podArt { position: absolute; top: 92px; left: 70px; box-shadow: 0 16px 36px rgb(0 0 0 / 45%); border-radius: 16px; }
+.podMeta { position: absolute; top: 366px; left: 24px; right: 24px; }
+.show { color: #bf5af2; font: 600 13px/18px var(--ios-font); text-transform: uppercase; letter-spacing: 0.4px; }
+.episode { font: 600 21px/26px var(--ios-display); }
+.podMeta .artist { font-size: 17px; line-height: 22px; }
+.podMeta + .scrub { top: 456px; }
+.podMeta + .scrub + .controls { top: 494px; }
+.speedRow { position: absolute; top: 566px; left: 24px; right: 24px; display: flex; justify-content: space-between; }
+.speed, .sleep { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 14px; background: rgb(255 255 255 / 16%); font: 600 14px/20px var(--ios-font); }
+.chapters { position: absolute; top: 612px; left: 24px; right: 24px; }
+.chapHead { padding-bottom: 6px; font: 700 17px/22px var(--ios-display); }
+.chapter { display: flex; align-items: center; gap: 12px; height: 32px; box-shadow: 0 -0.5px 0 rgb(255 255 255 / 15%); color: rgb(255 255 255 / 60%); font: 400 15px/20px var(--ios-font); }
+.chapter[data-active="true"] { color: #fff; font-weight: 600; }
+.chapTime { width: 44px; font-variant-numeric: tabular-nums; font-size: 13px; }
+.chapName { flex: 1; }
+.eq { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.eq i { width: 3px; background: #bf5af2; border-radius: 1px; }
+.eq i:nth-child(1) { height: 7px; }
+.eq i:nth-child(2) { height: 12px; }
+.eq i:nth-child(3) { height: 9px; }

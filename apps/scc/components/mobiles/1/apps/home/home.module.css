@@ -1,0 +1,31 @@
+.home { position: absolute; inset: 0; color: #fff; overflow: hidden; }
+.wallpaper { position: absolute; inset: 0; }
+.grid { position: absolute; top: 66px; left: 0; right: 0; display: grid; grid-template-columns: repeat(4, 90px); justify-content: center; column-gap: 6px; row-gap: 0; }
+.cell { height: 96px; display: flex; flex-direction: column; align-items: center; gap: 5px; padding-top: 6px; }
+.iconWrap { position: relative; width: 60px; height: 60px; }
+.label { max-width: 84px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 400 11.5px/14px var(--ios-font); letter-spacing: -0.1px; text-shadow: 0 0.5px 3px rgb(0 0 0 / 45%); }
+.badge { position: absolute; top: -6px; right: -6px; min-width: 22px; height: 22px; box-sizing: border-box; padding: 0 6px; border-radius: 11px; background: var(--ios-red); color: #fff; font: 400 15px/22px var(--ios-font); letter-spacing: 0; text-align: center; }
+.pill { position: absolute; left: 50%; bottom: 190px; transform: translateX(-50%); width: 92px; height: 30px; display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: 15px; background: rgb(255 255 255 / 22%); font: 400 14px/18px var(--ios-font); letter-spacing: -0.1px; }
+.dots { position: absolute; left: 0; right: 0; bottom: 232px; display: flex; justify-content: center; gap: 9px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: rgb(255 255 255 / 40%); }
+.dot[data-on="true"] { background: #fff; }
+.dock { position: absolute; left: 10px; right: 10px; bottom: 24px; height: 96px; box-sizing: border-box; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; border-radius: 36px; background: rgb(255 255 255 / 24%); }
+
+.search { position: absolute; inset: 0; color: #fff; overflow: hidden; }
+.shade { position: absolute; inset: 0; background: rgb(18 18 24 / 62%); }
+.field { position: absolute; top: 62px; left: 16px; right: 16px; display: flex; align-items: center; gap: 14px; }
+.input { flex: 1; height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 9px; border-radius: 10px; background: rgb(118 118 128 / 34%); color: rgb(235 235 245 / 60%); font: 400 17px/22px var(--ios-font); }
+.cancel { color: #fff; font: 400 17px/22px var(--ios-font); }
+.sectionTitle { margin: 0 0 7px 32px; font: 400 13px/18px var(--ios-font); text-transform: uppercase; color: rgb(235 235 245 / 60%); letter-spacing: -0.08px; }
+.sections { position: absolute; top: 118px; left: 0; right: 0; }
+.card { margin: 0 16px 22px; padding: 14px 8px 10px; border-radius: 14px; background: rgb(60 60 67 / 62%); }
+.sirirow { display: flex; justify-content: space-around; }
+.sirirow .cell { height: auto; padding: 0; width: 76px; }
+.contacts { display: flex; justify-content: space-around; padding: 4px 4px 2px; }
+.contact { width: 72px; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 400 12px/15px var(--ios-font); }
+.avatar { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; font: 500 21px/1 var(--ios-rounded); color: #fff; }
+.list { margin: 0 16px; border-radius: 14px; background: rgb(60 60 67 / 62%); overflow: hidden; }
+.item { display: flex; align-items: center; gap: 12px; padding: 9px 14px; font: 400 17px/22px var(--ios-font); }
+.item + .item { box-shadow: inset 0 0.5px 0 rgb(84 84 88 / 65%); }
+.itemText { flex: 1; display: flex; flex-direction: column; }
+.itemText small { color: rgb(235 235 245 / 60%); font-size: 13px; line-height: 17px; }

@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: repeat(var(--spoon-class-columns), minmax(0, 1fr));
   grid-template-rows: repeat(var(--spoon-class-rows), 150px);
+  height: 100vh;
   height: 100svh;
   overflow: hidden;
   width: 100%;

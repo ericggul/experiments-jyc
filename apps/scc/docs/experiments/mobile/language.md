@@ -1,0 +1,31 @@
+# Language — /mobile/transform/language/[experiment]/[clone]
+
+Experimental, 2026-10-03. Rapid language transfer. The baseline is each preserved `clone/1`–`clone/13` mobile surface, wrapped like [substitution](substitution.md) without editing the clone. Tested relation: what an interface becomes when every label keeps its place and function but the language it speaks changes autonomously, element by element, at spectacle speed.
+
+## Material
+
+`tools/extract.mjs` reads every clone's `screen/index.tsx` and `model/*.ts` with the TypeScript parser and keeps rendered strings only: JSX text, `placeholder`, notice/error setters, visible data fields (names, labels, options, categories, statuses, places, times) and template literals as patterns (`` `${n}개` `` → `{0}개`). Aria labels, alt text, ids, class names, comparison literals, and long prose fields (`description`, `body`, `bio`, captions) are excluded. Wikimedia file titles in clone 12 were removed by hand. Result: 1,206 unique strings (493 Korean, 713 English).
+
+Each string was translated as literally as possible (최대한 직역) into 40 languages: ko, en, ja, zh, vi, th, id, tl, hi, bn, ta, ur, fa, ar, he, tr, ru, uk, pl, cs, hu, ro, el, fi, de, nl, sv, eu, fr, es, pt, it, sw, am, ka, hy, mn, km, my, si. Meaningful brand and shop names were translated word by word; personal and place names transliterated. Translation was machine work by parallel Sonnet agents (the repository's preferred `gpt-5.6-terra` delegate was unavailable), with placeholder and script checks in `tools/build-lexicon.mjs`; no native-speaker review. `lexicon/<clone>.json` holds `[source, ...40 translations]` rows in `languages.ts` order and is loaded per clone.
+
+## Mechanism
+
+- **Unit**: the nearest interactive ancestor of a text (button, link, label, tab, select, input), else its nearest text block (`h1–h6`, `p`, `li`, `dt/dd`, …). All fragments in a unit speak the same language at any moment.
+- **Chain**: each unit is an independent continuous-time Markov chain over the 40 languages, starting in its source language (ko or en). Holding times are exponential with the global rate times a per-unit pace in 0.55–1.45. The base transition row keeps self-persistence 0.06; other weights are `0.15 + 3·same family + 1.2·same script + 2.5·exp(−distance/2500 km)` between rough speech-area centroids, so units mostly drift to nearby or related languages and occasionally jump.
+- **Coupling (동조)**: at each step the row is mixed with the language distribution of the unit's four nearest units on screen: `(1−κ)·P + κ·neighbours`. κ = 0 gives independent chains, κ = 1 a voter model; intermediate values grow drifting patches of one language.
+- **Drawing**: originals stay in layout with only their glyphs hidden (`-webkit-text-fill-color: transparent`); a pointer-transparent canvas redraws each line with the original computed font, colour, opacity, text shadow, letter spacing and text transform. Placement rules, all derived from the rendered original:
+  - the measured box is the glyph range without surrounding spaces, so spacing between pieces stays where the clone rendered it; the baseline is that box's top plus the font ascent;
+  - alignment comes from CSS `text-align` of the text's formatting block when explicit, otherwise from where the line actually sits in that block, climbing out of shrink-wrapped wrappers;
+  - a translation stays inside its own layout cell (its block's content box; a shrink-wrapped block may use its parent only when centred in it, e.g. a nav label under its icon), keeps half an em from neighbouring icons, fields and text, never grows into the gap toward a neighbour it is attached to (`30` + ` credits`), and is otherwise condensed horizontally to fit;
+  - pieces of one element sharing a line (`7` + ` classes`, `East Village` + ` · ` + `Alex`) are re-set together as a run with their original gaps;
+  - untranslatable text in a hidden element (counts) is redrawn unchanged; wrapped text is split across its rendered lines; placeholders use the input's content box and the selected `<select>` option leaves ~1.6em for the arrow.
+  The canvas enters the top layer as a manual popover and re-enters it when a clone dialog opens; texts whose every visible line is covered (modal backdrop, sticky bar, the control) keep their original glyphs instead.
+- **Clocks and dates** generated at runtime (`7:00`/`AM` in clone 9, `09:00` in clone 8, `오후 02:30` in clone 5, `Fri, 25 Sept`, `Wednesday, Sep 23`, `9월 23일 수요일`, `2h 7m`, `65,000원`) are re-formatted per language with `Intl.DateTimeFormat` (`clock.ts`) or lexicon patterns; the source language keeps the clone's exact string.
+- **Failures on 2026-10-03** (user-observed broken layout, twice): first, wrapped and long text was anchored to the whole unit's edges, `text-align` was trusted, text was centred vertically, and untranslated sibling counts were hidden without redraw. Second, after a rewrite, trimmed redraws dropped surrounding spaces (`7classes`), inline neighbours were mistaken for alignment cues (`East Village` right-aligned), and longer translations spread across the whole button into other columns (a title over the credit count, `credits` over the studio name). Fixed by the rules above.
+- Unknown text (runtime dates, numbers, user input, post bodies) is untouched.
+
+Bottom-right control (`언어`): 원본 / 전이, 속도 0.5–60 steps per second per unit (logarithmic, default ≈15/s), 동조 0–100% (default 35%). The control is excluded from the transform. 원본 removes all hiding; returning to 전이 restarts every unit from its source language.
+
+## Status
+
+Static checks: scoped `tsc` and `eslint` pass. Runtime check (user-requested, 2026-10-03) with headless Chrome over CDP at 390×844 against the running HTTPS dev server: with every unit frozen in its source language, `/mobile/transform/language/1/9` matched `/sns/mobile/9` (spacing, placeholder, baselines, wordmark); running captures of clones 1, 2, 6 and 9 showed text held inside its cells, runs keeping their gaps, and select text clear of the arrow. A freeze harness glitch left some clone 1 units stepping, so only clone 9 has a full frozen comparison. Unverified: Safari popover ordering above `showModal` dialogs, real-device glyph fallback for Ethiopic, Khmer, Myanmar and Sinhala, re-render cost on clones 12/13, and dialogs and secondary views of each clone.

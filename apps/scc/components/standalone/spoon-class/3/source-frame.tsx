@@ -1,17 +1,34 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, type CSSProperties } from "react";
 
 export const NATIVE_GAME_WIDTH = 600;
 export const NATIVE_GAME_HEIGHT = 150;
 
-// Keep each document at the upstream game's native canvas size. The wall
-// scales the whole browsing context after it has rendered, rather than asking
-// Runner to reinterpret its game world in a tiny iframe.
+// A separate document preserves the original document, CSS cascade, canvas,
+// global Runner singleton, input listeners and audio lifecycle. Unmounting the
+// frame disposes that whole browsing context, including requestAnimationFrame.
+//
+// Without a scale the document fills its tile. With a scale it stays at the
+// upstream game's native canvas size and the wall scales the whole browsing
+// context, rather than asking Runner to reinterpret its world in a tiny frame.
 const SourceFrame = forwardRef<
   HTMLIFrameElement,
-  { html: string; scale: number; title: string }
->(function SourceFrame({ html, scale, title }, ref) {
+  { html: string; title: string; scale?: number }
+>(function SourceFrame({ html, title, scale }, ref) {
+  const placement: CSSProperties =
+    scale === undefined
+      ? { width: "100%", height: "100%" }
+      : {
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: NATIVE_GAME_WIDTH,
+          height: NATIVE_GAME_HEIGHT,
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: "center",
+        };
+
   return (
     <iframe
       ref={ref}
@@ -21,16 +38,10 @@ const SourceFrame = forwardRef<
       allow="autoplay"
       tabIndex={0}
       style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
         display: "block",
-        width: NATIVE_GAME_WIDTH,
-        height: NATIVE_GAME_HEIGHT,
         border: 0,
         background: "#f7f7f7",
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        transformOrigin: "center",
+        ...placement,
       }}
     />
   );

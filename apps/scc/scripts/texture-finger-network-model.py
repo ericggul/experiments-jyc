@@ -3,13 +3,15 @@
 Run headless:
   /Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup \
     --python apps/scc/scripts/texture-finger-network-model.py -- shape.glb front.png left.png back.png output.glb \
-    [--triangles 60000] [--texture 2048]
+    [--triangles 60000] [--texture 2048] [--variant grin=front-grin.png ...]
 
 The views are background-free images cropped to the person and centered on a square canvas, as an image-to-3D
 service receives them: front faces the camera, left shows the person's left side, back shows their back. The
 person's right side reuses the mirrored left view. Each view is projected along its axis onto the mesh's bounding
 box; a vertex takes a view only if it faces that view and nothing occludes it, weighted by how squarely it faces.
-The blend is baked into one texture on a fresh UV layout.
+The blend is baked into one texture on a fresh UV layout. Each --variant is another front view (the same body
+with a different face) baked onto the same layout and written next to the output as <output>-<name>.webp, so
+the page can swap expressions by swapping one texture.
 """
 
 import sys
@@ -21,6 +23,7 @@ args = sys.argv[sys.argv.index("--") + 1:]
 shape, front_path, left_path, back_path, target = args[:5]
 triangles = int(args[args.index("--triangles") + 1]) if "--triangles" in args else 60000
 texture_size = int(args[args.index("--texture") + 1]) if "--texture" in args else 2048
+variants = [args[i + 1].split("=", 1) for i, arg in enumerate(args) if arg == "--variant"]
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=shape)
@@ -78,18 +81,34 @@ views = {
     "right": ("left", lambda p: (p.y - low.y) / size.y, Vector((-1, 0, 0))),
 }
 
+alphas = {name: (image.size[0], image.size[1], image.pixels[:]) for name, image in images.items()}
+
+
+def opaque(image_name, point, horizontal):
+    """Whether the view's image has the person (not removed background) where this point projects."""
+    width, height, pixels = alphas[image_name]
+    left_edge, bottom, right_edge, top = boxes[image_name]
+    u = left_edge + horizontal(point) * (right_edge - left_edge)
+    v = bottom + (point.z - low.z) / size.z * (top - bottom)
+    x = min(width - 1, max(0, int(u * width)))
+    y = min(height - 1, max(0, int(v * height)))
+    return pixels[(y * width + x) * 4 + 3] > 0.5
+
+
+head_line = low.z + size.z * 0.84
 tree = BVHTree.FromObject(body, bpy.context.evaluated_depsgraph_get())
 reach = size.length * 2
 weights = {name: [0.0] * len(mesh.vertices) for name in views}
 for vertex in mesh.vertices:
-    for name, (_, _, toward) in views.items():
+    for name, (image_name, horizontal, toward) in views.items():
         facing = vertex.normal.dot(toward)
-        if facing <= 0.05:
+        if facing <= 0.05 or not opaque(image_name, vertex.co, horizontal):
             continue
         hit = tree.ray_cast(vertex.co + toward * size.length * 0.004, toward, reach)
         if hit[0] is not None:
             continue
-        weights[name][vertex.index] = facing ** 3
+        # The face is only sharp in the front view, so the head leans on it.
+        weights[name][vertex.index] = facing ** 3 * (6.0 if name == "front" and vertex.co.z > head_line else 1.0)
     total = sum(weights[name][vertex.index] for name in views)
     if total == 0:
         weights["front"][vertex.index] = 1.0
@@ -114,6 +133,16 @@ bpy.ops.object.mode_set(mode="EDIT")
 bpy.ops.mesh.select_all(action="SELECT")
 bpy.ops.uv.smart_project(angle_limit=1.15, island_margin=0.003)
 bpy.ops.object.mode_set(mode="OBJECT")
+# The face carries the likeness and the expressions, so the head gets four times the texel density of the body.
+for polygon in mesh.polygons:
+    if polygon.center.z > head_line:
+        for index in polygon.loop_indices:
+            baked_layer.data[index].uv *= 4.0
+bpy.ops.object.mode_set(mode="EDIT")
+bpy.ops.mesh.select_all(action="SELECT")
+bpy.ops.uv.select_all(action="SELECT")
+bpy.ops.uv.pack_islands(rotate=True, margin=0.002)
+bpy.ops.object.mode_set(mode="OBJECT")
 
 # Projection shader: four image lookups mixed by the per-vertex weights, emitted for baking.
 material = bpy.data.materials.new("projection")
@@ -124,12 +153,15 @@ output = nodes.new("ShaderNodeOutputMaterial")
 emission = nodes.new("ShaderNodeEmission")
 links.new(emission.outputs[0], output.inputs["Surface"])
 mixed = None
+front_nodes = []
 for name, (image_name, _, _) in views.items():
     uv = nodes.new("ShaderNodeUVMap")
     uv.uv_map = "proj_" + name
     texture = nodes.new("ShaderNodeTexImage")
     texture.image = images[image_name]
     texture.extension = "EXTEND"
+    if image_name == "front":
+        front_nodes.append(texture)
     links.new(uv.outputs[0], texture.inputs[0])
     weight = nodes.new("ShaderNodeAttribute")
     weight.attribute_name = "w_" + name
@@ -161,6 +193,19 @@ bpy.ops.object.select_all(action="DESELECT")
 body.select_set(True)
 bpy.context.view_layer.objects.active = body
 bpy.ops.object.bake(type="EMIT")
+
+for variant, path in variants:
+    face = bpy.data.images.load(path)
+    for node in front_nodes:
+        node.image = face
+    image = bpy.data.images.new("body_" + variant, texture_size, texture_size)
+    target_node.image = image
+    bpy.ops.object.bake(type="EMIT")
+    image.filepath_raw = target.rsplit(".", 1)[0] + "-" + variant + ".webp"
+    image.file_format = "WEBP"
+    scene.render.image_settings.quality = 88
+    image.save()
+    print("variant", image.filepath_raw)
 
 # Final material: the baked colour on a matte surface; projection layers and weights are dropped.
 for name in views:

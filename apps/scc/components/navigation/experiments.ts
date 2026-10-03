@@ -118,11 +118,12 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "grid/4", area: "standalone", family: "grid", date: "2026-08-06", phrase: "Rectangles flashing over a persistent unit field" },
   { key: "grid/5", area: "standalone", family: "grid", date: "2026-08-06", phrase: "Orthogonal media field placed at random coordinates" },
   { key: "macos/1", area: "standalone", family: "macos", date: "2026-07-10", phrase: "macOS menu bar with populated menus and monochrome status icons" },
+  { key: "mobiles/1", area: "standalone", family: "mobiles", date: "2026-10-03", phrase: "Ninety phones living one stochastic New York weekday on a shared clock" },
   { key: "splice/1", area: "standalone", family: "splice", date: "2026-09-16", phrase: "Two-source audio instrument for finding, repeating, mixing and interrupting fragments" },
   { key: "spoon-class/default", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Upstream Chrome dino game embedded unchanged in one viewport frame" },
   { key: "spoon-class/1", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Chrome dino repeated as a responsive field of game modules" },
-  { key: "spoon-class/2", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Dino field where a pixel human ages past tests and life blocks" },
-  { key: "spoon-class/3", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "High-density wall of native-size human-life dino games" },
+  { key: "spoon-class/2", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Dino field where a pixel human ages past tests and life blocks, less dense or dense" },
+  { key: "spoon-class/3", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Working copy of the human-life dino field for the next direction" },
   { key: "swarm/1", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Neutral flock field with adjustable separation, alignment and cohesion" },
   { key: "swarm/2", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Flock confined to a world coastline map with a latitude-longitude graticule" },
   { key: "swarm/3", area: "standalone", family: "swarm", date: "2026-07-17", phrase: "Map clicks launch missile salvos that the flock steers away from" },
@@ -201,6 +202,8 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "mobile/transform/pixelate", area: "mobile", family: "mobile/transform/pixelate", date: "2026-09-24", phrase: "Adjustable viewport pixelation over any of the 13 clones" },
   { key: "mobile/transform/substitution/1", area: "mobile", family: "mobile/transform/substitution", date: "2026-09-25", phrase: "Clones swapped for object outlines or representative colors" },
   { key: "mobile/transform/substitution/2", area: "mobile", family: "mobile/transform/substitution", date: "2026-09-25", phrase: "Clone targets replaced by uppercase command words" },
+  { key: "mobile/transform/language/1", area: "mobile", family: "mobile/transform/language", date: "2026-10-03", phrase: "Every interface label drifting through 40 literal translations by Markov chain" },
+  { key: "mobile/transform/decomposition", area: "mobile", family: "mobile/transform/decomposition", date: "2026-10-03", phrase: "Interface taken apart into atoms, each sorted beside its kind, still clickable" },
 ];
 
 function toNavigationItem(experiment: SccExperiment): SccNavigationItem {
