@@ -1,42 +1,55 @@
 import { useEffect, useRef } from "react";
-import type { TechEyeRenderer } from "../rendering/tech-eye-scene";
+import type { TechEyeRenderer } from "../rendering/tech-eyeball-atlas";
 
 let shared: TechEyeRenderer | null = null;
 let consumers = 0;
+let selectedBlinkSpeed = 0.7;
 
-export function TechEye3D({ index, active, gradient, inspect = false }: {
+export function blinkAll3DEyes() { shared?.blinkAll(); }
+export function set3DEyeBlinkSpeed(speed: number) {
+  selectedBlinkSpeed = speed;
+  shared?.setBlinkSpeed(speed);
+}
+
+export function TechEye3D({ index, active, gradient, inspect = false, blinking = false }: {
   index: number;
   active: boolean;
   gradient?: string;
   inspect?: boolean;
+  blinking?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const renderer = useRef<TechEyeRenderer | null>(null);
   const activeRef = useRef(active);
+  const blinkingRef = useRef(blinking);
 
   useEffect(() => {
     activeRef.current = active;
-    if (canvas.current) renderer.current?.update(canvas.current, active);
-  }, [active]);
+    blinkingRef.current = blinking;
+    if (canvas.current) renderer.current?.update(canvas.current, active, blinking);
+  }, [active, blinking]);
 
   useEffect(() => {
     const element = canvas.current;
     if (!element) return;
     let cancelled = false;
     let attached: TechEyeRenderer | null = null;
-    const observer = new ResizeObserver(() => renderer.current?.update(element, activeRef.current));
+    const observer = new ResizeObserver(() => renderer.current?.update(element, activeRef.current, blinkingRef.current));
     observer.observe(element);
     // Load Three only when this mode is selected. The blink module is independent.
-    void import("../rendering/tech-eye-scene").then(({ TechEyeRenderer }) => {
+    void import("../rendering/tech-eyeball-atlas").then(({ TechEyeRenderer }) => {
       if (cancelled) return;
-      shared ??= new TechEyeRenderer();
+      if (!shared) {
+        shared = new TechEyeRenderer();
+        shared.setBlinkSpeed(selectedBlinkSpeed);
+      }
       attached = shared;
       consumers++;
       renderer.current = shared;
-      shared.attach(element, index, activeRef.current, inspect);
+      shared.attach(element, index, activeRef.current, inspect, blinkingRef.current);
     }).catch((error: unknown) => {
       element.dataset.eye3dStatus = "fallback";
-      console.warn("[0922/blink-auto/tech-eye-3d] Photograph retained:", error);
+      console.warn("[0922/tech-eye-3d] Photograph retained:", error);
     });
     return () => {
       cancelled = true;
@@ -50,7 +63,7 @@ export function TechEye3D({ index, active, gradient, inspect = false }: {
     };
   }, [index, inspect]);
 
-  return <span style={{ position: "absolute", inset: 0, isolation: "isolate", pointerEvents: inspect ? "auto" : "none" }}>
+  return <span style={{ position: "absolute", inset: 0, isolation: "isolate", borderRadius: "50%", overflow: "hidden", pointerEvents: inspect ? "auto" : "none" }}>
     <canvas ref={canvas} data-tech-eye-3d={index} data-eye3d-status="loading" aria-hidden={!inspect}
       aria-label={inspect ? "3D eyeball study. Drag or use arrow keys to rotate." : undefined}
       tabIndex={inspect ? 0 : undefined}

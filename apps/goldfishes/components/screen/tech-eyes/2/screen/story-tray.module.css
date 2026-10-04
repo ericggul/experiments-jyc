@@ -38,14 +38,9 @@
 .storyGrid {
   position: relative;
   z-index: 1;
-  display: grid;
+  display: block;
   width: 100%;
   height: 100%;
-  grid-template-columns: repeat(var(--grid-columns), var(--story-size));
-  grid-template-rows: repeat(var(--grid-rows), var(--story-size));
-  align-content: center;
-  justify-content: center;
-  gap: var(--story-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -302,8 +297,11 @@
 }
 
 .gridItem {
+  position: absolute;
   width: var(--story-size);
   height: var(--story-size);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .story {
@@ -458,6 +456,26 @@
 }
 
 .storyRingPlain .logoSurface {
+  border-width: 0;
+}
+
+.storyRing.storyRingEye3D {
+  padding: 0;
+}
+
+.storyRingEye3D::before {
+  display: none;
+}
+
+.storyRingEye3D .logoSurface {
+  border-width: 0;
+}
+
+.storyRing.storyRingFace3D {
+  padding: 0;
+}
+
+.storyRingFace3D .logoSurface {
   border-width: 0;
 }
 

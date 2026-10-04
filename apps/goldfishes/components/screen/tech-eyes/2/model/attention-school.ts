@@ -119,16 +119,10 @@ export class AttentionSchool {
   }
 
   private nearbyTargets(x: number, y: number, radius: number) {
-    const { columns, rows, iconSize, gap } = this.layout;
-    const origin = storyCenter(0, this.layout);
-    const sx = iconSize + gap, sy = iconSize + gap;
     const result = this.nearbyTargetBuffer;
     result.length = 0;
-    for (let row = Math.max(0, Math.ceil((y - radius - origin.y) / sy)); row <= Math.min(rows - 1, Math.floor((y + radius - origin.y) / sy)); row++) {
-      for (let column = Math.max(0, Math.ceil((x - radius - origin.x) / sx)); column <= Math.min(columns - 1, Math.floor((x + radius - origin.x) / sx)); column++) {
-        const target = this.targets.get(row * columns + column);
-        if (target) result.push(target);
-      }
+    for (const target of this.targets.values()) {
+      if (Math.abs(target.x - x) <= radius && Math.abs(target.y - y) <= radius) result.push(target);
     }
     return result;
   }
@@ -258,7 +252,10 @@ export class AttentionSchool {
     this.relationState.flags.set(this.candidateFlags);
     this.relationState.weights.set(this.candidateScores);
     for (let index = 0; index < count; index++) {
-      const center = storyCenter(index, this.layout);
+      const position = system.states[index]?.position;
+      const center = position
+        ? { x: position.x * this.layout.width, y: position.y * this.layout.height }
+        : storyCenter(index, this.layout);
       this.relationState.centers[index * 2] = center.x;
       this.relationState.centers[index * 2 + 1] = center.y;
       const state = system.states[index]!;

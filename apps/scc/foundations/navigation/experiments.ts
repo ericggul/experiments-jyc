@@ -118,6 +118,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "macos/1", area: "standalone", family: "macos", date: "2026-07-10", phrase: "macOS menu bar with populated menus and monochrome status icons" },
   { key: "dimensions/xyzt-city/1", area: "dimensions", family: "dimensions/xyzt-city", date: "2026-10-03", phrase: "Lower Manhattan as building lifespans in x, y and time, raised into a city by a height threshold" },
   { key: "mobiles/1", area: "standalone", family: "mobiles", date: "2026-10-03", phrase: "Ninety phones living one stochastic New York weekday on a shared clock" },
+  { key: "mobiles/1/mobile-testing", area: "standalone", family: "mobiles", date: "2026-10-04", phrase: "The same phone OS to use by hand: lock screen, home screen and every app" },
   { key: "splice/1", area: "standalone", family: "splice", date: "2026-09-16", phrase: "Two-source audio instrument for finding, repeating, mixing and interrupting fragments" },
   { key: "spoon-class/default", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Upstream Chrome dino game embedded unchanged in one viewport frame" },
   { key: "spoon-class/1", area: "standalone", family: "spoon-class", date: "2026-09-08", phrase: "Chrome dino repeated as a responsive field of game modules" },

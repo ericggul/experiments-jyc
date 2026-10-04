@@ -1,0 +1,72 @@
+/* A phone you can hold: full-bleed on a real phone, framed on a desktop. */
+.root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #000;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.slot { position: relative; }
+
+/* On a real phone the glass is the screen: no bezel, no rounded corners. */
+.bare {
+  width: 390px;
+  height: 844px;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.bare > .glassBare { border-radius: 0; }
+.glassBare { border-radius: 0; }
+
+.layer { position: absolute; inset: 0; overflow: hidden; }
+
+/* Lock */
+.lockHint {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  color: rgb(255 255 255 / 80%);
+  font: 500 15px/20px var(--ios-font);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Home */
+.home { position: absolute; inset: 0; color: #fff; }
+.pages {
+  position: absolute;
+  inset: 0 0 160px;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.pages::-webkit-scrollbar { display: none; }
+.page { position: relative; flex: none; width: 390px; height: 100%; scroll-snap-align: start; }
+.icon {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon:active { filter: brightness(0.7); }
+.icon:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 16px; }
+
+/* System gestures over an open app */
+.edge { position: absolute; z-index: 60; top: 54px; bottom: 40px; left: 0; width: 22px; touch-action: none; }
+.homeBar { position: absolute; z-index: 60; left: 0; right: 0; bottom: 0; height: 34px; touch-action: none; cursor: pointer; }

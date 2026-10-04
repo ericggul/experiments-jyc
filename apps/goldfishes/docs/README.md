@@ -43,8 +43,7 @@ Chronological log:
 | `/desktop/native-windows/2` | 2026-09-15 | `/desktop/0915/2` | Accumulating native windows, unequal sizes and continuous drift. [doc](./desktop/native-windows/2.md) |
 | `/desktop/native-windows/3` | 2026-09-15 | `/desktop/0915/3` | New pages mixed with random tab revisits; bounded turnover and scrolling. [doc](./desktop/native-windows/3.md) |
 | `/screen/tech-eyes/1` | 2026-09-22 | `/screen/0922/default` | Overlay-5 baseline with optional independent blinking across all 80 tech eyes and [source-matched 3D face/lips field options](./screen/tech-eyes/face-lips-3d-trials.md). [doc](./screen/tech-eyes/1.md) |
-| `/screen/tech-eyes/2` | 2026-09-23 | `/screen/0922/blink-auto` | Preserved accepted full-tech-eye auto-blink baseline before manual blink-all. [doc](./screen/tech-eyes/2.md) |
-| `/screen/tech-eyes/3` | 2026-09-28 | `/screen/0922/interactive` | Participant clicks place story bubbles at their exact screen positions. [doc](./screen/tech-eyes/3.md) |
+| `/screen/tech-eyes/2` | 2026-09-28 | `/screen/0922/interactive` | Participant clicks place story bubbles at their exact screen positions. [doc](./screen/tech-eyes/2.md) |
 | `/mobile/keyword-grid/1` | 2026-09-30 | `/mobile/0930/1` | Configure a keyword, place it on a map point; bubbles decay unless finger-skated. [doc](./mobile/keyword-grid/1.md) |
 | `/mobile/keyword-grid/2` | 2026-09-30 | `/mobile/0930/2` | + opens word and color pickers; bubbles collide and shrink over 30 seconds. [doc](./mobile/keyword-grid/2.md) |
 

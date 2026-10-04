@@ -94,7 +94,6 @@ export const goldfishFamilies: readonly GoldfishFamily[] = [
     members: [
       "screen/tech-eyes/1",
       "screen/tech-eyes/2",
-      "screen/tech-eyes/3",
     ],
   },
   {

@@ -177,14 +177,20 @@ const APP_SERVICES: readonly AppService[] = [
   icon("Mastodon", siMastodon),
 ];
 
-function foregroundFor(hex: string) {
+export const appServiceCount = APP_SERVICES.length;
+
+export function foregroundFor(hex: string) {
   const channels = [0, 2, 4].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255);
   const luminance = channels.reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index]!, 0);
   return luminance > 0.62 ? "#07090b" : "#fff";
 }
 
+export function appServiceAt(index: number) {
+  return APP_SERVICES[((index % APP_SERVICES.length) + APP_SERVICES.length) % APP_SERVICES.length]!;
+}
+
 export function AppServiceMark({ index }: { index: number }) {
-  const service = APP_SERVICES[index % APP_SERVICES.length]!;
+  const service = appServiceAt(index);
   const background = service.background ?? `#${service.icon?.hex ?? "fff"}`;
   const style = { "--app-service-background": background } as CSSProperties;
 

@@ -63,8 +63,8 @@ the original photograph. The cap is a workload limit, not a FPS guarantee.
 
 Implementation: `model/tech-eye-3d.ts`,
 `rendering/tech-eyeball-atlas.ts`, `screen/tech-eye-3d.tsx`; narrow integration
-in `screen/index.tsx`. Independent blinking modules and the preserved
-`tech-eyes/2` route were not edited.
+in `screen/index.tsx`. Independent blinking modules and the former
+blink-auto snapshot (since removed) were not edited.
 
 References: installed Three 0.185.1,
 [physical materials](https://threejs.org/docs/pages/MeshPhysicalMaterial.html),

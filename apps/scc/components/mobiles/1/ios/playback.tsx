@@ -11,3 +11,18 @@ export type Playback = { minutesPerSecond: number; playing: boolean; frozen: boo
 export const PlaybackContext = createContext<Playback>({ minutesPerSecond: timeConfig.minutesPerSecond, playing: true, frozen: false });
 
 export const usePlayback = () => useContext(PlaybackContext);
+
+/**
+ * Hands-on use (the mobile-testing route). When provided, storyboards stop
+ * playing themselves and wait for the person's taps instead.
+ */
+export type Interaction = {
+  /** The session has no further scripted step from here. */
+  onExhausted: () => void;
+  /** The active board exposes its back action (edge swipe); null on unmount. */
+  register: (controls: { back: () => boolean } | null) => void;
+};
+
+export const InteractionContext = createContext<Interaction | null>(null);
+
+export const useInteraction = () => useContext(InteractionContext);

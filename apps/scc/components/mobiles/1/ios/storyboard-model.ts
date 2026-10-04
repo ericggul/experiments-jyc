@@ -232,3 +232,24 @@ export function frameAt<T extends { offset: number }>(frames: readonly T[], offs
   }
   return result;
 }
+
+/** The way back out of a transition: push ↔ pop, sheet ↔ dismiss, swipe-up ↔ swipe-down. */
+export function reverseEnter(enter: Enter): Enter {
+  const pairs: Partial<Record<Enter, Enter>> = { push: "pop", pop: "push", sheet: "dismiss", dismiss: "sheet", "swipe-up": "swipe-down", "swipe-down": "swipe-up" };
+  return pairs[enter] ?? enter;
+}
+
+/**
+ * Two-frame keyframes for one panel in a single transition, from the same
+ * motion table the timeline uses. `in` is the arriving panel, `out` the
+ * leaving one. Null when that side does not move (a page staying beneath a sheet).
+ */
+export function transitionKeyframes(enter: Enter, role: "in" | "out"): { transform: string; opacity: number }[] | null {
+  const motion = motions[enter];
+  const pair: [State, State] = role === "in" ? [motion.from, "shown"] : ["shown", motion.to];
+  if (pair[0] === pair[1]) return null;
+  return pair.map((state) => ({ transform: transforms[state], opacity: state === "hidden" ? 0 : 1 }));
+}
+
+/** Whether the page left behind stays visible (beneath a sheet). */
+export const keepsUnderneath = (enter: Enter) => enter === "sheet";

@@ -289,6 +289,36 @@ export function createSocialStorySystem(
   };
 }
 
+/** Start with identities and topology, but wait for a participant to place a bubble. */
+export function createInteractiveStorySystem(columns: number, rows: number, now = 0): SocialStorySystem {
+  const system = createSocialStorySystem(columns, rows, now);
+  return { ...system, states: system.states.map(() => emptyStoryState()) };
+}
+
+export function placeBubbleAt(system: SocialStorySystem, now: number, x: number, y: number): SocialStorySystem {
+  const empty = system.states.flatMap((state, index) => state.status === "empty" ? [index] : []);
+  if (empty.length === 0) return system;
+  const choice = nextRandom(system.randomSeed);
+  const index = empty[Math.floor(choice.value * empty.length)]!;
+  const next = newStoryState(now, index, choice.seed);
+  const states = [...system.states];
+  states[index] = { ...next.state, position: { x, y }, transmitAt: null, transmissionsRemaining: 0 };
+  return { ...system, states, randomSeed: next.seed };
+}
+
+/** Only these changes affect rendered bubbles and fish target geometry. */
+export function bubblePresentationChanged(previous: SocialStorySystem, next: SocialStorySystem) {
+  if (previous.nodes !== next.nodes || previous.states.length !== next.states.length) return true;
+  return next.states.some((state, index) => {
+    const before = previous.states[index]!;
+    return state.status !== before.status
+      || state.bubbleScale !== before.bubbleScale
+      || state.availableAt !== before.availableAt
+      || state.position?.x !== before.position?.x
+      || state.position?.y !== before.position?.y;
+  });
+}
+
 /** Keep the field alive without resetting its existing occurrences. */
 export function maintainSocialStoryActivity(
   system: SocialStorySystem,
@@ -342,13 +372,20 @@ export function resizeSocialStorySystem(
   now: number,
 ): SocialStorySystem {
   if (system.columns === columns && system.rows === rows) return system;
-  const next = createSocialStorySystem(columns, rows, now);
+  const next = createInteractiveStorySystem(columns, rows, now);
   const count = columns * rows;
+  const states = next.states.map((state, index) => system.states[index] ?? state);
+  const overflow = system.states.slice(count).filter((state) => state.status !== "empty");
+  for (const state of overflow) {
+    const emptyIndex = states.findIndex((candidate) => candidate.status === "empty");
+    if (emptyIndex < 0) break;
+    states[emptyIndex] = state;
+  }
 
   return {
     ...next,
     time: system.time,
-    states: next.states.map((state, index) => system.states[index] ?? state),
+    states,
     influences: system.influences.filter((influence) => influence.source < count && influence.target < count),
     randomSeed: system.randomSeed,
   };
@@ -361,6 +398,7 @@ export function stepSocialStorySystem(
   leavingTransitionMilliseconds = LEAVING_TRANSITION_MILLISECONDS,
   activeBubbleTarget: number | null = null,
   appearingTransitionMilliseconds = APPEARING_TRANSITION_MILLISECONDS,
+  allowPropagation = true,
 ): SocialStorySystem {
   if (now <= system.time) return system;
 
@@ -372,9 +410,10 @@ export function stepSocialStorySystem(
     const contact = attention.get(index) ?? 0;
     const crowd = contact / Math.max(0.001, elapsed);
     const extension = (Math.min(crowd, 3) * 0.55 - Math.max(0, crowd - 3) * 0.8) * elapsed * 1000;
-    const current = state.status === "new" && state.viewAt !== null
-      ? { ...state, viewAt: Math.min(state.availableAt + 12000 * state.bubbleScale, state.viewAt + extension) }
-      : state;
+    const nextViewAt = state.status === "new" && state.viewAt !== null
+      ? Math.min(state.availableAt + 12000 * state.bubbleScale, state.viewAt + extension)
+      : state.viewAt;
+    const current = nextViewAt !== state.viewAt ? { ...state, viewAt: nextViewAt } : state;
     const fullyAppearedAt = current.status === "new"
       ? current.availableAt + appearingTransitionMilliseconds
       : Number.NEGATIVE_INFINITY;
@@ -384,16 +423,26 @@ export function stepSocialStorySystem(
       && current.viewAt <= now
       && fullyAppearedAt <= now
     ) {
-      return viewingStoryState(now, current.bubbleScale);
+      return { ...viewingStoryState(now, current.bubbleScale), position: current.position };
     }
     if (current.status === "viewing" && current.viewingUntil !== null && current.viewingUntil <= now) {
-      return leavingStoryState(now, current.bubbleScale, leavingTransitionMilliseconds);
+      return { ...leavingStoryState(now, current.bubbleScale, leavingTransitionMilliseconds), position: current.position };
     }
     if (current.status === "leaving" && current.leavingUntil !== null && current.leavingUntil <= now) {
       return emptyStoryState(now + EMPTY_COOLDOWN_MILLISECONDS);
     }
     return current;
   });
+
+  if (!allowPropagation) {
+    const statesChanged = resolvedStates.some((state, index) => state !== system.states[index]);
+    return {
+      ...system,
+      time: now,
+      states: statesChanged ? resolvedStates : system.states,
+      influences: system.influences.length ? [] : system.influences,
+    };
+  }
 
   const activeSources = new Set<number>();
   for (const node of system.nodes) {

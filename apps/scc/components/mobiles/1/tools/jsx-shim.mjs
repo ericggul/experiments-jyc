@@ -3,7 +3,8 @@ export const Fragment = rt.Fragment;
 function check(type, props) {
   const children = props?.children;
   if (!Array.isArray(children)) return;
-  for (const child of children) {
+  // The children array itself, and any array nested in it (from .map()).
+  for (const child of [children, ...children]) {
     if (!Array.isArray(child)) continue;
     const seen = new Set();
     for (const el of child) {

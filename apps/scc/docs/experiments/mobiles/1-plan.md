@@ -316,4 +316,5 @@ speed doubles the tempo.
 - `node components/mobiles/1/tools/bench-build.mjs <out>` builds the bench, then:
   - `node …/bench-screens.mjs <out>` reports nodes per fixture;
   - `node …/bench-keys.mjs <out>` reports duplicate keys and render errors over many seeds and days;
+  - `node …/bench-apps.mjs <out>` renders every view of every clone over 60 seeds, 5 lengths and 3 moments (about 40 s) and reports duplicate keys, including a list that is a whole children array, and render errors;
   - `node …/bench-field.mjs <out> 3` reports field cost per tick.

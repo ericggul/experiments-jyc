@@ -262,7 +262,9 @@ function mailSession({ view, seed, owner, clock, duration }: Ctx): Session {
   const boxes = () => {
     if (!panels.boxes && !afford(COST.boxes + COST.list)) return false;
     const pool = Array.from({ length: 30 }, (_, i) => makeMail(hash(seed, "boxes"), i, owner, clock - 30 - i * 47));
-    const list = [...pool.filter((mail) => (vip ? mail.kind === "personal" || mail.kind === "work" : mail.kind === "promo")), ...pool].slice(0, 6).map((mail) => ({ ...mail, vip }));
+    // Matching mail first, then the rest of the pool, each message once.
+    const matches = (mail: (typeof pool)[number]) => (vip ? mail.kind === "personal" || mail.kind === "work" : mail.kind === "promo");
+    const list = [...pool.filter(matches), ...pool.filter((mail) => !matches(mail))].slice(0, 6).map((mail) => ({ ...mail, vip }));
     const name = vip ? "VIP" : "Promotions";
     panels.boxes ??= {
       top: 150,

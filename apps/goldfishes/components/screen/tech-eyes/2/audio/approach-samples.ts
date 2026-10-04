@@ -1,6 +1,6 @@
-/** Source/license and editing history: docs/0922/blink-auto.md. */
+/** Source/license and editing history: docs/0922/interactive.md. */
 export async function loadApproachSamples(context: AudioContext, signal: AbortSignal) {
-  const response = await fetch("/assets/goldfishes/audio/0922/blink-auto/pond-feeding.wav", { signal });
+  const response = await fetch("/assets/goldfishes/audio/0922/interactive/pond-feeding.wav", { signal });
   if (!response.ok) throw new Error("Pond recording unavailable");
   const decoded = await context.decodeAudioData(await response.arrayBuffer());
   if (signal.aborted) throw new Error("Audio disposed");

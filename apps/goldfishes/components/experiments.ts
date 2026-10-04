@@ -224,21 +224,12 @@ export const goldfishExperiments: readonly GoldfishExperiment[] = [
     load: () => import("./screen/tech-eyes/1"),
   },
   {
-    key: "screen/tech-eyes/3",
-    legacyKeys: ["screen/0922/interactive", "0922/interactive"],
+    key: "screen/tech-eyes/2",
+    legacyKeys: ["screen/tech-eyes/3", "screen/0922/interactive", "0922/interactive"],
     area: "screen",
     section: "dated",
     date: "2026-09-28",
     phrase: "Click to place each story bubble freely among the goldfish",
-    load: () => import("./screen/tech-eyes/3"),
-  },
-  {
-    key: "screen/tech-eyes/2",
-    legacyKeys: ["screen/0922/blink-auto", "0922/blink-auto"],
-    area: "screen",
-    section: "dated",
-    date: "2026-09-23",
-    phrase: "Accepted independent full-tech-eye auto-blink baseline before manual blink-all",
     load: () => import("./screen/tech-eyes/2"),
   },
   {

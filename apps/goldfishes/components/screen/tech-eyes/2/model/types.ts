@@ -7,6 +7,8 @@ export type StoryNode = Readonly<{
 
 export type StoryCellState = Readonly<{
   status: StoryStatus;
+  /** Position within the stage, independent of the hidden identity pool. */
+  position?: Readonly<{ x: number; y: number }>;
   /** A per-occurrence visual scale; the full visible lifetime uses this ratio too. */
   bubbleScale: number;
   viewAt: number | null;

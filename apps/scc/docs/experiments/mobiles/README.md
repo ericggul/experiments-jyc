@@ -33,6 +33,16 @@ Experimental group of desktop fields made of many phones. `/mobiles` lists the v
 | 23:30 | 38 | doomscroll, 33 of them feeds |
 | 01:00 | 26 | doomscroll fading |
 
+**Hands-on phone (2026-10-04).** `/mobiles/1/mobile-testing` is the same OS to use by hand on a real phone's browser. It goes lock screen → swipe up → home screen (the home clone's layout, icons and dock) → tap an app.
+- **Reuse.** Clones are unchanged. `Storyboard` picks its player from `InteractionContext`:
+  - `AutoBoard` (`ios/storyboard-auto.tsx`) is the desktop field's timeline; its output is unchanged.
+  - `InteractiveBoard` (`ios/storyboard-interactive.tsx`) reads the same session as a navigation graph (`ios/storyboard-graph.ts`).
+- **Navigation.** The script's tap points become hotspots that open their target page with the script's transition. A tap anywhere else follows the next scripted step. Pages scroll natively.
+- **System gestures.** The left edge (or ←) reverses the last transition, and the home bar (or Esc) closes the app into its icon. When an app's script runs out, it moves to the app's next fixture.
+- **Time.** Hands-on transitions are real time (320 ms), because the person is the clock. The status bar and live values use the wall clock.
+- **Layout.** Full-bleed below 600 px wide, framed on a desktop.
+- **Checks.** `tools/bench-interactive.mjs` renders every fixture in hands-on mode: 0 errors and 0 duplicate keys. Opening pages offer 1–3 tap targets per app, because only scripted taps are targets. Browser and touch behaviour are unverified.
+
 **Sessions in simulated time (2026-10-03).**
 - Every clone view builds a `Session`: panels (pages of the app) and shots (navigation, scroll flicks, taps). `ios/storyboard.tsx` plays the session with the Web Animations API on a timeline of simulated minutes, with `playbackRate` equal to the speed. A ten-minute scene at 10 min/s is a one-second burst of use, and doubling the speed doubles its tempo.
 - React builds a session once per scene. Per-tick values (ETAs, timers, countdowns, meters) render through the storyboard's `live` prop, inside their panel, so they move with its transitions.

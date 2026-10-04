@@ -15,3 +15,8 @@
   opacity: 0;
   pointer-events: none;
 }
+/* Interactive use: the person scrolls with a finger. */
+.native { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.native::-webkit-scrollbar { display: none; }
+.hidden { visibility: hidden; pointer-events: none; }
+.hotspot { position: absolute; z-index: 45; width: 64px; height: 64px; margin: -32px 0 0 -32px; padding: 0; border: 0; border-radius: 50%; background: transparent; -webkit-tap-highlight-color: transparent; cursor: pointer; }
