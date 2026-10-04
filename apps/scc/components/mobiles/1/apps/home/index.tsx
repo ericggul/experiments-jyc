@@ -320,4 +320,4 @@ const home: CloneDefinition = {
 export default home;
 
 /** Shared with the hands-on launcher (os/), which lays out the same home screen. */
-export { Cell as HomeCell, DOCK as homeDock, layout as homeLayout, styles as homeStyles };
+export { DOCK as homeDock, layout as homeLayout };

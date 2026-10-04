@@ -5,6 +5,8 @@ import MobileTesting from "@/components/mobiles/1/os";
 export const metadata: Metadata = {
   title: "mobiles",
   description: "A phone to use by hand, built from the mobiles/1 app clones.",
+  // Added to the Home Screen, the page runs full screen under the real status bar.
+  appleWebApp: { capable: true, title: "mobiles", statusBarStyle: "black-translucent" },
 };
 
 // Behaves like a phone's own screen: no zoom, edge to edge, black chrome.
