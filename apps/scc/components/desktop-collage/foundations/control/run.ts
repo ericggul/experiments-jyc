@@ -9,11 +9,15 @@ import { closeTerminal, openTerminal } from '../surfaces/terminal/index.ts';
 /** Windows opened through this module that need their IDs to be closed. */
 export type Opened = { terminal: number[] };
 
-export function openPlan(plan: Plan, display: Display, handlers: Handlers, opened: Opened) {
+export type Rect = { x: number; y: number; width: number; height: number };
+/** A run in progress. `move` exists when the surface can move windows after opening them. */
+export type Session = { stop: () => void; move?: (index: number, rect: Rect) => void };
+
+export function openPlan(plan: Plan, display: Display, handlers: Handlers, opened: Opened): Session {
   if (plan.surface === 'bare') return openBare(plan, display, handlers);
   if (plan.surface === 'terminal') return openTerminal(plan, handlers, ids => { opened.terminal.push(...ids); });
   const launch = openChromeApp(plan, handlers);
-  return { stop: launch.cancel };
+  return { stop: launch.cancel, move: launch.move };
 }
 
 /** Closes every window on every surface; returns how many tracked Terminal windows closed. */

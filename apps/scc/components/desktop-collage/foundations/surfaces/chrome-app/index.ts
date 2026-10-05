@@ -52,6 +52,8 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
   const tagged = windows.map((window, index) => ({ ...window, url: `${window.url}#scc-dc-${run}-${index}` }));
   const timers: ReturnType<typeof setTimeout>[] = [];
   const placed = new Set<number>();
+  /** Chrome window ID for each placed item. */
+  const windowIds = new Map<number, number>();
   let cancelled = false;
   let devtools: Devtools | undefined;
 
@@ -64,6 +66,7 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
     const window = tagged[index];
     try {
       const { windowId } = await devtools.send<{ windowId: number }>('Browser.getWindowForTarget', { targetId: target.targetId });
+      windowIds.set(index, windowId);
       await devtools.send('Browser.setWindowBounds', { windowId, bounds: { left: Math.round(window.x), top: Math.round(window.y), width: Math.round(window.width), height: Math.round(window.height), windowState: 'normal' } });
     } catch (error) {
       console.error('[desktop-collage] chrome app placement', (error as Error).message);
@@ -93,12 +96,10 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
         onLaunch(index, Date.now() - first);
       }, (index - from) * intervalMs));
     }
-    // Close the protocol connection once every window has had time to appear.
-    timers.push(setTimeout(() => devtools?.close(), (tagged.length - from) * intervalMs + 15000));
   };
 
   prepareProfile();
-  if (!tagged.length) return { cancel: () => {} };
+  if (!tagged.length) return { cancel: () => {}, move: () => {} };
   if (ready()) void attach().then(() => !cancelled && schedule(0));
   else {
     launch(tagged[0]);
@@ -112,7 +113,16 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
       }
     }, 100);
   }
-  return { cancel: () => { cancelled = true; timers.forEach(clearTimeout); devtools?.close(); } };
+  /** Moves a placed window; windows not yet placed are skipped. */
+  function move(index: number, rect: { x: number; y: number; width: number; height: number }) {
+    const windowId = windowIds.get(index);
+    if (!devtools || windowId === undefined) return;
+    void devtools.send('Browser.setWindowBounds', { windowId, bounds: { left: Math.round(rect.x), top: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) } }).catch(() => windowIds.delete(index));
+  }
+
+  // The protocol connection stays open while the windows can still be moved;
+  // quitting the instance (clear) ends it.
+  return { cancel: () => { cancelled = true; timers.forEach(clearTimeout); devtools?.close(); }, move };
 }
 
 /** Opens a plan's windows in the dedicated instance. */

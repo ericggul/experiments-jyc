@@ -1,6 +1,8 @@
 # Clock experiments
 
-Route: `/clock/1`, owned by the filesystem-only `complex-systems` group.
+Route: `/fractal/clock/1`, owned by the filesystem-only `complex-systems` group.
+On 2026-10-05 the family moved under [fractal](../README.md); `/clock` and
+`/clock/1–3` redirect permanently to `/fractal/clock/1–3`.
 
 Date: 2026-08-28.
 
@@ -119,7 +121,7 @@ existing experiment rather than a new numbered route.
 
 ## clock/2 — finger-skated clock grid
 
-Route: `/clock/2`. Date: 2026-10-02.
+Route: `/fractal/clock/2` (was `/clock/2`). Date: 2026-10-02.
 
 - **Tested relation:** whether a running clock can record a finger-skating
   gesture. The hour hand records where the gesture went; the minute hand shows
@@ -168,7 +170,7 @@ Route: `/clock/2`. Date: 2026-10-02.
 
 ## clock/3 — two-tier fractal, finger-skated
 
-Route: `/clock/3`. Date: 2026-10-02.
+Route: `/fractal/clock/3` (was `/clock/3`). Date: 2026-10-02.
 
 - **Tested relation:** whether clock/2's skating rule still reads when each
   clock carries clocks inside it.

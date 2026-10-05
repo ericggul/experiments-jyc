@@ -12,13 +12,15 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
 
-- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real Safari windows whose rectangles trace a heart.
+- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near.
 
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 
 - [aerodynamics/1–2](experiments/standalone/aerodynamics/README.md): interactive 3D ABC Euler flow with moving arrows or raised-middle-finger hands.
+
+- [amoeba/1](experiments/complex-systems/amoeba/README.md): grazing amoebae divide into plaques, encyst, and return in waves when the lawn regrows; click to found a lineage.
 
 - [barabasi-albert/1](experiments/complex-systems/barabasi-albert/README.md): seeded network growth with degree-proportional attachment.
 

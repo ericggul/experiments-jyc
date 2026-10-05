@@ -25,10 +25,12 @@ export const sccApps = [
 /** Families with their own index route; redirecting families are omitted. */
 export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "adaptive-coevolving-network",
+  "amoeba",
   "barabasi-albert",
   "cellular-automata",
   "diffusion-graph",
   "erdos-renyi",
+  "fractal",
   "living-topology",
   "github",
   "palantir",

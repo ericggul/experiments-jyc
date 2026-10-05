@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
         destination: "/cellular-automata/colour/:experiment",
         permanent: true,
       },
+      {
+        source: "/clock",
+        destination: "/fractal/clock/1",
+        permanent: true,
+      },
+      {
+        source: "/clock/:experiment(1|2|3)",
+        destination: "/fractal/clock/:experiment",
+        permanent: true,
+      },
     ];
   },
   allowedDevOrigins: ["macbook-air-5.local"],

@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Display, Outcome } from "../../../foundations/surfaces";
-import type { Settings } from "../model/settings";
+import type { Display, Outcome } from "../surfaces";
 
-export type ControlStatus = {
+export type ControlStatus<Settings> = {
   enabled: boolean;
   running: boolean;
+  /** Windows are being moved after opening. */
+  moving?: boolean;
   message: string;
   display?: Display;
   /** Windows this page has opened and not yet cleared, on every surface. */
@@ -17,14 +18,14 @@ export type ControlStatus = {
   settings?: Settings;
 };
 
-const initial: ControlStatus = { enabled: false, running: false, message: "Connecting…", open: 0, progress: 0, total: 0 };
+const initial: ControlStatus<never> = { enabled: false, running: false, message: "Connecting…", open: 0, progress: 0, total: 0 };
 
 /**
  * Polls the control endpoint and measures the Mac's desktop on load and
  * whenever this page regains focus; every run measures it again server-side.
  */
-export function useControl(endpoint: string) {
-  const [status, setStatus] = useState<ControlStatus>(initial);
+export function useControl<Settings>(endpoint: string) {
+  const [status, setStatus] = useState<ControlStatus<Settings>>(initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const inFlight = useRef(false);

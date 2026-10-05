@@ -65,7 +65,10 @@ The references depict a computer; here the computer performs the collage.
 ## Structure
 
 - `primitives/`: elementary gestures (shape, rhythm, order, material), each
-  small enough to judge on its own. [primitives/1](primitives/1.md).
+  small enough to judge on its own.
+  - [primitives/1](primitives/1.md): a heart of windows.
+  - [primitives/2](primitives/2.md): entangled windows, one field across
+    windows that connect when near.
 - `foundations/`: the area's shared window machinery, grouped by function so
   later experiments can reuse and extend it. Every surface takes the same plan:
   rectangles in top-left desktop coordinates, a colour or page, and a stacking
@@ -83,4 +86,8 @@ The references depict a computer; here the computer performs the collage.
   - `jxa/`: runs `osascript -l JavaScript` processes and reads their events.
   - `control/`: `run.ts` sends a plan to the right surface and clears
     everything; `index.ts` is the route-handler control. Admission is the local
-    HTTPS dev server on macOS only, one run at a time.
+    HTTPS dev server on macOS only, one run at a time. An optional `animate`
+    hook keeps moving opened windows (chrome app windows can be moved through
+    DevTools).
+  - `controller/`: the shared control page: frame, parameter rows, and the
+    polling hook.

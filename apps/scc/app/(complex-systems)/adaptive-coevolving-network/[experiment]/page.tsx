@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
 import CoevolvingVoterOne from "@/components/complex-systems/adaptive-coevolving-network/1";
+import CoevolvingVoterThreeDimensional from "@/components/complex-systems/adaptive-coevolving-network/1-3d";
 import AdaptiveEpidemicTwo from "@/components/complex-systems/adaptive-coevolving-network/2";
 import AdaptiveCooperationThree from "@/components/complex-systems/adaptive-coevolving-network/3";
 import EchoChambersFour from "@/components/complex-systems/adaptive-coevolving-network/4";
@@ -17,6 +18,7 @@ import {
 
 const components: Record<AdaptiveCoevolvingNetworkExperimentSlug, ComponentType> = {
   "1": CoevolvingVoterOne,
+  "1-3d": CoevolvingVoterThreeDimensional,
   "2": AdaptiveEpidemicTwo,
   "3": AdaptiveCooperationThree,
   "4": EchoChambersFour,
@@ -28,6 +30,7 @@ const components: Record<AdaptiveCoevolvingNetworkExperimentSlug, ComponentType>
 
 const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
   "1": "A coevolving voter network where disagreement is resolved either by adopting a neighbour's view or by rewiring the tie to someone like-minded, so opinions reshape the graph and the graph reshapes opinions.",
+  "1-3d": "The same coevolving voter network laid out in a turning volume: disagreements glow as bright filaments, and rewiring pulls like-minded voters into separate luminous islands.",
   "2": "An adaptive SIS epidemic where healthy people cut ties to infected neighbours and reconnect to healthy ones, so avoidance reshapes the network that carries the next outbreak.",
   "3": "A prisoner's dilemma on a network where players copy richer neighbours and leave defecting partners, so cooperators gather ties, become hubs and take over.",
   "4": "An activity-driven opinion network where like-minded contact choice turns one-sided radicalization into two polarized echo chambers.",

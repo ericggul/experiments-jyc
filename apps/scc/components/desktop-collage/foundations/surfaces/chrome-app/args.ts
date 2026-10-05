@@ -12,6 +12,11 @@ export function chromeAppArgs(window: ChromeAppWindow) {
     '--no-default-browser-check',
     // Port 0: Chrome picks a free local port and writes it to DevToolsActivePort.
     '--remote-debugging-port=0',
+    // Window pages are served by the local development server, whose
+    // certificate this throwaway profile does not trust. `--test-type` hides
+    // the warning bar Chrome shows for that flag.
+    '--ignore-certificate-errors',
+    '--test-type',
     `--app=${window.url}`,
     `--window-position=${Math.round(window.x)},${Math.round(window.y)}`,
     `--window-size=${Math.round(window.width)},${Math.round(window.height)}`,

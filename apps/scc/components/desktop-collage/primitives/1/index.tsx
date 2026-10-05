@@ -1,37 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import styles from "@/foundations/navigation/navigation.module.css";
-import { ThemeToggle, useSccTheme } from "@/foundations/navigation/theme";
-import { surfaceInfo, surfaces, type Display } from "../../foundations/surfaces";
-import { Amount, Choice, Section } from "./controller/fields";
+import { useEffect, useMemo, useState } from "react";
+import { Amount, Choice, Section } from "../../foundations/controller/fields";
+import { ControlShell, useDisplay } from "../../foundations/controller/shell";
+import { useControl } from "../../foundations/controller/use-control";
+import { surfaceInfo, surfaces } from "../../foundations/surfaces";
 import { Preview } from "./controller/preview";
-import { useControl } from "./controller/use-control";
 import { layoutHeart } from "./model/heart";
 import { clampSetting, defaults, fillsFor, orders, ranges, stacksFor, timings, type Settings } from "./model/settings";
 
 const ENDPOINT = "/desktop-collage/primitives/1/control";
-const linkTone = "text-(--scc-fg)/55 hover:text-(--scc-fg) focus-visible:text-(--scc-fg) focus-visible:outline-none";
-
-const sized = (width: number, height: number): Display => ({ width, height, visible: { x: 0, y: 0, width, height }, scale: 1, measuredAt: 0 });
-const serverDisplay = sized(1440, 900);
-let screenDisplay: Display | undefined;
-const noSubscription = () => () => {};
-/** This browser's screen, used only until the Mac's desktop has been measured. */
-const readScreen = () => (screenDisplay ??= sized(window.screen.width, window.screen.height));
-
-function clock(at: number) {
-  return new Date(at).toLocaleTimeString("en-GB", { hour12: false });
-}
 
 export default function PrimitivesOne() {
-  const theme = useSccTheme();
-  const { status, busy, error, send } = useControl(ENDPOINT);
+  const { status, busy, error, send } = useControl<Settings>(ENDPOINT);
   const [draft, setDraft] = useState<Settings>(defaults);
   const [rehearsal, setRehearsal] = useState<number | null>(null);
-  const fallback = useSyncExternalStore(noSubscription, readScreen, () => serverDisplay);
-  const display = status.display ?? fallback;
+  const display = useDisplay(status.display);
   // While a run is in progress the preview follows the settings it was started with.
   const shape = status.running && status.settings ? status.settings : draft;
   const tiles = useMemo(() => layoutHeart(display.visible, shape), [display, shape]);
@@ -54,36 +38,14 @@ export default function PrimitivesOne() {
   }, [rehearsal, tiles.length, draft.timing, draft.interval]);
 
   const shown = status.running ? status.progress : rehearsal ?? tiles.length;
-  const measured = status.display ? `measured ${clock(status.display.measuredAt)}` : "not measured · showing this screen";
 
   return (
-    <main data-scc-navigation data-theme={theme === "system" ? undefined : theme} className={`${styles.root} flex min-h-svh flex-col bg-(--scc-bg) text-(--scc-fg) lg:h-svh`}>
-      <header className="flex min-h-14 items-center justify-between gap-4 px-4">
-        <h1 className="flex min-w-0 items-center gap-2 truncate text-[15px] font-semibold tracking-[-0.02em]">
-          <Link href="/" className={linkTone}>SCC</Link>
-          <span aria-hidden="true" className="text-(--scc-fg)/25">/</span>
-          <Link href="/desktop-collage" className={linkTone}>desktop-collage</Link>
-          <span aria-hidden="true" className="text-(--scc-fg)/25">/</span>
-          <Link href="/desktop-collage/primitives" className={linkTone}>primitives</Link>
-          <span aria-hidden="true" className="text-(--scc-fg)/25">/</span>
-          <span>1</span>
-        </h1>
-        <div className="font-mono text-[10px] text-(--scc-fg)/45"><ThemeToggle /></div>
-      </header>
-
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <section aria-label="Desktop preview" className="flex min-h-[50svh] min-w-0 flex-col px-4 pb-4">
-          <div className="min-h-0 flex-1">
-            <Preview display={display} tiles={tiles} shown={shown} settings={shape} />
-          </div>
-          <p className="flex flex-wrap gap-x-4 pt-3 font-mono text-[10px] text-(--scc-fg)/45">
-            <span>{display.width} × {display.height}</span>
-            <span>visible {display.visible.width} × {display.visible.height}</span>
-            <span>{measured}</span>
-          </p>
-        </section>
-
-        <aside aria-label="Parameters" className="flex min-h-0 flex-col overflow-y-auto px-1 pb-4 lg:pr-3">
+    <ControlShell
+      crumbs={[{ label: "desktop-collage", href: "/desktop-collage" }, { label: "primitives", href: "/desktop-collage/primitives" }, { label: "1" }]}
+      display={display}
+      measured={!!status.display}
+      preview={<Preview display={display} tiles={tiles} shown={shown} settings={shape} />}
+    >
           <Section title="Rhythm">
             <Choice label="Timing" options={timings} value={draft.timing} names={{ sequence: "one by one", together: "all at once" }} onChange={(value) => set("timing", value)} />
             {draft.timing === "sequence" ? <Amount id="interval" label="Interval" unit="s" value={draft.interval} range={ranges.interval} onChange={amount("interval")} /> : null}
@@ -137,8 +99,6 @@ export default function PrimitivesOne() {
               ) : null}
             </p>
           </div>
-        </aside>
-      </div>
-    </main>
+    </ControlShell>
   );
 }

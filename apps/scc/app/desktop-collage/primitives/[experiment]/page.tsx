@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
 import PrimitivesOne from "@/components/desktop-collage/primitives/1";
+import PrimitivesTwo from "@/components/desktop-collage/primitives/2";
 import {
   isPrimitivesExperimentSlug,
   primitivesExperiments,
@@ -10,6 +11,7 @@ import {
 
 const components: Record<PrimitivesExperimentSlug, ComponentType> = {
   "1": PrimitivesOne,
+  "2": PrimitivesTwo,
 };
 
 export function generateStaticParams() {
