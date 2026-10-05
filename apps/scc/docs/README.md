@@ -12,6 +12,8 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
 
+- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real Safari windows whose rectangles trace a heart.
+
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.

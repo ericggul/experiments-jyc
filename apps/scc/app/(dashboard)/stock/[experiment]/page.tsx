@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
-import StockTwo from "@/components/dashboard/stock/2";
-import StockThree from "@/components/dashboard/stock/3";
-import StockFour from "@/components/dashboard/stock/4";
-import StockDefault from "@/components/dashboard/stock/default";
+import StockTwo from "@/components/ui/dashboard/stock/2";
+import StockThree from "@/components/ui/dashboard/stock/3";
+import StockFour from "@/components/ui/dashboard/stock/4";
+import StockDefault from "@/components/ui/dashboard/stock/default";
 import {
   isStockDirectRoute,
   stockDirectRoutes,
   type StockDirectRoute,
-} from "@/components/dashboard/stock/experiments";
+} from "@/components/ui/dashboard/stock/experiments";
 
 const components: Record<StockDirectRoute, ComponentType> = {
   default: StockDefault,

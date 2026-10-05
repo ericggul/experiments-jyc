@@ -7,7 +7,7 @@ const candidateLedgerPath = path.join(candidateDirectory, "candidates.json");
 const outputDirectory = path.join(root, "apps/scc/public/images/stock-4/kisses");
 const outputLedgerPath = path.join(
   root,
-  "apps/scc/components/dashboard/stock/4/model/kiss-sources.json",
+  "apps/scc/components/ui/dashboard/stock/4/model/kiss-sources.json",
 );
 
 // Hand-selected from the local 299-image contact-sheet review. The set favors

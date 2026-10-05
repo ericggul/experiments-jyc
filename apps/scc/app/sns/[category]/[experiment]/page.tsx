@@ -14,33 +14,33 @@ import SnsMobileTen from "@/components/mobile/clone/10";
 import SnsMobileEleven from "@/components/mobile/clone/11";
 import SnsMobileTwelve from "@/components/mobile/clone/12";
 import SnsMobileThirteen from "@/components/mobile/clone/13";
-import SnsFeedOne from "@/components/sns/feed/1";
-import SnsInstagramOne from "@/components/sns/instagram/1";
-import SnsInstagramTwo from "@/components/sns/instagram/2";
-import SnsInstagramThree from "@/components/sns/instagram/3";
-import SnsInstagramThreeFinger from "@/components/sns/instagram/3-finger";
-import SnsInstagramFour from "@/components/sns/instagram/4";
-import SnsNavigationOne from "@/components/sns/navigation/1";
-import SnsNavigationTwo from "@/components/sns/navigation/2";
-import SnsNavigationDefault from "@/components/sns/navigation/default";
-import SnsLinkedinTwo from "@/components/sns/linkedin/2";
-import SnsLinkedinThree from "@/components/sns/linkedin/3";
-import SnsLinkedinFour from "@/components/sns/linkedin/4";
-import SnsLinkedinFive from "@/components/sns/linkedin/5";
-import SnsLinkedinSix from "@/components/sns/linkedin/6";
-import SnsLinkedinSixTest from "@/components/sns/linkedin/6-test";
-import SnsLinkedinOne from "@/components/sns/linkedin/1";
-import SnsYoutubeOne from "@/components/sns/youtube/1";
-import SnsYoutubeTwo from "@/components/sns/youtube/2";
-import SnsYoutubeThree from "@/components/sns/youtube/3";
-import SnsYoutubeFour from "@/components/sns/youtube/4";
-import SnsYoutubeFive from "@/components/sns/youtube/5";
-import SnsYoutubeSix from "@/components/sns/youtube/6";
+import SnsFeedOne from "@/components/ui/sns/feed/1";
+import SnsInstagramOne from "@/components/ui/sns/instagram/1";
+import SnsInstagramTwo from "@/components/ui/sns/instagram/2";
+import SnsInstagramThree from "@/components/ui/sns/instagram/3";
+import SnsInstagramThreeFinger from "@/components/ui/sns/instagram/3-finger";
+import SnsInstagramFour from "@/components/ui/sns/instagram/4";
+import SnsNavigationOne from "@/components/ui/sns/navigation/1";
+import SnsNavigationTwo from "@/components/ui/sns/navigation/2";
+import SnsNavigationDefault from "@/components/ui/sns/navigation/default";
+import SnsLinkedinTwo from "@/components/ui/sns/linkedin/2";
+import SnsLinkedinThree from "@/components/ui/sns/linkedin/3";
+import SnsLinkedinFour from "@/components/ui/sns/linkedin/4";
+import SnsLinkedinFive from "@/components/ui/sns/linkedin/5";
+import SnsLinkedinSix from "@/components/ui/sns/linkedin/6";
+import SnsLinkedinSixTest from "@/components/ui/sns/linkedin/6-test";
+import SnsLinkedinOne from "@/components/ui/sns/linkedin/1";
+import SnsYoutubeOne from "@/components/ui/sns/youtube/1";
+import SnsYoutubeTwo from "@/components/ui/sns/youtube/2";
+import SnsYoutubeThree from "@/components/ui/sns/youtube/3";
+import SnsYoutubeFour from "@/components/ui/sns/youtube/4";
+import SnsYoutubeFive from "@/components/ui/sns/youtube/5";
+import SnsYoutubeSix from "@/components/ui/sns/youtube/6";
 import {
   findSnsExperiment,
   snsExperiments,
   type SnsExperimentKey,
-} from "@/components/sns/experiments";
+} from "@/components/ui/sns/experiments";
 
 const components: Record<SnsExperimentKey, ComponentType> = {
   "mobile/1": SnsMobileOne,

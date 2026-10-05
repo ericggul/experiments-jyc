@@ -31,10 +31,12 @@ test("every slug in a family-root registry is dated in the navigation index", ()
 
   for (const registry of findRegistries(componentsRoot)) {
     const family = path.relative(componentsRoot, path.dirname(registry)).split(path.sep);
+    // ui/sns and ui/dashboard keep their own catalogue areas.
+    if (family[0] === "ui" && (family[1] === "sns" || family[1] === "dashboard")) family.shift();
     if (skipped.has(family[0])) continue;
 
     const source = readFileSync(registry, "utf8");
-    const prefix = family[0] === "ui" || family[0] === "dimensions" ? family.join("/") : family.at(-1);
+    const prefix = family[0] === "ui" || family[0] === "dimensions" || family[0] === "desktop-collage" ? family.join("/") : family.at(-1);
     const pattern = /\{\s*(?:family:\s*"([^"]+)",\s*)?slug:\s*"([^"]+)"/g;
     for (const [, group, slug] of source.matchAll(pattern)) {
       const key = [prefix, group, slug].filter(Boolean).join("/");

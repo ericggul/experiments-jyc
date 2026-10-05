@@ -9,6 +9,6 @@ data model or visual contract.
 
 Primary files:
 
-- `components/dashboard/stock/default/dashboard.tsx`
-- `components/dashboard/stock/default/historical-data.ts`
-- `components/dashboard/stock/default/index.tsx`
+- `components/ui/dashboard/stock/default/dashboard.tsx`
+- `components/ui/dashboard/stock/default/historical-data.ts`
+- `components/ui/dashboard/stock/default/index.tsx`

@@ -8,7 +8,7 @@ const root = process.cwd();
 const outputDirectory = path.join(root, "apps/scc/public/images/stock-4/cats");
 const ledgerPath = path.join(
   root,
-  "apps/scc/components/dashboard/stock/4/model/cat-sources.json",
+  "apps/scc/components/ui/dashboard/stock/4/model/cat-sources.json",
 );
 const userAgent = "SCC-Stock-4-Cat-Sequence/1.0 (local interface study)";
 const queries = [

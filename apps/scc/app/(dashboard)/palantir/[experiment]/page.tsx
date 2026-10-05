@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PalantirOne from "@/components/dashboard/palantir/1";
+import PalantirOne from "@/components/ui/dashboard/palantir/1";
 import {
   isPalantirExperimentSlug,
   palantirExperiments,
-} from "@/components/dashboard/palantir/experiments";
+} from "@/components/ui/dashboard/palantir/experiments";
 
 export function generateStaticParams() {
   return palantirExperiments.map(({ slug }) => ({ experiment: slug }));

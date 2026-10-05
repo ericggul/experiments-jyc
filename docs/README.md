@@ -44,14 +44,15 @@ history when their subject affects the task, not for every code change.
 - [Splice](../apps/scc/docs/experiments/standalone/splice/README.md): two-deck audio collage practice; a separate instrument for the later native application collage direction.
 
 - [xyzt city](../apps/scc/docs/experiments/dimensions/xyzt-city/README.md): Lower Manhattan in (x, y, t) with height as the swept threshold, variant `1`.
+- [desktop-collage](../apps/scc/docs/experiments/desktop-collage/README.md): real browser windows as collage material (papier collé / Dada lineage), `primitives/1` heart of windows.
 - [Aerodynamics](../apps/scc/docs/experiments/standalone/aerodynamics/README.md): standalone 3D ABC Euler flow, variants `1`–`2`.
 
 | Code family | Registered variants | Documentation |
 | --- | --- | --- |
 | `apps/ddong-meong/components` | Unversioned finished app | [ddong-meong](../apps/ddong-meong/docs/README.md) · [콘텐츠 확장 매뉴얼](../apps/ddong-meong/docs/content-manual.md) |
-| `apps/scc/components/dashboard/github` | `1`, `2` | [github/1](../apps/scc/docs/experiments/dashboard/github/1.md) · [github/2](../apps/scc/docs/experiments/dashboard/github/2.md) |
-| `apps/scc/components/dashboard/palantir` | `1` | [palantir/1](../apps/scc/docs/experiments/dashboard/palantir/1.md) |
-| `apps/scc/components/dashboard/stock` | `default`, `1`, `2`, `3`, `4` | [stock index](../apps/scc/docs/experiments/dashboard/stock/README.md) |
+| `apps/scc/components/ui/dashboard/github` | `1`, `2` | [github/1](../apps/scc/docs/experiments/dashboard/github/1.md) · [github/2](../apps/scc/docs/experiments/dashboard/github/2.md) |
+| `apps/scc/components/ui/dashboard/palantir` | `1` | [palantir/1](../apps/scc/docs/experiments/dashboard/palantir/1.md) |
+| `apps/scc/components/ui/dashboard/stock` | `default`, `1`, `2`, `3`, `4` | [stock index](../apps/scc/docs/experiments/dashboard/stock/README.md) |
 | `apps/scc/components/complex-systems/barabasi-albert` | `1` | [Barabási–Albert network growth](../apps/scc/docs/experiments/complex-systems/barabasi-albert/README.md) |
 | `apps/scc/components/complex-systems/self-evolving-network` | `1` | [self-evolving network](../apps/scc/docs/experiments/complex-systems/self-evolving-network/README.md) |
 | `apps/scc/components/complex-systems/erdos-renyi` | `1` | [Erdős–Rényi random graph](../apps/scc/docs/experiments/complex-systems/erdos-renyi/README.md) |
@@ -84,7 +85,7 @@ history when their subject affects the task, not for every code change.
 | `apps/scc/components/dj` | `1` | [dj](../apps/scc/docs/experiments/dj/README.md) |
 | `apps/c-val/components` | Unversioned finished app; numbered records are history | [c-val](../apps/c-val/docs/README.md) |
 | `apps/scc/components/network-system` | `default`, `macro-economy`, `cycle`, `population`, `competitive-firms` | [network-system index](../apps/scc/docs/experiments/network-system/README.md) |
-| `apps/scc/components/sns` | `feed/1`, `navigation/default`, `navigation/1`, `navigation/2`, `youtube/1`, `youtube/2`, `linkedin/1` | [sns index](../apps/scc/docs/experiments/sns/README.md) |
+| `apps/scc/components/ui/sns` | `feed/1`, `navigation/default`, `navigation/1`, `navigation/2`, `youtube/1`, `youtube/2`, `linkedin/1` | [sns index](../apps/scc/docs/experiments/sns/README.md) |
 
 The registries under `apps/*/components/**/experiments.ts` remain the source of truth
 for executable variants. This index describes them; it does not replace those

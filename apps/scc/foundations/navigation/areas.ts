@@ -10,6 +10,7 @@ export const sccAreas = [
   { key: "sns", href: "/sns" },
   { key: "mobile", href: "/mobile" },
   { key: "dimensions", href: "/dimensions" },
+  { key: "desktop-collage", href: "/desktop-collage" },
 ] as const;
 
 export type SccArea = (typeof sccAreas)[number]["key"];
@@ -46,6 +47,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "ui/smile",
   "parametric-interface",
   "dimensions/xyzt-city",
+  "desktop-collage/primitives",
   "dj",
   "network-system",
   "sns",

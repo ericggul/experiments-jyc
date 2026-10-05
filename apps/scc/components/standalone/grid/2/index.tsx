@@ -5,8 +5,8 @@ import { LevaPanel, useControls, useCreateStore } from "leva";
 import { bastilleDayImages } from "@/components/standalone/bastille-day/1/images";
 import goodFrenchSources from "@/components/standalone/bastille-day/2/good-sources.json";
 import darkFrenchSources from "@/components/standalone/bastille-day/2/dark-sources.json";
-import catSources from "@/components/dashboard/stock/4/model/cat-sources.json";
-import kissSources from "@/components/dashboard/stock/4/model/kiss-sources.json";
+import catSources from "@/components/ui/dashboard/stock/4/model/cat-sources.json";
+import kissSources from "@/components/ui/dashboard/stock/4/model/kiss-sources.json";
 import politicianSources from "./politician-sources.json";
 import styles from "../screen/grid.module.css";
 

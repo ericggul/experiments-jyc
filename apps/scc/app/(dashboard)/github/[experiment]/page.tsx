@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import GitHubOne from "@/components/dashboard/github/1";
-import GitHubTwo from "@/components/dashboard/github/2";
+import GitHubOne from "@/components/ui/dashboard/github/1";
+import GitHubTwo from "@/components/ui/dashboard/github/2";
 import {
   githubExperiments,
   isGitHubExperimentSlug,
-} from "@/components/dashboard/github/experiments";
+} from "@/components/ui/dashboard/github/experiments";
 
 export function generateStaticParams() {
   return githubExperiments.map(({ slug: experiment }) => ({ experiment }));

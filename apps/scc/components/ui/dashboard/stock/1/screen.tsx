@@ -14,7 +14,7 @@ import {
   StockChart,
   type PricePoint,
   type StockRow,
-} from "@/components/dashboard/stock/default/dashboard";
+} from "@/components/ui/dashboard/stock/default/dashboard";
 
 const stockNames = {
   alpha: "Alpha Signal Corp.",

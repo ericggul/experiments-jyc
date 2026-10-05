@@ -7,9 +7,17 @@ filesystem route groups never change public URLs.
 | SCC family | Route root | Component root |
 | --- | --- | --- |
 | Single-device | `app/(standalone)/[group]` | `components/standalone/[group]` |
-| Workstations | `app/(dashboard)/[group]` | `components/dashboard/[group]` |
+| Found interfaces: buttons, smile | `app/(standalone)/ui/[group]` | `components/ui/[group]` |
+| Found interfaces: workstations | `app/(dashboard)/[group]` | `components/ui/dashboard/[group]` |
+| Found interfaces: SNS | `app/sns` | `components/ui/sns` |
 | Mobile experiments | `app/mobile` | `components/mobile` |
-| `dj`, `network-system`, `sns` | `app/[group]` | `components/[group]` |
+| `dj`, `network-system` | `app/[group]` | `components/[group]` |
+| Desktop collage (real browser windows) | `app/desktop-collage/[family]` | `components/desktop-collage/[family]`; native control in `components/desktop-collage/native` |
+
+`components/ui/` gathers reconstructed and transformed found interfaces; its
+public URLs and catalogue areas (`/ui`, `/sns`, `/dashboard`) stay separate.
+`foundations/` holds non-experiment ground shared by the catalogue: the
+navigation index and the `/reference` shelf (`foundations/reference`).
 
 Within a family, `page.tsx` renders the shared SCC navigation
 (`foundations/navigation`) scoped to that family; `[experiment]/page.tsx`

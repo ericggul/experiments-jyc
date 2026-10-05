@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import StockOneMobile from "@/components/dashboard/stock/1/mobile";
-import { isStockMultiDeviceExperimentSlug } from "@/components/dashboard/stock/experiments";
+import StockOneMobile from "@/components/ui/dashboard/stock/1/mobile";
+import { isStockMultiDeviceExperimentSlug } from "@/components/ui/dashboard/stock/experiments";
 
 export const metadata: Metadata = { title: "stock mobile" };
 

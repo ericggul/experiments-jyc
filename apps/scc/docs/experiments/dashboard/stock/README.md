@@ -1,6 +1,6 @@
 # Stock experiments
 
-Documentation for `components/dashboard/stock` and the public `/stock` routes.
+Documentation for `components/ui/dashboard/stock` and the public `/stock` routes.
 Agents changing the `stock/1` data model or device behavior must first read its
 [preservation contract](./1.md).
 
@@ -20,7 +20,7 @@ Routes:
 - `app/(dashboard)/stock/[experiment]/page.tsx` owns direct/default routing.
 - `app/(dashboard)/stock/[experiment]/mobile/page.tsx` and
   `screen/page.tsx` own the multi-device role routes.
-- `components/dashboard/stock/experiments.ts` is the route registry.
+- `components/ui/dashboard/stock/experiments.ts` is the route registry.
 - `apps/scc/socket/experiments/stock/index.mjs` owns the isolated `stock:*` room and events.
 
 ## Variant documents

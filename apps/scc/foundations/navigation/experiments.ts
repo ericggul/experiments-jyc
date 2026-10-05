@@ -116,6 +116,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "grid/4", area: "standalone", family: "grid", date: "2026-08-06", phrase: "Rectangles flashing over a persistent unit field" },
   { key: "grid/5", area: "standalone", family: "grid", date: "2026-08-06", phrase: "Orthogonal media field placed at random coordinates" },
   { key: "macos/1", area: "standalone", family: "macos", date: "2026-07-10", phrase: "macOS menu bar with populated menus and monochrome status icons" },
+  { key: "desktop-collage/primitives/1", area: "desktop-collage", family: "desktop-collage/primitives", date: "2026-10-05", phrase: "Real Safari windows open one by one or all at once until their rectangles trace a heart" },
   { key: "dimensions/xyzt-city/1", area: "dimensions", family: "dimensions/xyzt-city", date: "2026-10-03", phrase: "Lower Manhattan as building lifespans in x, y and time, raised into a city by a height threshold" },
   { key: "mobiles/1", area: "standalone", family: "mobiles", date: "2026-10-03", phrase: "Ninety phones living one stochastic New York weekday on a shared clock" },
   { key: "mobiles/1/mobile-testing", area: "standalone", family: "mobiles", date: "2026-10-04", phrase: "The same phone OS to use by hand: lock screen, home screen and every app" },

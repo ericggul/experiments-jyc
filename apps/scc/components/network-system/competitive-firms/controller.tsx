@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styled from "styled-components";
-import { StockChart, type PricePoint, type StockRow } from "@/components/dashboard/stock/default/dashboard";
+import { StockChart, type PricePoint, type StockRow } from "@/components/ui/dashboard/stock/default/dashboard";
 import { directedLine, firmNodes, pairedFirmConnections, splitCompetitionEdge } from "./graph";
 import { createInitialCompetitiveFirmsSnapshot, firmIds, type CompetitiveFirmsSnapshot, type FirmId } from "./model";
 import { useCompetitiveFirmsSocket } from "./use-competitive-firms-socket";

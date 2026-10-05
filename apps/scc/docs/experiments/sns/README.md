@@ -29,17 +29,17 @@ Files:
 
 - `app/sns/page.tsx`
 - `app/sns/[category]/[experiment]/page.tsx`
-- `components/sns/experiments.ts`
-- `components/sns/feed/1/index.tsx`
-- `components/sns/feed/1/data.ts`
-- `components/sns/instagram/1/`
-- `components/sns/navigation/default/index.tsx`
-- `components/sns/navigation/1/index.tsx`
-- `components/sns/navigation/2/index.tsx`
+- `components/ui/sns/experiments.ts`
+- `components/ui/sns/feed/1/index.tsx`
+- `components/ui/sns/feed/1/data.ts`
+- `components/ui/sns/instagram/1/`
+- `components/ui/sns/navigation/default/index.tsx`
+- `components/ui/sns/navigation/1/index.tsx`
+- `components/ui/sns/navigation/2/index.tsx`
 - `public/images/sns/navigation/2/instagram-action-row-reference.jpg`
-- `components/sns/youtube/1/`
-- `components/sns/youtube/2/`
-- `components/sns/linkedin/1/`
+- `components/ui/sns/youtube/1/`
+- `components/ui/sns/youtube/2/`
+- `components/ui/sns/linkedin/1/`
 
 Intent:
 
@@ -120,6 +120,6 @@ Interaction:
 Rules:
 
 - Keep `app/sns/[category]/[experiment]/page.tsx` as a route switch only.
-- Keep generated feed data in `components/sns/[category]/[experiment]/data.ts`.
-- Keep interaction logic in `components/sns/[category]/[experiment]/index.tsx`.
+- Keep generated feed data in `components/ui/sns/[category]/[experiment]/data.ts`.
+- Keep interaction logic in `components/ui/sns/[category]/[experiment]/index.tsx`.
 - Do not add API calls or live social-network dependencies.
