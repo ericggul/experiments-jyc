@@ -41,6 +41,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "adaptive-coevolving-network/6", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-02", phrase: "News of a disease spreads online; the aware cut contact with the infected" },
   { key: "adaptive-coevolving-network/7", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-02", phrase: "Living web where each page's area is its PageRank and attention flows by rank" },
   { key: "adaptive-coevolving-network/7-glsl", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank web as one gel of rank-sized cells and flowing links" },
+  { key: "adaptive-coevolving-network/7-glsl-2", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank web as combed fibres whose brightness is the rank they carry" },
   { key: "amoeba/1", area: "complex-systems", family: "amoeba", date: "2026-10-05", phrase: "Amoebae eat a bacterial lawn, divide into plaques and return in waves" },
   { key: "amoeba/2", area: "complex-systems", family: "amoeba", date: "2026-10-06", phrase: "Full-screen lawn where amoeba sizes are inherited, drift and differ wildly" },
   { key: "barabasi-albert/1", area: "complex-systems", family: "barabasi-albert", date: "2026-09-10", phrase: "Degree-proportional growth where early hubs accumulate links" },

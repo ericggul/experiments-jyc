@@ -84,10 +84,48 @@ The references depict a computer; here the computer performs the collage.
   - `display/`: measures the desktop's visible frame.
   - `pages/`: self-contained colour pages as data URLs.
   - `jxa/`: runs `osascript -l JavaScript` processes and reads their events.
-  - `control/`: `run.ts` sends a plan to the right surface and clears
-    everything; `index.ts` is the route-handler control. Admission is the local
-    HTTPS dev server on macOS only, one run at a time. An optional `animate`
-    hook keeps moving opened windows (chrome app windows can be moved through
-    DevTools).
+  - `control/`:
+    - `definition.ts` (browser-safe): an experiment's `validate`, `plan` and
+      optional `animate`. Each primitive keeps its own in `primitives/<n>/plan.ts`.
+    - `core.ts`: the control state and actions (measure, start, stop, clear),
+      one run at a time.
+    - `run.ts`: sends a plan to the right surface and clears everything.
+    - `index.ts`: the route handler. It runs only on the local HTTPS
+      development server on macOS.
+    - An optional `animate` hook keeps moving opened windows (chrome app
+      windows can be moved through DevTools).
+  - `browser/`: the fallback where no Mac control answers. The same plan opens
+    as pop-up windows from this page. Pop-ups keep a slim address bar, and
+    newest is always in front. A browser lets one pop-up through per click
+    until pop-ups are allowed for the site.
   - `controller/`: the shared control page: frame, parameter rows, and the
-    polling hook.
+    control hook.
+- `helper/`: the Mac helper. It serves the same `core.ts` for pages from any
+  approved origin, so a page on Vercel opens the same Chrome app, Terminal and
+  bare windows as the local development server does.
+
+## Running from anywhere (2026-10-06)
+
+The control page picks who opens the windows, in this order:
+1. **Route:** the page's own route, on the local HTTPS development server on
+   macOS.
+2. **Mac helper:** `https://127.0.0.1:2099`, probed only from a Mac browser,
+   and probed again every 5 s while browser windows are in use.
+3. **Browser windows:** everywhere else.
+
+Route and helper run the same control code, so the windows are identical.
+Windows load pages from the origin of the controlling page: the Vercel
+deployment when it is opened there.
+
+The helper:
+- Start it on the Mac with `pnpm desktop-collage:helper` from the repository
+  root. It uses the repository's local certificates, whose root the Mac
+  already trusts for the development server.
+- It listens on loopback only. It answers only approved origins:
+  `https://scc-jyc.vercel.app` and the local development addresses; add more
+  with `DESKTOP_COLLAGE_ORIGINS`.
+- It plans every window itself from validated settings, so a page cannot ask
+  it to open anything else.
+- Chrome asks once whether the Vercel page may reach devices on the local
+  network (Private Network Access / Local Network Access); the helper answers
+  the preflight for it.

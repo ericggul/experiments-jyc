@@ -5,13 +5,14 @@ import { Amount, Choice, Section } from "../../foundations/controller/fields";
 import { ControlShell, useDisplay } from "../../foundations/controller/shell";
 import { useControl } from "../../foundations/controller/use-control";
 import { Preview } from "./controller/preview";
+import { definition } from "./plan";
 import { arrange } from "./model/arrangement";
 import { arrangements, clampSetting, colorAt, defaults, fills, forms, motions, ranges, type Settings } from "./model/settings";
 
 const ENDPOINT = "/desktop-collage/primitives/2/control";
 
 export default function PrimitivesTwo() {
-  const { status, busy, error, send } = useControl<Settings>(ENDPOINT);
+  const { status, busy, error, send } = useControl<Settings>(ENDPOINT, definition);
   const [draft, setDraft] = useState<Settings>(defaults);
   const display = useDisplay(status.display);
   const shape = status.running && status.settings ? status.settings : draft;

@@ -6,13 +6,14 @@ import { ControlShell, useDisplay } from "../../foundations/controller/shell";
 import { useControl } from "../../foundations/controller/use-control";
 import { surfaceInfo, surfaces } from "../../foundations/surfaces";
 import { Preview } from "./controller/preview";
+import { definition } from "./plan";
 import { layoutHeart } from "./model/heart";
 import { clampSetting, defaults, fillsFor, orders, ranges, stacksFor, timings, type Settings } from "./model/settings";
 
 const ENDPOINT = "/desktop-collage/primitives/1/control";
 
 export default function PrimitivesOne() {
-  const { status, busy, error, send } = useControl<Settings>(ENDPOINT);
+  const { status, busy, error, send } = useControl<Settings>(ENDPOINT, definition);
   const [draft, setDraft] = useState<Settings>(defaults);
   const [rehearsal, setRehearsal] = useState<number | null>(null);
   const display = useDisplay(status.display);

@@ -27,6 +27,7 @@
     "dev:socket:goldfishes": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=goldfishes node socket-server.mjs",
     "dev:socket:six-sigma": "bash scripts/generate-certs.sh && SCC_SOCKET_SCOPE=six-sigma node socket-server.mjs",
     "socket:production": "node socket-server-production.mjs",
+    "desktop-collage:helper": "bash scripts/generate-certs.sh && node apps/scc/components/desktop-collage/helper/serve.ts",
     "deploy:scc-relay": "node scripts/deploy-scc-relay.mjs",
     "typecheck": "pnpm --recursive --if-present typecheck",
     "lint": "eslint",
