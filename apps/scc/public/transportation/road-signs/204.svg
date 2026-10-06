@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="604"
+   height="604"
+   viewBox="0 0 604 604.00002"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="xxx.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="px"
+     showgrid="false"
+     units="px"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.834386"
+     inkscape:cx="605.23547"
+     inkscape:cy="304.41546"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Lager 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-392)">
+    <circle
+       style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:6.03093;stroke-linecap:round"
+       id="path108"
+       cx="302"
+       cy="694"
+       r="301" />
+    <circle
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:6.0109;stroke-linecap:round"
+       id="circle1404"
+       cx="302"
+       cy="694"
+       r="300" />
+    <circle
+       style="fill:#d21d24;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5.81054;stroke-linecap:round"
+       id="circle1406"
+       cx="302"
+       cy="694"
+       r="290" />
+    <circle
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:4.40799;stroke-linecap:round"
+       id="circle2134"
+       cx="302"
+       cy="694"
+       r="220" />
+    <rect
+       style="fill:#d21d24;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:6.68293;stroke-linecap:round"
+       id="rect9727"
+       width="40"
+       height="560"
+       x="-297.18585"
+       y="424.27835"
+       transform="rotate(-45)" />
+    <path
+       id="rect3936"
+       style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:15.305;stroke-linecap:round"
+       d="m 157,624.00001 c -16.61993,0 -30,13.38002 -30,30 v 80 h 350.00003 v -80 c 0,-16.61998 -13.3801,-30 -30,-30 z m 0,10 h 26 v 45 h -46 v -25 c 0,-11.07999 8.92004,-20 20,-20 z m 36,0 h 47 v 45 h -47 z m 57,0 h 47 v 45 h -47 z m 57,0 h 47.00003 v 45 H 307 Z m 57.00003,0 h 47 v 45 h -47 z m 57,0 h 26 c 11.0799,0 20,8.92001 20,20 v 25 h -46 z" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:10.8839;stroke-linecap:round"
+       id="path4051"
+       sodipodi:type="arc"
+       sodipodi:cx="191.99997"
+       sodipodi:cy="740"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       sodipodi:start="3.1415927"
+       sodipodi:end="0"
+       sodipodi:arc-type="slice"
+       d="m 161.99997,740 a 30,30 0 0 1 30,-30 30,30 0 0 1 30,30 h -30 z" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:10.8839;stroke-linecap:round"
+       id="circle4340"
+       sodipodi:type="arc"
+       sodipodi:cx="411.99997"
+       sodipodi:cy="740"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       sodipodi:start="3.1415927"
+       sodipodi:end="0"
+       sodipodi:arc-type="slice"
+       d="m 381.99997,740 a 30,30 0 0 1 30,-30 30,30 0 0 1 30,30 h -30 z" />
+    <circle
+       style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:8.70715;stroke-linecap:round"
+       id="circle4335"
+       cx="191.99997"
+       cy="740"
+       r="24" />
+    <circle
+       style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:8.70715;stroke-linecap:round"
+       id="circle4342"
+       cx="411.99997"
+       cy="740"
+       r="24" />
+  </g>
+</svg>

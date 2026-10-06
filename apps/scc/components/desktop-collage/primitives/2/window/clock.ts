@@ -11,3 +11,6 @@ export const sharedTime = () => ((Date.now() - midnight) / 1000) % 7200;
 
 /** main.js eases toward targets with `falloff = .05` per frame at ~60 fps; this is the same decay per tick at `hz`. */
 export const falloffAt = (hz: number) => 1 - Math.pow(1 - 0.05, 60 / hz);
+
+/** The same decay for a frame of `delta` seconds (capped so a stall does not snap). */
+export const falloffPerFrame = (delta: number) => 1 - Math.pow(1 - 0.05, Math.min(delta, 0.1) * 60);

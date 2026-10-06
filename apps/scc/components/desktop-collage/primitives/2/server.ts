@@ -17,7 +17,7 @@ export const { GET, POST } = createDesktopCollageControl({
       items: arrange(display.visible, settings).map((rect, index) => {
         const color = colorAt(settings.fill, index);
         const partner = colorAt(settings.fill, (index + 1) % settings.count);
-        const query = new URLSearchParams({ run, i: String(index), n: String(settings.count), c: color.slice(1), p: partner.slice(1), r: String(range), f: settings.form });
+        const query = new URLSearchParams({ run, i: String(index), n: String(settings.count), c: color.slice(1), p: partner.slice(1), r: String(range), f: settings.form, t: String(settings.turnover) });
         return { ...rect, rank: 1, color, url: `${origin}${WINDOW_PATH}?${query}` };
       }),
     };

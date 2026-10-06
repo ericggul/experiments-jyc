@@ -1,0 +1,1521 @@
+[
+ {
+  "num": "101",
+  "name": "＋자형교차로표지",
+  "meaning": "＋자형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_101.svg"
+ },
+ {
+  "num": "102",
+  "name": "T자형교차로표지",
+  "meaning": "T자형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_102.svg"
+ },
+ {
+  "num": "103",
+  "name": "Y자형교차로표지",
+  "meaning": "Y자형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_103.svg"
+ },
+ {
+  "num": "104",
+  "name": "ㅏ자형교차로표지",
+  "meaning": "ㅏ자형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_104.svg",
+  "notes": "PDF name uses conjoining jamo U+1161; written here with compatibility jamo ㅏ."
+ },
+ {
+  "num": "105",
+  "name": "ㅓ자형교차로표지",
+  "meaning": "ㅓ자형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_105.svg",
+  "notes": "PDF name uses conjoining jamo U+1165; written here with compatibility jamo ㅓ."
+ },
+ {
+  "num": "106",
+  "name": "우선도로표지",
+  "meaning": "우선도로에서 우선도로가 아닌 도로와 교차함을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_106.svg"
+ },
+ {
+  "num": "107",
+  "name": "우합류도로표지",
+  "meaning": "우합류 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_107.svg"
+ },
+ {
+  "num": "108",
+  "name": "좌합류도로표지",
+  "meaning": "좌합류 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_108.svg"
+ },
+ {
+  "num": "109",
+  "name": "회전형교차로표지",
+  "meaning": "회전형 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_109.svg"
+ },
+ {
+  "num": "110",
+  "name": "철길건널목표지",
+  "meaning": "철길건널목이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_110.svg"
+ },
+ {
+  "num": "110의2",
+  "name": "노면전차주의표지",
+  "meaning": "차마와 노면전차가 교차하는 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_110%EC%9D%982.svg"
+ },
+ {
+  "num": "111",
+  "name": "우로굽은도로표지",
+  "meaning": "우로 굽은 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_111.svg"
+ },
+ {
+  "num": "112",
+  "name": "좌로굽은도로표지",
+  "meaning": "좌로 굽은 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_112.svg"
+ },
+ {
+  "num": "113",
+  "name": "우좌로이중굽은도로표지",
+  "meaning": "우좌로 이중 굽은 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_113.svg"
+ },
+ {
+  "num": "114",
+  "name": "좌우로이중굽은도로표지",
+  "meaning": "좌우로 이중 굽은 도로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_114.svg"
+ },
+ {
+  "num": "115",
+  "name": "2방향통행표지",
+  "meaning": "2방향 통행이 실시됨을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_115.svg"
+ },
+ {
+  "num": "116",
+  "name": "오르막경사표지",
+  "meaning": "오르막경사가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_116.svg"
+ },
+ {
+  "num": "117",
+  "name": "내리막경사표지",
+  "meaning": "내리막경사가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_117.svg"
+ },
+ {
+  "num": "118",
+  "name": "도로폭이좁아짐표지",
+  "meaning": "도로의 폭이 좁아짐을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_118.svg"
+ },
+ {
+  "num": "119",
+  "name": "우측차로없어짐표지",
+  "meaning": "우측차로의 없어짐을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_119.svg"
+ },
+ {
+  "num": "120",
+  "name": "좌측차로없어짐표지",
+  "meaning": "좌측차로 없어짐을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_120.svg"
+ },
+ {
+  "num": "121",
+  "name": "우측방통행표지",
+  "meaning": "도로의 우측방향으로 통행하여야 할 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_121.svg"
+ },
+ {
+  "num": "122",
+  "name": "양측방통행표지",
+  "meaning": "동일방향 통행도로에서 양측방으로 통행하여야 할 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_122.svg"
+ },
+ {
+  "num": "123",
+  "name": "중앙분리대시작표지",
+  "meaning": "중앙분리대가 시작됨을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_123.svg"
+ },
+ {
+  "num": "124",
+  "name": "중앙분리대끝남표지",
+  "meaning": "중앙분리대가 끝남을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_124.svg"
+ },
+ {
+  "num": "125",
+  "name": "신호기표지",
+  "meaning": "신호기가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_125.svg"
+ },
+ {
+  "num": "126",
+  "name": "미끄러운도로표지",
+  "meaning": "자동차 등이 미끄러지기 쉬운 곳임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_126.svg"
+ },
+ {
+  "num": "127",
+  "name": "강변도로표지",
+  "meaning": "도로의 일변이 강변, 해변, 계곡 등 추락위험지점임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_127.svg"
+ },
+ {
+  "num": "128",
+  "name": "노면고르지못함표지",
+  "meaning": "노면이 고르지 못함을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_128.svg"
+ },
+ {
+  "num": "129",
+  "name": "과속방지턱,고원식횡단보도(주변차로보다약간높게만든횡단보도를말한다.이하같다),고원식교차로표지",
+  "meaning": "과속방지턱, 고원식 횡단보도, 고원식 교차로가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_129.svg"
+ },
+ {
+  "num": "130",
+  "name": "낙석도로표지",
+  "meaning": "낙석의 우려가 있는 장소가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_130.svg"
+ },
+ {
+  "num": "132",
+  "name": "횡단보도표지",
+  "meaning": "횡단보도(대각선 횡단보도를 포함한다)가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_132_(newer).svg",
+  "notes": "\"(newer)\" figure chosen; it matches the drawing (short-haired pedestrian walking right); plain 132 is the older figure."
+ },
+ {
+  "num": "133",
+  "name": "어린이보호표지",
+  "meaning": "어린이 또는 영유아의 통행로나 횡단보도가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_133_(newer).svg",
+  "notes": "\"(newer)\" figure chosen; matches the drawing (girl in skirt with boy)."
+ },
+ {
+  "num": "134",
+  "name": "자전거표지",
+  "meaning": "자전거등의 통행이 많은 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_134.svg"
+ },
+ {
+  "num": "135",
+  "name": "도로공사중표지",
+  "meaning": "도로상이나 도로변에서 공사나 작업을 하고 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_135.svg"
+ },
+ {
+  "num": "136",
+  "name": "비행기표지",
+  "meaning": "비행기가 이착륙하는 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_136.svg"
+ },
+ {
+  "num": "137",
+  "name": "횡풍표지",
+  "meaning": "강한 횡풍의 우려가 있는 지점이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_137.svg"
+ },
+ {
+  "num": "138",
+  "name": "터널표지",
+  "meaning": "터널이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_138.svg"
+ },
+ {
+  "num": "138의2",
+  "name": "교량표지",
+  "meaning": "교량이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_138%EC%9D%982.svg"
+ },
+ {
+  "num": "139",
+  "name": "야생동물보호표지",
+  "meaning": "야생동물의 보호지역임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_139.svg"
+ },
+ {
+  "num": "140",
+  "name": "위험표지",
+  "meaning": "도로교통상 각종 위험이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_140.svg"
+ },
+ {
+  "num": "141",
+  "name": "상습정체구간표지",
+  "meaning": "상습정체구간임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_141.svg"
+ },
+ {
+  "num": "201",
+  "name": "통행금지표지",
+  "meaning": "보행자 및 차마 등의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_201.svg"
+ },
+ {
+  "num": "202",
+  "name": "자동차통행금지표지",
+  "meaning": "자동차의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_202.svg"
+ },
+ {
+  "num": "203",
+  "name": "화물자동차통행금지표지",
+  "meaning": "화물자동차의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_203.svg"
+ },
+ {
+  "num": "204",
+  "name": "승합자동차통행금지표지",
+  "meaning": "승합자동차(승차정원 30명 이상인 것)의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_204.svg"
+ },
+ {
+  "num": "205",
+  "name": "이륜자동차및원동기장치자전거통행금지표지",
+  "meaning": "이륜자동차 및 원동기장치자전거의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_205.svg"
+ },
+ {
+  "num": "205의2",
+  "name": "개인형이동장치통행금지표지",
+  "meaning": "개인형 이동장치의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_205%EC%9D%982.svg"
+ },
+ {
+  "num": "206",
+  "name": "자동차·이륜자동차및원동기장치자전거통행금지표지",
+  "meaning": "자동차·이륜자동차 및 원동기장치자전거의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_206.svg"
+ },
+ {
+  "num": "206의2",
+  "name": "이륜자동차·원동기장치자전거및개인형이동장치통행금지표지",
+  "meaning": "이륜자동차·원동기장치자전거 및 개인형 이동장치의 통행을 금지하는 것",
+  "source": "drawn",
+  "commons": "File:KR road sign 205.svg; File:KR road sign 205의2.svg",
+  "notes": "No Commons file. Built on the 205 Commons ring/bar geometry; scooter rider from KR road sign 205의2.svg and motorcycle from KR road sign 205.svg, scaled and positioned to the drawn figure (dimension labels 140x220 / 190x150 are larger than the drawn figures; drawn positions followed, as Commons 205/205의2/206 do). PDF name uses U+2027 ‧, normalised to ·."
+ },
+ {
+  "num": "207",
+  "name": "경운기·트랙터및손수레통행금지표지",
+  "meaning": "경운기·트랙터 및 손수레의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:South_Korea_road_sign_207.svg",
+  "notes": "별표 6 drawing is schematic (tractor over tiller with trailer); Commons figure (hand cart over tiller) kept as it matches installed signs."
+ },
+ {
+  "num": "210",
+  "name": "자전거통행금지표지",
+  "meaning": "자전거등의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_210.svg"
+ },
+ {
+  "num": "211",
+  "name": "진입금지표지",
+  "meaning": "차의 진입을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_211.svg"
+ },
+ {
+  "num": "212",
+  "name": "직진금지표지",
+  "meaning": "차의 직진을 금지함",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_212.svg"
+ },
+ {
+  "num": "213",
+  "name": "우회전금지표지",
+  "meaning": "차가 우회전하는 것을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_213.svg"
+ },
+ {
+  "num": "214",
+  "name": "좌회전금지표지",
+  "meaning": "차가 좌회전하는 것을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_214.svg",
+  "notes": "PDF misprints the name as 죄회전금지표지; corrected to 좌회전금지표지."
+ },
+ {
+  "num": "216",
+  "name": "유턴금지표지",
+  "meaning": "차마의 유턴을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_216.svg"
+ },
+ {
+  "num": "217",
+  "name": "앞지르기금지표지",
+  "meaning": "차의 앞지르기를 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_217.svg"
+ },
+ {
+  "num": "218",
+  "name": "정차·주차금지표지",
+  "meaning": "차의 정차 및 주차를 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_218.svg"
+ },
+ {
+  "num": "219",
+  "name": "주차금지표지",
+  "meaning": "차의 주차를 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_219.svg"
+ },
+ {
+  "num": "220",
+  "name": "차중량제한표지",
+  "meaning": "표지판에 표시한 중량을 초과하는 차의 통행을 제한하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_220.svg"
+ },
+ {
+  "num": "221",
+  "name": "차높이제한표지",
+  "meaning": "표지판에 표시한 높이를 초과하는 차(적재한 화물의 높이를 포함)의 통행을 제한하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_221.svg"
+ },
+ {
+  "num": "222",
+  "name": "차폭제한표지",
+  "meaning": "표지판에 표시한 폭이 초과된 차(적재한 화물의 폭을 포함)의 통행을 제한하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_222.svg"
+ },
+ {
+  "num": "223",
+  "name": "차간거리확보표지",
+  "meaning": "표지판에 표시된 차간거리 이상 확보할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_223.svg"
+ },
+ {
+  "num": "224",
+  "name": "최고속도제한표지",
+  "meaning": "표지판에 표시한 속도로 자동차 등의 최고속도를 지정하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_224-50.svg",
+  "notes": "Official drawing example value 50."
+ },
+ {
+  "num": "225",
+  "name": "최저속도제한표지",
+  "meaning": "표지판에 표시한 속도로 자동차 등의 최저속도를 지정하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_225-30.svg",
+  "notes": "Official drawing example value 30."
+ },
+ {
+  "num": "226",
+  "name": "서행표지",
+  "meaning": "차가 서행하여야 할 장소임을 지정하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_226.svg"
+ },
+ {
+  "num": "227",
+  "name": "일시정지표지",
+  "meaning": "차가 일시 정지하여야 할 장소임을 지정하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_227.svg"
+ },
+ {
+  "num": "228",
+  "name": "양보표지",
+  "meaning": "차가 도로를 양보할 장소임을 지정하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_228.svg"
+ },
+ {
+  "num": "230",
+  "name": "보행자보행금지표지",
+  "meaning": "보행자의 보행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_230.svg"
+ },
+ {
+  "num": "231",
+  "name": "위험물적재차량통행금지표지",
+  "meaning": "위험물 적재차량의 통행을 금지하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_231.svg"
+ },
+ {
+  "num": "301",
+  "name": "자동차전용도로표지",
+  "meaning": "자동차 전용도로 또는 전용구역임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_301.svg"
+ },
+ {
+  "num": "302",
+  "name": "자전거전용도로표지",
+  "meaning": "자전거 전용도로 또는 전용구간임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_302.svg"
+ },
+ {
+  "num": "303",
+  "name": "자전거ᆞ보행자겸용도로표지",
+  "meaning": "자전거ᆞ보행자 겸용도로임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_303.svg",
+  "notes": "Wikipedia shows \"KR road sign 303 (newer)\" (upright standing figures); the official drawing has the striding adult and girl in a dress, which matches the plain KR 303 file."
+ },
+ {
+  "num": "303의2",
+  "name": "노면전차전용도로표지",
+  "meaning": "노면전차만 통행할 수 있는 전용도로임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_303%EC%9D%982.svg"
+ },
+ {
+  "num": "304",
+  "name": "회전교차로표지",
+  "meaning": "표지판이 화살표 방향으로 자동차가 회전 진행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_304.svg"
+ },
+ {
+  "num": "305",
+  "name": "직진표지",
+  "meaning": "차가 직진할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_305.svg"
+ },
+ {
+  "num": "306",
+  "name": "우회전표지",
+  "meaning": "차가 우회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_306.svg"
+ },
+ {
+  "num": "307",
+  "name": "좌회전표지",
+  "meaning": "차가 좌회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_307.svg"
+ },
+ {
+  "num": "308",
+  "name": "직진및우회전표지",
+  "meaning": "차가 직진 또는 우회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_308.svg"
+ },
+ {
+  "num": "309",
+  "name": "직진및좌회전표지",
+  "meaning": "차가 직진 또는 좌회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_309.svg"
+ },
+ {
+  "num": "309의2",
+  "name": "좌회전및유턴표지",
+  "meaning": "차가 좌회전 또는 유턴할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_309%EC%9D%982.svg"
+ },
+ {
+  "num": "310",
+  "name": "좌우회전표지",
+  "meaning": "차가 우회전 또는 좌회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_310.svg"
+ },
+ {
+  "num": "311",
+  "name": "유턴표지",
+  "meaning": "차마가 유턴할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_311.svg"
+ },
+ {
+  "num": "312",
+  "name": "양측방통행표지",
+  "meaning": "차가 양측 방향으로 통행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_312.svg"
+ },
+ {
+  "num": "313",
+  "name": "우측면통행표지",
+  "meaning": "차가 우측면으로 통행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_313.svg"
+ },
+ {
+  "num": "314",
+  "name": "좌측면통행표지",
+  "meaning": "차가 좌측면으로 통행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_314.svg"
+ },
+ {
+  "num": "315",
+  "name": "진행방향별통행구분표지",
+  "meaning": "차가 좌회전·직진 또는 우회전할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:South_Korea_road_sign_315.svg",
+  "notes": "No KR-series file; South Korea series used (matches the drawing)."
+ },
+ {
+  "num": "316",
+  "name": "우회로표지",
+  "meaning": "차의 좌회전이 금지된 지역에서 우회도로로 통행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_316.svg"
+ },
+ {
+  "num": "317",
+  "name": "자전거및보행자통행구분도로표지",
+  "meaning": "자전거ᆞ보행자 겸용도로에서 자전거등과 보행자를 구분하여 통행하도록 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:South_Korea_road_sign_317.svg",
+  "notes": "\"KR road sign 317 (obsolete)\" is a different (tyre) sign; South Korea series matches the drawing."
+ },
+ {
+  "num": "318",
+  "name": "자전거전용차로표지",
+  "meaning": "자전거등만 통행하도록 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_318.svg"
+ },
+ {
+  "num": "319",
+  "name": "주차장표지",
+  "meaning": "주차장이 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_319.svg",
+  "notes": "Byte-identical to \"South Korea road sign 319.svg\"."
+ },
+ {
+  "num": "320",
+  "name": "자전거주차장표지",
+  "meaning": "자전거주차장이 있음을 알리고 자전거주차장에 주차하도록 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_320.svg"
+ },
+ {
+  "num": "320의2",
+  "name": "개인형이동장치주차장표지",
+  "meaning": "개인형 이동장치주차장이 있음을 알리고 개인형 이동장치주차장에 주차하도록 지시하는 것",
+  "source": "drawn",
+  "notes": "Not on Commons; drawn from p30 embedded image. White symbols on blue per 일반기준 (drawing is line art). Glyph geometry measured from the drawing; its 300/270 dimension labels do not agree with the drawn proportions, so the drawn proportions were kept."
+ },
+ {
+  "num": "320의3",
+  "name": "어린이통학버스승하차표지",
+  "meaning": "어린이 보호구역에서 어린이통학버스가 어린이 승하차를 위해 표시판에 표시된 시간동안 정차 및 주차할 수 있도록 지시하는 것",
+  "source": "drawn",
+  "notes": "Not on Commons (and missing from the brief's number list); added 2024 and drawn from p31. White on blue per 일반기준."
+ },
+ {
+  "num": "320의4",
+  "name": "어린이승하차표지",
+  "meaning": "어린이 보호구역에서 어린이통학버스와 자동차등이 어린이 승하차를 위해 표지판에 표시된 시간동안 정차 및 주차할 수 있도록 지시하는 것",
+  "source": "drawn",
+  "notes": "Not on Commons (and missing from the brief's number list); added 2024 and drawn from p31. White on blue per 일반기준."
+ },
+ {
+  "num": "321",
+  "name": "보행자전용도로표지",
+  "meaning": "보행자 전용도로임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_321.svg",
+  "notes": "Wikipedia shows \"KR road sign 321 (newer)\"; the plain KR 321 file matches the official drawing's figures (striding adult, girl in a dress)."
+ },
+ {
+  "num": "321의2",
+  "name": "보행자우선도로표지",
+  "meaning": "보행자우선도로임을 지시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_302.svg",
+  "notes": "Not on Commons; drawn from p32. Adult/child figures traced from the embedded drawing, bicycle reused from KR 302 (same pictogram), small car drawn by hand. Colours assumed white on blue per 일반기준 (the drawing is black on white)."
+ },
+ {
+  "num": "322",
+  "name": "횡단보도표지",
+  "meaning": "보행자가 횡단보도(대각선 횡단보도를 포함한다)로 통행할 것을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_322.svg"
+ },
+ {
+  "num": "323",
+  "name": "노인보호표지(노인보호구역안)",
+  "meaning": "노인보호구역 안에서 노인의 보호를 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_323.svg"
+ },
+ {
+  "num": "324",
+  "name": "어린이보호표지(어린이보호구역안)",
+  "meaning": "어린이보호구역 안에서 어린이 또는 영유아의 보호를 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_324_(newer).svg"
+ },
+ {
+  "num": "324의2",
+  "name": "장애인보호표지(장애인보호구역안)",
+  "meaning": "장애인보호구역 안에서 장애인의 보호를 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_324%EC%9D%982.svg"
+ },
+ {
+  "num": "325",
+  "name": "자전거횡단도표지",
+  "meaning": "자전거등의 횡단도임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_325.svg"
+ },
+ {
+  "num": "326",
+  "name": "일방통행표지",
+  "meaning": "우측방향으로만 진행할 수 있는 일방통행임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_326.svg"
+ },
+ {
+  "num": "327",
+  "name": "일방통행표지",
+  "meaning": "좌측방향으로만 진행할 수 있는 일방통행임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_327.svg"
+ },
+ {
+  "num": "328",
+  "name": "일방통행표지",
+  "meaning": "전방으로만 진행할 수 있는 일방통행임을 지시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_328.svg",
+  "notes": "Byte-identical to \"South Korea road sign 328.svg\"."
+ },
+ {
+  "num": "329",
+  "name": "비보호좌회전표지",
+  "meaning": "진행신호시 반대방면에서 오는 차량에 방해가 되지 아니하도록 좌회전을 조심스럽게 할 수 있다는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_329.svg"
+ },
+ {
+  "num": "330",
+  "name": "버스전용차로표지",
+  "meaning": "버스전용차로 통행차만 통행할 수 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_330.svg"
+ },
+ {
+  "num": "331",
+  "name": "다인승차량전용차로표지",
+  "meaning": "다인승차량(3인 이상이 승차한 승합자동차·승용자동차를 말한다)만이 통행할 수 있음을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_331.svg",
+  "notes": "Lane bars in the Commons file run nearly to the rim; the drawing shows them inset like 330. Minor."
+ },
+ {
+  "num": "331의2",
+  "name": "노면전차전용차로표지",
+  "meaning": "노면전차만 통행할 수 있는 전용차로임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_331%EC%9D%982.svg"
+ },
+ {
+  "num": "332",
+  "name": "통행우선표지",
+  "meaning": "백색 화살표 방향으로 진행하는 차량이 우선 통행할 수 있도록 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_332.svg",
+  "notes": "Drawing shows a plain square with sharp corners and no rim; the Commons file matches that."
+ },
+ {
+  "num": "333",
+  "name": "자전거나란히통행허용표지",
+  "meaning": "자전거도로에서 2대 이상 자전거등의 나란히 통행을 허용하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_333.svg",
+  "notes": "Byte-identical to \"South Korea road sign 333.svg\"."
+ },
+ {
+  "num": "334",
+  "name": "도시부표지",
+  "meaning": "「국토의 계획 및 이용에 관한 법률」 제36조제1항제1호에 따른 주거지역·상업지역·공업지역 내의 도로임을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:KR_road_sign_334.svg"
+ },
+ {
+  "num": "335",
+  "name": "좌회전감응신호표지",
+  "meaning": "좌회전 감응신호를 운영하는 장소임을 알리는 것",
+  "source": "drawn",
+  "notes": "Not on Commons; drawn from p36 using its dimension labels (the embedded drawing is not to scale). Assumed all white on blue per 일반기준: white 20 mm frame around the arrow, white 20 mm divider, white text. Unsure whether the lower text panel is meant to be white with black text, as on 326–328."
+ },
+ {
+  "num": "401",
+  "name": "거리표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 시설물 또는 장소까지의 거리",
+  "source": "drawn",
+  "notes": "Plate per 별표 6 보조표지 공통기준: white plate R20, 10 mm white rim, black line (assumed 5 mm wide, inner corner R10). Text: NotoSansCJKkr-Bold outlines fitted to the ink box measured on the official drawing (drawing face is a lighter gothic)."
+ },
+ {
+  "num": "402",
+  "name": "거리표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 시설물 또는 장소까지의 거리",
+  "source": "drawn"
+ },
+ {
+  "num": "403",
+  "name": "구역표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 내용 구간 또는 구역",
+  "source": "drawn"
+ },
+ {
+  "num": "404",
+  "name": "일자표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통규제 또는 지시의 일자",
+  "source": "drawn"
+ },
+ {
+  "num": "405",
+  "name": "시간표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통규제 또는 지시의 시간",
+  "source": "drawn"
+ },
+ {
+  "num": "406",
+  "name": "시간표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통규제 또는 지시의 시간",
+  "source": "drawn",
+  "notes": "600x300 two-line plate."
+ },
+ {
+  "num": "407",
+  "name": "신호등화상태표지",
+  "meaning": "지시표지가 표시하는 지시를 따라야 하는 신호등화상태를 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "407의2",
+  "name": "우회전신호등표지",
+  "meaning": "우회전 신호등임을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "407의3",
+  "name": "신호등방향표지",
+  "meaning": "특정 방향(차량)의 신호등임을 표시",
+  "source": "drawn",
+  "notes": "Drawing gives two examples; drawn the first (버스전용). Second example: 서울역방향."
+ },
+ {
+  "num": "407의4",
+  "name": "신호등보조장치표지",
+  "meaning": "신호등 보조장치가 설치되어 있음을 표시",
+  "source": "drawn",
+  "notes": "Drawing gives two examples; drawn the first (보행신호연장시스템). Second example: 보행자 작동신호기."
+ },
+ {
+  "num": "408",
+  "name": "전방우선도로표지",
+  "meaning": "그 도로와 교차하는 전방의 도로가 우선도로임을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "409",
+  "name": "안전속도표지",
+  "meaning": "주의표지가 표시하는 뜻을 보충하기 위하여 표시",
+  "source": "drawn",
+  "notes": "400x400; numerals 30 drawn geometrically (each digit 100x200, stroke 30) per the drawing, not from the font."
+ },
+ {
+  "num": "410",
+  "name": "기상상태표지",
+  "meaning": "기상상태로 인하여 도로교통상 주의가 필요한 사항을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "411",
+  "name": "노면상태표지",
+  "meaning": "노면상태가 도로교통상 주의를 필요로 함을 표시",
+  "source": "drawn",
+  "notes": "600x300 with centre divider. Snowman/umbrella traced from the drawing and mapped to the dimensioned plate (the embedded drawing is not to scale); snowman kept as outline like the drawing, umbrella canopy filled. Dimension labels 70/75/25/45 not fully legible, so placement follows the trace."
+ },
+ {
+  "num": "412",
+  "name": "교통규제표지",
+  "meaning": "주의표지가 표시하는 뜻을 보충하여 도로교통상의 규제내용을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "413",
+  "name": "통행규제표지",
+  "meaning": "규제표지가 표시하는 뜻을 보충하여 도로교통상의 통행규제 내용을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "414",
+  "name": "차량한정표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통규제 또는 지시를 따라야 할 차의 종류를 한정",
+  "source": "drawn"
+ },
+ {
+  "num": "415",
+  "name": "통행주의표지",
+  "meaning": "주의표지가 표시하는 뜻을 보충하기 위하여 필요한 주의사항을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "415의2",
+  "name": "충돌주의표지",
+  "meaning": "표지가 표시하는 뜻을 보충하기 위하여 필요한 주의사항을 표시",
+  "source": "drawn",
+  "notes": "PDF splits the name as \"충돌 주의표 지\"; joined."
+ },
+ {
+  "num": "416",
+  "name": "표지설명표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 시설 또는 장소에 대하여 보충할 사항을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "417",
+  "name": "구간시작표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통의 규제·지시가 행하여지는 구간의 시작을 표시",
+  "source": "drawn",
+  "notes": "Arrow red per 일반기준 1.가.(3). 400x400 per dimensions (embedded drawing is horizontally stretched)."
+ },
+ {
+  "num": "418",
+  "name": "구간내표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통의 규제·지시가 행하여지는 구간임을 표시",
+  "source": "drawn",
+  "notes": "Arrow red per 일반기준 1.가.(3). 400x400 per dimensions (drawing stretched)."
+ },
+ {
+  "num": "419",
+  "name": "구간끝표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 교통의 규제·지시가 행하여지는 구간의 끝을 표시",
+  "source": "drawn",
+  "notes": "Arrow red per 일반기준 1.가.(3). 400x400 per dimensions (drawing stretched)."
+ },
+ {
+  "num": "420",
+  "name": "우방향표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 노선, 시설 또는 장소가 우측방향임을 표시",
+  "source": "drawn",
+  "notes": "Arrow 50–350, shaft 40, 60° head, barb R10; head width (90) measured."
+ },
+ {
+  "num": "421",
+  "name": "좌방향표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 노선, 시설 또는 장소가 좌측방향임을 표시",
+  "source": "drawn",
+  "notes": "Mirror of 420."
+ },
+ {
+  "num": "422",
+  "name": "전방표지",
+  "meaning": "규제표지 또는 지시표지가 표시하는 노선, 시설 또는 장소가 전방임을 표시",
+  "source": "drawn",
+  "notes": "Plate corners R50 (line R40) per drawing. Barb fillet reduced from R20 to R12 because R20 does not fit the 25 mm barb edge at the measured head width."
+ },
+ {
+  "num": "423",
+  "name": "중량표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 뜻 중 중량에 대한 보충사항을 표시",
+  "source": "drawn",
+  "notes": "400x150, text 70 high."
+ },
+ {
+  "num": "424",
+  "name": "노폭표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 뜻 중 노폭에 대한 보충사항을 표시",
+  "source": "drawn",
+  "notes": "End triangles drawn as outlines in the drawing; filled here."
+ },
+ {
+  "num": "425",
+  "name": "거리표지",
+  "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 뜻 중 거리에 대한 보충사항을 표시",
+  "source": "drawn"
+ },
+ {
+  "num": "427",
+  "name": "해제표지",
+  "meaning": "교통규제 또는 지시가 해제됨을 표시",
+  "source": "drawn",
+  "notes": "Shown without the underlying (lighter) regulatory symbol the plate is overlaid on. Frame line at inset 30, four 12 mm stripes in a 70 mm band (stripe/gap split estimated)."
+ },
+ {
+  "num": "428",
+  "name": "견인지역표지",
+  "meaning": "주차금지장소에 주차한 자동차를 견인하는 지역임을 표시",
+  "source": "drawn",
+  "notes": "550x600. Drawing shows only the plate edge; standard 보조표지 line added for consistency. Tow-truck pictogram traced from the drawing and filled."
+ },
+ {
+  "num": "501",
+  "name": "중앙선표시",
+  "meaning": "법 제14조에 따라 도로의 중앙선을 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2."
+ },
+ {
+  "num": "502",
+  "name": "유턴구역선표시",
+  "meaning": "유턴을 허용하는 안전표지가 있는 곳에서 차마가 유턴하는 구역임을 표시하는 것",
+  "source": "drawn"
+ },
+ {
+  "num": "503",
+  "name": "차선표시",
+  "meaning": "법 제14조에 따라 도로구간 내의 차로의 경계를 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2."
+ },
+ {
+  "num": "504",
+  "name": "전용차로표시",
+  "meaning": "법 제15조에 따라 전용차로의 경계를 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2. Lane line drawn dashed in the illustration shown white."
+ },
+ {
+  "num": "504의2",
+  "name": "노면전차 전용로 표시",
+  "meaning": "노면전차만 통행할 수 있는 도로 또는 차로를 표시하는 것",
+  "source": "drawn",
+  "notes": "Lettering and double line blue per 일반기준 2.나.(2); rails grey as drawn; drawing is anisotropic, scaled to 1,200 x 5,000 text block."
+ },
+ {
+  "num": "505",
+  "name": "길가장자리구역선표시",
+  "meaning": "법 제2조제11호에 따라 차도와 보도를 구획하는 길가장자리구역을 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2. Context centre line shown yellow, lane lines white (colours not given in drawing)."
+ },
+ {
+  "num": "506",
+  "name": "진로변경제한선표시",
+  "meaning": "법 제14조제5항에 따라 통행하고 있는 차의 진로변경을 제한하는 것",
+  "source": "drawn",
+  "notes": "Stop line drawn as dashed reference outline in 별표 6; shown as a solid white band."
+ },
+ {
+  "num": "507",
+  "name": "진로변경제한선표시",
+  "meaning": "차가 점선이 있는 쪽에서는 진로를 변경할 수 있으나, 실선이 있는 쪽에서는 진로변경을 제한하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2."
+ },
+ {
+  "num": "508",
+  "name": "진로변경제한선표시",
+  "meaning": "차가 점선이 있는 쪽에서는 진로를 변경할 수 있으나, 실선이 있는 쪽에서는 진로변경을 제한하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2."
+ },
+ {
+  "num": "510",
+  "name": "우회전금지표시",
+  "meaning": "차가 우회전하는 것을 금지하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_510_No_Turn_Right.svg",
+  "notes": "Geometry taken from the Commons file (2010 drawing, same as current); outline strokes dropped, white fill on pavement grey, scaled to the specified total length."
+ },
+ {
+  "num": "511",
+  "name": "좌회전금지표시",
+  "meaning": "차가 좌회전하는 것을 금지하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_511_No_Turn_Left.svg",
+  "notes": "Geometry taken from the Commons file (2010 drawing, same as current); outline strokes dropped, white fill on pavement grey, scaled to the specified total length."
+ },
+ {
+  "num": "512",
+  "name": "직진금지표시",
+  "meaning": "차가 직진하는 것을 금지하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_512_No_Straight.svg",
+  "notes": "Geometry taken from the Commons file (2010 drawing, same as current); outline strokes dropped, white fill on pavement grey, scaled to the specified total length."
+ },
+ {
+  "num": "512의2",
+  "name": "직진 및 좌회전 금지 표시",
+  "meaning": "차가 직진·좌회전하는 것을 금지하는 것",
+  "source": "drawn",
+  "notes": "Traced from the 별표 6 image with its anisotropic dimension scale (140 x 700)."
+ },
+ {
+  "num": "512의3",
+  "name": "직진 및 우회전 금지 표시",
+  "meaning": "차가 직진·우회전하는 것을 금지하는 것",
+  "source": "drawn",
+  "notes": "Mirror of 512의2 (drawing is its mirror with identical dimensions)."
+ },
+ {
+  "num": "513",
+  "name": "좌우회전금지표시",
+  "meaning": "차가 좌우회전하는 것을 금지하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_513_No_Turn_Left_and_Right.svg",
+  "notes": "Geometry taken from the Commons file (2010 drawing, same as current); outline strokes dropped, white fill on pavement grey, scaled to the specified total length."
+ },
+ {
+  "num": "514",
+  "name": "유턴금지표시",
+  "meaning": "차마의 유턴을 금지하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_514_No_U_Turn.svg",
+  "notes": "Geometry taken from the Commons file (2010 drawing, same as current); outline strokes dropped, white fill on pavement grey, scaled to the specified total length."
+ },
+ {
+  "num": "515",
+  "name": "주차금지표시",
+  "meaning": "법 제33조에 따라 주차금지를 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2."
+ },
+ {
+  "num": "516",
+  "name": "정차·주차금지표시",
+  "meaning": "법 제32조에 따라 정차 및 주차 금지를 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2. Yellow single solid edge line."
+ },
+ {
+  "num": "516의2",
+  "name": "정차·주차금지표시",
+  "meaning": "법 제32조에 따라 정차 및 주차금지를 표시하는 것",
+  "source": "drawn",
+  "notes": "Proportions follow the 별표 6 illustration scaled by its stated line width; longitudinal dash/gap lengths are schematic as drawn, not the specified l1/l2. Yellow double solid edge line (10/5/10)."
+ },
+ {
+  "num": "516의3",
+  "name": "소방시설 주변 정차·주차금지표시",
+  "meaning": "소방시설 등이 설치된 곳으로부터 5미터 이내인 곳 중 필요한 곳에 정차 및 주차 금지를 표시하는 것",
+  "source": "drawn",
+  "notes": "Drawing identical to 516의2 (same image); red per 일반기준 2.나.(3) (빨간색 또는 흰색). Meaning phrase shortened."
+ },
+ {
+  "num": "516의4",
+  "name": "소방시설 주변 정차·주차금지표시(연석)",
+  "meaning": "소방시설 등이 설치된 곳으로부터 5미터 이내인 곳 중 필요한 곳에 정차 및 주차 금지를 표시하는 것",
+  "source": "drawn",
+  "notes": "Oblique curb view as drawn, not to scale (viewBox nominal mm); red curb top/side (side shaded darker), white '소방시설 주정차금지'; sidewalk and section greys illustrative; paving texture and dimensions omitted. Meaning phrase shortened."
+ },
+ {
+  "num": "517",
+  "name": "속도제한표시",
+  "meaning": "최고속도를 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_517_Speed_Limit.svg",
+  "notes": "Commons '40' outline used as white fill, height 3,400 within 150~360 cm."
+ },
+ {
+  "num": "517의2",
+  "name": "시간제 속도제한 표시",
+  "meaning": "시간대별로 속도제한을 다르게 하는 구간임을 표시하는 것",
+  "source": "drawn",
+  "notes": "Lettering outlined from Noto Sans CJK KR Bold, stretched to the drawn 230 x ~400 cm block."
+ },
+ {
+  "num": "518",
+  "name": "속도제한표시(보호구역)",
+  "meaning": "보호구역(어린이·노인·장애인) 안에서 최고속도를 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_518_Speed_Limit_Children.svg",
+  "notes": "Commons file outdated (grey digits); redrawn: ellipse 2,000 x 2,800, digits 700/200/700 x 1,200; both variants stacked as drawn (general pavement: red ring, white digits; anti-slip red pavement: white ring/digits). Ring width 100 mm assumed."
+ },
+ {
+  "num": "519",
+  "name": "서행표시",
+  "meaning": "차가 서행하여야 할 것을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_519_Slow.svg",
+  "notes": "Commons glyph geometry fitted to 230 x 180 cm."
+ },
+ {
+  "num": "520",
+  "name": "서행표시",
+  "meaning": "차가 서행해야 하는 곳을 표시하는 것",
+  "source": "drawn",
+  "notes": "Zigzag 300 cm pitch, 50 cm amplitude, 15 cm line; shown white (colour follows the line it replaces)."
+ },
+ {
+  "num": "521",
+  "name": "일시정지표시",
+  "meaning": "차가 일시정지하여야 할 것을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_521_Stop.svg",
+  "notes": "Commons '정지' glyphs fitted to 220 x 160 cm; stop bar 240 x 40 cm (bar width = 차로폭, nominal)."
+ },
+ {
+  "num": "522",
+  "name": "양보표시",
+  "meaning": "차가 양보하여야 할 장소임을 표시하는 것",
+  "source": "drawn",
+  "notes": "Commons version lacks the 양보 lettering; redrawn 150 x 450 cm triangle with 150 x 150 cm lettering (Noto, mid-range sizes)."
+ },
+ {
+  "num": "523",
+  "name": "주차구획표시",
+  "meaning": "「주차장법」 제2조제1호가목에 따른 노상주차장의 주차구획을 표시하는 것",
+  "source": "drawn",
+  "notes": "Stall sizes per drawing (parallel row horizontal, other row vertical), all white; 주차장법 colour rules not applied; type labels painted as drawn."
+ },
+ {
+  "num": "523의2",
+  "name": "버스정차구획표시",
+  "meaning": "법 제32조제4호 단서에 따라 버스정류지에서 버스여객자동차가 정차할 수 있는 장소를 표시하는 것",
+  "source": "drawn",
+  "notes": "Kerb-side line omitted as in drawing; bus-stop sign/shelter on the sidewalk omitted; 버스 lettering Noto, 150 cm high."
+ },
+ {
+  "num": "524",
+  "name": "정차금지지대표시",
+  "meaning": "광장이나 교차로 중앙지점 등에 설치된 구획부분에 차가 들어가 정차하는 것을 금지하는 것을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_524_No_Standing_Zone.svg",
+  "notes": "Commons file uses an older square hatch layout; redrawn yellow: hatch approximated as parallel stripes (20 cm) clipped to a border band; overall size nominal 9.3 x 6.9 m."
+ },
+ {
+  "num": "525",
+  "name": "유도선표시",
+  "meaning": "교차로에서 통행하여야 할 방향을 유도하는 선을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_525_Roundabout_Line.svg",
+  "notes": "Commons 525 adds an arrow head absent from the current drawing; redrawn as a dashed arc, dash=gap=75 cm, line width 15 cm (width not dimensioned)"
+ },
+ {
+  "num": "525의2",
+  "name": "좌회전유도차로표시",
+  "meaning": "교차로에서 좌회전하려는 차량이 다른 교통에 방해가 되지 않도록 녹색등화 동안 교차로 안에서 대기하는 지점을 표시하는 것",
+  "source": "drawn",
+  "notes": "two dashed arcs (l=75) ending at the waiting bar d=45; lane width 300 and line width 15 assumed"
+ },
+ {
+  "num": "525의3",
+  "name": "노면색깔유도선표시",
+  "meaning": "교차로, 나들목, 분기점에서 통행해야 하는 방향을 유도하는 분홍색, 녹색 또는 연한녹색의 선을 표시하는 것",
+  "source": "drawn",
+  "notes": "shown as a 2-direction pair (pink + green) 47.5 cm wide with white chevrons (start group 3 at 40, then 400 / pairs 125); colour hexes approximate (no values in 별표 6); the arrow+destination interruption detail and car cross-sections omitted"
+ },
+ {
+  "num": "526",
+  "name": "유도표시",
+  "meaning": "교차로에서 회전시 통행하여야할 방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_526_Roundabout_Intersection.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "526의2",
+  "name": "회전교차로양보선표시",
+  "meaning": "회전교차로에 진입하려는 차량이 양보해야할 지점을 표시하는 것",
+  "source": "drawn",
+  "notes": "7 marks l1=50 × d=30, gap l2=50, row tilted 15° as drawn; roundabout/curb context lines omitted"
+ },
+ {
+  "num": "527",
+  "name": "유도표시",
+  "meaning": "교차로에서 회전시 통행하여야할 방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_527_Roundabout_4_Direction.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "528",
+  "name": "유도표시",
+  "meaning": "교차로에서 회전시 통행하여야할 방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_528_Roundabout_BiDirection.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "529",
+  "name": "횡단보도예고표시",
+  "meaning": "전방에 횡단보도가 있음을 알리는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_529_Crosswalk_Ahead.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; context lane lines stay thin black as in Commons/official drawing"
+ },
+ {
+  "num": "530",
+  "name": "정지선표시",
+  "meaning": "운행중 정지를 해야 할 경우 정지해야 할 지점을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_530_Stop_Line.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; context lane lines stay thin black"
+ },
+ {
+  "num": "531",
+  "name": "안전지대표시",
+  "meaning": "노상에 장애물이 있거나 안전확보가 필요한 안전지대로서 이 지대에 들어가지 못함을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_531_Safety_Zone.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; Commons shows the yellow (양방향) variant"
+ },
+ {
+  "num": "532",
+  "name": "횡단보도표시",
+  "meaning": "횡단보도임을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_532_Crosswalk.svg",
+  "notes": "Commons 532 is a 4-arm intersection layout; redrawn per current drawing: plain bars + offset directional type, l1=50, l2=1.5×l1=75, arrows l3=95"
+ },
+ {
+  "num": "532의2",
+  "name": "대각선횡단보도표시",
+  "meaning": "모든 방향으로 통행 가능한 횡단보도(횡단보도 표시 사이 빈 공간도 횡단보도에 포함한다)임을 표시하는 것",
+  "source": "drawn",
+  "notes": "layout traced from the drawing (bars 48 wide; straight 180 long, diagonal 330 long)"
+ },
+ {
+  "num": "533",
+  "name": "고원식횡단보도표시",
+  "meaning": "제한속도가 30km/h 이하로 제한된 도로에서 횡단보도(오르막 경사면 표시는 포함하지 않는다)임을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_533_Crosswalk_2.svg",
+  "notes": "raised table (drawn outline) shown as lighter grey #a6a6a6; Commons lacked it"
+ },
+ {
+  "num": "534",
+  "name": "자전거횡단도표시",
+  "meaning": "자전거등의 횡단도임을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_534_Bicycle_Cross.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; Commons dashed line uses longer rectangles than the drawing's small squares"
+ },
+ {
+  "num": "535",
+  "name": "자전거전용도로표시",
+  "meaning": "자전거 전용도로, 차로 또는 전용구간임을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_535_Bicycle_Only.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "535의2",
+  "name": "자전거우선도로표시",
+  "meaning": "자전거 우선도로임을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_535_Bicycle_Only.svg",
+  "notes": "bicycle outline reused from Commons 535 (scaled to 100×65); double chevron 10-wide bands, total 65"
+ },
+ {
+  "num": "535의3",
+  "name": "자전거·보행자겸용도로",
+  "meaning": "자전거·보행자 겸용도로임을 표시하는 것",
+  "source": "drawn",
+  "notes": "name as printed (no trailing 표시; PDF uses U+119E for the middle dot); 135×165 cm"
+ },
+ {
+  "num": "536",
+  "name": "어린이보호구역표시",
+  "meaning": "어린이 또는 영유아의 보호구역임을 표시하는 것",
+  "source": "drawn",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_536_School_Ahead.svg",
+  "notes": "Commons 536 is the obsolete 학교앞/유치원앞; 230×400 cm"
+ },
+ {
+  "num": "536의2",
+  "name": "노인보호구역표시",
+  "meaning": "노인보호구역임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×400 cm"
+ },
+ {
+  "num": "536의3",
+  "name": "장애인보호구역표시",
+  "meaning": "장애인보호구역임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×400 cm"
+ },
+ {
+  "num": "536의4",
+  "name": "보호구역기점표시",
+  "meaning": "어린이, 노인, 장애인 보호구역이 시작되는 지점을 표시하는 것",
+  "source": "drawn",
+  "notes": "both drawn variants (230×150 horizontal, 175×230 vertical); yellow border 15, white text"
+ },
+ {
+  "num": "536의5",
+  "name": "보호구역종점표시",
+  "meaning": "어린이, 노인, 장애인 보호구역이 끝나는 지점을 표시하는 것",
+  "source": "drawn",
+  "notes": "both drawn variants; yellow border 15, white text"
+ },
+ {
+  "num": "537",
+  "name": "진행방향표시",
+  "meaning": "진행방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_537_Proceeding_Direction.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "538",
+  "name": "진행방향표시",
+  "meaning": "진행방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_538_Proceeding_Direction_2.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "539",
+  "name": "진행방향표시",
+  "meaning": "진행방향을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_539_Proceeding_Direction_3.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "540",
+  "name": "진행방향및방면표시",
+  "meaning": "진행할 방향과 방면을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_540_Proceeding_Direction_Local.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; canvas padded 20 px via viewBox"
+ },
+ {
+  "num": "541",
+  "name": "진행방향및방면표시",
+  "meaning": "진행할 방향과 방면을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_541_Proceeding_Right_Local.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; canvas padded 20 px via viewBox"
+ },
+ {
+  "num": "542",
+  "name": "비보호표시",
+  "meaning": "진행신호에 반대방면에서 오는 교통에 방해가 되지 않게 좌회전을 조심스럽게 할 수 있다는 표시",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_542_Left_Turn_No_Signal.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork; canvas padded 20 px via viewBox"
+ },
+ {
+  "num": "543",
+  "name": "차로변경표시",
+  "meaning": "차로변경을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_543_Change_Lane.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "544",
+  "name": "오르막경사면표시",
+  "meaning": "전방 과속방지턱 또는 교차로에 오르막 경사면이 있음을 표시하는 것",
+  "source": "commons",
+  "commons": "https://commons.wikimedia.org/wiki/File:Korea_Traffic_Safety_Sign_-_Road_Mark_-_544_Up_Hill.svg",
+  "notes": "commons file verbatim except a pavement-grey background rect inserted behind the artwork"
+ },
+ {
+  "num": "545",
+  "name": "보행자전용도로표시",
+  "meaning": "보행자전용도로임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×400 cm"
+ },
+ {
+  "num": "545의2",
+  "name": "보행자우선도로표시",
+  "meaning": "보행자우선도로임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×400 cm"
+ },
+ {
+  "num": "546",
+  "name": "진입금지표시",
+  "meaning": "차의 진입이 금지되는 구역, 구간, 도로임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×195 cm"
+ },
+ {
+  "num": "547",
+  "name": "일방통행표시",
+  "meaning": "도로가 일방통행 구간임을 표시하는 것",
+  "source": "drawn",
+  "notes": "230×195 cm"
+ },
+ {
+  "num": "548",
+  "name": "감속유도표시",
+  "meaning": "차량의 감속이 필요한 구간임을 표시하는 것",
+  "source": "drawn",
+  "notes": "parallelograms 100×30, 45°, 100 gap, 5 cm from edge lines; lane width 300 assumed"
+ },
+ {
+  "num": "549",
+  "name": "좌회전감응신호표시",
+  "meaning": "좌회전 감응신호를 운영하는 장소임을 알리는 것",
+  "source": "drawn",
+  "notes": "box 200×575 (border 15), left-turn arrow 500 long, text 230×195; arrow curve shape approximated"
+ }
+]

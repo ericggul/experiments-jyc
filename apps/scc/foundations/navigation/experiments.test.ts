@@ -36,7 +36,9 @@ test("every slug in a family-root registry is dated in the navigation index", ()
     if (skipped.has(family[0])) continue;
 
     const source = readFileSync(registry, "utf8");
-    const prefix = family[0] === "ui" || family[0] === "dimensions" || family[0] === "desktop-collage" ? family.join("/") : family.at(-1);
+    // standalone/transportation groups several families under one route prefix.
+    if (family[0] === "standalone" && family[1] === "transportation") family.shift();
+    const prefix = family[0] === "ui" || family[0] === "dimensions" || family[0] === "desktop-collage" || family[0] === "transportation" ? family.join("/") : family.at(-1);
     const pattern = /\{\s*(?:family:\s*"([^"]+)",\s*)?slug:\s*"([^"]+)"/g;
     for (const [, group, slug] of source.matchAll(pattern)) {
       const key = [prefix, group, slug].filter(Boolean).join("/");

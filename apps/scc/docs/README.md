@@ -16,11 +16,16 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
+- [transportation/traffic-light/1–2](experiments/standalone/transportation/traffic-light/README.md): Korean signal heads on a galvanised cantilever pole, with options for 1–3 heads, left turn, back-to-back and pole-mounted heads, and timing plans; [/2](experiments/standalone/transportation/traffic-light/2.md) repeats the pole fifty times down a straight road.
+
+- [transportation/road-signs/1](experiments/standalone/transportation/road-signs/README.md): all 212 current Korean safety signs and road markings of 별표 6, 101–549, in official order.
+
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 
 - [aerodynamics/1–2](experiments/standalone/aerodynamics/README.md): interactive 3D ABC Euler flow with moving arrows or raised-middle-finger hands.
 
 - [amoeba/1](experiments/complex-systems/amoeba/README.md): grazing amoebae divide into plaques, encyst, and return in waves when the lawn regrows; click to found a lineage.
+- [amoeba/2](experiments/complex-systems/amoeba/2.md): the same lawn across the whole screen, with inherited body sizes that drift and differ by an order of magnitude.
 
 - [barabasi-albert/1](experiments/complex-systems/barabasi-albert/README.md): seeded network growth with degree-proportional attachment.
 

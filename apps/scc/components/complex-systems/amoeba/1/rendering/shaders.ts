@@ -1,99 +1,147 @@
 /**
- * Pass 1 draws each cell as a soft body (crawling pseudopods, a pinching
- * dumbbell while dividing, a damped wobble after birth). It writes normalized
- * distance as depth so the nearest body owns a pixel, and stores slot + 1 (RG)
- * and a 16-bit body height (BA).
- * Pass 2 lights that height field as a translucent gel over the lawn.
+ * Pass A (field): each body adds a soft kernel into a half-resolution float
+ * field; the colony surface is one threshold of that sum, so contacts fuse and
+ * division necks part without any switch between shapes.
+ * Pass B (owner): the nearest body per pixel, used only for interior detail
+ * (nucleus, granules, creases) that fades out before owners can change.
+ * Composite: the field's height lights a gel that refracts and absorbs the lawn.
  */
 
-/** Quad extent in cell radii; room for lobes, wobble and dividing halves. */
-export const QUAD_EXTENT = 2.0;
+/** Kernel support in body radii; the membrane sits at radius 1. */
+export const SUPPORT = 1.35;
+/** Field value on the membrane of an isolated body. */
+export const THRESHOLD = Math.pow(1 - 1 / (SUPPORT * SUPPORT), 3);
+/** Owner pass reach in body radii: interior detail ends inside this. */
+export const OWNER_REACH = 1.2;
 
-export const cellVertex = /* glsl */ `
+/**
+ * Per-body shape terms are constant over a body, so the vertex shader computes
+ * them once per instance; fragments only evaluate dot products.
+ */
+export const bodyVertexShader = /* glsl */ `
 precision highp float;
 in vec3 position;
-in vec4 aBody;    // x, y, radius, heading
-in vec4 aState;   // state, phase, slot, seed
-in vec2 aMotion;  // seconds since birth, mass
+in vec4 aBody;   // x, y, radius, heading
+in vec4 aShape;  // phase, cyst, presence, seed
+in vec4 aMotion; // age, index, unused, unused
 uniform vec2 uScale;
-out vec2 vLocal;
-flat out vec4 vBody;
-flat out vec4 vState;
-flat out vec2 vMotion;
+uniform float uTime;
+uniform float uReach;
+out vec2 vLocal;          // heading frame, body radii
+flat out vec4 vLead;      // leading lobe direction, amplitude, wobble
+flat out vec4 vSideA;     // lobe 1 direction, amplitude, lobe amount
+flat out vec4 vSideB;     // lobe 2 direction, amplitude, breathing
+flat out vec4 vSideC;     // lobe 3 direction, amplitude, division phase
+flat out float vSlot;
+
+vec2 direction(float angle) {
+  return vec2(cos(angle), sin(angle));
+}
+
 void main() {
-  vLocal = position.xy * ${QUAD_EXTENT.toFixed(1)};
-  vBody = aBody;
-  vState = aState;
-  vMotion = aMotion;
-  gl_Position = vec4((aBody.xy + vLocal * aBody.z) * uScale, 0.0, 1.0);
+  float phase = aShape.x;
+  float cyst = aShape.y;
+  float seed = aShape.w;
+  float age = aMotion.x;
+  float t = uTime;
+
+  float lobeAmount = (1.0 - cyst) * smoothstep(0.0, 0.8, age) * (1.0 - smoothstep(0.0, 0.35, phase));
+  float wobble = exp(-age * 3.0) * sin(age * 14.0) * 0.28;
+  float lead = 0.3 * (0.7 + 0.3 * sin(t * 0.9 + seed * 2.1));
+  vLead = vec4(direction(0.4 * sin(t * 0.5 + seed)), lead, wobble);
+  float amp0 = 0.17 * (0.5 + 0.5 * sin(t * 0.6 + seed * 1.7));
+  float amp1 = 0.17 * (0.5 + 0.5 * sin(t * 0.6 + seed * 1.7 + 2.3));
+  float amp2 = 0.17 * (0.5 + 0.5 * sin(t * 0.6 + seed * 1.7 + 4.6));
+  vSideA = vec4(direction(seed * 3.1 + 0.7 * sin(t * 0.3 + seed)), amp0, lobeAmount);
+  vSideB = vec4(direction(seed * 3.1 + 2.1 + 0.7 * sin(t * 0.3 + seed + 1.0)), amp1, 0.02 * sin(t * 2.1 + seed * 5.0));
+  vSideC = vec4(direction(seed * 3.1 + 4.2 + 0.7 * sin(t * 0.3 + seed + 2.0)), amp2, phase);
+  vSlot = aMotion.y;
+
+  // The quad only covers how far this body can actually reach right now.
+  float stretch = (1.0 + lobeAmount * (lead + amp0 + amp1 + amp2) + 0.02) * (1.0 + abs(wobble));
+  float extent = uReach * stretch + 0.64 * smoothstep(0.0, 1.0, phase);
+  vec2 corner = position.xy * extent;
+  float h = aBody.w;
+  vLocal = mat2(cos(h), -sin(h), sin(h), cos(h)) * corner;
+  float size = aBody.z * mix(1.0, 0.82, cyst) * mix(0.35, 1.0, aShape.z);
+  gl_Position = vec4((aBody.xy + corner * size) * uScale, 0.0, 1.0);
 }
 `;
 
-export const cellFragment = /* glsl */ `
+const bodyFragmentHead = /* glsl */ `
 precision highp float;
 in vec2 vLocal;
-flat in vec4 vBody;
-flat in vec4 vState;
-flat in vec2 vMotion;
-uniform float uTime;
+flat in vec4 vLead;
+flat in vec4 vSideA;
+flat in vec4 vSideB;
+flat in vec4 vSideC;
+flat in float vSlot;
 out vec4 color;
 
-float smin(float a, float b, float k) {
-  if (k <= 0.0) return min(a, b);
-  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-  return mix(b, a, h) - k * h * (1.0 - h);
+float lobe4(vec2 n, vec2 axis) {
+  float c = max(dot(n, axis), 0.0);
+  c *= c;
+  return c * c;
 }
 
-// Crawling body in its own frame (x = heading), distance in radii.
-float crawling(vec2 q, float seed, float age) {
-  // Damped jelly wobble after birth, stretched along the division axis.
-  float wobble = exp(-age * 3.2) * cos(age * 15.0) * 0.3;
+float lobe7(vec2 n, vec2 axis) {
+  float c = max(dot(n, axis), 0.0);
+  float c2 = c * c;
+  return c2 * c2 * c2 * c;
+}
+
+// Distance in body radii (1 = membrane) of a crawling body in its heading frame.
+float crawling(vec2 q) {
+  float wobble = vLead.w;
   q.x /= 1.0 + wobble;
   q.y *= 1.0 + wobble * 0.8;
-  float a = atan(q.y, q.x);
-  float t = uTime;
-  float lobes = 0.34 * pow(max(cos(a - 0.4 * sin(t * 0.5 + seed)), 0.0), 4.0) * (0.7 + 0.3 * sin(t * 0.9 + seed * 2.1));
-  for (int k = 0; k < 3; k++) {
-    float fk = float(k);
-    float angle = seed * 3.1 + fk * 2.1 + 0.7 * sin(t * 0.3 + seed + fk);
-    float amp = 0.2 * (0.5 + 0.5 * sin(t * 0.6 + seed * 1.7 + fk * 2.3));
-    lobes += amp * pow(max(cos(a - angle), 0.0), 7.0);
-  }
-  float breathe = 0.025 * sin(t * 2.1 + seed * 5.0);
-  return length(q) / (1.0 + lobes + breathe);
+  float len = length(q);
+  vec2 n = q / max(len, 1e-5);
+  float lobes = vLead.z * lobe4(n, vLead.xy)
+    + vSideA.z * lobe7(n, vSideA.xy) + vSideB.z * lobe7(n, vSideB.xy) + vSideC.z * lobe7(n, vSideC.xy);
+  return len / (1.0 + vSideA.w * lobes + vSideB.w);
 }
 
-// Dividing: the halves part across the heading, a neck pinches and closes.
-float dividing(vec2 q, float phase) {
-  float e = smoothstep(0.0, 1.0, phase);
-  float apart = 0.64 * e;
-  float radius = mix(1.0, 0.707, e);
-  float a = length(q - vec2(0.0, apart)) / radius;
-  float b = length(q + vec2(0.0, apart)) / radius;
-  float d = smin(a, b, 0.4 * (1.0 - smoothstep(0.5, 0.9, phase)));
-  float pinch = 0.55 * smoothstep(0.25, 0.95, phase);
-  return d + pinch * exp(-q.y * q.y / 0.035) * smoothstep(0.2, 0.6, length(q));
+float kernel(float d) {
+  float s = 1.0 - d * d / ${(SUPPORT * SUPPORT).toFixed(4)};
+  return s > 0.0 ? s * s * s : 0.0;
 }
+`;
 
+export const fieldFragment = /* glsl */ `${bodyFragmentHead}
 void main() {
-  float state = vState.x;
-  float heading = vBody.w;
-  vec2 q = mat2(cos(heading), -sin(heading), sin(heading), cos(heading)) * vLocal;
-  float d;
-  float h;
-  float thick = 0.55 + 0.25 * clamp(vMotion.y / 2.0, 0.0, 1.0);
-  if (state > 1.5) {
-    d = length(q) / 0.8;
-    h = 0.9 * smoothstep(1.0, 0.72, d) * (0.85 + 0.15 * (1.0 - d * d));
+  float phase = vSideC.w;
+  float f;
+  if (phase <= 0.0) {
+    f = kernel(crawling(vLocal));
   } else {
-    d = state > 0.5 ? dividing(q, vState.y) : crawling(q, vState.w, vMotion.x);
-    h = thick * pow(max(1.0 - d * d, 0.0), 0.65);
+    // Halves part across the heading; their sum keeps the neck continuous.
+    float e = smoothstep(0.0, 1.0, phase);
+    vec2 apart = vec2(0.0, 0.64 * e);
+    float radius = mix(1.0, 0.707, e);
+    f = mix(0.5, 1.0, e) * (kernel(crawling((vLocal - apart) / radius)) + kernel(crawling((vLocal + apart) / radius)));
   }
-  if (d > 1.0) discard;
-  gl_FragDepth = d;
-  float slot = vState.z + 1.0;
-  float height = floor(clamp(h, 0.0, 0.999) * 65535.0);
-  color = vec4(floor(slot / 256.0) / 255.0, mod(slot, 256.0) / 255.0, floor(height / 256.0) / 255.0, mod(height, 256.0) / 255.0);
+  if (f <= 0.0) discard;
+  color = vec4(f, 0.0, 0.0, 1.0);
+}
+`;
+
+export const ownerFragment = /* glsl */ `${bodyFragmentHead}
+void main() {
+  float phase = vSideC.w;
+  float nearest;
+  if (phase <= 0.0) {
+    nearest = crawling(vLocal);
+  } else {
+    float e = smoothstep(0.0, 1.0, phase);
+    vec2 apart = vec2(0.0, 0.64 * e);
+    float radius = mix(1.0, 0.707, e);
+    nearest = min(crawling((vLocal - apart) / radius), crawling((vLocal + apart) / radius));
+  }
+  if (nearest > ${OWNER_REACH.toFixed(2)}) discard;
+  gl_FragDepth = nearest / ${OWNER_REACH.toFixed(2)};
+  float slot = vSlot + 1.0;
+  color = vec4(floor(slot / 256.0) / 255.0, mod(slot, 256.0) / 255.0, nearest / ${OWNER_REACH.toFixed(2)}, 1.0);
 }
 `;
 
@@ -108,31 +156,158 @@ void main() {
 export const compositeFragment = /* glsl */ `
 precision highp float;
 precision highp sampler2D;
-uniform sampler2D uCells;   // pass 1
-uniform sampler2D uData;    // per slot: (x, y, heading, radius), (state, lineage, seed, phase)
-uniform sampler2D uFood;    // food / capacity
+uniform sampler2D uField;   // pass A, half resolution, linear
+uniform sampler2D uOwner;   // pass B, full resolution, nearest
+uniform sampler2D uData;    // per body: (x, y, heading, radius), (cyst, lineage, seed, phase)
+uniform sampler2D uFood;    // food / capacity, pre-blurred
+uniform sampler2D uGrain;   // baked lawn grain: film (R), fine (G)
 uniform vec2 uResolution;
 uniform float uRadius;      // dish radius in pixels
 uniform float uCellPx;      // newborn radius in pixels
+uniform float uCellWorld;   // newborn radius in dish units
 uniform float uDataWidth;
 out vec4 color;
 
-const vec3 PAGE = vec3(0.905, 0.900, 0.885);
-const vec3 EATEN = vec3(0.925, 0.918, 0.892);
-const vec3 LAWN = vec3(0.760, 0.748, 0.690);
-const vec3 GEL = vec3(0.700, 0.690, 0.650);
-const vec3 CYST = vec3(0.540, 0.440, 0.320);
-const vec3 LIGHT = vec3(-0.45, 0.55, 0.70);
+const float THRESHOLD = ${THRESHOLD.toFixed(5)};
+const vec3 PAGE = vec3(0.900, 0.896, 0.882);
+const vec3 CLEARED = vec3(0.905, 0.902, 0.872);
+const vec3 LAWN = vec3(0.735, 0.722, 0.655);
+const vec3 LIGHT = vec3(-0.42, 0.55, 0.72);
 
 vec3 lineageTint(float lineage) {
   int i = int(mod(lineage, 6.0));
-  if (i == 0) return vec3(0.80, 0.45, 0.36);
-  if (i == 1) return vec3(0.40, 0.53, 0.72);
-  if (i == 2) return vec3(0.48, 0.64, 0.46);
-  if (i == 3) return vec3(0.80, 0.64, 0.34);
-  if (i == 4) return vec3(0.62, 0.48, 0.68);
-  return vec3(0.36, 0.62, 0.62);
+  if (i == 0) return vec3(0.86, 0.66, 0.58);
+  if (i == 1) return vec3(0.64, 0.72, 0.84);
+  if (i == 2) return vec3(0.68, 0.79, 0.66);
+  if (i == 3) return vec3(0.86, 0.78, 0.58);
+  if (i == 4) return vec3(0.76, 0.68, 0.82);
+  return vec3(0.62, 0.78, 0.78);
 }
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+// Food arrives pre-blurred; grain is baked once in dish space (see grainFragment).
+vec3 lawnAt(vec2 world) {
+  vec2 uv = world * 0.5 + 0.5;
+  float food = texture(uFood, uv).r;
+  vec2 grain = texture(uGrain, uv).rg;
+  vec3 base = mix(CLEARED, LAWN, food);
+  return base * (1.0 - 0.07 * food * (grain.r - 0.5) - 0.035 * food * (grain.g - 0.5));
+}
+
+float fieldAt(vec2 frag) {
+  return texture(uField, frag / uResolution).r;
+}
+
+vec4 bodyData(float slot, float row) {
+  return texelFetch(uData, ivec2(int(mod(slot, uDataWidth)), int(floor(slot / uDataWidth) * 2.0 + row)), 0);
+}
+
+void main() {
+  vec2 frag = gl_FragCoord.xy;
+  vec2 world = (frag - 0.5 * uResolution) / uRadius;
+  float r = length(world);
+  if (r > 1.0 + 1.0 / uRadius) {
+    color = vec4(PAGE, 1.0);
+    return;
+  }
+
+  float field = fieldAt(frag);
+  vec3 light = normalize(LIGHT);
+
+  // Agar with a soft shadow and a faint contact darkening around bodies.
+  vec2 toward = normalize(light.xy) * uCellPx;
+  float caster = max(fieldAt(frag + toward * 0.3), fieldAt(frag + toward * 0.65) * 0.8);
+  vec3 ground = lawnAt(world);
+  ground *= 1.0 - 0.18 * smoothstep(THRESHOLD * 0.25, THRESHOLD * 1.6, caster);
+  ground *= 1.0 - 0.07 * smoothstep(0.0, THRESHOLD, field);
+
+  float width = max(fwidth(field), 1e-4) * 0.8;
+  float coverage = smoothstep(THRESHOLD - width, THRESHOLD + width, field);
+  vec3 shade = ground;
+
+  if (coverage > 0.0) {
+    // Height from the field: a plump dome with a steep, refracting rim.
+    float u = clamp((field - THRESHOLD) / (1.0 - THRESHOLD), 0.0, 1.0);
+    float h = 0.7 * sqrt(u);
+    float slope = 0.35 / max(sqrt(u), 0.14) / (1.0 - THRESHOLD);
+    float gx = fieldAt(frag + vec2(1.0, 0.0)) - fieldAt(frag - vec2(1.0, 0.0));
+    float gy = fieldAt(frag + vec2(0.0, 1.0)) - fieldAt(frag - vec2(0.0, 1.0));
+    vec3 normal = normalize(vec3(-gx * slope * uCellPx * 0.5, -gy * slope * uCellPx * 0.5, 1.0));
+
+    // Interior detail from the nearest body, faded well before its border.
+    vec4 owner = texture(uOwner, frag / uResolution);
+    float slot = floor(owner.r * 255.0 + 0.5) * 256.0 + floor(owner.g * 255.0 + 0.5) - 1.0;
+    float nearest = owner.b * 1.2;
+    float cyst = 0.0;
+    float nucleus = 0.0;
+    float grains = 0.0;
+    vec3 tint = vec3(0.86, 0.84, 0.80);
+    float crease = 0.0;
+    if (slot >= 0.0) {
+      vec4 a = bodyData(slot, 0.0);
+      vec4 b = bodyData(slot, 1.0);
+      cyst = b.x;
+      tint = mix(vec3(0.88, 0.86, 0.82), lineageTint(b.y), 0.35);
+      vec2 local = (world - a.xy) / a.w;
+      local = mat2(cos(a.z), -sin(a.z), sin(a.z), cos(a.z)) * local;
+      float inner = 1.0 - smoothstep(0.5, 0.8, nearest);
+      float apart = 0.64 * smoothstep(0.0, 1.0, b.w);
+      float split = smoothstep(0.0, 0.25, b.w);
+      vec2 n1 = mix(vec2(-0.22, 0.0), vec2(0.0, apart), split);
+      vec2 n2 = mix(vec2(-0.22, 0.0), vec2(0.0, -apart), split);
+      float ns = mix(1.0, 0.75, b.w);
+      nucleus = max(1.0 - smoothstep(0.2 * ns, 0.29 * ns, length(local - n1)), 1.0 - smoothstep(0.2 * ns, 0.29 * ns, length(local - n2)));
+      nucleus *= inner * (1.0 - cyst);
+      vec2 grid = local * 15.0 + b.z * 7.0;
+      vec2 cell = floor(grid);
+      vec2 spot = cell + 0.3 + 0.4 * vec2(hash(cell), hash(cell + 17.0));
+      grains = (1.0 - smoothstep(0.07, 0.17, length(grid - spot))) * step(0.4, hash(cell + 5.0)) * inner * (1.0 - nucleus);
+      crease = smoothstep(0.86, 1.08, nearest);
+    }
+
+    // Light through the gel: refracted lawn, absorbed with depth, milky scatter.
+    float refraction = uCellWorld * 0.9 * h;
+    vec3 seen = vec3(
+      lawnAt(world + normal.xy * refraction * 0.94).r,
+      lawnAt(world + normal.xy * refraction).g,
+      lawnAt(world + normal.xy * refraction * 1.06).b
+    );
+    vec3 sigma = mix(vec3(0.55, 0.7, 1.0), vec3(1.5, 2.1, 3.0), cyst) * (1.0 + 1.2 * nucleus + 0.9 * grains);
+    vec3 transmit = exp(-sigma * h * 1.4);
+    float scatter = (1.0 - transmit.g) * (0.5 + 0.2 * cyst);
+    vec3 milk = mix(tint, vec3(0.72, 0.58, 0.40), cyst) * (0.78 + 0.22 * dot(normal, light));
+    vec3 gel = seen * transmit + milk * scatter;
+    gel *= 1.0 - 0.22 * crease * (1.0 - cyst);
+
+    // Wet surface: fresnel reflection of a soft area light over a pale room.
+    vec3 reflected = reflect(vec3(0.0, 0.0, -1.0), normal);
+    float facing = max(dot(reflected, light), 0.0);
+    float fresnel = 0.03 + 0.97 * pow(1.0 - normal.z, 5.0);
+    float softbox = smoothstep(0.86, 0.975, facing);
+    vec3 room = mix(vec3(0.78, 0.77, 0.74), vec3(0.97, 0.96, 0.94), reflected.z * 0.5 + 0.5);
+    gel = mix(gel, room, fresnel * 0.55);
+    gel += (softbox * 0.42 + pow(facing, 10.0) * 0.06) * (1.0 - 0.6 * cyst);
+
+    shade = mix(ground, gel, coverage);
+  }
+
+  // The dish wall: a narrow meniscus.
+  float wall = 1.0 - smoothstep(0.0, 2.0, abs(r - 1.0) * uRadius);
+  shade = mix(shade, shade * 0.84, wall);
+  color = vec4(shade, 1.0);
+}
+`;
+
+/** Draws the static lawn grain once into dish-space texture coordinates. */
+export const grainFragment = /* glsl */ `
+precision highp float;
+uniform vec2 uSize;
+out vec4 color;
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -147,96 +322,9 @@ float noise(vec2 p) {
   return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + 1.0), f.x), f.y);
 }
 
-vec4 cellsAt(vec2 frag) {
-  return texture(uCells, frag / uResolution);
-}
-
-float slotOf(vec4 c) {
-  return floor(c.r * 255.0 + 0.5) * 256.0 + floor(c.g * 255.0 + 0.5) - 1.0;
-}
-
-float heightOf(vec4 c) {
-  return (floor(c.b * 255.0 + 0.5) * 256.0 + floor(c.a * 255.0 + 0.5)) / 65535.0;
-}
-
-float heightAt(vec2 frag) {
-  return heightOf(cellsAt(frag));
-}
-
-vec4 slotData(float slot, float row) {
-  return texelFetch(uData, ivec2(int(mod(slot, uDataWidth)), int(floor(slot / uDataWidth) * 2.0 + row)), 0);
-}
-
 void main() {
-  vec2 frag = gl_FragCoord.xy;
-  vec2 world = (frag - 0.5 * uResolution) / uRadius;
-  float r = length(world);
-  if (r > 1.0 + 1.0 / uRadius) {
-    color = vec4(PAGE, 1.0);
-    return;
-  }
-
-  // Lawn: turbid where bacteria remain, a faint film texture inside it.
-  vec2 foodUv = world * 0.5 + 0.5;
-  vec2 texel = 0.6 / vec2(textureSize(uFood, 0));
-  float food = 0.25 * (texture(uFood, foodUv + texel).r + texture(uFood, foodUv - texel).r
-    + texture(uFood, foodUv + vec2(texel.x, -texel.y)).r + texture(uFood, foodUv + vec2(-texel.x, texel.y)).r);
-  float film = noise(world * 70.0) * 0.6 + noise(world * 170.0) * 0.4;
-  vec3 medium = mix(EATEN, LAWN, food) * (1.0 - 0.05 * food * (film - 0.5));
-
-  // Soft contact shadow cast away from the light.
-  vec2 toward = normalize(LIGHT.xy) * uCellPx;
-  float occluder = max(heightAt(frag + toward * 0.25), max(heightAt(frag + toward * 0.5) * 0.8, heightAt(frag + toward * 0.8) * 0.55));
-  medium *= 1.0 - 0.2 * clamp(occluder * 1.4, 0.0, 1.0);
-
-  vec4 here = cellsAt(frag);
-  float slot = slotOf(here);
-  vec3 shade = medium;
-  if (slot >= 0.0) {
-    float h = heightOf(here);
-    float dx = heightAt(frag + vec2(1.0, 0.0)) - heightAt(frag - vec2(1.0, 0.0));
-    float dy = heightAt(frag + vec2(0.0, 1.0)) - heightAt(frag - vec2(0.0, 1.0));
-    vec3 normal = normalize(vec3(-dx * uCellPx * 0.7, -dy * uCellPx * 0.7, 1.0));
-    vec3 light = normalize(LIGHT);
-
-    vec4 a = slotData(slot, 0.0);
-    vec4 b = slotData(slot, 1.0);
-    bool cyst = b.x > 1.5;
-    vec2 local = (world - a.xy) / a.w;
-    local = mat2(cos(a.z), -sin(a.z), sin(a.z), cos(a.z)) * local;
-
-    vec3 gel = cyst ? CYST : mix(GEL, lineageTint(b.y), 0.32);
-    vec3 body = gel * (0.62 + 0.38 * dot(normal, light));
-
-    if (!cyst) {
-      // Granular endoplasm thickening toward the middle.
-      vec2 grid = local * 13.0 + b.z * 7.0;
-      vec2 cell = floor(grid);
-      vec2 grain = cell + 0.3 + 0.4 * vec2(hash(cell), hash(cell + 17.0));
-      float grains = (1.0 - smoothstep(0.08, 0.2, length(grid - grain))) * step(0.35, hash(cell + 5.0)) * smoothstep(0.3, 0.6, h);
-      body = mix(body, body * 0.7, grains * 0.7);
-      // Nucleus seen through the gel; two while dividing.
-      float apart = 0.64 * smoothstep(0.0, 1.0, b.w);
-      float nucleus = b.x > 0.5
-        ? max(1.0 - smoothstep(0.2, 0.28, length(local - vec2(0.0, apart))), 1.0 - smoothstep(0.2, 0.28, length(local + vec2(0.0, apart))))
-        : 1.0 - smoothstep(0.24, 0.32, length(local + vec2(0.25, 0.0)));
-      body = mix(body, body * 0.84 + 0.05, nucleus * 0.7);
-    }
-
-    // Thin ectoplasm stays clear; the granular middle is denser.
-    float absorb = (cyst ? 0.85 : 0.42) * (1.0 - exp(-2.2 * h)) + (cyst ? 0.0 : 0.3 * smoothstep(0.35, 0.75, h));
-    shade = mix(medium, body, absorb);
-    // Refractive edge reads as a dark membrane line.
-    float tilt = 1.0 - normal.z;
-    shade *= 1.0 - (cyst ? 0.45 : 0.32) * smoothstep(0.12, 0.5, tilt);
-    vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
-    float facing = max(dot(normal, halfway), 0.0);
-    shade += (pow(facing, 28.0) * 0.16 + pow(facing, 160.0) * 0.28) * (cyst ? 0.4 : 1.0) * smoothstep(0.05, 0.25, h);
-  }
-
-  // The dish wall: a narrow meniscus.
-  float wall = 1.0 - smoothstep(0.0, 2.0, abs(r - 1.0) * uRadius);
-  shade = mix(shade, shade * 0.82, wall);
-  color = vec4(shade, 1.0);
+  vec2 world = gl_FragCoord.xy / uSize * 2.0 - 1.0;
+  float film = noise(world * 75.0) * 0.6 + noise(world * 21.0) * 0.4;
+  color = vec4(film, noise(world * 260.0), 0.0, 1.0);
 }
 `;

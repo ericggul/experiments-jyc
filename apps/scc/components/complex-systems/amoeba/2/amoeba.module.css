@@ -1,0 +1,19 @@
+.field {
+  position: fixed;
+  inset: 0;
+  background: #e7e5df;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+  outline: none;
+}
+
+.canvas:focus-visible {
+  outline: 2px solid #8a8577;
+  outline-offset: -4px;
+}

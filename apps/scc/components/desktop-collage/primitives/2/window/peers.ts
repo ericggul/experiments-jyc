@@ -5,7 +5,7 @@ import type { Rect } from '../model/field';
 // loop. A window that stops announcing is forgotten after a short silence.
 
 export type Peer = { id: number; color: string; /** The core's colour: the entangled partner's. */ partner: string; /** Page area. */ content: Rect; /** Whole window including its title bar. */ outer: Rect; seen: number };
-type Message = { type: 'state'; peer: Omit<Peer, 'seen'> } | { type: 'hello' } | { type: 'bye'; id: number };
+type Message = { type: 'state'; peer: Omit<Peer, 'seen'> } | { type: 'hello' } | { type: 'bye'; id: number } | { type: 'share'; id: number; payload: unknown };
 
 const SILENCE_MS = 1500;
 const HEARTBEAT_MS = 400;
@@ -23,6 +23,8 @@ const same = (a: Rect, b: Rect) => a.x === b.x && a.y === b.y && a.width === b.w
 
 export function createPeers(channelName: string, self: { id: number; color: string; partner: string }) {
   const peers = new Map<number, Peer>();
+  /** Latest payload each window shared (e.g. its graph). */
+  const shared = new Map<number, unknown>();
   const listeners = new Set<() => void>();
   // Opened per mount (connect) and closed on unmount (disconnect), so a
   // remount in development StrictMode never reuses a closed channel.
@@ -40,7 +42,8 @@ export function createPeers(channelName: string, self: { id: number; color: stri
 
   const receive = ({ data }: MessageEvent<Message>) => {
     if (data.type === 'hello') { const me = own(); if (me) post({ type: 'state', peer: { id: me.id, color: me.color, partner: me.partner, content: me.content, outer: me.outer } }); return; }
-    if (data.type === 'bye') { peers.delete(data.id); dirty = true; emit(); return; }
+    if (data.type === 'bye') { peers.delete(data.id); shared.delete(data.id); dirty = true; emit(); return; }
+    if (data.type === 'share') { shared.set(data.id, data.payload); dirty = true; return; }
     const previous = peers.get(data.peer.id);
     if (!previous || !same(previous.content, data.peer.content)) dirty = true;
     peers.set(data.peer.id, { ...data.peer, seen: performance.now() });
@@ -56,7 +59,7 @@ export function createPeers(channelName: string, self: { id: number; color: stri
       peers.set(self.id, { ...self, ...rects, seen: now });
       if (moved) dirty = true;
       if (moved || now - lastSent > HEARTBEAT_MS) { post({ type: 'state', peer: { ...self, ...rects } }); lastSent = now; }
-      for (const [id, peer] of peers) if (id !== self.id && now - peer.seen > SILENCE_MS) { peers.delete(id); dirty = true; }
+      for (const [id, peer] of peers) if (id !== self.id && now - peer.seen > SILENCE_MS) { peers.delete(id); shared.delete(id); dirty = true; }
       emit();
     },
     /** Joins the field and asks the other windows to announce themselves. */
@@ -74,6 +77,9 @@ export function createPeers(channelName: string, self: { id: number; color: stri
       channel = null;
     },
     get: (id: number) => peers.get(id),
+    /** Shares a payload with every other window (and keeps it as this window's own). */
+    share(payload: unknown) { shared.set(self.id, payload); post({ type: 'share', id: self.id, payload }); },
+    shared: (id: number) => shared.get(id),
     /** True once after any position or membership change. */
     takeDirty() { const was = dirty; dirty = false; return was; },
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },

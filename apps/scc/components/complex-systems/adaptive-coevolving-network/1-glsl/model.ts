@@ -51,7 +51,7 @@ export type CoevolutionMeasure = {
 };
 
 export const DEFAULT_VOTERS = 500;
-export const MAX_VOTERS = 800;
+export const MAX_VOTERS = 5_000;
 /** Pair keys stay valid as the population grows up to MAX_VOTERS. */
 const PAIR_STRIDE = 1 << 16;
 export const DEFAULT_MEAN_DEGREE = 4;

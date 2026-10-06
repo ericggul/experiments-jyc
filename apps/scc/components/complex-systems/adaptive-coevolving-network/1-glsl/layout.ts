@@ -47,12 +47,186 @@ export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   }
 }
 
-/** One relaxation step; `delta` in seconds. O(n²) repulsion is fine at n ≈ 240. */
+/** Opening angle for Barnes–Hut: a group is one body when size < θ · distance. */
+const OPENING = 0.75;
+/** Voters a leaf holds before it splits. */
+const LEAF_SIZE = 6;
+const MAX_TREE_DEPTH = 24;
+
+type Tree = {
+  left: Float64Array;
+  top: Float64Array;
+  half: Float64Array;
+  mass: Float64Array;
+  sumX: Float64Array;
+  sumY: Float64Array;
+  child: Int32Array;
+  head: Int32Array;
+  held: Int32Array;
+  next: Int32Array;
+  stack: Int32Array;
+};
+
+let tree: Tree | null = null;
+
+/** Tree storage is kept between frames and only grows. */
+function treeFor(count: number): Tree {
+  const capacity = count * 4 + 64;
+  if (tree && tree.next.length >= count && tree.left.length >= capacity) return tree;
+  tree = {
+    left: new Float64Array(capacity),
+    top: new Float64Array(capacity),
+    half: new Float64Array(capacity),
+    mass: new Float64Array(capacity),
+    sumX: new Float64Array(capacity),
+    sumY: new Float64Array(capacity),
+    child: new Int32Array(capacity),
+    head: new Int32Array(capacity),
+    held: new Int32Array(capacity),
+    next: new Int32Array(count),
+    stack: new Int32Array(MAX_TREE_DEPTH * 4 + 8),
+  };
+  return tree;
+}
+
+/**
+ * The same pairwise repulsion as the exact loop, summed with a quadtree:
+ * near voters exactly, far groups as one body of their combined mass at their
+ * centre of mass. O(n log n) instead of O(n²).
+ */
+function addTreeRepulsion(
+  bodies: readonly Body[],
+  forceX: Float64Array,
+  forceY: Float64Array,
+  repulsion: number,
+  softening: number,
+) {
+  const count = bodies.length;
+  const { left, top, half, mass, sumX, sumY, child, head, held, next, stack } = treeFor(count);
+  const capacity = left.length;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const body of bodies) {
+    if (body.x < minX) minX = body.x;
+    if (body.y < minY) minY = body.y;
+    if (body.x > maxX) maxX = body.x;
+    if (body.y > maxY) maxY = body.y;
+  }
+  let used = 1;
+  const reset = (node: number) => {
+    mass[node] = 0;
+    sumX[node] = 0;
+    sumY[node] = 0;
+    child[node] = -1;
+    head[node] = -1;
+    held[node] = 0;
+  };
+  reset(0);
+  left[0] = minX;
+  top[0] = minY;
+  half[0] = Math.max(maxX - minX, maxY - minY, 1e-3) / 2 + 1e-3;
+
+  const quadrant = (node: number, x: number, y: number) =>
+    child[node]! + (x >= left[node]! + half[node]! ? 1 : 0) + (y >= top[node]! + half[node]! ? 2 : 0);
+
+  const insert = (body: number, start: number, startDepth: number) => {
+    const { x, y } = bodies[body]!;
+    let node = start;
+    let depth = startDepth;
+    for (;;) {
+      mass[node]! += 1;
+      sumX[node]! += x;
+      sumY[node]! += y;
+      if (child[node]! >= 0) {
+        node = quadrant(node, x, y);
+        depth += 1;
+        continue;
+      }
+      if (held[node]! < LEAF_SIZE || depth >= MAX_TREE_DEPTH || used + 4 > capacity) {
+        next[body] = head[node]!;
+        head[node] = body;
+        held[node]! += 1;
+        return;
+      }
+      // Split the full leaf and push its residents one level down.
+      const resident = head[node]!;
+      head[node] = -1;
+      held[node] = 0;
+      child[node] = used;
+      const quarter = half[node]! / 2;
+      for (let index = 0; index < 4; index += 1) {
+        reset(used + index);
+        left[used + index] = left[node]! + (index & 1 ? half[node]! : 0);
+        top[used + index] = top[node]! + (index & 2 ? half[node]! : 0);
+        half[used + index] = quarter;
+      }
+      used += 4;
+      for (let moving = resident; moving >= 0; ) {
+        const following = next[moving]!;
+        insert(moving, quadrant(node, bodies[moving]!.x, bodies[moving]!.y), depth + 1);
+        moving = following;
+      }
+      node = quadrant(node, x, y);
+      depth += 1;
+    }
+  };
+  for (let body = 0; body < count; body += 1) insert(body, 0, 0);
+
+  const opening = OPENING * OPENING;
+  for (let index = 0; index < count; index += 1) {
+    const { x, y } = bodies[index]!;
+    let fx = 0;
+    let fy = 0;
+    let size = 0;
+    stack[size++] = 0;
+    while (size > 0) {
+      const node = stack[--size]!;
+      const weight = mass[node]!;
+      if (weight === 0) continue;
+      if (child[node]! < 0) {
+        for (let other = head[node]!; other >= 0; other = next[other]!) {
+          if (other === index) continue;
+          const dx = x - bodies[other]!.x;
+          const dy = y - bodies[other]!.y;
+          const push = repulsion / (dx * dx + dy * dy + softening);
+          fx += dx * push;
+          fy += dy * push;
+        }
+        continue;
+      }
+      const dx = x - sumX[node]! / weight;
+      const dy = y - sumY[node]! / weight;
+      const squared = dx * dx + dy * dy;
+      const width = half[node]! * 2;
+      if (width * width < opening * squared) {
+        const push = (weight * repulsion) / (squared + softening);
+        fx += dx * push;
+        fy += dy * push;
+      } else {
+        const first = child[node]!;
+        stack[size++] = first;
+        stack[size++] = first + 1;
+        stack[size++] = first + 2;
+        stack[size++] = first + 3;
+      }
+    }
+    forceX[index]! += fx;
+    forceY[index]! += fy;
+  }
+}
+
+/**
+ * One relaxation step; `delta` in seconds. Exact O(n²) repulsion by default;
+ * `approximate` sums it with a Barnes–Hut quadtree instead, for large n.
+ */
 export function relaxBodies(
   bodies: Body[],
   ties: readonly CoevolvingTie[],
   frame: Frame,
   delta: number,
+  approximate = false,
 ) {
   const count = bodies.length;
   const length = idealLength(frame, count);
@@ -61,7 +235,8 @@ export function relaxBodies(
   const softening = (length * 0.25) ** 2;
   const repulsion = length * length * REPULSION;
 
-  for (let first = 0; first < count; first += 1) {
+  if (approximate) addTreeRepulsion(bodies, forceX, forceY, repulsion, softening);
+  else for (let first = 0; first < count; first += 1) {
     const a = bodies[first]!;
     for (let second = first + 1; second < count; second += 1) {
       const b = bodies[second]!;
@@ -97,7 +272,8 @@ export function relaxBodies(
   const step = Math.min(delta, 1 / 30);
   const damping = Math.exp(-6 * step);
   const maxSpeed = length * 6;
-  const margin = Math.min(frame.width, frame.height) * 0.04;
+  // Voters are held only at the screen's own edges.
+  const margin = 0;
 
   for (let index = 0; index < count; index += 1) {
     const body = bodies[index]!;

@@ -15,6 +15,7 @@ consequences did not cohere.
 | `adaptive-coevolving-network/5` Jain–Krishna ecosystem (2026-10-03) | Removed by the user as not useful. Routes 6–8 were renumbered 5–7. |
 | `adaptive-coevolving-network/4` structural balance, `/5` bounded confidence (2026-10-03) | Removed by the user as not useful. Structural balance changed only relationship signs, with no node state, and settled into the same two-camp picture each time. Bounded confidence repeated the opinion-and-rewiring loop that `/1` and the echo-chamber route already show. Routes 6–10 were renumbered 4–8. |
 | `adaptive-coevolving-network/4` Physarum (2026-10-03) | Removed by the user as a wrong example for this family. It was a Tero flow–conductance model, in which tube conductance adapts to flux. That is adaptive transport, not a network whose node states and ties coevolve through agents. Routes 5–11 were renumbered 4–10. |
+| `adaptive-coevolving-network/polling-ecology` (2026-10-06) | Removed at the user's request as no longer needed. It was a synchronous faction/topic/conviction/age lattice with reproduction, switching and attrition: a cellular ecology with no network, so it never fit this family's state-and-tie question. |
 | `adaptive-coevolving-network/human-relations` | `person`, `account`, `conversation`, and `follow` were labels on a generic local graph. Those distinctions did not create different social actions, incentives, or relation dynamics; most meaningful topology changes were manual or isolated-node repair. |
 | `adaptive-coevolving-network/p2p` | Devices had scalar load/stability and links had scalar traffic/quality, but there were no peers exchanging a resource, packets, routing, replication, discovery, capacity, or failure propagation. It was a network costume, not P2P. |
 | `ant-colony/1` | There were moving nutrient/pheromone-sensing agents, but no nest, task switching, food carrying, outward/homeward states, recruitment, or colony-level resource loop. Constant trail deposition and mutating division made it closer to an evolving walker/microbe field than ants or a colony. |
@@ -42,9 +43,6 @@ cycling “events” are activity, not necessarily system evolution.
 
 ## Retained routes with explicit gaps
 
-- `polling-ecology` remains because cells, states, neighbourhood rules, and
-  visible change are aligned. It remains a synthetic cellular ecology—not a
-  polling claim and not yet an adaptive network.
 - `cellular-automata/1` is a valid Conway baseline. Its next extension should
   place experimental controls at the bottom: birth and survival sets, boundary
   condition, seed density or named seeds, brush, and step rate. Each control

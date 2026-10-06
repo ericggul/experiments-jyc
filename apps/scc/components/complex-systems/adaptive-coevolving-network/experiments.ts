@@ -1,13 +1,14 @@
 export const adaptiveCoevolvingNetworkExperiments = [
   { slug: "1", label: "coevolving voter network" },
   { slug: "1-3d", label: "coevolving voter network in 3d" },
+  { slug: "1-glsl", label: "coevolving voter network as tissue" },
   { slug: "2", label: "adaptive epidemic" },
   { slug: "3", label: "adaptive cooperation" },
   { slug: "4", label: "echo chambers" },
   { slug: "5", label: "self-organized criticality" },
   { slug: "6", label: "awareness and epidemic" },
   { slug: "7", label: "ranked web" },
-  { slug: "polling-ecology", label: "polling ecology" },
+  { slug: "7-glsl", label: "ranked web as gel" },
 ] as const;
 
 export type AdaptiveCoevolvingNetworkExperimentSlug =

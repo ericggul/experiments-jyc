@@ -1,4 +1,7 @@
-export const amoebaExperiments = [{ slug: "1", label: "amoeba/1" }] as const;
+export const amoebaExperiments = [
+  { slug: "1", label: "amoeba/1" },
+  { slug: "2", label: "amoeba/2" },
+] as const;
 
 export type AmoebaExperimentSlug = (typeof amoebaExperiments)[number]["slug"];
 

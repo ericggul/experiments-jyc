@@ -1,12 +1,14 @@
 export const arrangements = ['row', 'ring', 'scatter'] as const;
 export const motions = ['still', 'drift'] as const;
 export const fills = ['green-red', 'pink-red'] as const;
-export const forms = ['clouds', 'cubes'] as const;
+export const forms = ['clouds', 'cubes', 'network'] as const;
 
 export type Settings = {
   /**
    * `clouds`: Entangled's particle clouds (veined shell, partner-coloured core,
    * hourglass bridge). `cubes`: the open-source multipleWindow3dScene demo.
+   * `network`: an evolving acquaintance network per window whose ties reach
+   * across windows.
    */
   form: typeof forms[number];
   /** Chrome app windows, each holding one cloud of the shared field. */
@@ -25,12 +27,14 @@ export type Settings = {
   amplitude: number;
   /** Seconds for one drift cycle. */
   period: number;
+  /** Network: chance per update that someone leaves and a newcomer arrives, %. */
+  turnover: number;
   /** Pattern for `scatter` and drift phases. */
   seed: number;
   clearFirst: boolean;
 };
 
-export const defaults: Settings = { form: 'clouds', count: 2, arrangement: 'row', tileWidth: 34, tileHeight: 58, range: 120, fill: 'green-red', motion: 'still', amplitude: 16, period: 14, seed: 1, clearFirst: true };
+export const defaults: Settings = { form: 'clouds', count: 2, arrangement: 'row', tileWidth: 34, tileHeight: 58, range: 120, fill: 'green-red', motion: 'still', amplitude: 16, period: 14, turnover: 6, seed: 1, clearFirst: true };
 
 export const ranges = {
   count: [2, 8, 1],
@@ -39,6 +43,7 @@ export const ranges = {
   range: [10, 120, 1],
   amplitude: [0, 40, 1],
   period: [3, 60, 1],
+  turnover: [2, 30, 1],
   seed: [1, 9999, 1],
 } as const satisfies Record<string, readonly [number, number, number]>;
 

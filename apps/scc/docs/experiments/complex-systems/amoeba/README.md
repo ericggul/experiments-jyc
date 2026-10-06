@@ -1,5 +1,7 @@
 # Amoeba / 1
 
+Variant: [amoeba/2](2.md) moves the lawn to a full-screen zone and gives each cell an inherited, widely varying size.
+
 Route: `/amoeba/1`. Deliberately synthetic agent model, added 2026-10-05.
 Code: `components/complex-systems/amoeba/1` (`model/` pure and tested,
 `rendering/` two WebGL2 passes).
@@ -65,35 +67,60 @@ across on a 900 px dish. The food grid (88²) and speed (0.0011) scale with that
 radius, which keeps the 0.016-radius dynamics on a proportionally smaller dish.
 Division takes 24 ticks (0.8 s) so the pinch is visible.
 
-Pass 1 draws each cell as a soft signed-distance body in its heading frame.
-It writes distance as depth, so the nearest body owns a pixel and pressed
-neighbours meet in a crease. It stores a 16-bit height. The body shape comes
-from model state:
+Rendering has three layers.
+
+**Bodies** (`rendering/bodies.ts`, CPU). Each cell's drawn body follows the
+model through damped springs keyed by stable id: position at 14 rad/s,
+radius, and heading capped at 2.5 rad/s. Encysting and waking blend over about
+0.4 s; founders grow in and dissolved cysts fade out. When a division
+completes, the parent re-anchors onto the half its dividing shape already drew.
+In a 25 s run at 24 fps the raw model jumped up to 1.17 radii and 0.79 rad
+between frames; the drawn bodies stay under 0.16 radii and 0.104 rad
+(`bodies.test.ts`).
+
+**Pass A, field** (half resolution, half-float). Each body adds a soft kernel
+(support 1.35 radii); the surface is one threshold of the sum. Contacts fuse,
+division necks part, and edges are anti-aliased with `fwidth`.
+
+**Pass B, owner** (half resolution). The nearest body per pixel, used only
+for nucleus, granules and creases, which fade out before ownership changes.
+
+Per-body shape terms (lobe directions, amplitudes, wobble) come from the
+vertex shader. The body shape:
 
 - **Active:** a slowly flowing leading pseudopod plus three wandering lobes.
-- **Since birth:** a damped wobble along the division axis, stretched first
-  and then rebounding (`born` tick).
-- **Dividing:** two halves part across the heading while a neck pinches and
-  closes (`phase`).
+- **Since birth:** a damped wobble along the division axis that starts from
+  zero (`born` tick).
+- **Dividing:** two halves part across the heading while their summed field
+  pinches the neck (`phase`).
 - **Cyst:** a firm round shell.
 
-Pass 2 lights the height field as gel over the lawn:
+**Composite** lights the field as gel over the lawn:
 
 | Visual | Model state |
 | --- | --- |
-| Clear thin edge, denser middle | Body thickness (mass) |
-| Dark refractive membrane line | Body edge and contact crease |
-| Two-lobe wet sheen | Height-field normals |
+| Lawn seen refracted through the gel, with slight dispersion | Body height |
+| Thickness-dependent absorption and milky scatter | Body height |
+| Fresnel reflection of a soft area light | Height-field normals |
 | Nucleus through the gel; two while dividing | Division phase |
 | Fine granules in the thick middle | Body thickness |
 | Faint body tint | Lineage |
 | Amber, firm, less glossy | Cyst |
-| Lawn turbidity, blurred over the 88² grid | Food level |
+| Lawn turbidity, pre-blurred over the 88² grid, with grain baked once | Food level |
 | Soft contact shadow | Body height |
 
+**Performance.**
+
+- CPU (model plus bodies): a median of 0.24 ms per frame, at most 1.84 ms,
+  with little change on frames with many divisions.
+- Body-pass fragments at a 750-body peak on a 1080p screen fell from 7.37 M
+  per frame (an owner pass at full resolution writing `gl_FragDepth`, and two
+  trig-heavy shapes per fragment) to 2.03 M (reach-sized quads, a
+  half-resolution owner pass, one dot-product shape unless dividing).
+- Lawn sampling per cell pixel fell from 16 taps plus 36 hashes to 8 taps.
+
 Budget: at most 4,096 instances, DPR ≤ 1 with a 3 MP cap, 24 Hz rendering
-(the GPU-safety default; 60 Hz would need an observed device run), and a
-model step under 1.5 ms.
+(the GPU-safety default; 60 Hz would need an observed device run).
 
 **Rejected visuals (2026-10-05):**
 
@@ -102,6 +129,7 @@ model step under 1.5 ms.
 | Pseudo-microscopy (DIC relief, granules, halo, specks) on 7 px cells | Read as fake decoration. |
 | Flat lineage discs with hairlines | Too abstract. |
 | First gel pass | Opaque, spherical bodies with one hard highlight read as glossy marbles. Absorption was capped and the membrane darkened, which fixed it. |
+| Nearest-owner gel (2026-10-06) | The silhouette came from per-pixel ownership without anti-aliasing, and the shape followed raw model headings and pushes, so edges crawled and bodies jumped. Replaced by the spring bodies and the summed field above. |
 
 The 2-component quad positions behind a NaN bounding-sphere warning became
 3-component.

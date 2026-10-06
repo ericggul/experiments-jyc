@@ -46,6 +46,8 @@ history when their subject affects the task, not for every code change.
 - [xyzt city](../apps/scc/docs/experiments/dimensions/xyzt-city/README.md): Lower Manhattan in (x, y, t) with height as the swept threshold, variant `1`.
 - [desktop-collage](../apps/scc/docs/experiments/desktop-collage/README.md): real browser windows as collage material (papier collé / Dada lineage), `primitives/1` heart of windows.
 - [Aerodynamics](../apps/scc/docs/experiments/standalone/aerodynamics/README.md): standalone 3D ABC Euler flow, variants `1`–`2`.
+- [Traffic light](../apps/scc/docs/experiments/standalone/transportation/traffic-light/README.md): standalone 3D Korean signal heads on a cantilever pole under `transportation/`, variants `1`–`2` (`2`: fifty poles down one road).
+- [Road signs](../apps/scc/docs/experiments/standalone/transportation/road-signs/README.md): every current Korean 안전표지 and 노면표시 as SVG under `transportation/`, variant `1`.
 
 | Code family | Registered variants | Documentation |
 | --- | --- | --- |
@@ -53,7 +55,7 @@ history when their subject affects the task, not for every code change.
 | `apps/scc/components/ui/dashboard/github` | `1`, `2` | [github/1](../apps/scc/docs/experiments/dashboard/github/1.md) · [github/2](../apps/scc/docs/experiments/dashboard/github/2.md) |
 | `apps/scc/components/ui/dashboard/palantir` | `1` | [palantir/1](../apps/scc/docs/experiments/dashboard/palantir/1.md) |
 | `apps/scc/components/ui/dashboard/stock` | `default`, `1`, `2`, `3`, `4` | [stock index](../apps/scc/docs/experiments/dashboard/stock/README.md) |
-| `apps/scc/components/complex-systems/amoeba` | `1` | [amoeba plaques and blooms](../apps/scc/docs/experiments/complex-systems/amoeba/README.md) |
+| `apps/scc/components/complex-systems/amoeba` | `1`, `2` | [amoeba plaques and blooms](../apps/scc/docs/experiments/complex-systems/amoeba/README.md) · [amoeba/2](../apps/scc/docs/experiments/complex-systems/amoeba/2.md) |
 | `apps/scc/components/complex-systems/barabasi-albert` | `1` | [Barabási–Albert network growth](../apps/scc/docs/experiments/complex-systems/barabasi-albert/README.md) |
 | `apps/scc/components/complex-systems/self-evolving-network` | `1` | [self-evolving network](../apps/scc/docs/experiments/complex-systems/self-evolving-network/README.md) |
 | `apps/scc/components/complex-systems/erdos-renyi` | `1` | [Erdős–Rényi random graph](../apps/scc/docs/experiments/complex-systems/erdos-renyi/README.md) |
@@ -71,7 +73,7 @@ history when their subject affects the task, not for every code change.
 | `apps/scc/components/complex-systems/diffusion-graph` | `1` | [diffusion graph](../apps/scc/docs/experiments/complex-systems/diffusion-graph/README.md) |
 | `apps/scc/components/complex-systems/flight-visualisation` | `1` | [flight visualisation (viz1090 port)](../apps/scc/docs/experiments/complex-systems/flight-visualisation/README.md) |
 | `apps/scc/components/complex-systems/cellular-automata` | `colour/1`–`6`, `grid-network/1` | [cellular automata](../apps/scc/docs/experiments/complex-systems/cellular-automata/README.md) |
-| `apps/scc/components/complex-systems/adaptive-coevolving-network` | `1`–`7`, `polling-ecology` | [adaptive coevolving networks](../apps/scc/docs/experiments/complex-systems/adaptive-coevolving-network/README.md) |
+| `apps/scc/components/complex-systems/adaptive-coevolving-network` | `1`–`7` and variants | [adaptive coevolving networks](../apps/scc/docs/experiments/complex-systems/adaptive-coevolving-network/README.md) |
 | Complex-systems acceptance standard | — | [removals and simulation standard](../apps/scc/docs/experiments/complex-systems/rejected-examples.md) |
 | `apps/scc/components/standalone/chess` | `1` | [chess](../apps/scc/docs/experiments/standalone/chess/README.md) |
 | `apps/scc/components/standalone/bastille-day` | `1`, `2` | [bastille-day](../apps/scc/docs/experiments/standalone/bastille-day/README.md) |

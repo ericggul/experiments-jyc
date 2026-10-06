@@ -27,20 +27,20 @@ import {
 // volume and cooler toward its edge. Voters are single bright motes; every tie
 // is a stream of fine particles flowing between its ends.
 
-// The reference's gradient: warm at the centre, blue toward the edge. Every
-// mote takes it first; opinion only tints it, so the field stays one material
-// and an island of agreement reads as one shade of it.
+// The reference's gradient (warm at the centre, blue toward the edge) is the
+// ground; opinion is the main colour over it, so islands of agreement read as
+// separate colours while the field stays one luminous material.
 const WARM = [0.97, 0.7, 0.45] as const;
 const COOL = [0.24, 0.43, 0.96] as const;
 const OPINION_COLOURS = [
-  [0.55, 0.82, 1.0],
-  [0.24, 0.4, 1.0],
-  [0.62, 0.46, 1.0],
-  [0.3, 0.9, 0.86],
-  [1.0, 0.68, 0.42],
-  [1.0, 0.5, 0.66],
+  [1.0, 0.62, 0.3],
+  [0.25, 0.5, 1.0],
+  [0.25, 0.92, 0.82],
+  [0.98, 0.36, 0.55],
+  [0.66, 0.42, 1.0],
+  [0.92, 0.9, 0.42],
 ] as const;
-const OPINION_TINT = 0.5;
+const OPINION_TINT = 0.85;
 /** Disagreeing ties run white-hot: the only places where the next event can happen. */
 const DISCORD = [1.0, 0.95, 0.88] as const;
 
@@ -49,7 +49,7 @@ const NEWCOMER_TIES = 2;
 /** Brush radius in ideal tie lengths, as in route 1. */
 const BRUSH_RADIUS = 1.1;
 /** RMS radius of the cloud in world units; the layout itself is unitless. */
-const VIEW_SPREAD = 1.7;
+const VIEW_SPREAD = 2.3;
 /** Slow turn of the whole volume so depth reads through parallax (rad/s). */
 const TURN_RATE = 0.03;
 /** Screen distance (CSS px) within which a press lands on a voter. */
@@ -59,6 +59,10 @@ const SPRITE_BUDGET = 8_192;
 const MAX_STREAM = SPRITE_BUDGET - MAX_VOTERS;
 const MAX_PER_TIE = 7;
 const FLASH_LIFETIME = 0.9;
+/** Longest frame gap the model catches up on, in seconds. */
+const MAX_CATCH_UP = 0.25;
+const LAYOUT_STEP = 1 / 24;
+const MAX_SUBSTEPS = 6;
 const MAX_TIES = 4_096;
 /** Tie line widths in CSS pixels: agreeing ties are hairlines, disagreements heavier. */
 const AGREE_WIDTH = 0.8;
@@ -345,7 +349,7 @@ function writeFrame(
     const b = bodies[tie.b]!;
     const agree = opinions[tie.a] === opinions[tie.b];
     const rgb = agree ? OPINION_COLOURS[opinions[tie.a]!]! : DISCORD;
-    const gain = agree ? 0.8 : 1;
+    const gain = agree ? 0.5 : 0.55;
     // Disagreements flow faster; agreeing ties drift.
     const speed = agree ? 0.06 : 0.22;
     const rewiredAt = timeline.rewired.get(tie.id);
@@ -528,7 +532,9 @@ export default function NetworkScene({
     const group = groupRef.current;
     const inner = innerRef.current;
     if (!group || !inner) return;
-    const delta = Math.min(frameDelta, 0.05);
+    // Model and layout follow real time even when frames are sparse
+    // (throttled tabs); a long gap catches up in bounded layout substeps.
+    const delta = Math.min(frameDelta, MAX_CATCH_UP);
     const tempo = reduceMotion ? 0.3 : 1;
     timeRef.current += delta * tempo;
     const time = timeRef.current;
@@ -551,7 +557,10 @@ export default function NetworkScene({
       if (time - at > REACH_TIME) timeline.rewired.delete(tie);
     }
 
-    relaxBodies(bodies, network.ties, delta * tempo);
+    const substeps = Math.min(MAX_SUBSTEPS, Math.ceil((delta * tempo) / LAYOUT_STEP));
+    for (let step = 0; step < substeps; step += 1) {
+      relaxBodies(bodies, network.ties, (delta * tempo) / substeps);
+    }
 
     // Fit the cloud to the view: follow its centroid and RMS radius smoothly,
     // so islands drifting apart read as the volume opening, not as a zoom jump.

@@ -30,11 +30,18 @@ export default function AmoebaOne() {
     let frame = 0;
     let lastFrame = 0;
     let carried = 0;
+    let lastDraw = 0;
 
-    const draw = (alpha: number) => renderer.render(colony, alpha, performance.now() / 1000);
+    // A still frame (first paint, resize, a click while paused) settles bodies fully.
+    const draw = (alpha: number, settle = false) => {
+      const now = performance.now();
+      const dt = settle || !lastDraw ? 2 : (now - lastDraw) / 1000;
+      lastDraw = now;
+      renderer.render(colony, alpha, now / 1000, dt);
+    };
     const resize = () => {
       renderer.resize(canvas.clientWidth, canvas.clientHeight);
-      draw(1);
+      draw(1, !frame);
     };
 
     const loop = (now: number) => {
@@ -62,7 +69,7 @@ export default function AmoebaOne() {
     const syncRunning = () => (motion.matches || document.hidden ? stop() : start());
 
     const place = (x: number, y: number) => {
-      if (spawnCell(colony, x, y) && !frame) draw(1);
+      if (spawnCell(colony, x, y) && !frame) draw(1, true);
     };
     const onPointerDown = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();

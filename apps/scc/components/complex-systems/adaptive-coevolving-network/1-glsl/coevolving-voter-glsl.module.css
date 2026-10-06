@@ -1,12 +1,13 @@
 .page {
-  --ink: #161614;
-  --quiet: rgba(22, 22, 20, 0.52);
+  --ink: rgba(247, 217, 183, 0.96);
+  --quiet: rgba(215, 224, 255, 0.48);
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: #ffffff;
+  background: #000000;
   color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font: 0.72rem var(--font-geist-mono), monospace;
+  letter-spacing: 0.01em;
 }
 
 .canvas {
@@ -33,31 +34,66 @@
 .hint {
   margin: 0;
   color: var(--quiet);
-  font-size: 0.8rem;
-  transition: opacity 600ms ease;
 }
 
-.hint[data-hidden="true"] {
-  opacity: 0;
+.options {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: min(22rem, 100%);
+  pointer-events: auto;
+}
+
+.styles {
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--quiet);
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.button[aria-pressed="true"] {
+  color: var(--ink);
+}
+
+.toggle {
+  color: var(--ink);
+  opacity: 0.55;
 }
 
 .balance {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  width: min(26rem, 100%);
-  font-size: 0.9rem;
+  width: min(22rem, 100%);
+  color: var(--quiet);
   pointer-events: auto;
+}
+
+.count {
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .balance input {
   flex: 1;
   min-width: 0;
-  accent-color: var(--ink);
+  accent-color: rgba(247, 217, 183, 0.96);
   cursor: ew-resize;
 }
 
 .canvas:focus-visible,
+.button:focus-visible,
 .balance input:focus-visible {
   outline: 1px solid var(--ink);
   outline-offset: 4px;

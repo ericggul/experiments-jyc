@@ -18,10 +18,12 @@ function readParams() {
   const range = Number(query.get("r"));
   const color = `#${query.get("c") ?? ""}`;
   const partner = `#${query.get("p") ?? ""}`;
-  const form = query.get("f") === "cubes" ? "cubes" as const : "clouds" as const;
+  const form = query.get("f") === "cubes" ? "cubes" as const : query.get("f") === "network" ? "network" as const : "clouds" as const;
+  const turnover = Number(query.get("t") ?? 6);
   const run = query.get("run") ?? "";
   if (!/^[a-z0-9]{1,16}$/.test(run) || !Number.isInteger(id) || !Number.isInteger(count) || count < 2 || count > 8 || id < 0 || id >= count || !(range > 0) || !/^#[0-9a-f]{6}$/i.test(color) || !/^#[0-9a-f]{6}$/i.test(partner)) return null;
-  return { id, count, range, color, partner, form, run };
+  if (!(turnover >= 2 && turnover <= 30)) return null;
+  return { id, count, range, color, partner, form, turnover, run };
 }
 
 export default function FieldWindow() {
@@ -45,13 +47,14 @@ export default function FieldWindow() {
       <style>{`html,body{margin:0;background:${params.form === "cubes" ? "#000" : "#05040c"};overflow:hidden}`}</style>
       <Canvas
         orthographic
-        dpr={1}
+        // The network gel is drawn per device pixel like 1-glsl (up to 2); other forms stay at DPR 1.
+        dpr={params.form === "network" ? Math.min(2, window.devicePixelRatio || 1) : 1}
         frameloop="demand"
         gl={{ antialias: true, powerPreference: "low-power" }}
         camera={{ manual: true, position: [0, 0, 2.5], near: -10000, far: 10000 }}
         style={{ position: "fixed", inset: 0 }}
       >
-        <Scene form={params.form} peers={peers} selfId={params.id} range={params.range} budget={particleBudget(params.count)} reducedMotion={reducedMotion} />
+        <Scene form={params.form} peers={peers} selfId={params.id} range={params.range} turnover={params.turnover} budget={particleBudget(params.count)} reducedMotion={reducedMotion} />
       </Canvas>
     </>
   );

@@ -40,8 +40,9 @@ export default function PrimitivesTwo() {
         <Amount id="tile-height" label="Height" unit="%" value={draft.tileHeight} range={ranges.tileHeight} onChange={amount("tileHeight")} />
       </Section>
       <Section title="Field">
-        <Choice label="Form" options={forms} value={draft.form} names={{ clouds: "entangled clouds", cubes: "source cubes" }} onChange={(value) => set("form", value)} />
-        {draft.form === "clouds" ? (
+        <Choice label="Form" options={forms} value={draft.form} names={{ clouds: "entangled clouds", cubes: "source cubes", network: "evolving network" }} onChange={(value) => set("form", value)} />
+        {draft.form === "network" ? <Amount id="turnover" label="Turnover" unit="%" value={draft.turnover} range={ranges.turnover} onChange={amount("turnover")} /> : null}
+        {draft.form !== "cubes" ? (
           <>
             <Amount id="range" label="Reach" unit="%" value={draft.range} range={ranges.range} onChange={amount("range")} />
             <Choice label="Colours" options={fills} value={draft.fill} names={{ "green-red": "green + red", "pink-red": "pink + red" }} onChange={(value) => set("fill", value)} />

@@ -17,6 +17,11 @@ export function chromeAppArgs(window: ChromeAppWindow) {
     // the warning bar Chrome shows for that flag.
     '--ignore-certificate-errors',
     '--test-type',
+    // Windows overlap by design: a covered window must keep animating and
+    // talking to the others instead of being throttled as hidden.
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-background-timer-throttling',
     `--app=${window.url}`,
     `--window-position=${Math.round(window.x)},${Math.round(window.y)}`,
     `--window-size=${Math.round(window.width)},${Math.round(window.height)}`,

@@ -1,0 +1,71 @@
+.field { position: fixed; inset: 0; overflow: hidden; background: #e6e0d6; }
+.field :global(.traffic-light-canvas) { position: absolute; inset: 0; }
+.field canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.field canvas:active { cursor: grabbing; }
+
+/* Option grammar after mobile/finger-network: one 옵션/닫기 toggle, rows of plain text choices above it. */
+.controls {
+  position: absolute;
+  right: calc(8px + env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.label,
+.control {
+  min-height: 36px;
+  padding: 0 12px;
+  color: #fff;
+  font: 400 13px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+  /* The scene behind is sky and pavement at any orbit; a soft shadow keeps white text legible on both. */
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  opacity: 0.55;
+}
+
+.control {
+  min-width: 44px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control[aria-expanded],
+.control[aria-pressed="false"] {
+  opacity: 0.55;
+}
+
+.control:hover {
+  opacity: 1;
+}
+
+.control:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: -4px;
+}
