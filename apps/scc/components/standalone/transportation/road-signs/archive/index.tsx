@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ROAD_SIGN_CLASSES, ROAD_SIGNS } from "./model/catalogue";
 import styles from "./screen/road-signs.module.css";
 
-export default function RoadSignsOne() {
+export default function RoadSignsArchive() {
   return <main className={styles.page} lang="ko">
     {ROAD_SIGN_CLASSES.map((signClass) => {
       const signs = ROAD_SIGNS.filter((sign) => sign.classId === signClass.id);

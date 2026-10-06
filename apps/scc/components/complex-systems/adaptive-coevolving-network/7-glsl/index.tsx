@@ -18,6 +18,7 @@ import {
   concentration,
   createRankedWeb,
   DAMPING_RANGE,
+  DEFAULT_PAGES,
   DEFAULT_DAMPING,
   DEFAULT_PARAMETERS,
   fadeCandidate,
@@ -65,6 +66,7 @@ const HIT_SLOP = 6;
 /** Frames are paced to at most 60 Hz on whole vsyncs, so 120 Hz screens draw every other one. */
 const FRAME_INTERVAL = 1_000 / 60 - 3;
 const MAX_PIXEL_RATIO = 2;
+const MIN_PAGES = 20;
 
 type Surfer = { from: number; to: number; progress: number; duration: number; jump: boolean };
 
@@ -124,6 +126,7 @@ function writeLink(
   by: number,
   rootA: number,
   rootB: number,
+  reach: number,
   phase: number,
   hueA: ArrayLike<number>,
   hueB: ArrayLike<number>,
@@ -138,7 +141,7 @@ function writeLink(
   data[offset++] = by;
   data[offset++] = rootA;
   data[offset++] = rootB;
-  data[offset++] = 1;
+  data[offset++] = reach;
   data[offset++] = phase;
   data[offset++] = hueA[0]!;
   data[offset++] = hueA[1]!;
@@ -203,6 +206,10 @@ export default function RankedWebGlsl() {
   const [volatility, setVolatility] = useState(DEFAULT_PARAMETERS.volatility);
   const [floor, setFloor] = useState(DEFAULT_PARAMETERS.floor);
   const [damping, setDampingValue] = useState(DEFAULT_DAMPING);
+  const dampingRef = useRef(DEFAULT_DAMPING);
+  const [population, setPopulation] = useState(DEFAULT_PAGES);
+  /** A requested page count; the frame loop starts the web over with it. */
+  const repopulateRef = useRef<number | null>(null);
   const [view, setView] = useState<ViewId>("network");
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [summary, setSummary] = useState("");
@@ -295,28 +302,31 @@ export default function RankedWebGlsl() {
       }
     };
 
+    /** Places every page of the current web and scatters the surfers over it. */
+    const seedPages = (field: Frame) => {
+      const web = webRef.current;
+      bodiesRef.current = [];
+      for (let page = 0; page < web.size; page += 1) {
+        const body = bodyAt(field, random);
+        bodiesRef.current[page] = body;
+        pointsRef.current[page * 2] = body.x;
+        pointsRef.current[page * 2 + 1] = body.y;
+        radiiRef.current[page] = radiusFor(web.rank[page]!, field);
+      }
+      surfersRef.current = Array.from({ length: SURFERS }, () => {
+        const page = Math.floor(random() * web.size);
+        return { from: page, to: page, progress: random(), duration: 0.6, jump: false };
+      });
+    };
+
     const sizeCanvas = () => {
       const bounds = canvas.getBoundingClientRect();
       const next = { width: bounds.width, height: bounds.height };
       const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
       renderer.resize(next.width, next.height, ratio);
       const field = layoutFrame(next);
-      if (bodiesRef.current.length === 0) {
-        const web = webRef.current;
-        for (let page = 0; page < web.size; page += 1) {
-          const body = bodyAt(field, random);
-          bodiesRef.current[page] = body;
-          pointsRef.current[page * 2] = body.x;
-          pointsRef.current[page * 2 + 1] = body.y;
-          radiiRef.current[page] = radiusFor(web.rank[page]!, field);
-        }
-        surfersRef.current = Array.from({ length: SURFERS }, () => {
-          const page = Math.floor(random() * web.size);
-          return { from: page, to: page, progress: random(), duration: 0.6, jump: false };
-        });
-      } else {
-        rescaleBodies(bodiesRef.current, layoutFrame(sizeRef.current), field);
-      }
+      if (bodiesRef.current.length === 0) seedPages(field);
+      else rescaleBodies(bodiesRef.current, layoutFrame(sizeRef.current), field);
       sizeRef.current = next;
     };
 
@@ -329,6 +339,19 @@ export default function RankedWebGlsl() {
       timeRef.current += delta;
       if (!still) motionTime += delta;
       motionTimeRef.current = motionTime;
+      const requested = repopulateRef.current;
+      if (requested !== null) {
+        // A new page count starts the web over, keeping the current d.
+        repopulateRef.current = null;
+        const fresh = createRankedWeb(requested);
+        setDamping(fresh, dampingRef.current);
+        webRef.current = fresh;
+        pagesBornRef.current = [];
+        pendingPagesRef.current = { value: 0 };
+        transitionRef.current = null;
+        focusRef.current = null;
+        seedPages(layoutFrame(sizeRef.current));
+      }
       const web = webRef.current;
       const size = sizeRef.current;
       const field = layoutFrame(size);
@@ -394,7 +417,7 @@ export default function RankedWebGlsl() {
       const visibility = linkVisibilityRef.current;
       const focus = focusRef.current;
 
-      // Links: each leaves its source at nearly the source's full width and
+      // Links: each grows along its own curved path; it leaves its source at nearly the source's full width and
       // enters its target nearly as wide as the target, in the same tone,
       // so page and link are one body; between them it narrows to
       // the width of the rank it passes on. Weight and view thin it, and it
@@ -423,6 +446,9 @@ export default function RankedWebGlsl() {
           by,
           source * 0.92,
           sink * 0.85,
+          // A new candidate grows out of its source as its weight rises; a
+          // fading one withdraws back into it.
+          presence ** 0.6,
           linkPhase(link.from, link.to),
           TONE,
           TONE,
@@ -444,6 +470,7 @@ export default function RankedWebGlsl() {
           press.pointerY,
           r * 0.92,
           0.6,
+          1,
           0,
           TONE,
           TONE,
@@ -544,13 +571,14 @@ export default function RankedWebGlsl() {
         if (entry.fading || entry.weight < 0.05) continue;
         const to = entry.target;
         const phase = linkPhase(from, to);
+        const grown = Math.min(1, entry.weight * 6) ** 0.6;
         const ax = points[from * 2]!;
         const ay = points[from * 2 + 1]!;
         const bx = points[to * 2]!;
         const by = points[to * 2 + 1]!;
         tentaclePoint(ax, ay, bx, by, 0, phase, time, 1, previous);
         for (let sample = 1; sample <= HIT_SAMPLES; sample += 1) {
-          tentaclePoint(ax, ay, bx, by, sample / HIT_SAMPLES, phase, time, 1, next);
+          tentaclePoint(ax, ay, bx, by, (sample / HIT_SAMPLES) * grown, phase, time, 1, next);
           if (distanceToSegment(x, y, previous.x, previous.y, next.x, next.y) <= HIT_SLOP) return { from, to };
           previous.x = next.x;
           previous.y = next.y;
@@ -645,12 +673,6 @@ export default function RankedWebGlsl() {
         {optionsOpen && (
           <div id="ranked-web-glsl-options" className={styles.options}>
             <p className={styles.hint}>크기가 곧 PageRank · 빈 곳을 누르면 새 페이지, 페이지에서 페이지로 끌면 링크</p>
-            <p className={styles.about}>
-              PageRank는 링크를 따라 무작위로 돌아다니는 사람(밝은 알갱이)이 각 페이지에 머무는
-              시간의 비율이고, 원의 넓이가 곧 그 비율입니다. 페이지들은 관심을 매력 있는 곳(순위가
-              높고 품질이 좋은 곳)으로 조금씩 옮기고, 그 관심이 다시 순위를 만듭니다. 품질이 계속
-              오르내려서 1위도 계속 바뀝니다. (Brin·Page 1998; Fortunato·Flammini·Menczer 2006)
-            </p>
             <div className={styles.views} role="group" aria-label="보기">
               {VIEWS.map((option) => (
                 <button
@@ -722,10 +744,29 @@ export default function RankedWebGlsl() {
                 onChange={(event) => {
                   const value = Number(event.target.value);
                   setDampingValue(value);
+                  dampingRef.current = value;
                   setDamping(webRef.current, value);
                 }}
               />
               <span>링크만</span>
+            </label>
+            <label className={styles.balance}>
+              <span>페이지</span>
+              <input
+                aria-label="페이지 수; 바꾸면 웹이 처음부터 다시 시작됩니다"
+                aria-valuetext={`페이지 ${population}개`}
+                max={MAX_PAGES}
+                min={MIN_PAGES}
+                step="10"
+                type="range"
+                value={population}
+                onChange={(event) => {
+                  const count = Number(event.target.value);
+                  setPopulation(count);
+                  repopulateRef.current = count;
+                }}
+              />
+              <span className={styles.count}>{population}</span>
             </label>
           </div>
         )}

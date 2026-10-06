@@ -821,7 +821,7 @@
   "name": "거리표지",
   "meaning": "주의표지, 규제표지 또는 지시표지가 표시하는 시설물 또는 장소까지의 거리",
   "source": "drawn",
-  "notes": "Plate per 별표 6 보조표지 공통기준: white plate R20, 10 mm white rim, black line (assumed 5 mm wide, inner corner R10). Text: NotoSansCJKkr-Bold outlines fitted to the ink box measured on the official drawing (drawing face is a lighter gothic)."
+  "notes": "Plate per 별표 6 보조표지 공통기준: white plate R20, 10 mm white rim, black line (assumed 5 mm wide, inner corner R10). Text: outlined lettering fitted to the ink box measured on the official drawing (drawing face is a lighter gothic)."
  },
  {
   "num": "402",
@@ -1183,7 +1183,7 @@
   "name": "시간제 속도제한 표시",
   "meaning": "시간대별로 속도제한을 다르게 하는 구간임을 표시하는 것",
   "source": "drawn",
-  "notes": "Lettering outlined from Noto Sans CJK KR Bold, stretched to the drawn 230 x ~400 cm block."
+  "notes": "Lettering outlined from sign lettering, stretched to the drawn 230 x ~400 cm block."
  },
  {
   "num": "518",
@@ -1221,7 +1221,7 @@
   "name": "양보표시",
   "meaning": "차가 양보하여야 할 장소임을 표시하는 것",
   "source": "drawn",
-  "notes": "Commons version lacks the 양보 lettering; redrawn 150 x 450 cm triangle with 150 x 150 cm lettering (Noto, mid-range sizes)."
+  "notes": "Commons version lacks the 양보 lettering; redrawn 150 x 450 cm triangle with 150 x 150 cm lettering (sign lettering, mid-range sizes)."
  },
  {
   "num": "523",
@@ -1235,7 +1235,7 @@
   "name": "버스정차구획표시",
   "meaning": "법 제32조제4호 단서에 따라 버스정류지에서 버스여객자동차가 정차할 수 있는 장소를 표시하는 것",
   "source": "drawn",
-  "notes": "Kerb-side line omitted as in drawing; bus-stop sign/shelter on the sidewalk omitted; 버스 lettering Noto, 150 cm high."
+  "notes": "Kerb-side line omitted as in drawing; bus-stop sign/shelter on the sidewalk omitted; 버스 lettering sign lettering, 150 cm high."
  },
  {
   "num": "524",

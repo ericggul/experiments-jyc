@@ -104,6 +104,7 @@ out vec3 colour;
 flat out float spanLength;
 flat out vec4 profile;
 flat out float phase;
+flat out float tip;
 ${SHARED}
 ${TENTACLE_GLSL}
 void main() {
@@ -112,17 +113,16 @@ void main() {
   vec2 span = b - a;
   spanLength = max(length(span), 1e-3);
   vec2 direction = span / spanLength;
-  vec2 side = vec2(-direction.y, direction.x);
   phase = roots.w;
 
-  // The ribbon follows the tentacle path; its own normal comes from the
-  // path's tangent, so its width is measured across the curve.
+  // The ribbon follows the grown path; its own normal comes from the path's
+  // tangent, so its width is measured across the curve. A link that is still
+  // growing (reach < 1) ends in a tip partway along the same path.
   float u = corner.x * roots.z;
+  tip = roots.z < 0.999 ? roots.z * spanLength : -1.0;
   float nudge = 0.002;
-  vec2 point = a + span * u + side * tentacleOffset(u, spanLength, phase, extra.x);
-  vec2 ahead = a + span * (u + nudge) + side * tentacleOffset(u + nudge, spanLength, phase, extra.x);
-  vec2 behind = a + span * (u - nudge) + side * tentacleOffset(u - nudge, spanLength, phase, extra.x);
-  vec2 tangent = ahead - behind;
+  vec2 point = tentaclePoint(a, b, u, phase, extra.x);
+  vec2 tangent = tentaclePoint(a, b, u + nudge, phase, extra.x) - tentaclePoint(a, b, u - nudge, phase, extra.x);
   tangent = length(tangent) > 1e-4 ? normalize(tangent) : direction;
   vec2 normal = vec2(-tangent.y, tangent.x);
 
@@ -145,6 +145,7 @@ in vec3 colour;
 flat in float spanLength;
 flat in vec4 profile;
 flat in float phase;
+flat in float tip;
 uniform float time;
 uniform float softness;
 uniform float ceiling;
@@ -155,6 +156,8 @@ void main() {
   float swell = profile.w * bead(along, fromB, time, phase);
   float shape = ribbonWidth(along, fromB, profile.x, profile.y, profile.z);
   float width = living(shape, along, fromB, profile.x, profile.y, time, phase) + swell * 0.5;
+  // A growing link narrows to a point at its tip.
+  if (tip >= 0.0) width *= smoothstep(0.0, 8.0, tip - along);
   // A link's depth is softly capped at about 2 px: its edge (and the smooth
   // joint with a cell) is untouched, but inside a cell only the cell's own
   // depth shapes the light, so roots never draw a star inside it.

@@ -14,7 +14,7 @@ import {
   stepColony,
 } from "./model";
 import { createAmoebaRenderer } from "./rendering";
-import { QUALITY_LEVELS, createPacer, pace } from "./rendering/pacing";
+import { createPacer, pace } from "./rendering/pacing";
 
 const SEED = 7;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
@@ -55,8 +55,7 @@ export default function AmoebaTwo() {
     // tick rate and the spring bodies interpolate between ticks.
     const loop = (now: number) => {
       frame = requestAnimationFrame(loop);
-      const { render, elapsed, changed } = pace(pacer, now);
-      if (changed) renderer.setQuality(QUALITY_LEVELS[pacer.level].scale);
+      const { render, elapsed } = pace(pacer, now);
       if (!render) return;
       carried += Math.min(elapsed, TICK_MS * MAX_TICKS_PER_FRAME);
       while (carried >= TICK_MS) {

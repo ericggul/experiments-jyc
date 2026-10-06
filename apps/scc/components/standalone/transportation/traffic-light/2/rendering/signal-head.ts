@@ -10,6 +10,11 @@ export const BODY_DEPTH = 0.22;
 const LENS_RADIUS = 0.152;
 const FRONT_Z = BODY_DEPTH / 2;
 const VISOR_DEPTH = 0.16;
+/**
+ * Emissive scale for portraits relative to the plain board: a continuous-tone
+ * picture at full LED intensity blooms to white and loses the face.
+ */
+const FACE_INTENSITY = 0.3;
 /** Housing centre forward of the arm axis for arm heads. */
 export const ARM_HOUSING_OFFSET = 0.3;
 
@@ -277,10 +282,23 @@ export function createHeadKit(textures: LedTextures, ledIntensity: Record<Signal
     }));
   }
 
+  /** Shows `faces` on the lit round lamps (null restores the LED board); the arrow keeps its board. */
+  const setFaces = (faces: Partial<Record<SignalLamp, THREE.Texture>> | null) => {
+    for (const lamp of ["red", "yellow", "green"] as const) {
+      const face = faces?.[lamp];
+      const texture = face ?? textures.disc;
+      boards[lamp].map = texture;
+      boards[lamp].emissiveMap = texture;
+      boards[lamp].emissiveIntensity = ledIntensity[lamp] * (face ? FACE_INTENSITY : 1);
+      lenses[lamp].emissiveMap = texture;
+    }
+  };
+
   return {
     housing,
     board,
     lens,
+    setFaces,
     powderCoat,
     hardware,
     boards,

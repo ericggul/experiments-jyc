@@ -43,7 +43,7 @@ history when their subject affects the task, not for every code change.
 
 - [Splice](../apps/scc/docs/experiments/standalone/splice/README.md): two-deck audio collage practice; a separate instrument for the later native application collage direction.
 
-- [xyzt city](../apps/scc/docs/experiments/dimensions/xyzt-city/README.md): Lower Manhattan in (x, y, t) with height as the swept threshold, variant `1`.
+- [xyzt city](../apps/scc/docs/experiments/dimensions/xyzt-city/README.md): Lower Manhattan in (x, y, t) with height as the swept threshold, variant `archive` (reference set; numbered variants are experiments on it).
 - [desktop-collage](../apps/scc/docs/experiments/desktop-collage/README.md): real browser windows as collage material (papier collé / Dada lineage), `primitives/1` heart of windows.
 - [Aerodynamics](../apps/scc/docs/experiments/standalone/aerodynamics/README.md): standalone 3D ABC Euler flow, variants `1`–`2`.
 - [Traffic light](../apps/scc/docs/experiments/standalone/transportation/traffic-light/README.md): standalone 3D Korean signal heads on a cantilever pole under `transportation/`, variants `1`–`2` (`2`: fifty poles down one road).

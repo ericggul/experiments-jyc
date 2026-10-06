@@ -1,3 +1,3 @@
 export const roadSignsExperiments = [
-  { slug: "1", label: "transportation/road-signs/1" },
+  { slug: "archive", label: "transportation/road-signs/archive" },
 ] as const;

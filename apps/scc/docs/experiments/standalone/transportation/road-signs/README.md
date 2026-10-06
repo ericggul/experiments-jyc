@@ -1,10 +1,12 @@
 # Road signs
 
-`/transportation/road-signs/1`, 2026-10-06: every currently valid Korean
-traffic safety sign (안전표지) laid out in its official order: 주의표지 100s,
-규제표지 200s, 지시표지 300s, 보조표지 400s and 노면표시 500s. Each sign
-shows its number and official name. The question is whether the complete
-legal vocabulary reads as one designed system once it is seen whole.
+`/transportation/road-signs/archive`, 2026-10-06: the reference archive of
+every currently valid Korean traffic safety sign (안전표지), laid out in its
+official order: 주의표지 100s, 규제표지 200s, 지시표지 300s, 보조표지 400s and
+노면표시 500s. Each sign shows its number and official name. It is the
+trusted source material, not an experiment. Numbered variants (`/1`, `/2`, …)
+are kept for experiments that use these signs as material; they should read
+the SVGs and `model/catalogue.ts` from here rather than copy them.
 
 Source of truth: 도로교통법 시행규칙 [별표 6] 「안전표지의 종류, 만드는 방식 및
 설치·관리기준」 (개정 2024. 11. 14.), in the version in force from 2026-08-24, downloaded from
@@ -27,7 +29,7 @@ remaining deviation:
   against the 별표 6 drawing, not against Wikipedia's gallery picks. 303 and
   321 use the plain files, not the "(newer)" ones.
 - **Drawn (88):** drawn for this route from the 별표 6 dimensions (mm viewBox,
-  lettering outlined from Noto Sans CJK KR Bold). These cover:
+  outlined lettering). These cover:
   - every 400s plate (the Commons set is the 2010 version with an empty plate);
   - every 501–524 marking;
   - 525–549 markings that are missing or outdated on Commons;
@@ -36,6 +38,33 @@ remaining deviation:
 Colours are normalised to one palette across sources: red #d21d24, blue
 #1e50a3, yellow #f9a70c and road-marking pavement #a7a5a6. Commons road
 marks lose their black outlines, because painted markings have none.
+
+Lettering. 안전표지 have no prescribed typeface. 별표 6 Ⅰ.1.마 says only
+that letterforms follow its examples, and the electronic law text sets those
+examples in ordinary Hancom fonts. The 『도로안내표지 디자인매뉴얼』 typeface
+covers guide signs, not safety signs. The Commons KR series' heavy square
+gothic (진입금지, 주정차금지) and narrow round numerals (224, 225) are
+therefore the reference, and every sign is lettered to match it:
+
+- **Sign faces and plates:** Gothic A1 ExtraBold for Hangul, with Barlow
+  Condensed Bold for numerals and Latin letters. Both are OFL, merged into one
+  outline source.
+- **Commons signs:** the lettering of 37 Commons signs (106, 116, 117, 140,
+  201–228, 301–334) was replaced glyph by glyph in its original cells. The
+  original layout is kept, for example the raised t and the smaller .5 in 220.
+  A glyph wider than its cell is condensed, as on the signs.
+- **Latin words:** SLOW, STOP, YIELD and DANGER and the P of 319 and 320 keep
+  their Commons lettering.
+- **Road markings:** painted letters have even strokes, so they use Do Hyeon,
+  stretched to each drawn letter box, with the same numerals. A bold face
+  stretched 2–3× thickens its horizontals, so it reads wrong on the road.
+  The Commons road letters of 519, 521 and 540–542 already have that even
+  painted stroke and are kept.
+
+The earlier 2026-10-06 pass mixed Commons lettering with Noto Sans CJK Bold.
+Its thin 비보호 (329), Helvetica-like 5.5t (220) and italic 10% (116, 117)
+read as foreign to the set. That pass is the failure the current lettering
+replaces.
 
 **207:** the 별표 6 drawing is schematic, showing a tractor over a tiller with
 a trailer. The Commons figure, a hand cart over a tiller, is kept instead,
@@ -56,6 +85,8 @@ markings. Images are fitted to their cells, so relative physical size is not
 preserved. Road markings are metres long and plates are 600 mm wide, so true
 scale would make most signs illegible.
 
-Checked on 2026-10-06 over HTTPS on the local server at desktop width: all
-212 images loaded and there was no horizontal overflow. Phone width has not
-been browser-checked. Scoped lint, TypeScript and the navigation test pass.
+Checked on 2026-10-06 over HTTPS on the local server at desktop width, before
+the relettering: all 212 images loaded and there was no horizontal overflow.
+The relettered set was checked by rasterising every SVG with resvg. Phone
+width has not been browser-checked. Scoped lint, TypeScript and the
+navigation test pass.

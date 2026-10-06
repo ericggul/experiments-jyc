@@ -136,7 +136,8 @@ test("a hand-drawn link from the leader lifts a new page more than one from a mi
 
 test("growth and damping stay within bounds; replay is deterministic", () => {
   const web = createRankedWeb();
-  run(web, 30, { ...DEFAULT_PARAMETERS, growth: 20 });
+  // Fast enough to pass this route's 1,000-page cap within the run.
+  run(web, 30, { ...DEFAULT_PARAMETERS, growth: 40 });
   assert.equal(web.size, MAX_PAGES);
   assert.equal(addPage(web), null);
   setDamping(web, 2);

@@ -4,8 +4,8 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 // Galvanised cantilever signal pole (신호등주), in metres.
 const FOOTING_TOP = 0.05;
 const BASE_PLATE = 0.032;
-const POLE_BOTTOM = FOOTING_TOP + BASE_PLATE;
-const POLE_HEIGHT = 6.1;
+export const POLE_BOTTOM = FOOTING_TOP + BASE_PLATE;
+export const POLE_HEIGHT = 6.1;
 /** Arm axis height: a 0.40 m head centred on it has its bottom at 5.0 m, within the manual's 4.5–5 m. */
 export const ARM_HEIGHT = 5.2;
 // Level arm: a rise put the arm and the level heads visibly out of line.
@@ -36,6 +36,17 @@ export const armRadiusAt = (x: number, armLength: number) => {
  * Pole at the origin with the arm reaching along local +x and the hand hole on
  * local -z; the caller turns it to face the street.
  */
+/**
+ * Which part of the pole a mesh belongs to when poles differ in height: the
+ * base stays on the ground, the shaft stretches, the top (cap, arm joint, arm)
+ * rises with it. Untagged meshes are base.
+ */
+export type PolePart = "base" | "shaft" | "top";
+const tag = (object: THREE.Object3D, part: PolePart) => {
+  object.userData.part = part;
+  return object;
+};
+
 export function createPole({
   galvanisedRoughness, concrete, armLength,
 }: { galvanisedRoughness: THREE.Texture; concrete: THREE.Texture; armLength: number }) {
@@ -75,7 +86,7 @@ export function createPole({
 
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(poleTop, poleBottom, POLE_HEIGHT, 72, 1), galvanised);
   shaft.position.y = POLE_BOTTOM + POLE_HEIGHT / 2;
-  pole.add(shaft);
+  pole.add(tag(shaft, "shaft"));
 
   const weld = new THREE.Mesh(new THREE.TorusGeometry(poleBottom + 0.002, 0.007, 8, 72), galvanised);
   weld.rotation.x = Math.PI / 2;
@@ -117,10 +128,10 @@ export function createPole({
   const cap = new THREE.Mesh(new THREE.SphereGeometry(poleTop + 0.006, 48, 12, 0, Math.PI * 2, 0, Math.PI / 2), galvanised);
   cap.scale.y = 0.42;
   cap.position.y = POLE_BOTTOM + POLE_HEIGHT;
-  pole.add(cap);
+  pole.add(tag(cap, "top"));
   const capRim = new THREE.Mesh(new THREE.CylinderGeometry(poleTop + 0.006, poleTop + 0.006, 0.03, 48), galvanised);
   capRim.position.y = POLE_BOTTOM + POLE_HEIGHT - 0.012;
-  pole.add(capRim);
+  pole.add(tag(capRim, "top"));
 
   // Arm joint: welded bracket box on the shaft, two bolted flange plates.
   const jointRadius = poleRadiusAt(ARM_HEIGHT, armLength);
@@ -128,17 +139,17 @@ export function createPole({
   const bracketStart = jointRadius * 0.55;
   const bracket = new THREE.Mesh(new RoundedBoxGeometry(bracketDepth, 0.4 * joint, 0.18 * joint, 2, 0.008), galvanised);
   bracket.position.set(bracketStart + bracketDepth / 2, ARM_HEIGHT, 0);
-  pole.add(bracket);
+  pole.add(tag(bracket, "top"));
   const flangeThickness = 0.022;
   const flangeGeometry = new RoundedBoxGeometry(flangeThickness, 0.34 * joint, 0.3 * joint, 2, 0.006);
   const poleFlange = new THREE.Mesh(flangeGeometry, galvanised);
   poleFlange.position.set(bracketStart + bracketDepth + flangeThickness / 2, ARM_HEIGHT, 0);
-  pole.add(poleFlange);
+  pole.add(tag(poleFlange, "top"));
 
   const arm = new THREE.Group();
   arm.position.set(bracketStart + bracketDepth + flangeThickness, ARM_HEIGHT, 0);
   arm.rotation.z = ARM_TILT;
-  pole.add(arm);
+  pole.add(tag(arm, "top"));
 
   const armFlange = new THREE.Mesh(flangeGeometry, galvanised);
   armFlange.position.x = flangeThickness / 2;

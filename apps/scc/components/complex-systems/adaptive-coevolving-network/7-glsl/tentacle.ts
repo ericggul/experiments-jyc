@@ -1,34 +1,31 @@
-// The path a link takes between its two pages: the straight chord plus a
-// sideways offset that vanishes at both ends. Each link has its own resting
-// curve (from its phase), slowly sways between a C and an S, and carries a
-// wave that travels from source to target, so it writhes like a tentacle.
-// The same function drives the ribbon in the shader and, in the browser,
-// the surfers riding inside it and link hit-testing, so all three agree.
+// The path a link takes between its two pages, grown rather than waved: a
+// cubic Hermite curve that leaves its source in its own direction and
+// arrives at its target from its own direction. Both angles are fixed per
+// link (from its phase) and drift slowly, so every link has a different,
+// slowly changing C or S shape, like a neurite or a hypha; long links run
+// straighter. A faint ripple travels along it. The same function drives the
+// ribbon in the shader and, in the browser, the surfers riding inside it and
+// link hit-testing.
 
-/** Resting bend and its slow sway, as a share of the chord, capped in px. */
-const BEND = { share: 0.16, cap: 26, pace: 0.35 } as const;
-/** An S-shaped twist that comes and goes. */
-const TWIST = { share: 0.07, cap: 10, pace: 0.27 } as const;
-/** A travelling wave: wavenumber in rad/px, speed in rad/s. */
-const WAVE = { share: 0.045, cap: 5, number: 0.12, speed: 1.6 } as const;
+/** Largest departure and arrival angle off the chord, in radians. */
+const ANGLE = 0.8;
+/** How far each angle drifts, in radians, and how fast. */
+const DRIFT = { angle: 0.22, pace: [0.17, 0.13] as const };
+/** Chord length (px) beyond which a link straightens: its angles shrink as 220 / length, to at most half. */
+const STRAIGHTEN = 220;
+/** Tangent length as a share of the chord. */
+const REACH = 0.85;
+/** A faint ripple: amplitude in px, wavenumber in rad/px, speed in rad/s. */
+const RIPPLE = { amplitude: 1.2, number: 0.1, speed: 1.2 } as const;
 
-/** Sideways offset (px) at parameter u ∈ [0, 1] along a chord of `length` px. */
-export function tentacleOffset(u: number, length: number, phase: number, time: number, amount: number) {
-  const envelope = Math.sin(Math.PI * u);
-  const bend =
-    (0.55 * Math.sin(time * BEND.pace + phase) + 0.45 * Math.sin(phase * 3.1)) *
-    Math.min(BEND.share * length, BEND.cap) *
-    envelope;
-  const twist =
-    Math.sin(2 * Math.PI * u) * Math.sin(time * TWIST.pace + phase * 1.7) * Math.min(TWIST.share * length, TWIST.cap);
-  const wave =
-    Math.max(envelope, 0) ** 0.7 *
-    Math.sin(u * length * WAVE.number - time * WAVE.speed + phase * 5) *
-    Math.min(WAVE.share * length, WAVE.cap);
-  return (bend + twist + wave) * amount;
+function angles(phase: number, time: number, amount: number) {
+  return [
+    amount * (ANGLE * Math.sin(phase * 3.7 + 1) + DRIFT.angle * Math.sin(time * DRIFT.pace[0] + phase)),
+    amount * (ANGLE * Math.sin(phase * 5.3 + 2) + DRIFT.angle * Math.sin(time * DRIFT.pace[1] + phase * 1.9)),
+  ] as const;
 }
 
-/** Writes the point at u on the tentacle from (ax, ay) to (bx, by) into `out`. */
+/** Writes the point at u ∈ [0, 1] on the link from (ax, ay) to (bx, by) into `out`. */
 export function tentaclePoint(
   ax: number,
   ay: number,
@@ -43,23 +40,55 @@ export function tentaclePoint(
   const dx = bx - ax;
   const dy = by - ay;
   const length = Math.max(Math.hypot(dx, dy), 1e-3);
-  const offset = tentacleOffset(u, length, phase, time, amount);
-  out.x = ax + dx * u - (dy / length) * offset;
-  out.y = ay + dy * u + (dx / length) * offset;
+  const bending = amount * Math.min(1, Math.max(0.5, STRAIGHTEN / length));
+  const [leave, arrive] = angles(phase, time, bending);
+  const scale = REACH;
+  const m0x = (dx * Math.cos(leave) - dy * Math.sin(leave)) * scale;
+  const m0y = (dx * Math.sin(leave) + dy * Math.cos(leave)) * scale;
+  const m1x = (dx * Math.cos(arrive) - dy * Math.sin(arrive)) * scale;
+  const m1y = (dx * Math.sin(arrive) + dy * Math.cos(arrive)) * scale;
+  const u2 = u * u;
+  const u3 = u2 * u;
+  const h00 = 2 * u3 - 3 * u2 + 1;
+  const h10 = u3 - 2 * u2 + u;
+  const h01 = -2 * u3 + 3 * u2;
+  const h11 = u3 - u2;
+  const ripple =
+    amount *
+    RIPPLE.amplitude *
+    Math.min(1, length / 60) *
+    Math.sin(Math.PI * u) *
+    Math.sin(u * length * RIPPLE.number - time * RIPPLE.speed + phase * 4);
+  out.x = h00 * ax + h10 * m0x + h01 * bx + h11 * m1x - (dy / length) * ripple;
+  out.y = h00 * ay + h10 * m0y + h01 * by + h11 * m1y + (dx / length) * ripple;
   return out;
 }
 
-/** The same offset in GLSL; `time` must be a uniform of the including shader. */
+/** The same path in GLSL; `time` must be a uniform of the including shader. */
 export const TENTACLE_GLSL = /* glsl */ `
-float tentacleOffset(float u, float spanLength, float phase, float amount) {
-  float envelope = sin(3.14159265 * u);
-  float bend = (0.55 * sin(time * ${BEND.pace.toFixed(4)} + phase) + 0.45 * sin(phase * 3.1))
-    * min(${BEND.share.toFixed(4)} * spanLength, ${BEND.cap.toFixed(1)}) * envelope;
-  float twist = sin(6.2831853 * u) * sin(time * ${TWIST.pace.toFixed(4)} + phase * 1.7)
-    * min(${TWIST.share.toFixed(4)} * spanLength, ${TWIST.cap.toFixed(1)});
-  float wave = pow(max(envelope, 0.0), 0.7)
-    * sin(u * spanLength * ${WAVE.number.toFixed(4)} - time * ${WAVE.speed.toFixed(4)} + phase * 5.0)
-    * min(${WAVE.share.toFixed(4)} * spanLength, ${WAVE.cap.toFixed(1)});
-  return (bend + twist + wave) * amount;
+vec2 turn(vec2 v, float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  return vec2(c * v.x - s * v.y, s * v.x + c * v.y);
+}
+
+vec2 tentaclePoint(vec2 a, vec2 b, float u, float phase, float amount) {
+  vec2 span = b - a;
+  float spanLength = max(length(span), 1e-3);
+  float bending = amount * clamp(${STRAIGHTEN.toFixed(1)} / spanLength, 0.5, 1.0);
+  float leave = bending * (${ANGLE.toFixed(4)} * sin(phase * 3.7 + 1.0)
+    + ${DRIFT.angle.toFixed(4)} * sin(time * ${DRIFT.pace[0].toFixed(4)} + phase));
+  float arrive = bending * (${ANGLE.toFixed(4)} * sin(phase * 5.3 + 2.0)
+    + ${DRIFT.angle.toFixed(4)} * sin(time * ${DRIFT.pace[1].toFixed(4)} + phase * 1.9));
+  vec2 m0 = turn(span, leave) * ${REACH.toFixed(4)};
+  vec2 m1 = turn(span, arrive) * ${REACH.toFixed(4)};
+  float u2 = u * u;
+  float u3 = u2 * u;
+  vec2 point = (2.0 * u3 - 3.0 * u2 + 1.0) * a + (u3 - 2.0 * u2 + u) * m0
+    + (-2.0 * u3 + 3.0 * u2) * b + (u3 - u2) * m1;
+  float ripple = amount * ${RIPPLE.amplitude.toFixed(4)} * min(1.0, spanLength / 60.0)
+    * sin(3.14159265 * u)
+    * sin(u * spanLength * ${RIPPLE.number.toFixed(4)} - time * ${RIPPLE.speed.toFixed(4)} + phase * 4.0);
+  return point + vec2(-span.y, span.x) / spanLength * ripple;
 }
 `;

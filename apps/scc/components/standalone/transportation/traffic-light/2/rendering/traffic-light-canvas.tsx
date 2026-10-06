@@ -9,8 +9,13 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import type { SignalLamp } from "../model/signal-cycle";
 import { createHeadKit, type LedTextures } from "./signal-head";
-import { buildStructure, frameCentre, POLE_COUNT, rowOfPoles, type SignalConfig } from "./structure";
-import { createArrowLedTexture, createConcreteTexture, createGalvanisedRoughness, createLedTexture } from "./textures";
+import type { PoleSpec } from "../model/arrangement";
+import { LAMP_FACES } from "../model/lamp-faces";
+import { signalAt, type SignalPhase } from "../model/signal-cycle";
+import { buildStructure, frameCentre, type SignalConfig } from "./structure";
+import {
+  createArrowLedTexture, createConcreteTexture, createGalvanisedRoughness, createImageLedTexture, createLedTexture,
+} from "./textures";
 
 export type { SignalConfig };
 
@@ -19,10 +24,18 @@ const LED_INTENSITY: Record<SignalLamp, number> = { red: 11, yellow: 6.5, arrow:
 const LENS_GLOW = 0.55;
 const SKY = { zenith: "#5f84b4", horizon: "#e6e0d6", ground: "#6d6a65" };
 const MIN_CAMERA_HEIGHT = 0.35;
+/** Shortest wait between signal updates: off-sync poles change often, so updates batch at 30 Hz. */
+const MIN_SIGNAL_TICK_MS = 1000 / 30;
 /** Sky and ground reach past the far end of the longest row. */
 const WORLD_RADIUS = 4000;
 /** Half-width of the sun's shadow box, which follows the view along the row. */
 const SHADOW_REACH = 30;
+
+/** The row fades into the horizon over most of its length. */
+const fogFar = (poles: readonly PoleSpec[]) => {
+  const reach = Math.max(...poles.map(({ x, z }) => Math.hypot(x - poles[0].x, z - poles[0].z)));
+  return Math.max(400, reach * 0.85);
+};
 
 function disposeObject(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
@@ -72,28 +85,37 @@ function createSkyDome() {
   return dome;
 }
 
+export type SignalPlan = { phases: readonly SignalPhase[]; opposingOffset: number };
+
 export default function TrafficLightCanvas({
-  front, back, config,
+  plan, config, poles, lampFace,
 }: {
-  /** Lit lamps for this approach (arm front and pole head). */
-  front: readonly SignalLamp[];
-  /** Lit lamps for the opposing approach (back heads). */
-  back: readonly SignalLamp[];
+  /** The timing plan every pole runs on its own clock (rate and phase from its spec). */
+  plan: SignalPlan;
   config: SignalConfig;
+  /** Where each pole stands and how it differs; the count stays fixed. */
+  poles: readonly PoleSpec[];
+  /** Id of the face shown on the round lamps (`LAMP_FACES`). */
+  lampFace: string;
 }) {
   const host = useRef<HTMLDivElement>(null);
-  const applyLit = useRef<(front: readonly SignalLamp[], back: readonly SignalLamp[]) => void>(() => undefined);
   const applyConfig = useRef<(config: SignalConfig) => void>(() => undefined);
-  const initial = useRef({ front, back, config });
-  const { headCount, leftTurn, backHead, poleHead, spacing } = config;
+  const applyPoles = useRef<(poles: readonly PoleSpec[]) => void>(() => undefined);
+  const applyFace = useRef<(face: string) => void>(() => undefined);
+  const initial = useRef({ plan, config, poles, lampFace });
+  const { headCount, leftTurn, backHead, poleHead } = config;
 
   useEffect(() => {
-    applyLit.current(front, back);
-  }, [front, back]);
+    applyConfig.current({ headCount, leftTurn, backHead, poleHead });
+  }, [headCount, leftTurn, backHead, poleHead]);
 
   useEffect(() => {
-    applyConfig.current({ headCount, leftTurn, backHead, poleHead, spacing });
-  }, [headCount, leftTurn, backHead, poleHead, spacing]);
+    applyPoles.current(poles);
+  }, [poles]);
+
+  useEffect(() => {
+    applyFace.current(lampFace);
+  }, [lampFace]);
 
   useEffect(() => {
     const mount = host.current;
@@ -109,7 +131,7 @@ export default function TrafficLightCanvas({
     renderer.shadowMap.autoUpdate = false;
     renderer.shadowMap.needsUpdate = true;
     renderer.domElement.setAttribute("role", "img");
-    renderer.domElement.setAttribute("aria-label", "Fifty identical Korean traffic signal poles in a straight row down one road. Drag to look around and scroll to move along.");
+    renderer.domElement.setAttribute("aria-label", "Fifty identical Korean traffic signal poles, arranged in a line or a circle, at even or scattered heights. Drag to look around and scroll to move closer.");
     mount.appendChild(renderer.domElement);
     const anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -162,8 +184,9 @@ export default function TrafficLightCanvas({
     scene.add(ground);
 
     const kit = createHeadKit(textures, LED_INTENSITY, LENS_GLOW);
-    let lit = { front: initial.current.front, back: initial.current.back };
+    let disposed = false;
     let config = initial.current.config;
+    let poles = initial.current.poles;
     let structure: ReturnType<typeof buildStructure> | null = null;
     const build = () => {
       if (structure) {
@@ -171,12 +194,10 @@ export default function TrafficLightCanvas({
         structure.dispose();
       }
       structure = buildStructure({
-        config, kit, galvanisedRoughness, concrete: footingConcrete, poles: rowOfPoles(POLE_COUNT, config.spacing),
+        config, kit, galvanisedRoughness, concrete: footingConcrete, poles,
       });
-      structure.light(lit);
       scene.add(structure.group);
-      // The row fades into the horizon over most of its length.
-      fog.far = Math.max(400, POLE_COUNT * config.spacing * 0.85);
+      fog.far = fogFar(poles);
       renderer.shadowMap.needsUpdate = true;
     };
     build();
@@ -219,15 +240,85 @@ export default function TrafficLightCanvas({
       });
     };
 
-    applyLit.current = (front, back) => {
-      lit = { front, back };
-      structure?.light(lit);
+    // Each pole runs the plan on its own clock: local time = elapsed × rate + phase × cycle.
+    // The next wake is the soonest change on any pole; synchronised poles all change together.
+    const { phases, opposingOffset } = initial.current.plan;
+    const cycle = phases.reduce((sum, phase) => sum + phase.seconds, 0);
+    const clockStart = performance.now();
+    let lit: { front: readonly SignalLamp[]; back: readonly SignalLamp[] }[] = [];
+    let signalTimer = 0;
+    const tick = () => {
+      window.clearTimeout(signalTimer);
+      const elapsed = (performance.now() - clockStart) / 1000;
+      let soonest = Infinity;
+      lit = poles.map(({ rate = 1, phase = 0 }) => {
+        const local = elapsed * rate + phase * cycle;
+        const front = signalAt(phases, local);
+        const back = signalAt(phases, local + opposingOffset);
+        soonest = Math.min(soonest, front.remaining / rate, back.remaining / rate);
+        return { front: front.lit, back: back.lit };
+      });
+      structure?.light((pole, approach) => lit[pole][approach]);
       render();
+      signalTimer = window.setTimeout(tick, Math.max(MIN_SIGNAL_TICK_MS, soonest * 1000 + 5));
+    };
+    tick();
+    // Image faces load once and stay cached; a later choice wins over a slower earlier load.
+    const faceTextures = new Map<string, Partial<Record<SignalLamp, THREE.Texture>>>();
+    let wantedFace = initial.current.lampFace;
+    const loadImage = (url: string) => new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = url;
+    });
+    applyFace.current = async (id) => {
+      wantedFace = id;
+      const face = LAMP_FACES.find((entry) => entry.id === id);
+      if (!face?.images) {
+        kit.setFaces(null);
+        render();
+        return;
+      }
+      let faces = faceTextures.get(id);
+      if (!faces) {
+        const loaded: Partial<Record<SignalLamp, THREE.Texture>> = {};
+        try {
+          await Promise.all(Object.entries(face.images).map(async ([lamp, { url, mask }]) => {
+            loaded[lamp as SignalLamp] = createImageLedTexture(await loadImage(url), mask, anisotropy);
+          }));
+        } catch {
+          return;
+        }
+        faces = loaded;
+        faceTextures.set(id, faces);
+      }
+      if (wantedFace !== id || disposed) return;
+      kit.setFaces(faces);
+      render();
+    };
+    applyFace.current(wantedFace);
+
+    applyPoles.current = (next) => {
+      if (next === poles) return;
+      const sameCount = next.length === poles.length;
+      poles = next;
+      // Same number of poles moved, turned or stretched: rewrite instance matrices, keep every geometry.
+      // A different number (another layout, or the grid's size) rebuilds the instance buffers once.
+      if (sameCount) {
+        structure?.place(poles);
+        fog.far = fogFar(poles);
+        renderer.shadowMap.needsUpdate = true;
+      } else {
+        build();
+      }
+      // New clocks or new poles: relight from the current time.
+      tick();
     };
     applyConfig.current = (next) => {
       if (next.headCount === config.headCount && next.leftTurn === config.leftTurn
-        && next.backHead === config.backHead && next.poleHead === config.poleHead
-        && next.spacing === config.spacing) return;
+        && next.backHead === config.backHead && next.poleHead === config.poleHead) return;
       // Keep the same view of the structure while its middle moves with the arm.
       const shift = frameCentre(next) - frameCentre(config);
       config = next;
@@ -236,7 +327,7 @@ export default function TrafficLightCanvas({
       camera.position.x += shift;
       controls.update();
       aimShadow();
-      render();
+      tick();
     };
     render();
 
@@ -280,8 +371,12 @@ export default function TrafficLightCanvas({
     resize.observe(mount);
 
     return () => {
-      applyLit.current = () => undefined;
+      window.clearTimeout(signalTimer);
       applyConfig.current = () => undefined;
+      applyPoles.current = () => undefined;
+      applyFace.current = () => undefined;
+      disposed = true;
+      faceTextures.forEach((faces) => Object.values(faces).forEach((texture) => texture?.dispose()));
       cancelAnimationFrame(frame);
       resize.disconnect();
       controls.removeEventListener("change", onControlsChange);

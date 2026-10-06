@@ -106,6 +106,60 @@ export function createArrowLedTexture(anisotropy: number) {
   return ledTexture(element, anisotropy);
 }
 
+/**
+ * A portrait as the lamp's light: the picture's own continuous tones, so the
+ * person reads at a glance even far away. The mask ellipse is scaled to fill
+ * the lens; outside it the board is dark (with a short feathered edge).
+ * Luminance inside is stretched between its 2nd and 98th percentiles with a
+ * slight gamma, so hair, skin and features keep their contrast.
+ */
+export function createImageLedTexture(
+  image: HTMLImageElement,
+  mask: { x: number; y: number; rx: number; ry: number },
+  anisotropy: number,
+) {
+  const size = 1024;
+  const { element, context } = canvas(size);
+  // Crop the picture to the mask's bounding square so the head fills the lens.
+  const half = Math.max(mask.rx, mask.ry);
+  const width = image.naturalWidth, height = image.naturalHeight;
+  context.drawImage(
+    image,
+    (mask.x - half) * width, (mask.y - half) * height, 2 * half * width, 2 * half * height,
+    0, 0, size, size,
+  );
+  const frame = context.getImageData(0, 0, size, size);
+  const pixels = frame.data;
+  const rx = mask.rx / (2 * half), ry = mask.ry / (2 * half);
+  const weight = new Float32Array(size * size);
+  const luminance = new Float32Array(size * size);
+  const samples: number[] = [];
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const index = y * size + x;
+      const distance = Math.hypot((x / size - 0.5) / rx, (y / size - 0.5) / ry);
+      weight[index] = Math.min(1, Math.max(0, (1 - distance) / 0.04));
+      const offset = index * 4;
+      luminance[index] = (0.2126 * pixels[offset] + 0.7152 * pixels[offset + 1] + 0.0722 * pixels[offset + 2]) / 255;
+      if (weight[index] > 0 && (index & 7) === 0) samples.push(luminance[index]);
+    }
+  }
+  samples.sort((a, b) => a - b);
+  const low = samples[Math.floor(samples.length * 0.02)] ?? 0;
+  const high = samples[Math.floor(samples.length * 0.98)] ?? 1;
+  const range = Math.max(1e-3, high - low);
+  for (let index = 0; index < size * size; index++) {
+    const stretched = Math.min(1, Math.max(0, (luminance[index] - low) / range));
+    const byte = Math.round(Math.pow(stretched, 1.15) * weight[index] * 255);
+    pixels[index * 4] = byte;
+    pixels[index * 4 + 1] = byte;
+    pixels[index * 4 + 2] = byte;
+    pixels[index * 4 + 3] = 255;
+  }
+  context.putImageData(frame, 0, 0);
+  return ledTexture(element, anisotropy);
+}
+
 /** Hot-dip galvanised steel: mottled spangle with faint vertical drip streaks. */
 export function createGalvanisedRoughness(anisotropy: number) {
   const size = 512;

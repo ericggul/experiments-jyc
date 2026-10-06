@@ -134,7 +134,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "swarm/1", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Neutral flock field with adjustable separation, alignment and cohesion" },
   { key: "swarm/2", area: "standalone", family: "swarm", date: "2026-07-14", phrase: "Flock confined to a world coastline map with a latitude-longitude graticule" },
   { key: "swarm/3", area: "standalone", family: "swarm", date: "2026-07-17", phrase: "Map clicks launch missile salvos that the flock steers away from" },
-  { key: "transportation/road-signs/1", area: "standalone", family: "transportation/road-signs", date: "2026-10-06", phrase: "Every current Korean traffic safety sign and road marking, 101 to 549, in its official order" },
+  { key: "transportation/road-signs/archive", area: "standalone", family: "transportation/road-signs", date: "2026-10-06", phrase: "Reference archive: every current Korean traffic safety sign and road marking, 101 to 549, in its official order" },
   { key: "transportation/traffic-light/1", area: "standalone", family: "transportation/traffic-light", date: "2026-10-06", phrase: "Korean signal heads on a galvanised cantilever pole, cycling through real junction timing plans" },
   { key: "transportation/traffic-light/2", area: "standalone", family: "transportation/traffic-light", date: "2026-10-06", phrase: "The same signal pole repeated fifty times down one straight road" },
   { key: "reference", area: "standalone", family: "reference", date: "2026-09-02", phrase: "Working visual references for when a question stays open" },

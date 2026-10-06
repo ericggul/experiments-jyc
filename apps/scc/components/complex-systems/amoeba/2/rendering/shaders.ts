@@ -187,6 +187,7 @@ uniform vec2 uResolution;
 uniform float uUnit;        // pixels per zone unit (the zone's half-height is 1)
 uniform float uHalfWidth;   // zone half-width
 uniform float uBaseRadius;  // newborn radius of a k = 1 body, zone units
+uniform float uFieldStep;   // output pixels per field texel
 uniform float uDataWidth;
 out vec4 color;
 
@@ -220,6 +221,41 @@ vec3 lawnAt(vec2 world) {
   return base * (1.0 - 0.07 * food * (grain.r - 0.5) - 0.035 * food * (grain.g - 0.5));
 }
 
+// Cubic B-spline reconstruction of the field with its derivatives, using the
+// 4-bilinear-fetch trick per term (value, d/dx, d/dy: 12 fetches). Its threshold
+// contour is curvature-continuous, so silhouettes stay smooth however far the
+// low-resolution field is magnified. Returns (value, d/dx, d/dy) per output pixel.
+vec3 fieldCubic(vec2 frag) {
+  vec2 size = vec2(textureSize(uField, 0));
+  vec2 t = frag / uResolution * size - 0.5;
+  vec2 i = floor(t);
+  vec2 f = t - i;
+  vec2 f2 = f * f;
+  vec2 f3 = f2 * f;
+  vec2 w0 = (1.0 - 3.0 * f + 3.0 * f2 - f3) / 6.0;
+  vec2 w1 = (4.0 - 6.0 * f2 + 3.0 * f3) / 6.0;
+  vec2 w2 = (1.0 + 3.0 * f + 3.0 * f2 - 3.0 * f3) / 6.0;
+  vec2 w3 = f3 / 6.0;
+  vec2 d0 = -0.5 * (1.0 - f) * (1.0 - f);
+  vec2 d1 = 1.5 * f2 - 2.0 * f;
+  vec2 d2 = 0.5 + f - 1.5 * f2;
+  vec2 d3 = 0.5 * f2;
+  vec2 g0 = w0 + w1;
+  vec2 g1 = w2 + w3;
+  vec2 h0 = i - 1.0 + w1 / g0;
+  vec2 h1 = i + 1.0 + w3 / g1;
+  vec2 e0 = d0 + d1;
+  vec2 e1 = d2 + d3;
+  vec2 k0 = i - 1.0 + d1 / min(e0, vec2(-1e-6));
+  vec2 k1 = i + 1.0 + d3 / max(e1, vec2(1e-6));
+  #define F(x, y) texture(uField, (vec2(x, y) + 0.5) / size).r
+  float value = g0.y * (g0.x * F(h0.x, h0.y) + g1.x * F(h1.x, h0.y)) + g1.y * (g0.x * F(h0.x, h1.y) + g1.x * F(h1.x, h1.y));
+  float dx = g0.y * (e0.x * F(k0.x, h0.y) + e1.x * F(k1.x, h0.y)) + g1.y * (e0.x * F(k0.x, h1.y) + e1.x * F(k1.x, h1.y));
+  float dy = e0.y * (g0.x * F(h0.x, k0.y) + g1.x * F(h1.x, k0.y)) + e1.y * (g0.x * F(h0.x, k1.y) + g1.x * F(h1.x, k1.y));
+  #undef F
+  return vec3(value, dx / uFieldStep, dy / uFieldStep);
+}
+
 float fieldAt(vec2 frag) {
   return texture(uField, frag / uResolution).r;
 }
@@ -234,6 +270,10 @@ void main() {
 
   vec4 fieldSample = texture(uField, frag / uResolution);
   float field = fieldSample.r;
+  // Near bodies, reconstruct smoothly; open lawn keeps the single bilinear tap.
+  vec3 smoothField = vec3(field, 0.0, 0.0);
+  if (field > THRESHOLD * 0.4) smoothField = fieldCubic(frag);
+  field = smoothField.x;
   // Field-weighted radius: the local body scale, continuous across contacts.
   float bodyRadius = field > 1e-4 ? fieldSample.g / field : uBaseRadius;
   float bodyPx = bodyRadius * uUnit;
@@ -254,15 +294,19 @@ void main() {
     float u = clamp((field - THRESHOLD) / (1.0 - THRESHOLD), 0.0, 1.0);
     float h = 0.7 * sqrt(u);
     float slope = 0.35 / max(sqrt(u), 0.14) / (1.0 - THRESHOLD);
-    // Hardware derivatives of the (smooth, half-resolution) field: no extra taps.
-    float gx = dFdx(field) * 2.0;
-    float gy = dFdy(field) * 2.0;
+    // Analytic derivatives of the cubic reconstruction: smooth normals.
+    float gx = smoothField.y * 2.0;
+    float gy = smoothField.z * 2.0;
     vec3 normal = normalize(vec3(-gx * slope * bodyPx * 0.5, -gy * slope * bodyPx * 0.5, 1.0));
 
     // Interior detail from the nearest body, faded well before its border.
-    vec4 owner = texture(uOwner, frag / uResolution);
+    // The owning body's id is read exactly (texelFetch ignores filtering); its
+    // distance is read filtered, so creases and interior fades stay smooth
+    // instead of showing the owner pass's coarse texels.
+    vec2 ownerUv = frag / uResolution;
+    vec4 owner = texelFetch(uOwner, ivec2(ownerUv * vec2(textureSize(uOwner, 0))), 0);
     float slot = floor(owner.r * 255.0 + 0.5) * 256.0 + floor(owner.g * 255.0 + 0.5) - 1.0;
-    float nearest = owner.b * 1.2;
+    float nearest = texture(uOwner, ownerUv).b * 1.2;
     float cyst = 0.0;
     float nucleus = 0.0;
     float grains = 0.0;

@@ -1,16 +1,11 @@
 /**
  * Frame pacing for display-rate rendering. Rendering every vsync avoids the
  * judder of a rate that does not divide the display's (24 fps on 60 Hz shows
- * frames for 2, 3, 2… vsyncs). When frames arrive late, quality steps down —
- * internal resolution first, then every second vsync, which keeps pacing even —
- * and steps back up once frames are on time again.
+ * frames for 2, 3, 2… vsyncs). Resolution is never reduced: when frames arrive
+ * late, rendering moves to every second vsync, which keeps pacing even, and
+ * returns to every vsync once frames are on time again.
  */
-export const QUALITY_LEVELS = [
-  { scale: 1, everyOther: false },
-  { scale: 0.8, everyOther: false },
-  { scale: 0.65, everyOther: false },
-  { scale: 0.65, everyOther: true },
-] as const;
+export const QUALITY_LEVELS = [{ everyOther: false }, { everyOther: true }] as const;
 
 const LATE = 1.45;
 const ON_TIME = 1.15;

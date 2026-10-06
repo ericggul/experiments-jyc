@@ -16,29 +16,32 @@ export type AmoebaRenderer = Readonly<{
   /** `time` and `dt` in seconds; bodies spring toward the colony at `alpha`. */
   render: (colony: Colony, alpha: number, time: number, dt: number) => void;
   resize: (width: number, height: number) => void;
-  /** Internal resolution scale (≤ 1) chosen by frame pacing. */
-  setQuality: (scale: number) => void;
   /** CSS pixel → zone coordinates (half-height 1, y up). */
   toWorld: (x: number, y: number) => readonly [number, number];
   dispose: () => void;
 }>;
 
-const MAX_CANVAS_PIXELS = 3_000_000;
+// Full device resolution (Retina included) for the final image, within a pixel cap.
+const MAX_DEVICE_PIXEL_RATIO = 2;
+// High enough that Retina laptop screens (2940×1912 = 5.6 MP, 3456×2234 = 7.7 MP)
+// keep their exact DPR: a fractional ratio resamples, and so softens, the image.
+const MAX_CANVAS_PIXELS = 8_300_000;
+// The field and owner passes stay at half the CSS resolution whatever the DPR:
+// the field is smooth, so its cost need not grow with the display.
+const FIELD_SCALE = 0.5;
+const MAX_GRAIN_SIZE = 4096;
 const DATA_WIDTH = 64;
 // Three texel rows per body: (x, y, heading, radius), (cyst, lineage, seed, phase), (split).
 const DATA_HEIGHT = (CAPACITY / DATA_WIDTH) * 3;
-const GRAIN_WIDTH = 1536;
 
 /** `halfWidth` is the zone's fixed half-width; the screen covers the zone. */
 export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: number): AmoebaRenderer {
-  const grainHeight = Math.max(1, Math.round(GRAIN_WIDTH / halfWidth));
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "low-power" });
   renderer.autoClear = false;
   const camera = new THREE.OrthographicCamera();
   const bodies = createBodies();
   let cssWidth = 1;
   let cssHeight = 1;
-  let quality = 1;
 
   // Pass A: summed soft kernels at half resolution.
   const fieldTarget = new THREE.WebGLRenderTarget(1, 1, {
@@ -50,11 +53,12 @@ export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: numbe
     generateMipmaps: false,
   });
   // Pass B: nearest body per pixel, also at half resolution (interior detail only).
+  // Linear filtering serves the smooth distance channel; ids use texelFetch.
   const ownerTarget = new THREE.WebGLRenderTarget(1, 1, {
     type: THREE.UnsignedByteType,
     format: THREE.RGBAFormat,
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
     depthBuffer: true,
     generateMipmaps: false,
   });
@@ -114,7 +118,7 @@ export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: numbe
   let foodLevels: Float32Array | null = null;
 
   // Static lawn grain, drawn once in dish space instead of per pixel per frame.
-  const grainTarget = new THREE.WebGLRenderTarget(GRAIN_WIDTH, grainHeight, {
+  const grainTarget = new THREE.WebGLRenderTarget(1, 1, {
     type: THREE.UnsignedByteType,
     format: THREE.RGBAFormat,
     minFilter: THREE.LinearFilter,
@@ -133,6 +137,7 @@ export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: numbe
     uUnit: { value: 1 },
     uHalfWidth: { value: halfWidth },
     uBaseRadius: { value: NEWBORN_RADIUS },
+    uFieldStep: { value: 1 },
     uDataWidth: { value: DATA_WIDTH },
   };
   const triangle = new THREE.BufferGeometry();
@@ -153,15 +158,25 @@ export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: numbe
     glslVersion: THREE.GLSL3,
     vertexShader: compositeVertex,
     fragmentShader: grainFragment,
-    uniforms: { uSize: { value: new THREE.Vector2(GRAIN_WIDTH, grainHeight) }, uHalfWidth: { value: halfWidth } },
+    uniforms: { uSize: { value: new THREE.Vector2(1, 1) }, uHalfWidth: { value: halfWidth } },
     depthTest: false,
     depthWrite: false,
   });
   const grainMesh = new THREE.Mesh(triangle, grainMaterial);
   grainMesh.frustumCulled = false;
-  renderer.setRenderTarget(grainTarget);
-  renderer.render(new THREE.Scene().add(grainMesh), camera);
-  renderer.setRenderTarget(null);
+  const grainScene = new THREE.Scene().add(grainMesh);
+
+  /** Bakes the lawn grain at the zone's on-screen pixel size, so it is never magnified. */
+  function bakeGrain(unit: number) {
+    const width = Math.min(MAX_GRAIN_SIZE, Math.ceil(unit * 2 * halfWidth));
+    const height = Math.min(MAX_GRAIN_SIZE, Math.ceil(unit * 2));
+    if (grainTarget.width === width && grainTarget.height === height) return;
+    grainTarget.setSize(width, height);
+    grainMaterial.uniforms.uSize.value.set(width, height);
+    renderer.setRenderTarget(grainTarget);
+    renderer.render(grainScene, camera);
+    renderer.setRenderTarget(null);
+  }
 
   let uploadedTick = -1;
 
@@ -264,22 +279,23 @@ export function createAmoebaRenderer(canvas: HTMLCanvasElement, halfWidth: numbe
     resize(width, height) {
       cssWidth = Math.max(1, width);
       cssHeight = Math.max(1, height);
-      const ratio = Math.min(1, Math.sqrt(MAX_CANVAS_PIXELS / (cssWidth * cssHeight))) * quality;
+      const device = Math.min(MAX_DEVICE_PIXEL_RATIO, window.devicePixelRatio || 1);
+      // Only whole-number ratios: above the cap, drop to 1 rather than a blurry fraction.
+      const ratio = cssWidth * cssHeight * device * device <= MAX_CANVAS_PIXELS ? device : 1;
       renderer.setPixelRatio(ratio);
       renderer.setSize(cssWidth, cssHeight, false);
       const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
-      fieldTarget.setSize(Math.ceil(buffer.x / 2), Math.ceil(buffer.y / 2));
-      ownerTarget.setSize(Math.ceil(buffer.x / 2), Math.ceil(buffer.y / 2));
+      const fieldWidth = Math.ceil(cssWidth * FIELD_SCALE);
+      const fieldHeight = Math.ceil(cssHeight * FIELD_SCALE);
+      fieldTarget.setSize(fieldWidth, fieldHeight);
+      ownerTarget.setSize(fieldWidth, fieldHeight);
       // Cover: the zone always fills the screen; a later aspect change crops it.
       const unit = Math.max(buffer.x / (2 * halfWidth), buffer.y / 2);
       scale.value.set(unit / (buffer.x / 2), unit / (buffer.y / 2));
       compositeUniforms.uResolution.value.copy(buffer);
       compositeUniforms.uUnit.value = unit;
-    },
-    setQuality(scale) {
-      if (scale === quality) return;
-      quality = scale;
-      this.resize(cssWidth, cssHeight);
+      compositeUniforms.uFieldStep.value = buffer.x / fieldWidth;
+      bakeGrain(unit);
     },
     toWorld(x, y) {
       const unit = Math.max(cssWidth / (2 * halfWidth), cssHeight / 2);

@@ -19,7 +19,7 @@
 // The continuous attention weights and drifting quality are this route's
 // extension. Positions are not part of this model.
 
-export const MAX_PAGES = 300;
+export const MAX_PAGES = 1_000;
 export const DEFAULT_PAGES = 100;
 export const DEFAULT_DAMPING = 0.85;
 export const DAMPING_RANGE = [0.5, 0.95] as const;

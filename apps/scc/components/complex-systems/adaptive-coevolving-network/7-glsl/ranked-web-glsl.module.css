@@ -39,16 +39,11 @@
   pointer-events: auto;
 }
 
-.hint,
-.about {
+.hint {
   margin: 0;
   color: var(--quiet);
   text-align: center;
   word-break: keep-all;
-}
-
-.about {
-  line-height: 1.6;
 }
 
 .views {
@@ -89,6 +84,12 @@
 
 .balance span {
   white-space: nowrap;
+}
+
+.count {
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .balance input {
