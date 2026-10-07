@@ -12,6 +12,7 @@ import AwarenessMultiplexSix from "@/components/complex-systems/adaptive-coevolv
 import RankedWebSeven from "@/components/complex-systems/adaptive-coevolving-network/7";
 import RankedWebGlsl from "@/components/complex-systems/adaptive-coevolving-network/7-glsl";
 import RankedWebGlslTwo from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-2";
+import RankedWebMorphogen from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-3";
 import {
   adaptiveCoevolvingNetworkExperiments,
   isAdaptiveCoevolvingNetworkExperimentSlug,
@@ -30,6 +31,7 @@ const components: Record<AdaptiveCoevolvingNetworkExperimentSlug, ComponentType>
   "7": RankedWebSeven,
   "7-glsl": RankedWebGlsl,
   "7-glsl-2": RankedWebGlslTwo,
+  "7-glsl-3": RankedWebMorphogen,
 };
 
 const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
@@ -44,6 +46,7 @@ const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
   "7": "A living web where each page's area is exactly its PageRank share; attention weights flow continuously toward highly ranked, high-quality pages, so rank shapes links and links shape rank while leaders keep changing.",
   "7-glsl": "The same living PageRank web drawn as one continuous gel: each page is a soft cell whose area is its rank, its links grow out of it as ribbons as wide as the rank they pass on, and bright beads of random surfers travel inside them.",
   "7-glsl-2": "7-glsl's PageRank gel in relief: rank-sized cells are lit domes, large pages grow stout processes into their links, and links that pass on more rank are wider and brighter.",
+  "7-glsl-3": "The PageRank web as a tissue that patterns itself: a reaction–diffusion system grows dividing cells inside pages, in proportion to their rank, and fibres along links, as many as the rank they pass on, drifting from source to target.",
 };
 
 export function generateStaticParams() {

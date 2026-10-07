@@ -1,6 +1,6 @@
-# Mobile finger-skating/1 — three vector-field options
+# Mobile finger-skating/default — three vector-field options
 
-- **Route:** `/mobile/finger-skating/1`
+- **Route:** `/mobile/finger-skating/default` (was `/1` until 2026-10-07; `/1` redirects)
 - **Date:** 2026-09-25
 - **Reference:** `finger-skating/field/1`'s captured-pointer discipline. This is a separate, single-device directional field.
 

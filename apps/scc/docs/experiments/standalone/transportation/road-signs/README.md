@@ -10,7 +10,11 @@ the SVGs and `model/catalogue.ts` from here rather than copy them.
 
 Child family: `/direction/…` experiments with the 305–307 arrow's heading.
 [`/direction/1`](direction/1.md) turns it through the full circle toward the
-pointer.
+pointer. [`/direction/2`](direction/2.md) makes it a fractal of signs: straight,
+left and right each open into smaller straight, left and right signs. [`/direction/3`](direction/3.md) keeps one
+sign whose single connected arrow branches straight, left and right without
+end. [`/direction/4`](direction/4.md) fills the screen with signs whose arrows
+are finger-skated, also listed at `/mobile/finger-skating/road-sign/1`.
 
 Source of truth: 도로교통법 시행규칙 [별표 6] 「안전표지의 종류, 만드는 방식 및
 설치·관리기준」 (개정 2024. 11. 14.), in the version in force from 2026-08-24, downloaded from

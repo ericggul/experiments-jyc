@@ -8,7 +8,7 @@ import styles from "./screen.module.css";
 
 type Option = 1 | 2 | 3;
 
-export default function MobileFingerSkatingOne() {
+export default function MobileFingerSkatingDefault() {
   const [option, setOption] = useState<Option>(2);
   const [open, setOpen] = useState(false);
 

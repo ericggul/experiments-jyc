@@ -5,12 +5,22 @@ export type SccExperimentRoute = {
   href: string;
 };
 
+/** A further family index that lists an experiment; its route stays canonical. */
+export type SccExperimentAlias = {
+  area: SccArea;
+  family: string;
+  /** Name inside the alias family; defaults to the canonical last segment. */
+  slug?: string;
+};
+
 export type SccExperiment = {
   /** Stable id: the canonical route path without its leading slash. */
   key: string;
   area: SccArea;
   /** Family index path, e.g. `grid`, `sns/youtube`, `mobile/face-trace`. */
   family: string;
+  /** Other families this experiment is an example of, e.g. a technique. */
+  also?: readonly SccExperimentAlias[];
   /** ISO date the experiment was created. */
   date: string;
   phrase: string;
@@ -42,6 +52,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "adaptive-coevolving-network/7", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-02", phrase: "Living web where each page's area is its PageRank and attention flows by rank" },
   { key: "adaptive-coevolving-network/7-glsl", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank web as one gel of rank-sized cells and flowing links" },
   { key: "adaptive-coevolving-network/7-glsl-2", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank gel with domed cells, stout roots and brighter main arteries" },
+  { key: "adaptive-coevolving-network/7-glsl-3", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "The PageRank web as a Turing tissue: dividing cells in pages, fibres along links" },
   { key: "amoeba/1", area: "complex-systems", family: "amoeba", date: "2026-10-05", phrase: "Amoebae eat a bacterial lawn, divide into plaques and return in waves" },
   { key: "amoeba/2", area: "complex-systems", family: "amoeba", date: "2026-10-06", phrase: "Full-screen lawn where amoeba sizes are inherited, drift and differ wildly" },
   { key: "barabasi-albert/1", area: "complex-systems", family: "barabasi-albert", date: "2026-09-10", phrase: "Degree-proportional growth where early hubs accumulate links" },
@@ -55,8 +66,8 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "cellular-automata/grid-network/2", area: "complex-systems", family: "cellular-automata", date: "2026-09-04", phrase: "Independent RGB fields with equal-state link disconnection" },
   { key: "cellular-automata/grid-network/3", area: "complex-systems", family: "cellular-automata", date: "2026-09-05", phrase: "Compact 3D cellular volume to rotate and zoom" },
   { key: "fractal/clock/1", area: "complex-systems", family: "fractal", date: "2026-08-28", phrase: "Recursive analogue clocks held at the tips of parent hands, optionally finger-skated" },
-  { key: "fractal/clock/2", area: "complex-systems", family: "fractal", date: "2026-10-02", phrase: "Clock grid finger-skated: hour hands keep exit direction, minute hands follow the finger" },
-  { key: "fractal/clock/3", area: "complex-systems", family: "fractal", date: "2026-10-02", phrase: "Finger-skated clock grid where each clock carries three clocks at its hand tips" },
+  { key: "fractal/clock/2", area: "complex-systems", family: "fractal", also: [{ area: "mobile", family: "mobile/finger-skating/clock" }], date: "2026-10-02", phrase: "Clock grid finger-skated: hour hands keep exit direction, minute hands follow the finger" },
+  { key: "fractal/clock/3", area: "complex-systems", family: "fractal", also: [{ area: "mobile", family: "mobile/finger-skating/clock" }], date: "2026-10-02", phrase: "Finger-skated clock grid where each clock carries three clocks at its hand tips" },
   { key: "fractal/logo/1", area: "complex-systems", family: "fractal", date: "2026-10-05", phrase: "AI logos holding half-size copies of themselves at every tip, down to sub-pixel" },
   { key: "diffusion-graph/1", area: "complex-systems", family: "diffusion-graph", date: "2026-09-10", phrase: "Conserved value spreading over a lattice of rewired directed links" },
   { key: "erdos-renyi/1", area: "complex-systems", family: "erdos-renyi", date: "2026-09-10", phrase: "Independent-edge random graph with components set by probability p" },
@@ -137,6 +148,9 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "swarm/3", area: "standalone", family: "swarm", date: "2026-07-17", phrase: "Map clicks launch missile salvos that the flock steers away from" },
   { key: "transportation/road-signs/archive", area: "standalone", family: "transportation/road-signs", date: "2026-10-06", phrase: "Reference archive: every current Korean traffic safety sign and road marking, 101 to 549, in its official order" },
   { key: "transportation/road-signs/direction/1", area: "standalone", family: "transportation/road-signs/direction", date: "2026-10-06", phrase: "One large 305–307 instruction sign whose arrow turns through the full circle toward the pointer" },
+  { key: "transportation/road-signs/direction/2", area: "standalone", family: "transportation/road-signs/direction", date: "2026-10-07", phrase: "Fractal of three-way signs: straight, left and right each open into smaller straight, left and right signs" },
+  { key: "transportation/road-signs/direction/3", area: "standalone", family: "transportation/road-signs/direction", date: "2026-10-07", phrase: "One large sign whose single arrow branches straight, left and right, and every branch branches again, endlessly" },
+  { key: "transportation/road-signs/direction/4", area: "standalone", family: "transportation/road-signs/direction", also: [{ area: "mobile", family: "mobile/finger-skating/road-sign", slug: "1" }], date: "2026-10-07", phrase: "A grid of instruction signs finger-skated: each arrow keeps the direction the finger left it" },
   { key: "transportation/traffic-light/1", area: "standalone", family: "transportation/traffic-light", date: "2026-10-06", phrase: "Korean signal heads on a galvanised cantilever pole, cycling through real junction timing plans" },
   { key: "transportation/traffic-light/2", area: "standalone", family: "transportation/traffic-light", date: "2026-10-06", phrase: "The same signal pole repeated fifty times down one straight road" },
   { key: "reference", area: "standalone", family: "reference", date: "2026-09-02", phrase: "Working visual references for when a question stays open" },
@@ -200,8 +214,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "mobile/finger-network/2", area: "mobile", family: "mobile/finger-network", date: "2026-09-28", phrase: "Five touches driving one moving 2D human figure" },
   { key: "mobile/finger-network/3", area: "mobile", family: "mobile/finger-network", date: "2026-10-02", phrase: "Touch sessions leave fading graphs, optionally carrying people" },
   { key: "mobile/finger-network/4", area: "mobile", family: "mobile/finger-network", date: "2026-10-02", phrase: "Touch-born people join a love society or an up/down political landscape" },
-  { key: "mobile/finger-skating/1", area: "mobile", family: "mobile/finger-skating", date: "2026-09-25", phrase: "Arrow field changed by a moving finger, three options" },
-  { key: "mobile/finger-skating/2", area: "mobile", family: "mobile/finger-skating", date: "2026-10-02", phrase: "A curve skated on the Cartesian plane, read back as its closest formula" },
+  { key: "mobile/finger-skating/default", area: "mobile", family: "mobile/finger-skating", date: "2026-09-25", phrase: "Arrow field changed by a moving finger, three options" },
   { key: "mobile/ui-collage/loading/1", area: "mobile", family: "mobile/ui-collage/loading", date: "2026-10-03", phrase: "A grid of cloned phone loaders that restart wherever a finger skates" },
   { key: "mobile/ui-collage/loading/2", area: "mobile", family: "mobile/ui-collage/loading", date: "2026-10-03", phrase: "Full-width progress bars from MS-DOS to Fluent, set to where a finger crosses" },
   { key: "mobile/ui-collage/sliders/1", area: "mobile", family: "mobile/ui-collage/sliders", date: "2026-10-03", phrase: "Narrow vertical sliders from Windows 95 to Material 3, drawn and played like a pentatonic equalizer" },
@@ -234,15 +247,31 @@ function toNavigationItem(experiment: SccExperiment): SccNavigationItem {
 export function getSccNavigationItems(
   filter: { area?: SccArea; family?: string } = {},
 ) {
-  return sccExperiments
-    .filter(
-      (experiment) =>
-        (!filter.area || experiment.area === filter.area) &&
-        (!filter.family ||
-          experiment.family === filter.family ||
-          experiment.family.startsWith(`${filter.family}/`)),
-    )
-    .map(toNavigationItem);
+  const matches = ({ area, family }: SccExperimentAlias) =>
+    (!filter.area || area === filter.area) &&
+    (!filter.family ||
+      family === filter.family ||
+      family.startsWith(`${filter.family}/`));
+  const items = sccExperiments.filter(matches).map(toNavigationItem);
+
+  // The unscoped archive lists every experiment once, under its own family.
+  if (!filter.area && !filter.family) return items;
+
+  const aliases = sccExperiments.flatMap((experiment) => {
+    if (matches(experiment)) return [];
+    const alias = experiment.also?.find(matches);
+    if (!alias) return [];
+    // Named inside the alias family (`mobile/finger-skating/clock/2`); the
+    // link still opens the canonical route.
+    const slug = alias.slug ?? experiment.key.split("/").at(-1);
+    return [{
+      ...toNavigationItem(experiment),
+      area: alias.area,
+      family: alias.family,
+      key: `${alias.family}/${slug}`,
+    }];
+  });
+  return [...items, ...aliases];
 }
 
 /** Clone pickers inside a mobile transform: one row per `sns/mobile` surface. */

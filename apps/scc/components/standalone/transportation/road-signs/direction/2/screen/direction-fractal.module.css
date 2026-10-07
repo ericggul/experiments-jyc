@@ -1,0 +1,13 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: linear-gradient(180deg, #97a8b8 0%, #b9c5cf 48%, #d9dee0 100%);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

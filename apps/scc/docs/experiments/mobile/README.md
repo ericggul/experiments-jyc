@@ -2,9 +2,13 @@
 
 The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13` entries preserve the SNS mobile variants; the public routes remain `/sns/mobile/1`–`/sns/mobile/13` so existing links continue to work. Their individual records remain in [SNS mobile](../sns/mobile/README.md).
 
-`finger-skating/1` is a single-device arrow field changed by a moving finger at [`/mobile/finger-skating/1`](../../../app/mobile/finger-skating/[experiment]/page.tsx); opt 3 deposits vorticity into a still fluid layer. See [finger skating](finger-skating.md).
+`finger-skating/default` (formerly `/1`) is a single-device arrow field changed by a moving finger at [`/mobile/finger-skating/default`](../../../app/mobile/finger-skating/[experiment]/page.tsx); opt 3 deposits vorticity into a still fluid layer. See [finger skating](finger-skating.md).
 
-`finger-skating/2` is an empty Cartesian plane: a finger-skated curve is read back as the closest closed-form function, at [`/mobile/finger-skating/2`](../../../app/mobile/finger-skating/[experiment]/page.tsx). See [finger skating /2](finger-skating-2.md).
+Removed 2026-10-07: `finger-skating/2` (skated curve read back as a formula); its code and notes remain in git history before that date.
+
+`finger-skating/clock` lists finger-skated experiments that live in other families, at [`/mobile/finger-skating/clock`](../../../app/mobile/finger-skating/clock/page.tsx): [`fractal/clock/2` and `/3`](../complex-systems/fractal/clock/README.md). They are tagged with `also` in `foundations/navigation/experiments.ts`; their code and routes stay in `fractal`.
+
+`finger-skating/road-sign/1` lists [`transportation/road-signs/direction/4`](../standalone/transportation/road-signs/direction/4.md) at [`/mobile/finger-skating/road-sign`](../../../app/mobile/finger-skating/road-sign/page.tsx); the alias sets its own name with `slug: "1"`.
 
 `ui-collage/` tiles the screen with faithful clones of everyday components and lets finger skating play them: `loading/1` is a grid of twelve circular phone loaders, `loading/2` stacks full-width progress bars from MS-DOS Setup onward (loading/1 restarts at 0% where a finger crosses; loading/2 jumps to the crossing position), and `sliders/1` is a row of narrow vertical sliders set to the finger's height. See [ui-collage](ui-collage/README.md).
 

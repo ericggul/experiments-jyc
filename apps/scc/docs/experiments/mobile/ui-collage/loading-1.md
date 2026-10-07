@@ -2,7 +2,7 @@
 
 - **Route:** `/mobile/ui-collage/loading/1` (first built at `/mobile/loading/1` on the same day and moved before it was committed)
 - **Date:** 2026-10-03
-- **Baseline:** `finger-skating/1`'s captured-pointer path and bottom-right option control, on a grid of familiar loading indicators instead of arrows.
+- **Baseline:** `finger-skating/default`'s captured-pointer path and bottom-right option control, on a grid of familiar loading indicators instead of arrows.
 
 The whole viewport is a grid of circular loading indicators, centred on both axes, with a gutter of a third of the indicator size (at least 8 px). Every indicator starts at 0% and fills to 100% by itself, then holds there. A finger skating across the grid restarts every indicator whose cell its path crosses (within half a pitch of the cell centre) at 0%. Multiple fingers and coalesced pointer samples are segment-tested, so a fast swipe does not skip cells.
 

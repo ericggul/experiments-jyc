@@ -1,0 +1,196 @@
+.stage {
+  --size: 96vmin;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: linear-gradient(180deg, #97a8b8 0%, #b9c5cf 48%, #d9dee0 100%);
+}
+
+/* 76 mm galvanised post behind a 600 mm plate. */
+.pole {
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  left: 50%;
+  width: calc(var(--size) * 0.127);
+  transform: translateX(-50%);
+  background:
+    linear-gradient(180deg, rgba(20, 26, 32, 0.55) 0, rgba(20, 26, 32, 0) calc(var(--size) * 0.62)),
+    linear-gradient(90deg, #5d6267 0%, #8d9397 18%, #d3d7d9 36%, #a3a8ac 52%, #767b80 74%, #4f5357 100%);
+}
+
+.sign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size);
+  height: var(--size);
+  overflow: hidden;
+  border-radius: 50%;
+  isolation: isolate;
+  transform: translate(-50%, -50%);
+}
+
+/* Soft contact shade of the plate's edge against the sky and post. */
+.shade {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 calc(var(--size) * 0.012) calc(var(--size) * 0.03) rgba(18, 26, 36, 0.32);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Option grammar after mobile/finger-network: one 옵션/닫기 toggle, rows of plain text choices above it. */
+.controls {
+  position: absolute;
+  right: calc(8px + env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  /* Many parameters scroll inside the panel rather than past the viewport. */
+  max-height: calc(100dvh - 72px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  scrollbar-width: none;
+}
+
+.options::-webkit-scrollbar {
+  display: none;
+}
+
+.row[data-section-start] {
+  margin-top: 14px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.label,
+.control,
+.range {
+  min-height: 36px;
+  padding: 0 12px;
+  color: #fff;
+  font: 400 13px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+  /* The sky and the blue plate sit behind; a dark halo keeps white text legible on both. */
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 0, 0, 0.45);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+}
+
+.control {
+  min-width: 44px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control[aria-expanded],
+.control[aria-pressed="false"] {
+  opacity: 0.68;
+}
+
+.control:hover {
+  opacity: 1;
+}
+
+.control:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: -4px;
+}
+
+/* Slider in the same plain grammar: a thin white track and thumb, the value in the row's type. */
+.range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.range input {
+  width: 168px;
+  height: 36px;
+  margin: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.range input::-webkit-slider-runnable-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.range input::-moz-range-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.range input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.range input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.range input:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.value {
+  min-width: 3.2em;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

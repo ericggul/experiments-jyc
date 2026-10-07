@@ -1,8 +1,7 @@
 export const mobileExperiments = [
   { key: "finger-network/1", label: "finger-network/1", href: "/mobile/finger-network/1" },
   { key: "finger-network/2", label: "finger-network/2", href: "/mobile/finger-network/2" },
-  { key: "finger-skating/1", label: "finger-skating/1", href: "/mobile/finger-skating/1" },
-  { key: "finger-skating/2", label: "finger-skating/2", href: "/mobile/finger-skating/2" },
+  { key: "finger-skating/default", label: "finger-skating/default", href: "/mobile/finger-skating/default" },
   { key: "ui-collage/loading/1", label: "ui-collage/loading/1", href: "/mobile/ui-collage/loading/1" },
   { key: "ui-collage/loading/2", label: "ui-collage/loading/2", href: "/mobile/ui-collage/loading/2" },
   { key: "ui-collage/sliders/1", label: "ui-collage/sliders/1", href: "/mobile/ui-collage/sliders/1" },

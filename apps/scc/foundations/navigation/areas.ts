@@ -59,6 +59,8 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "sns",
   "mobile/finger-network",
   "mobile/finger-skating",
+  "mobile/finger-skating/clock",
+  "mobile/finger-skating/road-sign",
   "mobile/gaze-tracking",
   "mobile/ui-collage",
   "mobile/ui-collage/loading",

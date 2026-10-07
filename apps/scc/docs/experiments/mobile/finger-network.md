@@ -2,7 +2,7 @@
 
 - **Route:** `/mobile/finger-network/1`
 - **Date:** 2026-09-28
-- **Baseline:** `finger-skating/1`'s captured-pointer, full-viewport canvas pattern.
+- **Baseline:** `finger-skating/default`'s captured-pointer, full-viewport canvas pattern.
 
 Each active touch is a node at that finger's current position. Every pair of nodes has one white edge, so `n` fingers display the complete graph `Kₙ` with `n(n − 1)/2` edges. A small white dot, fixed ring, and repeating expanding ring make each node visible even when only one finger touches the screen. Captured document touch events update only their changed identifiers; ending or cancelling one contact removes only that contact. A window blur does not erase the whole graph. Safari gesture defaults are prevented where cancelable. Mouse and pen retain pointer input, with touch pointer events used only when Touch Events are unavailable. Releasing or cancelling a touch removes its node and all incident edges immediately.
 

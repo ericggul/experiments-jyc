@@ -2,7 +2,7 @@
 
 Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `foundations/navigation`, grouped by creation date. Register each new variant's date and phrase in `foundations/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
 
-- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field and curve-to-formula plane, ui-collage loaders, progress bars and sliders played by finger skating, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
+- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field (with finger-skated fractal clocks and road signs linked in from their own families), ui-collage loaders, progress bars and sliders played by finger skating, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
 
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
@@ -18,7 +18,7 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [transportation/traffic-light/1–2](experiments/standalone/transportation/traffic-light/README.md): Korean signal heads on a galvanised cantilever pole, with options for 1–3 heads, left turn, back-to-back and pole-mounted heads, and timing plans; [/2](experiments/standalone/transportation/traffic-light/2.md) repeats the pole fifty times down a straight road.
 
-- [transportation/road-signs/archive](experiments/standalone/transportation/road-signs/README.md): reference archive of all 212 current Korean safety signs and road markings of 별표 6, 101–549, in official order; numbered variants will use it as material. [/direction/1](experiments/standalone/transportation/road-signs/direction/1.md) turns one large 305–307 arrow through the full circle toward the pointer.
+- [transportation/road-signs/archive](experiments/standalone/transportation/road-signs/README.md): reference archive of all 212 current Korean safety signs and road markings of 별표 6, 101–549, in official order; numbered variants will use it as material. [/direction/1](experiments/standalone/transportation/road-signs/direction/1.md) turns one large 305–307 arrow through the full circle toward the pointer. [/direction/2](experiments/standalone/transportation/road-signs/direction/2.md) recurses it into a tree of straight, left and right signs. [/direction/3](experiments/standalone/transportation/road-signs/direction/3.md) keeps one sign whose single connected arrow branches endlessly. [/direction/4](experiments/standalone/transportation/road-signs/direction/4.md) finger-skates a grid of signs.
 
 - [chess/1–4](experiments/standalone/chess/README.md): minimal semantic chess across planar, twisted, and parallel fields.
 

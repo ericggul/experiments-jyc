@@ -25,7 +25,10 @@ selects the variant from the matching `components/.../experiments.ts`. Every
 SCC variant also needs an entry with its ISO creation date and one-line phrase
 in `foundations/navigation/experiments.ts`, which drives the home, area and
 family indexes (date-grouped, searchable, modelled on Goldfishes); its pure
-test flags registry slugs missing from that index. Use dynamic variants, not literal numbered
+test flags registry slugs missing from that index. When a variant is also an example of another
+family (e.g. a finger-skated fractal clock), add an `also` alias to its index
+entry instead of copying code: the alias family index lists it, the route and
+code stay canonical, and agents find such cross-listings by grepping `also:`. Use dynamic variants, not literal numbered
 route directories. Keep implementation in `components/.../[experiment]/`.
 SCC route links in the main catalogue, family indexes, and route navigation open
 their destination in a new tab so the catalogue stays available. In-screen

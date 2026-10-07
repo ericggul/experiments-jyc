@@ -118,8 +118,12 @@ export function startBrowser<S extends { clearFirst: boolean }>(definition: Defi
   const mine: (Window | null)[] = [];
   status = { ...status, running: true, display, settings, progress: 0, total: plan.items.length, result: undefined, message: `Opening ${plan.items.length} windows` };
   const finish = () => {
-    const blocked = failed ? ' · allow pop-ups for this site to open them all' : '';
-    status = { ...status, running: false, progress: plan.items.length, result: { opened: plan.items.length - failed, failed, spreadMs: Math.round(performance.now() - started), resized: 0 }, message: (failed ? 'Some windows did not open' : 'Done') + blocked };
+    const count = plan.items.length;
+    // A browser lets one pop-up through per click; the rest need pop-ups allowed for this site.
+    const message = failed
+      ? `Opened ${count - failed} of ${count} · the browser blocked the rest. Allow pop-ups for ${window.location.host} (the blocked pop-up icon in the address bar → always allow), then open again.`
+      : 'Done';
+    status = { ...status, running: false, progress: count, result: { opened: count - failed, failed, spreadMs: Math.round(performance.now() - started), resized: 0 }, message };
     if (definition.animate) {
       animation = definition.animate(settings, plan, display, (index, rect) => { const target = mine[index]; if (target && !target.closed) place(target, rect); });
       status = { ...status, moving: !!animation };

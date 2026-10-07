@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import { sccExperiments } from "./experiments.ts";
+import { sccFamilyIndexes } from "./areas.ts";
+import { getSccNavigationItems, sccExperiments } from "./experiments.ts";
 
 const componentsRoot = path.resolve(import.meta.dirname, "../../components");
 const keys = new Set(sccExperiments.map((experiment) => experiment.key));
@@ -47,4 +48,21 @@ test("every slug in a family-root registry is dated in the navigation index", ()
   }
 
   assert.deepEqual(missing, []);
+});
+
+test("every alias names another family index and lists the canonical route", () => {
+  for (const experiment of sccExperiments) {
+    for (const alias of experiment.also ?? []) {
+      assert.notEqual(alias.family, experiment.family, experiment.key);
+      assert.ok(sccFamilyIndexes.has(alias.family), `${experiment.key} → ${alias.family}`);
+      const listed = getSccNavigationItems({ family: alias.family }).find(
+        (item) => item.routes[0]?.href === `/${experiment.key}`,
+      );
+      assert.equal(listed?.family, alias.family, experiment.key);
+      assert.ok(listed?.key.startsWith(`${alias.family}/`), experiment.key);
+      assert.equal(listed?.routes[0]?.href, `/${experiment.key}`, experiment.key);
+    }
+  }
+  const all = getSccNavigationItems().map((item) => item.key);
+  assert.equal(new Set(all).size, all.length);
 });

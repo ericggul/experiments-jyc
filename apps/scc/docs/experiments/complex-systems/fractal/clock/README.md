@@ -128,7 +128,7 @@ Route: `/fractal/clock/2` (was `/clock/2`). Date: 2026-10-02.
   where the finger is now.
 - **Baseline:** clock/1 provides the face: the rim, 12 ticks with longer
   quarter ticks, and `0.72` face opacity. It also provides the gold hour /
-  ivory minute palette and the centre dot. `mobile/finger-skating/1` provides
+  ivory minute palette and the centre dot. `mobile/finger-skating/default` provides
   captured multi-pointer input, coalesced samples, and a state that persists
   after release. This is a standalone fork that imports neither.
 - **Grid:** square-ish cells of `clamp(min(w, h) / 14, 50, 72)` px. That is
