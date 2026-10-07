@@ -11,7 +11,7 @@ import ThresholdNetworkFive from "@/components/complex-systems/adaptive-coevolvi
 import AwarenessMultiplexSix from "@/components/complex-systems/adaptive-coevolving-network/6";
 import RankedWebSeven from "@/components/complex-systems/adaptive-coevolving-network/7";
 import RankedWebGlsl from "@/components/complex-systems/adaptive-coevolving-network/7-glsl";
-import RankedWebFibres from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-2";
+import RankedWebGlslTwo from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-2";
 import {
   adaptiveCoevolvingNetworkExperiments,
   isAdaptiveCoevolvingNetworkExperimentSlug,
@@ -29,7 +29,7 @@ const components: Record<AdaptiveCoevolvingNetworkExperimentSlug, ComponentType>
   "6": AwarenessMultiplexSix,
   "7": RankedWebSeven,
   "7-glsl": RankedWebGlsl,
-  "7-glsl-2": RankedWebFibres,
+  "7-glsl-2": RankedWebGlslTwo,
 };
 
 const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
@@ -43,7 +43,7 @@ const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
   "6": "People live on two layers: news of a disease spreads and fades on one, the disease spreads on the other, and aware people avoid infection by rewiring their physical contacts away from the infected.",
   "7": "A living web where each page's area is exactly its PageRank share; attention weights flow continuously toward highly ranked, high-quality pages, so rank shapes links and links shape rank while leaders keep changing.",
   "7-glsl": "The same living PageRank web drawn as one continuous gel: each page is a soft cell whose area is its rank, its links grow out of it as ribbons as wide as the rank they pass on, and bright beads of random surfers travel inside them.",
-  "7-glsl-2": "The same living PageRank web as combed fibres of light: each link is a bundle of hairline fibres, as many as the rank it passes on, combed with its neighbours into glowing bundles by edge bundling; pages are dots whose area is their rank.",
+  "7-glsl-2": "7-glsl's PageRank gel in relief: rank-sized cells are lit domes, large pages grow stout processes into their links, and links that pass on more rank are wider and brighter.",
 };
 
 export function generateStaticParams() {

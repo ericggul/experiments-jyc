@@ -8,6 +8,10 @@ trusted source material, not an experiment. Numbered variants (`/1`, `/2`, …)
 are kept for experiments that use these signs as material; they should read
 the SVGs and `model/catalogue.ts` from here rather than copy them.
 
+Child family: `/direction/…` experiments with the 305–307 arrow's heading.
+[`/direction/1`](direction/1.md) turns it through the full circle toward the
+pointer.
+
 Source of truth: 도로교통법 시행규칙 [별표 6] 「안전표지의 종류, 만드는 방식 및
 설치·관리기준」 (개정 2024. 11. 14.), in the version in force from 2026-08-24, downloaded from
 [국가법령정보센터](https://www.law.go.kr/법령/도로교통법시행규칙). Its drawings

@@ -18,7 +18,7 @@ function readParams() {
   const range = Number(query.get("r"));
   const color = `#${query.get("c") ?? ""}`;
   const partner = `#${query.get("p") ?? ""}`;
-  const form = query.get("f") === "cubes" ? "cubes" as const : query.get("f") === "network" ? "network" as const : "clouds" as const;
+  const form = query.get("f") === "cubes" ? "cubes" as const : query.get("f") === "clouds" ? "clouds" as const : "network" as const;
   const turnover = Number(query.get("t") ?? 6);
   const run = query.get("run") ?? "";
   if (!/^[a-z0-9]{1,16}$/.test(run) || !Number.isInteger(id) || !Number.isInteger(count) || count < 2 || count > 8 || id < 0 || id >= count || !(range > 0) || !/^#[0-9a-f]{6}$/i.test(color) || !/^#[0-9a-f]{6}$/i.test(partner)) return null;

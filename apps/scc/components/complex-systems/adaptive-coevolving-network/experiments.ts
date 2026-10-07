@@ -9,7 +9,7 @@ export const adaptiveCoevolvingNetworkExperiments = [
   { slug: "6", label: "awareness and epidemic" },
   { slug: "7", label: "ranked web" },
   { slug: "7-glsl", label: "ranked web as gel" },
-  { slug: "7-glsl-2", label: "ranked web as combed fibres" },
+  { slug: "7-glsl-2", label: "ranked web as gel in relief" },
 ] as const;
 
 export type AdaptiveCoevolvingNetworkExperimentSlug =

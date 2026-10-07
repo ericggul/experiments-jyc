@@ -34,7 +34,7 @@ export type Settings = {
   clearFirst: boolean;
 };
 
-export const defaults: Settings = { form: 'clouds', count: 2, arrangement: 'row', tileWidth: 34, tileHeight: 58, range: 120, fill: 'green-red', motion: 'still', amplitude: 16, period: 14, turnover: 6, seed: 1, clearFirst: true };
+export const defaults: Settings = { form: 'network', count: 2, arrangement: 'row', tileWidth: 34, tileHeight: 58, range: 120, fill: 'green-red', motion: 'still', amplitude: 16, period: 14, turnover: 6, seed: 1, clearFirst: true };
 
 export const ranges = {
   count: [2, 8, 1],

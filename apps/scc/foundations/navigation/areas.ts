@@ -47,6 +47,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "swarm",
   "transportation",
   "transportation/road-signs",
+  "transportation/road-signs/direction",
   "transportation/traffic-light",
   "ui/buttons",
   "ui/smile",
