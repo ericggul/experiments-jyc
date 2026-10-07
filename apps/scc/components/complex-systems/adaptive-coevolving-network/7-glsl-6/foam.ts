@@ -26,7 +26,7 @@ export const BUBBLE_FLOATS = 4;
 /** The ownership passes run at this share of the CSS resolution. */
 const SCALE = 0.75;
 /** A bubble is drawn this far (CSS px) past its own radius, so its neighbour is found near the wall. */
-const MARGIN = 24;
+const MARGIN = 16;
 
 const SPLAT_VERTEX = /* glsl */ `#version 300 es
 layout(location = 0) in vec2 corner;
@@ -98,10 +98,14 @@ float noise(vec3 x) {
   return mix(mix(mix(hash(i), hash(i + vec3(1, 0, 0)), f.x), mix(hash(i + vec3(0, 1, 0)), hash(i + vec3(1, 1, 0)), f.x), f.y),
     mix(mix(hash(i + vec3(0, 0, 1)), hash(i + vec3(1, 0, 1)), f.x), mix(hash(i + vec3(0, 1, 1)), hash(i + vec3(1, 1, 1)), f.x), f.y), f.z);
 }
+// Two octaves: enough for the slow currents that fold the film.
+float fbm2(vec3 x) {
+  return 0.5 * noise(x) + 0.25 * noise(x * 2.03 + vec3(1.7, 9.2, 3.1));
+}
 float fbm(vec3 x) {
   float sum = 0.0;
   float amplitude = 0.5;
-  for (int i = 0; i < 4; i += 1) {
+  for (int i = 0; i < 3; i += 1) {
     sum += amplitude * noise(x);
     x = x * 2.03 + vec3(1.7, 9.2, 3.1);
     amplitude *= 0.5;
@@ -121,31 +125,61 @@ vec3 interference(float t, float c) {
 
 void main() {
   vec2 p = vec2(uv.x, 1.0 - uv.y) * frame;
-  vec4 a = texture(first, uv);
-  vec4 b = texture(second, uv);
-  float fa = own(a, p);
-  float fb = own(b, p);
-  if (fb < fa) {
-    vec4 s = a; a = b; b = s;
-    float t = fa; fa = fb; fb = t;
+  // The passes are per texel at a coarser grid; gather every bubble they
+  // found around this pixel and decide exactly here, so walls fall where the
+  // geometry puts them, not on the texel grid.
+  ivec2 centre = ivec2(uv * vec2(textureSize(first, 0)));
+  ivec2 limit = textureSize(first, 0) - 1;
+  vec4 found[18];
+  int count = 0;
+  for (int y = -1; y <= 1; y += 1) {
+    for (int x = -1; x <= 1; x += 1) {
+      ivec2 at = clamp(centre + ivec2(x, y), ivec2(0), limit);
+      for (int layer = 0; layer < 2; layer += 1) {
+        vec4 c = layer == 0 ? texelFetch(first, at, 0) : texelFetch(second, at, 0);
+        // Repeats are harmless (they give the same distances), so they are
+        // kept rather than searched for.
+        if (c.z <= 0.0) continue;
+        found[count] = c;
+        count += 1;
+      }
+    }
   }
-  // Distances in px: to the free face (where f = 0) and to the wall (where
-  // the two bubbles' f meet), each from f's own gradient.
-  vec2 da = p - a.xy;
-  float slopeA = max(2.0 * length(da) / a.z, 1e-3);
-  float toFace = -fa / slopeA;
-  float toWall = 1e4;
-  if (b.z > 0.0 && fb < 0.0) {
-    vec2 db = p - b.xy;
-    vec2 gradient = 2.0 * da / a.z - 2.0 * db / b.z;
-    toWall = (fb - fa) / max(length(gradient), 1e-3);
-  }
-  float toEdge = min(toFace, toWall);
-  float coverage = smoothstep(-0.7, 0.7, toFace);
-  if (coverage <= 0.0) {
+  // Open ground: nothing to compute.
+  if (count == 0) {
     pixel = vec4(0.0, 0.0, 0.0, 1.0);
     return;
   }
+  vec4 a = vec4(0.0);
+  float fa = 1e9;
+  for (int i = 0; i < 18; i += 1) {
+    if (i >= count) break;
+    float f = own(found[i], p);
+    if (f < fa) {
+      fa = f;
+      a = found[i];
+    }
+  }
+  // Distances in px, each from f's own gradient: to the free face (f = 0)
+  // and to the nearest wall with any neighbour that overlaps here. Taking
+  // the nearest over all neighbours keeps the surface whole where the
+  // second-nearest bubble changes.
+  vec2 da = p - a.xy;
+  float slopeA = max(2.0 * length(da) / max(a.z, 1e-3), 1e-3);
+  float toFace = -fa / slopeA;
+  float toWall = 1e4;
+  for (int i = 0; i < 18; i += 1) {
+    if (i >= count) break;
+    vec4 c = found[i];
+    if (distance(c.xy, a.xy) < 1e-3) continue;
+    float fc = own(c, p);
+    if (fc >= 0.0) continue;
+    vec2 dc = p - c.xy;
+    vec2 gradient = 2.0 * da / a.z - 2.0 * dc / c.z;
+    toWall = min(toWall, (fc - fa) / max(length(gradient), 1e-3));
+  }
+  float toEdge = min(toFace, toWall);
+  float coverage = a.z > 0.0 ? smoothstep(-0.7, 0.7, toFace) : 0.0;
 
   // A shallow cap over the cell: steep at the edge, nearly level inside.
   float r = a.z;
@@ -155,20 +189,24 @@ void main() {
   vec3 normal = normalize(vec3(-slope, max(h, 0.05) + 0.6));
   float facing = clamp(normal.z, 0.0, 1.0);
 
-  // The film drains: thin (towards black film) at the top of each bubble,
-  // thicker at the bottom, and swirls slowly in its own currents.
+  // The film drains: towards black film at the top of each bubble, thicker
+  // below, and the drainage is carried round in slow, folding currents, so
+  // no two bubbles and no two moments share a pattern.
   vec2 q = da / r;
   float seed = a.w * 37.0;
-  vec3 at = vec3(q * 1.6 + seed, time * 0.07 + seed);
-  vec2 warp = vec2(fbm(at), fbm(at + vec3(5.2, 1.3, 2.7))) - 0.5;
-  float swirl = fbm(vec3(q * 2.2 + warp * 1.8 + seed, time * 0.05));
-  float drain = clamp(0.5 + 0.5 * q.y, 0.0, 1.0);
-  float thickness = mix(80.0, 760.0, drain) * (0.55 + 0.9 * swirl);
+  vec3 at = vec3(q * 1.3 + seed, time * 0.06 + seed);
+  vec2 warp = (vec2(fbm2(at), fbm2(at + vec3(5.2, 1.3, 2.7))) - 0.375) * (0.9375 / 0.75);
+  vec3 folded = vec3(q * 1.7 + warp * 3.2 + seed, time * 0.045 + seed);
+  vec2 warp2 = (vec2(fbm2(folded), fbm2(folded + vec3(3.1, 7.7, 1.9))) - 0.375) * (0.9375 / 0.75);
+  float swirl = fbm(vec3(q * 2.0 + warp2 * 2.6 + seed, time * 0.04));
+  float drain = smoothstep(-0.95, 0.9, q.y + 0.55 * (warp.y + warp2.x));
+  float thickness = mix(20.0, 900.0, drain * drain) * (0.4 + 1.2 * swirl);
   float inner = sqrt(max(1.0 - (1.0 - facing * facing) / (1.33 * 1.33), 0.0));
   vec3 film = interference(thickness, inner);
-  // Real films are pale and gentle on dark ground: keep the colour, temper it.
+  // Real films are pale on dark ground: most of the colour is tempered,
+  // and only thick, swirling film keeps a little of it.
   float grey = dot(film, vec3(0.3333));
-  film = mix(vec3(grey), film, 0.55);
+  film = mix(vec3(grey), film, 0.3 * smoothstep(150.0, 500.0, thickness));
 
   // Fresnel weight and a soft window, mirrored faintly by the back face.
   vec3 view = vec3(0.0, 0.0, 1.0);
@@ -177,11 +215,11 @@ void main() {
   float front = pow(max(dot(normal, normalize(window + view)), 0.0), 90.0);
   vec3 mirrored = normalize(vec3(0.45, -0.6, 0.66));
   float back = pow(max(dot(normal, normalize(mirrored + view)), 0.0), 60.0) * 0.25;
-  float ambient = 0.16 + 0.12 * (0.5 - 0.5 * q.y);
+  float ambient = 0.07;
   // Seen edge-on, at a wall or the free face, the film catches more light.
   float edgeOn = exp(-toEdge / 1.4);
 
-  vec3 colour = film * (ambient + 0.85 * fresnel + 0.55 * edgeOn) + vec3(1.0) * (front * 0.9 + back);
+  vec3 colour = film * (ambient + 0.9 * fresnel + 0.45 * edgeOn) + vec3(1.0) * (front * 0.85 + back);
   pixel = vec4(colour * coverage, 1.0);
 }
 `;

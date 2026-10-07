@@ -13,7 +13,7 @@ export const adaptiveCoevolvingNetworkExperiments = [
   { slug: "7-glsl-3", label: "ranked web as self-patterning tissue" },
   { slug: "7-glsl-4", label: "ranked web as tissue and protists" },
   { slug: "7-glsl-5", label: "ranked web performed by a surfer colony" },
-  { slug: "7-glsl-6", label: "ranked web as converging pulses" },
+  { slug: "7-glsl-6", label: "ranked web as a raft of soap bubbles" },
   { slug: "7-glsl-7", label: "ranked web as ink marbling" },
 ] as const;
 

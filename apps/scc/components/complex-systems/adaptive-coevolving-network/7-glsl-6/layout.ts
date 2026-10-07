@@ -1,7 +1,9 @@
-// Browser-side geometry (7-glsl-3's copy: bodies may carry a presence, so
-// small pages repel, collide and link at shorter range and cluster tightly). Springs along links (direction ignored), repulsion
-// between every pair, a weak pull toward the centre, and a collision pass so
-// rank-sized discs never overlap. Position never feeds back into the model.
+// Browser-side geometry for a raft of soap bubbles (from 7-glsl-3's copy).
+// Springs along links (direction ignored), a short-range repulsion, a pull
+// toward the centre, and bubble contact (see below). Neighbours are found by
+// sweep and prune along x (bubbles of very different sizes mix freely), so a
+// step stays cheap at a thousand pages. Position never feeds back into the
+// model.
 
 export type Body = { x: number; y: number; vx: number; vy: number };
 export type Frame = { width: number; height: number };
@@ -10,8 +12,13 @@ export type Pair = { readonly from: number; readonly to: number };
 /** Strong enough that the bubbles gather into one raft and press together. */
 const GRAVITY = 0.6;
 const REPULSION = 0.35;
-const SPRING = 1.6;
-const GAP = 4;
+const SPRING = 0.4;
+/** Bubbles within this gap (px) of touching are drawn together, with this stiffness (1/s²), once per step. */
+const CAPILLARY_REACH = 10;
+const CAPILLARY = 2;
+const CONTACT_PASSES = 6;
+/** Bodies kept sorted along x between steps (nearly sorted, so an insertion sort is cheap). */
+let order: Int32Array = new Int32Array(0);
 
 export function idealLength(frame: Frame, count: number) {
   // 7-glsl: .42 of the area; far less here, so repulsion is short-ranged and
@@ -56,20 +63,88 @@ export function relaxBodies(
   const forceY = new Float64Array(count);
   const softening = (length * 0.25) ** 2;
   const repulsion = length * length * REPULSION;
+  // Pairs whose discs, widened by the capillary reach, overlap along both
+  // axes: exactly the pairs the contacts act on.
+  const margin = CAPILLARY_REACH;
+  const pairs = (visit: (a: number, b: number) => void) => {
+    if (order.length !== count) order = Int32Array.from({ length: count }, (_, index) => index);
+    const left = (index: number) => bodies[index]!.x - radii[index]!;
+    for (let at = 1; at < count; at += 1) {
+      const index = order[at]!;
+      const key = left(index);
+      let to = at - 1;
+      while (to >= 0 && left(order[to]!) > key) {
+        order[to + 1] = order[to]!;
+        to -= 1;
+      }
+      order[to + 1] = index;
+    }
+    for (let at = 0; at < count; at += 1) {
+      const index = order[at]!;
+      const a = bodies[index]!;
+      const ra = radii[index]!;
+      const right = a.x + ra + margin;
+      for (let after = at + 1; after < count; after += 1) {
+        const other = order[after]!;
+        const b = bodies[other]!;
+        const rb = radii[other]!;
+        if (b.x - rb > right) break;
+        if (Math.abs(b.y - a.y) > ra + rb + margin) continue;
+        visit(index, other);
+      }
+    }
+  };
 
+  // Repulsion between every pair, as before; read into flat arrays so a
+  // thousand pages stay cheap.
+  const xs = new Float64Array(count);
+  const ys = new Float64Array(count);
+  const reaches = new Float64Array(count);
+  for (let index = 0; index < count; index += 1) {
+    xs[index] = bodies[index]!.x;
+    ys[index] = bodies[index]!.y;
+    reaches[index] = reachOf(index);
+  }
   for (let first = 0; first < count; first += 1) {
-    const a = bodies[first]!;
+    const ax = xs[first]!;
+    const ay = ys[first]!;
+    const scaled = repulsion * reaches[first]!;
+    let fx = 0;
+    let fy = 0;
     for (let second = first + 1; second < count; second += 1) {
-      const b = bodies[second]!;
-      const dx = a.x - b.x;
-      const dy = a.y - b.y;
-      const push = (repulsion * reachOf(first) * reachOf(second)) / (dx * dx + dy * dy + softening);
-      forceX[first]! += dx * push;
-      forceY[first]! += dy * push;
+      const dx = ax - xs[second]!;
+      const dy = ay - ys[second]!;
+      const push = (scaled * reaches[second]!) / (dx * dx + dy * dy + softening);
+      fx += dx * push;
+      fy += dy * push;
       forceX[second]! -= dx * push;
       forceY[second]! -= dy * push;
     }
+    forceX[first]! += fx;
+    forceY[first]! += fy;
   }
+
+  // Capillary attraction: bubbles just short of touching are drawn
+  // together by a gentle force, once per step. (Applied as a position
+  // correction in every contact pass, it summed over a crowd's many
+  // neighbours and collapsed small bubbles onto a single point.)
+  pairs((first, second) => {
+    const a = bodies[first]!;
+    const b = bodies[second]!;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const ra = radii[first]!;
+    const rb = radii[second]!;
+    const distance = Math.hypot(dx, dy);
+    const rest = Math.max(Math.sqrt(ra * ra + rb * rb - ra * rb), Math.max(ra, rb) + 0.25 * Math.min(ra, rb));
+    const gap = distance - rest;
+    if (gap <= 0 || distance > ra + rb + CAPILLARY_REACH) return;
+    const pull = (CAPILLARY * gap) / distance;
+    forceX[first]! += dx * pull;
+    forceY[first]! += dy * pull;
+    forceX[second]! -= dx * pull;
+    forceY[second]! -= dy * pull;
+  });
 
   for (const link of links) {
     const a = bodies[link.from]!;
@@ -105,23 +180,65 @@ export function relaxBodies(
     body.y += body.vy * step;
   }
 
-  // Collision: separate overlapping discs half each way.
-  for (let first = 0; first < count; first += 1) {
-    const a = bodies[first]!;
-    for (let second = first + 1; second < count; second += 1) {
+  // Contact, as floating soap bubbles: two bubbles of radii r₁, r₂ rest at
+  // √(r₁² + r₂² − r₁r₂), where their films meet the shared wall at 120°
+  // (at least the larger radius plus a quarter of the smaller, so a small
+  // bubble always shows on a large one's surface instead of sinking in);
+  // closer, they are pushed apart (capillary attraction, above, draws those
+  // a little farther apart together). Resolved a few times per step.
+  // The last pass settles only small bubbles against much larger ones, so
+  // none is left inside a large bubble at the end of the step.
+  for (let pass = 0; pass <= CONTACT_PASSES; pass += 1) {
+    const settling = pass === CONTACT_PASSES;
+    pairs((first, second) => {
+      const a = bodies[first]!;
       const b = bodies[second]!;
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const distance = Math.hypot(dx, dy) || 1e-3;
-      const overlap = radii[first]! + radii[second]! + 1 + (GAP - 1) * Math.min(reachOf(first), reachOf(second)) - distance;
-      if (overlap <= 0) continue;
-      const shiftX = (dx / distance) * overlap * 0.5;
-      const shiftY = (dy / distance) * overlap * 0.5;
-      a.x -= shiftX;
-      a.y -= shiftY;
-      b.x += shiftX;
-      b.y += shiftY;
-    }
+      let dx = b.x - a.x;
+      let dy = b.y - a.y;
+      // Two bubbles on the very same spot part along a direction of their own
+      // (otherwise there is no direction to push them apart and they stay
+      // stacked for good).
+      if (Math.abs(dx) + Math.abs(dy) < 1e-3) {
+        const angle = (first * 2.399963 + second * 0.618034 * Math.PI) % (Math.PI * 2);
+        dx = Math.cos(angle) * 1e-2;
+        dy = Math.sin(angle) * 1e-2;
+      }
+      const ra = radii[first]!;
+      const rb = radii[second]!;
+      const reach = ra + rb + CAPILLARY_REACH;
+      if (Math.abs(dx) > reach || Math.abs(dy) > reach) return;
+      const distance = Math.hypot(dx, dy);
+      const rest = Math.max(Math.sqrt(ra * ra + rb * rb - ra * rb), Math.max(ra, rb) + 0.25 * Math.min(ra, rb));
+      const overlap = rest - distance;
+      if (overlap <= 0) return;
+      // Bubbles of like size share the correction; against a much larger
+      // one (3× or more) a small bubble takes all of it, so a crowd of small
+      // bubbles can never push one into a large bubble.
+      const ratio = ra / rb;
+      if (settling && ratio < 3 && ratio > 1 / 3) return;
+      const share = ratio >= 3 ? 0 : ratio <= 1 / 3 ? 1 : 0.5;
+      const shiftX = (dx / distance) * overlap;
+      const shiftY = (dy / distance) * overlap;
+      a.x -= shiftX * share;
+      a.y -= shiftY * share;
+      b.x += shiftX * (1 - share);
+      b.y += shiftY * (1 - share);
+      // Pressed together, they stop closing in (an inelastic contact): only
+      // the part of their velocities that drives one into the other is taken
+      // away, so nothing is set moving and gravity and springs cannot keep
+      // pushing a bubble further into another.
+      if (overlap > 0) {
+        const nx = dx / distance;
+        const ny = dy / distance;
+        const closing = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+        if (closing < 0) {
+          a.vx += 0.5 * closing * nx;
+          a.vy += 0.5 * closing * ny;
+          b.vx -= 0.5 * closing * nx;
+          b.vy -= 0.5 * closing * ny;
+        }
+      }
+    });
   }
 
   for (let index = 0; index < count; index += 1) {

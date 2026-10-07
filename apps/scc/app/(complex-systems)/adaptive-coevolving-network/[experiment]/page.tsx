@@ -57,8 +57,8 @@ const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
   "7-glsl-3": "The PageRank web as a tissue that patterns itself: a reaction–diffusion system grows dividing cells inside pages, in proportion to their rank, and fibres along links, as many as the rank they pass on, drifting from source to target.",
   "7-glsl-4": "The self-patterning PageRank tissue with its small pages as protists — membrane, drifting nucleus and a beating tail — spread over more of the screen.",
   "7-glsl-5": "PageRank performed rather than drawn: a dividing colony of random surfers follows links by weight or jumps anywhere, and the only image is their trail — pages glow as brightly as their rank, links are veins as thick as the rank they carry.",
-  "7-glsl-6": "PageRank's power iteration made visible: every beat each page sends its rank along its links as pulses of light, and the displayed ranks converge, ripple and settle again as the web changes.",
-  "7-glsl-7": "Suminagashi on a page: each page drips ink in proportion to its rank and links carry it as currents across still water, so rank flows and swirls as ink.",
+  "7-glsl-6": "A raft of soap bubbles: every page is a bubble as large as its rank, pressed against its neighbours; along every link small bubbles of rank bud off, drift through the raft and merge into the page they feed.",
+  "7-glsl-7": "Sumi ink on still water: each page is a well of ink as dense as its rank, and links are currents that draw it out into the pages they feed.",
 };
 
 export function generateStaticParams() {

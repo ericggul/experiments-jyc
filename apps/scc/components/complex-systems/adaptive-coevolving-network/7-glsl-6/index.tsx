@@ -28,10 +28,8 @@ import { BUBBLE_FLOATS, createFoamRenderer, MAX_BUBBLES } from "./foam";
 import { LINK_VISIBILITY, viewTargets, VIEWS, type ViewId } from "./views";
 
 /** Share of the field's area that all pages together cover; area = displayed rank × this. */
-const AREA_BUDGET = 0.1;
-const MIN_RADIUS = 2.5;
-/** Pages are spaced by this share of their radius, plus a gap that shrinks for small pages. */
-const REACH_SHARE = 1.12;
+const AREA_BUDGET = 0.3;
+const MIN_RADIUS = 5;
 /** Weight a link drawn by hand starts with; it then follows appeal like any other. */
 const HAND_LINK_WEIGHT = 0.5;
 /** The display relaxes toward one power-iteration step with this time constant, seconds. */
@@ -41,9 +39,6 @@ const PERIOD = [1.3, 3.2] as const;
 /** Within its own cycle a portion necks off until this phase and is taken in from that one. */
 const DETACHED = 0.35;
 const TAKEN_IN = 0.62;
-/** A page's bubble reaches this share of its rank disc plus a pad (px), so neighbours press into each other and fill the foam. */
-const BUBBLE_SWELL = 1.45;
-const BUBBLE_PAD = 7;
 /** A portion's path bows aside by this share of its length (at most BOW_LIMIT px), so crossing flows part. */
 const BOW = 0.08;
 const BOW_LIMIT = 36;
@@ -268,7 +263,8 @@ export default function RankedWebIteration() {
       for (let page = 0; page < web.size; page += 1) {
         radii[page] = radii[page]! + (radiusFor(shown[page]!, field) - radii[page]!) * grow;
         presence[page] = Math.min(1, Math.max(0.35, Math.sqrt((web.rank[page]! * web.size) / 4)));
-        spacing[page] = radii[page]! * REACH_SHARE + 3 * presence[page]!;
+        // Bubbles rest at their contact distance (see layout.ts).
+        spacing[page] = radii[page]!;
       }
 
       // The layout pulls on links that matter.
@@ -314,13 +310,13 @@ export default function RankedWebIteration() {
       for (let page = 0; page < pageCount; page += 1) pools[page] = shown[page]!;
       const bubbles = renderer.bubbles;
       let bubbleCount = 0;
-      const put = (x: number, y: number, radius: number) => {
+      const put = (x: number, y: number, radius: number, seed: number) => {
         if (bubbleCount >= MAX_BUBBLES) return;
         const at = bubbleCount * BUBBLE_FLOATS;
         bubbles[at] = x;
         bubbles[at + 1] = y;
         bubbles[at + 2] = radius;
-        bubbles[at + 3] = 0;
+        bubbles[at + 3] = seed;
         bubbleCount += 1;
       };
 
@@ -351,7 +347,7 @@ export default function RankedWebIteration() {
             const dy = points[to * 2 + 1]! - ay;
             const length = Math.hypot(dx, dy) || 1;
             const bow = Math.sin(Math.PI * travel) * Math.min(BOW_LIMIT, BOW * length) * (hashOf(from + 7, to) < 0.5 ? -1 : 1);
-            put(ax + dx * travel - (dy / length) * bow, ay + dy * travel + (dx / length) * bow, radius * BUBBLE_SWELL + 2);
+            put(ax + dx * travel - (dy / length) * bow, ay + dy * travel + (dx / length) * bow, radius, hashOf(from, to + 5));
           }
         }
       }
@@ -359,10 +355,10 @@ export default function RankedWebIteration() {
       // Pages: one bubble each, as large as its rank, pressed into its neighbours.
       for (let page = 0; page < pageCount; page += 1) {
         const r = radiusFor(Math.max(pools[page]!, 0), field);
-        put(points[page * 2]!, points[page * 2 + 1]!, r * BUBBLE_SWELL + BUBBLE_PAD);
+        put(points[page * 2]!, points[page * 2 + 1]!, r, hashOf(page, 3));
       }
 
-      renderer.render(bubbleCount);
+      renderer.render(bubbleCount, motionTime);
 
       sinceSummary += delta;
       if (sinceSummary > 2) {
