@@ -152,7 +152,9 @@ void main() {
   shape = vec3(cell.z, tint.a, cell.w);
   vitality = tint.r;
   velocity = tint.gb;
-  local = (corner * 2.0 - 1.0) * (cell.z * 1.1 + ${REACH.toFixed(1)} * SOFTNESS);
+  // Room for a small page's tail (see CELL_FRAGMENT).
+  float tail = tint.a > 0.0 ? (1.0 - smoothstep(10.0, 22.0, cell.z)) * (cell.z * 2.4 + 6.0) : 0.0;
+  local = (corner * 2.0 - 1.0) * (cell.z * 1.1 + ${REACH.toFixed(1)} * SOFTNESS + tail);
   gl_Position = vec4(toClip(cell.xy + local, frame), 0.0, 1.0);
 }
 `;
@@ -195,7 +197,27 @@ void main() {
   float cover = 1.0 - smoothstep(edge - 1.0, edge + 1.0, length(local));
   // The page's tissue rides with it as the layout moves it.
   motion = vec4(velocity * cover * depth, cover * depth, shape.z * (1.0 - smoothstep(0.0, radius * 0.5, length(local))) * 0.6);
-  nourishment = vec4(vitality * cover * depth, cover * depth, radius * cover * depth, 0.0);
+  // A small page is kept alive as a protist: a wobbling membrane, a nucleus
+  // drifting inside it, and a tail (flagellum) that trails behind as the
+  // page moves and beats as it goes. These are held alive in the tissue
+  // itself (w: 0–1), which grows around them. A large page is tissue: its
+  // membrane and tail fade out between 10 and 22 px of radius, and only a
+  // small nucleus at its centre remains.
+  float small = 1.0 - smoothstep(10.0, 22.0, radius);
+  float membraneWidth = max(0.9, 0.11 * radius);
+  float membrane = small * step(4.0, radius) * (1.0 - smoothstep(0.5 * membraneWidth, membraneWidth, abs(length(local) - 0.82 * edge)));
+  vec2 wander = 0.22 * radius * small * vec2(sin(time * 0.7 + phase), cos(time * 0.9 + phase * 1.7));
+  float nucleusRadius = mix(max(1.8, 0.12 * radius), max(1.3, 0.24 * radius), small);
+  float nucleus = 1.0 - smoothstep(0.6 * nucleusRadius, nucleusRadius, length(local - wander));
+  float speed = length(velocity);
+  vec2 behind = speed > 2.0 ? -velocity / speed : vec2(cos(phase + time * 0.25), sin(phase + time * 0.25));
+  vec2 across = vec2(-behind.y, behind.x);
+  float along = dot(local, behind) - 0.8 * radius;
+  float reach = radius * 2.4 + 6.0;
+  float beat = sin(along * 0.55 - time * 7.0 + phase) * (0.5 + 0.18 * radius) * clamp(along / reach, 0.0, 1.0);
+  float tail = small * step(0.0, along) * (1.0 - smoothstep(0.75 * reach, reach, along))
+    * (1.0 - smoothstep(0.45, 1.0, abs(dot(local, across) - beat) / max(0.7, 0.09 * radius * (1.0 - along / reach))));
+  nourishment = vec4(vitality * cover * depth, cover * depth, radius * cover * depth, max(max(membrane, nucleus), tail));
 }
 `;
 
@@ -268,14 +290,11 @@ void main() {
   // where no tissue lives within 8 px, see below).
   float threshold = inside > 0.5 && vitality + page > 0.15 ? mix(mix(0.9993, 0.995, page), 0.985, core) : 2.0;
   transport = vec4(shift, threshold, m.w * inside);
-  // Every page keeps a living nucleus at its centre, max(1.8 px, 12% of its
-  // radius) across, from which its tissue grows: a page too small for the
-  // tissue's grain is still a living point, and a large one grows lush
-  // tissue out of its nucleus as far as its feed allows.
-  float radius = n.y > 1e-3 ? n.z / n.y : 0.0;
-  float fromCentre = radius * (1.0 - clamp(depth, 0.0, 1.0));
-  float nucleusRadius = max(1.8, 0.12 * radius);
-  nuclei = vec4(page * (1.0 - smoothstep(0.6 * nucleusRadius, nucleusRadius, fromCentre)), 0.0, 0.0, 0.0);
+  // Every page keeps living structure that its tissue grows from: a large
+  // page a small nucleus, a small page a whole protist (membrane, nucleus,
+  // tail), written by the page itself (see CELL_FRAGMENT). So no page is too
+  // small for the tissue's grain to be seen.
+  nuclei = vec4(clamp(n.w, 0.0, 1.0), 0.0, 0.0, 0.0);
 }
 `;
 

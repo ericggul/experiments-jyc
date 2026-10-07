@@ -1,0 +1,86 @@
+/* The sheet replaces the viewport: no browser pan or zoom, so every touch is a drag. */
+.finger-decomposition-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  visibility: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.finger-decomposition-control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483001;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: #171717;
+}
+
+.finger-decomposition-control * { box-sizing: border-box; }
+
+.finger-decomposition-trigger {
+  min-height: 42px;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 15px;
+  background: #171717;
+  color: #fff;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.finger-decomposition-panel {
+  width: min(232px, calc(100vw - 32px));
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.finger-decomposition-panel button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0 10px;
+  background: transparent;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.finger-decomposition-label {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.finger-decomposition-slider {
+  display: block;
+  width: calc(100% - 12px);
+  margin: 0 6px 12px;
+  accent-color: #171717;
+  cursor: pointer;
+}
+
+.finger-decomposition-control button:focus-visible,
+.finger-decomposition-slider:focus-visible {
+  outline: 2px solid #1469d8;
+  outline-offset: 2px;
+}

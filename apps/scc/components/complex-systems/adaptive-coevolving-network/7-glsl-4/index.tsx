@@ -202,7 +202,7 @@ function pageSeed(page: number) {
   return 0.02 + 0.98 * grain(page, 17);
 }
 
-export default function RankedWebMorphogen() {
+export default function RankedWebMorphogenFour() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webRef = useRef<RankedWeb>(createRankedWeb());
   const bodiesRef = useRef<Body[]>([]);
@@ -282,7 +282,7 @@ export default function RankedWebMorphogen() {
     if (!canvas) return;
     const renderer = createMorphogenRenderer(canvas);
     if (!renderer) {
-      console.warn("adaptive-coevolving-network/7-glsl-3 needs WebGL2 with float render targets.");
+      console.warn("adaptive-coevolving-network/7-glsl-4 needs WebGL2 with float render targets.");
       return;
     }
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -662,7 +662,7 @@ export default function RankedWebMorphogen() {
         className={styles.canvas}
         role="application"
         tabIndex={0}
-        aria-describedby="ranked-web-morphogen-summary"
+        aria-describedby="ranked-web-morphogen-4-summary"
         aria-label="A living web of pages ranked by PageRank, grown as a tissue that patterns itself. Each page is a territory whose area is its share of PageRank, colonised by dividing cells; each link that passes on enough rank grows a bundle of fibres that drifts toward the page it feeds; random surfers pulse the tissue. Tap empty space to add a page; drag from one page to another to add a link or let it fade; drag from a page to empty space to create a page it links to; tap a link to let it fade; tap a page to stir it and highlight its links. Press N to add a page linked from the leader, Escape to clear focus."
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -718,13 +718,13 @@ export default function RankedWebMorphogen() {
           createPage((anchor?.x ?? 0) + 30, (anchor?.y ?? 0) + 30, top);
         }}
       />
-      <p id="ranked-web-morphogen-summary" className={styles.screenReaderOnly}>
+      <p id="ranked-web-morphogen-4-summary" className={styles.screenReaderOnly}>
         {summary}
       </p>
 
       <div className={styles.controls}>
         {optionsOpen && (
-          <div id="ranked-web-morphogen-options" className={styles.options}>
+          <div id="ranked-web-morphogen-4-options" className={styles.options}>
             <p className={styles.hint}>크기가 곧 PageRank · 빈 곳을 누르면 새 페이지, 페이지에서 페이지로 끌면 링크</p>
             <div className={styles.views} role="group" aria-label="보기">
               {VIEWS.map((option) => (
@@ -827,7 +827,7 @@ export default function RankedWebMorphogen() {
           type="button"
           className={`${styles.button} ${styles.toggle}`}
           aria-expanded={optionsOpen}
-          aria-controls="ranked-web-morphogen-options"
+          aria-controls="ranked-web-morphogen-4-options"
           onClick={() => setOptionsOpen((open) => !open)}
         >
           {optionsOpen ? "닫기" : "옵션"}

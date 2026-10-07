@@ -7,13 +7,16 @@ export type Body = { x: number; y: number; vx: number; vy: number };
 export type Frame = { width: number; height: number };
 export type Pair = { readonly from: number; readonly to: number };
 
-const GRAVITY = 0.9;
+/** Strong enough that the bubbles gather into one raft and press together. */
+const GRAVITY = 0.6;
 const REPULSION = 0.35;
 const SPRING = 1.6;
 const GAP = 4;
 
 export function idealLength(frame: Frame, count: number) {
-  return Math.sqrt((frame.width * frame.height * 0.42) / Math.max(1, count));
+  // 7-glsl: .42 of the area; far less here, so repulsion is short-ranged and
+  // the bubbles pack into foam instead of spreading apart.
+  return Math.sqrt((frame.width * frame.height * 0.12) / Math.max(1, count));
 }
 
 export function bodyAt(frame: Frame, random: () => number): Body {

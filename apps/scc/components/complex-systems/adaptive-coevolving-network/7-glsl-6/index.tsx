@@ -1,15 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import styles from "./ranked-web-morphogen.module.css";
-import {
-  createMorphogenRenderer,
-  MAX_TIES,
-  MAX_VOTERS as MAX_CELLS,
-  TIE_FLOATS,
-  VOTER_FLOATS,
-  type TieStyle,
-} from "./morphogen";
+import styles from "./ranked-web-iteration.module.css";
 import { bodyAt, relaxBodies, rescaleBodies, type Body, type Frame } from "./layout";
 import {
   addCandidate,
@@ -26,58 +18,41 @@ import {
   GROWTH_RANGE,
   leader,
   MAX_PAGES,
-  outWeight,
   setDamping,
   stepRankedWeb,
   VOLATILITY_RANGE,
   type RankedWeb,
 } from "./model";
-import { tentaclePoint } from "./tentacle";
+import { iterate, transit } from "./iteration";
+import { BUBBLE_FLOATS, createFoamRenderer, MAX_BUBBLES } from "./foam";
 import { LINK_VISIBILITY, viewTargets, VIEWS, type ViewId } from "./views";
 
-type Rgb = readonly [number, number, number];
-
-// One restrained tone for everything, as route 7 is monochrome: hierarchy
-// comes only from size, depth and brightness.
-const TONE: Rgb = [0.86, 0.86, 0.84];
-/** Surfers are the same tone, lit brighter, running inside the links. */
-const SURFER_GLOW = 0.9;
-/** Links are still: their width is data (the rank they pass on), so it does not breathe. */
-/** A link's territory leaves its page as a broad root and narrows to its own width. */
-const LINK_STYLE: TieStyle = { taper: [1.6, 3, 40, 1.3] };
-/** How fast the tissue drifts along a link, from source to target, CSS px/s (up to twice this for the richest links). */
-const DRIFT = 5;
-/**
- * Richness (against the average) at which a region starves and at which it is
- * fully fed. Vitality runs 0–1 between them on a log scale, and sets the
- * tissue's feed rate: rich pages grow lush, poor ones die back.
- */
-const PAGE_RICHNESS = [0.4, 5] as const;
-const LINK_RICHNESS = [0.5, 8] as const;
-
-function vitality(richness: number, [poor, rich]: readonly [number, number]) {
-  const value = (Math.log(Math.max(richness, 1e-6)) - Math.log(poor)) / (Math.log(rich) - Math.log(poor));
-  return Math.min(1, Math.max(0, value));
-}
-/**
- * Share of the field's area that all pages together cover; area = rank × this.
- * Route 7's 6%: a page must be large enough to hold a colony of the tissue's
- * cells, whose number then follows its rank.
- */
-const AREA_BUDGET = 0.06;
-/** Small pages stay small (7-glsl: 2.2); each still holds a living nucleus. */
+/** Share of the field's area that all pages together cover; area = displayed rank × this. */
+const AREA_BUDGET = 0.1;
 const MIN_RADIUS = 2.5;
-/** A page's soft outline reaches about 1.1 of its radius; pages are spaced by this so they never touch. */
+/** Pages are spaced by this share of their radius, plus a gap that shrinks for small pages. */
 const REACH_SHARE = 1.12;
 /** Weight a link drawn by hand starts with; it then follows appeal like any other. */
 const HAND_LINK_WEIGHT = 0.5;
-/** Random surfers travelling along links; their density approximates rank. */
-const SURFERS = 160;
-const SURFER_RADIUS = 3;
-const SURFER_PACE = 2.5;
-const MARK_LIFETIME = 0.9;
+/** The display relaxes toward one power-iteration step with this time constant, seconds. */
+const STEP_SECONDS = 1.1;
+/** Each link sends its portion round on its own period (seconds), from quickest to slowest. */
+const PERIOD = [1.3, 3.2] as const;
+/** Within its own cycle a portion necks off until this phase and is taken in from that one. */
+const DETACHED = 0.35;
+const TAKEN_IN = 0.62;
+/** A page's bubble reaches this share of its rank disc plus a pad (px), so neighbours press into each other and fill the foam. */
+const BUBBLE_SWELL = 1.45;
+const BUBBLE_PAD = 7;
+/** A portion's path bows aside by this share of its length (at most BOW_LIMIT px), so crossing flows part. */
+const BOW = 0.08;
+const BOW_LIMIT = 36;
+/** Portions carrying less than this share of the mean flow are not drawn (they would read as specks). */
+const LEAST_PORTION = 0.5;
+const MIN_PORTION_RADIUS = 1.5;
 const TRANSITION_SECONDS = 0.9;
-const FOLLOW_RATE = 12;
+/** Displayed pools follow the layout slowly, so packing jitter never reaches the surface. */
+const FOLLOW_RATE = 4;
 const DRAG_THRESHOLD = 6;
 const HIT_SLOP = 6;
 /** Frames are paced to at most 60 Hz on whole vsyncs, so 120 Hz screens draw every other one. */
@@ -85,22 +60,11 @@ const FRAME_INTERVAL = 1_000 / 60 - 3;
 const MAX_PIXEL_RATIO = 2;
 const MIN_PAGES = 20;
 
-type Surfer = { from: number; to: number; progress: number; duration: number; jump: boolean };
-
 type Press = { x: number; y: number; source: number | null; dragging: boolean; pointerX: number; pointerY: number };
 
 type Transition = { from: Float64Array; linksFrom: number; startedAt: number };
 
-type WeightedLink = { from: number; to: number; weight: number; flow: number };
-
-/** Pages may use the whole screen; the options float over it. */
-function layoutFrame(size: Frame): Frame {
-  return size;
-}
-
-function easeInOut(value: number) {
-  return value < 0.5 ? 4 * value ** 3 : 1 - (-2 * value + 2) ** 3 / 2;
-}
+type WeightedLink = { from: number; to: number; weight: number };
 
 /** Disc area is exactly proportional to rank: πr² = rank × budget. */
 function radiusFor(rank: number, field: Frame) {
@@ -119,90 +83,22 @@ function distanceToSegment(px: number, py: number, x1: number, y1: number, x2: n
   return Math.hypot(px - (x1 + dx * t), py - (y1 + dy * t));
 }
 
-/** Stable 0–1 noise per link. */
-function grain(from: number, to: number) {
-  const value = Math.sin(from * 12.9898 + to * 78.233) * 43_758.5453;
+function smooth(from: number, to: number, value: number) {
+  const t = Math.min(1, Math.max(0, (value - from) / (to - from)));
+  return t * t * (3 - 2 * t);
+}
+
+/** A stable value in [0, 1) per pair. */
+function hashOf(a: number, b: number) {
+  const value = Math.sin(a * 12.9898 + b * 78.233) * 43_758.5453;
   return value - Math.floor(value);
 }
 
-/** Each link's own phase: its resting curve and the timing of its writhing. */
-function linkPhase(from: number, to: number) {
-  return grain(from, to) * Math.PI * 2;
+function easeInOut(value: number) {
+  return value < 0.5 ? 4 * value ** 3 : 1 - (-2 * value + 2) ** 3 / 2;
 }
 
-/** Samples along a tentacle for hit-testing. */
-const HIT_SAMPLES = 24;
-
-/** One ribbon: ax ay bx by | rootA rootB reach phase | rgbA pulse | rgbB strength | writhe middle. */
-function writeLink(
-  data: Float32Array,
-  index: number,
-  ax: number,
-  ay: number,
-  bx: number,
-  by: number,
-  rootA: number,
-  rootB: number,
-  reach: number,
-  phase: number,
-  hueA: ArrayLike<number>,
-  hueB: ArrayLike<number>,
-  strength: number,
-  writhe: number,
-  middle: number,
-  drift: number,
-  vitality: number,
-) {
-  let offset = index * TIE_FLOATS;
-  data[offset++] = ax;
-  data[offset++] = ay;
-  data[offset++] = bx;
-  data[offset++] = by;
-  data[offset++] = rootA;
-  data[offset++] = rootB;
-  data[offset++] = reach;
-  data[offset++] = phase;
-  data[offset++] = hueA[0]!;
-  data[offset++] = hueA[1]!;
-  data[offset++] = hueA[2]!;
-  data[offset++] = 0;
-  data[offset++] = hueB[0]!;
-  data[offset++] = hueB[1]!;
-  data[offset++] = hueB[2]!;
-  data[offset++] = strength;
-  data[offset++] = writhe;
-  data[offset++] = middle;
-  data[offset++] = drift;
-  data[offset++] = vitality;
-}
-
-function writeCell(
-  data: Float32Array,
-  index: number,
-  x: number,
-  y: number,
-  radius: number,
-  glow: number,
-  hue: ArrayLike<number>,
-  seed = 0,
-) {
-  const offset = index * VOTER_FLOATS;
-  data[offset] = x;
-  data[offset + 1] = y;
-  data[offset + 2] = radius;
-  data[offset + 3] = glow;
-  data[offset + 4] = hue[0]!;
-  data[offset + 5] = hue[1]!;
-  data[offset + 6] = hue[2]!;
-  data[offset + 7] = seed;
-}
-
-/** A stable seed in (0, 1] for each page's outline and buds. */
-function pageSeed(page: number) {
-  return 0.02 + 0.98 * grain(page, 17);
-}
-
-export default function RankedWebMorphogen() {
+export default function RankedWebIteration() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webRef = useRef<RankedWeb>(createRankedWeb());
   const bodiesRef = useRef<Body[]>([]);
@@ -211,11 +107,8 @@ export default function RankedWebMorphogen() {
   const pointsRef = useRef(new Float64Array(MAX_PAGES * 2));
   const targetsRef = useRef(new Float64Array(MAX_PAGES * 2));
   const sizeRef = useRef<Frame>({ width: 0, height: 0 });
-  const pagesBornRef = useRef<{ page: number; at: number }[]>([]);
-  const surfersRef = useRef<Surfer[]>([]);
   const pendingPagesRef = useRef({ value: 0 });
   const timeRef = useRef(0);
-  const motionTimeRef = useRef(0);
   const pressRef = useRef<Press | null>(null);
   const focusRef = useRef<number | null>(null);
   const viewRef = useRef<ViewId>("network");
@@ -239,7 +132,7 @@ export default function RankedWebMorphogen() {
     parametersRef.current = { ...DEFAULT_PARAMETERS, growth, volatility, floor };
   }, [growth, volatility, floor]);
 
-  /** Presentation-only randomness (layout seeds, surfer choices); never touches the model. */
+  /** Presentation-only randomness (layout seeds); never touches the model. */
   const random = useCallback(() => {
     let state = randomRef.current;
     state ^= state << 13;
@@ -249,13 +142,12 @@ export default function RankedWebMorphogen() {
     return randomRef.current / 4_294_967_296;
   }, []);
 
-  /** Gives page `page` a body and a drawn position at (x, y); it grows in from nothing. */
+  /** Gives page `page` a body and a position at (x, y); it grows in from nothing. */
   const placePage = useCallback((page: number, x: number, y: number) => {
     bodiesRef.current[page] = { x, y, vx: 0, vy: 0 };
     pointsRef.current[page * 2] = x;
     pointsRef.current[page * 2 + 1] = y;
     radiiRef.current[page] = 0;
-    pagesBornRef.current.push({ page, at: timeRef.current });
     const transition = transitionRef.current;
     if (transition && transition.from.length < (page + 1) * 2) {
       const from = new Float64Array((page + 1) * 2);
@@ -280,56 +172,31 @@ export default function RankedWebMorphogen() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const renderer = createMorphogenRenderer(canvas);
+    const renderer = createFoamRenderer(canvas);
     if (!renderer) {
-      console.warn("adaptive-coevolving-network/7-glsl-3 needs WebGL2 with float render targets.");
+      console.warn("adaptive-coevolving-network/7-glsl-6 needs WebGL2 with float render targets.");
       return;
     }
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // Reused every frame: every candidate link, and the strong ones that pull in the layout.
-    const links: WeightedLink[] = [];
     const pulling: WeightedLink[] = [];
-    const glow = new Float32Array(MAX_PAGES);
     const presence = new Float64Array(MAX_PAGES);
-    // Each page's drawn velocity (px/s, smoothed), so its tissue can ride with it.
-    const velocities = new Float64Array(MAX_PAGES * 2);
-    const lastPoints = new Float64Array(MAX_PAGES * 2);
-    let lastCount = 0;
-    const riding = { x: 0, y: 0 };
     let frame = 0;
     let previous = performance.now();
     let sinceSummary = 2;
+    // The displayed distribution: it starts uniform and relaxes, without
+    // beats, toward one power-iteration step of itself, so it converges to
+    // PageRank continuously and again whenever the web changes.
+    const shown = new Float64Array(MAX_PAGES);
+    const stepped = new Float64Array(MAX_PAGES);
+    const pools = new Float64Array(MAX_PAGES);
     let motionTime = 0;
-
-    const nextHop = (surfer: Surfer) => {
+    const restart = () => {
       const web = webRef.current;
-      const at = surfer.to;
-      const total = outWeight(web, at);
-      surfer.from = at;
-      surfer.progress = 0;
-      if (total > 1e-9 && random() < web.damping) {
-        // Follow a link with probability proportional to its weight.
-        let cursor = random() * total;
-        let target = web.out[at]![0]!.target;
-        for (const entry of web.out[at]!) {
-          cursor -= entry.weight;
-          target = entry.target;
-          if (cursor <= 0) break;
-        }
-        const points = pointsRef.current;
-        const distance = Math.hypot(points[target * 2]! - points[at * 2]!, points[target * 2 + 1]! - points[at * 2 + 1]!);
-        surfer.to = target;
-        surfer.jump = false;
-        // Drawn at 1/2.5 of 7-glsl's pace, so a surfer ripples through the tissue rather than streaking.
-        surfer.duration = (0.35 + distance / 520) * SURFER_PACE;
-      } else {
-        surfer.to = Math.min(web.size - 1, Math.floor(random() * web.size));
-        surfer.jump = true;
-        surfer.duration = 0.5 * SURFER_PACE;
-      }
+      shown.fill(0);
+      shown.fill(1 / Math.max(1, web.size), 0, web.size);
     };
+    restart();
 
-    /** Places every page of the current web and scatters the surfers over it. */
     const seedPages = (field: Frame) => {
       const web = webRef.current;
       bodiesRef.current = [];
@@ -340,10 +207,6 @@ export default function RankedWebMorphogen() {
         pointsRef.current[page * 2 + 1] = body.y;
         radiiRef.current[page] = radiusFor(web.rank[page]!, field);
       }
-      surfersRef.current = Array.from({ length: SURFERS }, () => {
-        const page = Math.floor(random() * web.size);
-        return { from: page, to: page, progress: random(), duration: 0.6, jump: false };
-      });
     };
 
     const sizeCanvas = () => {
@@ -351,9 +214,8 @@ export default function RankedWebMorphogen() {
       const next = { width: bounds.width, height: bounds.height };
       const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
       renderer.resize(next.width, next.height, ratio);
-      const field = layoutFrame(next);
-      if (bodiesRef.current.length === 0) seedPages(field);
-      else rescaleBodies(bodiesRef.current, layoutFrame(sizeRef.current), field);
+      if (bodiesRef.current.length === 0) seedPages(next);
+      else rescaleBodies(bodiesRef.current, sizeRef.current, next);
       sizeRef.current = next;
     };
 
@@ -365,23 +227,21 @@ export default function RankedWebMorphogen() {
       const still = reduceMotion.matches;
       timeRef.current += delta;
       if (!still) motionTime += delta;
-      motionTimeRef.current = motionTime;
       const requested = repopulateRef.current;
       if (requested !== null) {
-        // A new page count starts the web over, keeping the current d.
+        // A new page count starts the web, and the display, over from uniform.
         repopulateRef.current = null;
         const fresh = createRankedWeb(requested);
         setDamping(fresh, dampingRef.current);
         webRef.current = fresh;
-        pagesBornRef.current = [];
         pendingPagesRef.current = { value: 0 };
         transitionRef.current = null;
         focusRef.current = null;
-        seedPages(layoutFrame(sizeRef.current));
+        seedPages(sizeRef.current);
+        restart();
       }
       const web = webRef.current;
-      const size = sizeRef.current;
-      const field = layoutFrame(size);
+      const field = sizeRef.current;
       const tempo = still ? 0.3 : 1;
 
       const events = stepRankedWeb(web, delta * tempo, parametersRef.current, pendingPagesRef.current);
@@ -396,32 +256,26 @@ export default function RankedWebMorphogen() {
         );
       }
 
-      // Radii track rank directly: the model already changes continuously.
+      // Continuous power iteration on the web as it is now.
+      iterate(web, shown, stepped);
+      const relax = Math.min(1, (delta * tempo) / STEP_SECONDS);
+      for (let page = 0; page < web.size; page += 1) shown[page] = shown[page]! + (stepped[page]! - shown[page]!) * relax;
+
+      // Radii follow the displayed rank; small pages may cluster (as in 7-glsl-3).
       const radii = radiiRef.current;
       const grow = 1 - Math.exp(-8 * delta);
       const spacing = spacingRef.current;
       for (let page = 0; page < web.size; page += 1) {
-        radii[page] = radii[page]! + (radiusFor(web.rank[page]!, field) - radii[page]!) * grow;
-        // A page's reach in the layout: full for a page with four times the
-        // average rank or more, less for smaller ones, so small pages cluster.
-        presence[page] = Math.min(1, Math.max(0.2, Math.sqrt((web.rank[page]! * web.size) / 4)));
-        spacing[page] = radii[page]! * REACH_SHARE + 2 * presence[page]!;
+        radii[page] = radii[page]! + (radiusFor(shown[page]!, field) - radii[page]!) * grow;
+        presence[page] = Math.min(1, Math.max(0.35, Math.sqrt((web.rank[page]! * web.size) / 4)));
+        spacing[page] = radii[page]! * REACH_SHARE + 3 * presence[page]!;
       }
 
-      // Every candidate link with its weight and the rank it passes on, d · PR · w / W.
-      let linkCount = 0;
+      // The layout pulls on links that matter.
       pulling.length = 0;
       for (let from = 0; from < web.size; from += 1) {
-        const total = outWeight(web, from);
-        if (total <= 1e-12) continue;
         for (const entry of web.out[from]!) {
-          const link = links[linkCount] ?? { from: 0, to: 0, weight: 0, flow: 0 };
-          links[linkCount++] = link;
-          link.from = from;
-          link.to = entry.target;
-          link.weight = entry.weight;
-          link.flow = (web.damping * web.rank[from]! * entry.weight) / total;
-          if (link.weight > 0.08) pulling.push(link);
+          if (entry.weight > 0.08) pulling.push({ from, to: entry.target, weight: entry.weight });
         }
       }
       relaxBodies(bodiesRef.current, pulling, spacing, field, delta * tempo, presence);
@@ -444,140 +298,71 @@ export default function RankedWebMorphogen() {
       const linksFrom = transition?.linksFrom ?? LINK_VISIBILITY[current];
       linkVisibilityRef.current = linksFrom + (LINK_VISIBILITY[current] - linksFrom) * eased;
       if (transition && progress >= 1) transitionRef.current = null;
+
+      // Nothing but rank's mass. Each page is a pool of its displayed rank.
+      // Every link keeps sending its share, d · x(from) · w / W, round on its
+      // own period and phase: a portion necks off the source pool, travels
+      // and merges into the target pool, then the next begins. Links never
+      // beat together and are seen only in where the mass goes. Mass is
+      // conserved at every moment: a portion is taken from its source as it
+      // necks off and given to its target as it merges, against the steady
+      // flow that both pools carry on average.
       const visibility = linkVisibilityRef.current;
       const focus = focusRef.current;
+      const pageCount = Math.min(web.size, MAX_PAGES);
+      const flowing = visibility >= 0.5;
+      for (let page = 0; page < pageCount; page += 1) pools[page] = shown[page]!;
+      const bubbles = renderer.bubbles;
+      let bubbleCount = 0;
+      const put = (x: number, y: number, radius: number) => {
+        if (bubbleCount >= MAX_BUBBLES) return;
+        const at = bubbleCount * BUBBLE_FLOATS;
+        bubbles[at] = x;
+        bubbles[at + 1] = y;
+        bubbles[at + 2] = radius;
+        bubbles[at + 3] = 0;
+        bubbleCount += 1;
+      };
 
-      // Links: each grows along its own curved path; it leaves its source at nearly the source's full width and
-      // enters its target nearly as wide as the target, in the same tone,
-      // so page and link are one body; between them it narrows to
-      // the width of the rank it passes on. Weight and view thin it, and it
-      // swells and fades continuously.
-      // Drawn velocities, smoothed over about a tenth of a second; a page that
-      // just appeared, or a web that was started over, starts at rest.
-      const settle = 1 - Math.exp(-10 * delta);
-      for (let index = 0; index < web.size * 2; index += 1) {
-        const moved = index < lastCount * 2 && delta > 0 ? (points[index]! - lastPoints[index]!) / delta : 0;
-        velocities[index] = index < lastCount * 2 ? velocities[index]! + (moved - velocities[index]!) * settle : 0;
-        lastPoints[index] = points[index]!;
-      }
-      lastCount = web.size;
-      const tieData = renderer.ties;
-      let tieCount = 0;
-      // Richness against the average: a page's rank × N, a link's flow
-      // against the mean flow of all links (whose flows sum to about d).
-      const meanFlow = linkCount > 0 ? web.damping / linkCount : 1;
-      for (let index = 0; index < linkCount && tieCount < MAX_TIES; index += 1) {
-        const link = links[index]!;
-        const linkVitality = vitality(link.flow / meanFlow, LINK_RICHNESS);
-        const involved = focus !== null && (link.from === focus || link.to === focus);
-        const presence = Math.min(1, link.weight * 6);
-        const strength = presence * (involved ? 1 : visibility) * (focus !== null && !involved ? 0.6 : 1);
-        if (strength < 0.02) continue;
-        // A link's territory is as wide as the rank it passes on, and never
-        // narrower than one filament of tissue, so every link is a living
-        // strand and a strong one a bundle.
-        const middle = 3 + link.flow * 70;
-        const source = radii[link.from]!;
-        const sink = radii[link.to]!;
-        const ax = points[link.from * 2]!;
-        const ay = points[link.from * 2 + 1]!;
-        const bx = points[link.to * 2]!;
-        const by = points[link.to * 2 + 1]!;
-        writeLink(
-          tieData,
-          tieCount++,
-          ax,
-          ay,
-          bx,
-          by,
-          // Roots barely wider than the link: the smooth union fillets them
-          // into the page, and the page keeps its own territory.
-          middle + Math.min(source * 0.35, 4),
-          middle + Math.min(sink * 0.35, 4),
-          // A new candidate grows out of its source as its weight rises; a
-          // fading one withdraws back into it.
-          presence ** 0.6,
-          linkPhase(link.from, link.to),
-          [0, velocities[link.from * 2]!, velocities[link.from * 2 + 1]!],
-          [0, velocities[link.to * 2]!, velocities[link.to * 2 + 1]!],
-          strength,
-          1,
-          middle,
-          // Food streams faster through a link that passes on more rank.
-          DRIFT * strength * (0.4 + 1.6 * linkVitality),
-          linkVitality,
-        );
-      }
-      // A link being drawn by hand reaches from its page toward the pointer.
-      const press = pressRef.current;
-      if (press?.dragging && press.source !== null && tieCount < MAX_TIES) {
-        const r = radii[press.source]!;
-        writeLink(
-          tieData,
-          tieCount++,
-          points[press.source * 2]!,
-          points[press.source * 2 + 1]!,
-          press.pointerX,
-          press.pointerY,
-          r * 0.92,
-          0.6,
-          1,
-          0,
-          TONE,
-          TONE,
-          1,
-          0.5,
-          2.6,
-          0,
-          0.5,
-        );
-      }
-
-      // Pages: soft cells whose area is their rank; a new page, and the
-      // focused one, glow.
-      glow.fill(0, 0, web.size);
-      pagesBornRef.current = pagesBornRef.current.filter((born) => timeRef.current - born.at < MARK_LIFETIME);
-      for (const born of pagesBornRef.current) {
-        glow[born.page] = Math.max(glow[born.page]!, 0.8 * (1 - (timeRef.current - born.at) / MARK_LIFETIME));
-      }
-      const cellData = renderer.voters;
-      let cellCount = 0;
-      for (let page = 0; page < web.size && cellCount < MAX_CELLS; page += 1) {
-        const r = radii[page]!;
-        if (r < 0.3) continue;
-        const x = points[page * 2]!;
-        const y = points[page * 2 + 1]!;
-        const lit = page === focus ? Math.max(glow[page]!, 0.7) : glow[page]!;
-        writeCell(cellData, cellCount++, x, y, r, lit, [vitality(web.rank[page]! * web.size, PAGE_RICHNESS), velocities[page * 2]!, velocities[page * 2 + 1]!], pageSeed(page));
-      }
-
-      // Surfers: bright beads gliding inside the links; jumping, they shrink away and back.
-      if (!still) {
-        for (const surfer of surfersRef.current) {
-          surfer.progress += delta / surfer.duration;
-          if (surfer.progress >= 1) nextHop(surfer);
-          const t = surfer.progress;
-          const fx = points[surfer.from * 2]!;
-          const fy = points[surfer.from * 2 + 1]!;
-          const tx = points[surfer.to * 2]!;
-          const ty = points[surfer.to * 2 + 1]!;
-          // Riding a link, a surfer follows the same writhing path as its ribbon.
-          tentaclePoint(fx, fy, tx, ty, t, linkPhase(surfer.from, surfer.to), motionTime, 1, riding);
-          let x = riding.x;
-          let y = riding.y;
-          let alpha = visibility;
-          if (surfer.jump) {
-            x = t < 0.5 ? fx : tx;
-            y = t < 0.5 ? fy : ty;
-            alpha *= Math.abs(1 - t * 2) * 0.6;
+      if (flowing) {
+        let linkCount = 0;
+        for (let from = 0; from < pageCount; from += 1) linkCount += web.out[from]!.length;
+        const meanFlow = linkCount > 0 ? web.damping / linkCount : 1;
+        for (let from = 0; from < pageCount; from += 1) {
+          for (const entry of web.out[from]!) {
+            const to = entry.target;
+            if (to >= pageCount) continue;
+            const flow = transit(web, shown, from, entry.weight);
+            const period = PERIOD[0] + (PERIOD[1] - PERIOD[0]) * hashOf(from, to);
+            const cycle = (motionTime / period + hashOf(to, from)) % 1;
+            const detach = smooth(0, DETACHED, cycle);
+            const takeIn = smooth(TAKEN_IN, 1, cycle);
+            pools[from] = pools[from]! - flow * (detach - cycle);
+            pools[to] = pools[to]! + flow * (takeIn - cycle);
+            const involved = focus !== null && (from === focus || to === focus);
+            if (flow < LEAST_PORTION * meanFlow && !involved) continue;
+            const portion = flow * (detach - takeIn);
+            const radius = Math.sqrt((Math.max(portion, 0) * AREA_BUDGET * field.width * field.height) / Math.PI);
+            if (radius < MIN_PORTION_RADIUS) continue;
+            const travel = smooth(0.04, 0.96, cycle);
+            const ax = points[from * 2]!;
+            const ay = points[from * 2 + 1]!;
+            const dx = points[to * 2]! - ax;
+            const dy = points[to * 2 + 1]! - ay;
+            const length = Math.hypot(dx, dy) || 1;
+            const bow = Math.sin(Math.PI * travel) * Math.min(BOW_LIMIT, BOW * length) * (hashOf(from + 7, to) < 0.5 ? -1 : 1);
+            put(ax + dx * travel - (dy / length) * bow, ay + dy * travel + (dx / length) * bow, radius * BUBBLE_SWELL + 2);
           }
-          const radius = SURFER_RADIUS * Math.min(1, alpha * 1.2);
-          if (radius < 0.4 || cellCount >= MAX_CELLS) continue;
-          writeCell(cellData, cellCount++, x, y, radius, SURFER_GLOW, TONE);
         }
       }
 
-      renderer.render(tieCount, cellCount, motionTime, still ? 0 : delta, LINK_STYLE);
+      // Pages: one bubble each, as large as its rank, pressed into its neighbours.
+      for (let page = 0; page < pageCount; page += 1) {
+        const r = radiusFor(Math.max(pools[page]!, 0), field);
+        put(points[page * 2]!, points[page * 2 + 1]!, r * BUBBLE_SWELL + BUBBLE_PAD);
+      }
+
+      renderer.render(bubbleCount);
 
       sinceSummary += delta;
       if (sinceSummary > 2) {
@@ -616,26 +401,12 @@ export default function RankedWebMorphogen() {
   const linkAt = useCallback((x: number, y: number) => {
     const web = webRef.current;
     const points = pointsRef.current;
-    const time = motionTimeRef.current;
-    const previous = { x: 0, y: 0 };
-    const next = { x: 0, y: 0 };
     for (let from = 0; from < web.size; from += 1) {
       for (const entry of web.out[from]!) {
         if (entry.fading || entry.weight < 0.05) continue;
         const to = entry.target;
-        const phase = linkPhase(from, to);
-        const grown = Math.min(1, entry.weight * 6) ** 0.6;
-        const ax = points[from * 2]!;
-        const ay = points[from * 2 + 1]!;
-        const bx = points[to * 2]!;
-        const by = points[to * 2 + 1]!;
-        tentaclePoint(ax, ay, bx, by, 0, phase, time, 1, previous);
-        for (let sample = 1; sample <= HIT_SAMPLES; sample += 1) {
-          tentaclePoint(ax, ay, bx, by, (sample / HIT_SAMPLES) * grown, phase, time, 1, next);
-          if (distanceToSegment(x, y, previous.x, previous.y, next.x, next.y) <= HIT_SLOP) return { from, to };
-          previous.x = next.x;
-          previous.y = next.y;
-        }
+        const d = distanceToSegment(x, y, points[from * 2]!, points[from * 2 + 1]!, points[to * 2]!, points[to * 2 + 1]!);
+        if (d <= HIT_SLOP) return { from, to };
       }
     }
     return null;
@@ -662,8 +433,8 @@ export default function RankedWebMorphogen() {
         className={styles.canvas}
         role="application"
         tabIndex={0}
-        aria-describedby="ranked-web-morphogen-summary"
-        aria-label="A living web of pages ranked by PageRank, grown as a tissue that patterns itself. Each page is a territory whose area is its share of PageRank, colonised by dividing cells; each link that passes on enough rank grows a bundle of fibres that drifts toward the page it feeds; random surfers pulse the tissue. Tap empty space to add a page; drag from one page to another to add a link or let it fade; drag from a page to empty space to create a page it links to; tap a link to let it fade; tap a page to stir it and highlight its links. Press N to add a page linked from the leader, Escape to clear focus."
+        aria-describedby="ranked-web-iteration-summary"
+        aria-label="A living web of pages ranked by PageRank, shown as a raft of foam performing the power iteration. Every page is a bubble as large as its displayed rank, pressed against its neighbours; along every link, each on its own rhythm, a small bubble of rank buds off its source, squeezes between the others and coalesces into the bubble it feeds, so the display converges to PageRank and settles again whenever the web changes. Tap empty space to add a page; drag from one page to another to add a link or let it fade; drag from a page to empty space to create a page it links to; tap between two pages to let their link fade; tap a page to highlight its links. Press N to add a page linked from the leader, Escape to clear focus."
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
           const point = pointFor(event.currentTarget, event.clientX, event.clientY);
@@ -718,13 +489,13 @@ export default function RankedWebMorphogen() {
           createPage((anchor?.x ?? 0) + 30, (anchor?.y ?? 0) + 30, top);
         }}
       />
-      <p id="ranked-web-morphogen-summary" className={styles.screenReaderOnly}>
+      <p id="ranked-web-iteration-summary" className={styles.screenReaderOnly}>
         {summary}
       </p>
 
       <div className={styles.controls}>
         {optionsOpen && (
-          <div id="ranked-web-morphogen-options" className={styles.options}>
+          <div id="ranked-web-iteration-options" className={styles.options}>
             <p className={styles.hint}>크기가 곧 PageRank · 빈 곳을 누르면 새 페이지, 페이지에서 페이지로 끌면 링크</p>
             <div className={styles.views} role="group" aria-label="보기">
               {VIEWS.map((option) => (
@@ -827,7 +598,7 @@ export default function RankedWebMorphogen() {
           type="button"
           className={`${styles.button} ${styles.toggle}`}
           aria-expanded={optionsOpen}
-          aria-controls="ranked-web-morphogen-options"
+          aria-controls="ranked-web-iteration-options"
           onClick={() => setOptionsOpen((open) => !open)}
         >
           {optionsOpen ? "닫기" : "옵션"}

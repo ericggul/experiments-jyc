@@ -13,6 +13,10 @@ import RankedWebSeven from "@/components/complex-systems/adaptive-coevolving-net
 import RankedWebGlsl from "@/components/complex-systems/adaptive-coevolving-network/7-glsl";
 import RankedWebGlslTwo from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-2";
 import RankedWebMorphogen from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-3";
+import RankedWebMorphogenFour from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-4";
+import RankedWebSwarm from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-5";
+import RankedWebIteration from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-6";
+import RankedWebMarbling from "@/components/complex-systems/adaptive-coevolving-network/7-glsl-7";
 import {
   adaptiveCoevolvingNetworkExperiments,
   isAdaptiveCoevolvingNetworkExperimentSlug,
@@ -32,6 +36,10 @@ const components: Record<AdaptiveCoevolvingNetworkExperimentSlug, ComponentType>
   "7-glsl": RankedWebGlsl,
   "7-glsl-2": RankedWebGlslTwo,
   "7-glsl-3": RankedWebMorphogen,
+  "7-glsl-4": RankedWebMorphogenFour,
+  "7-glsl-5": RankedWebSwarm,
+  "7-glsl-6": RankedWebIteration,
+  "7-glsl-7": RankedWebMarbling,
 };
 
 const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
@@ -47,6 +55,10 @@ const descriptions: Record<AdaptiveCoevolvingNetworkExperimentSlug, string> = {
   "7-glsl": "The same living PageRank web drawn as one continuous gel: each page is a soft cell whose area is its rank, its links grow out of it as ribbons as wide as the rank they pass on, and bright beads of random surfers travel inside them.",
   "7-glsl-2": "7-glsl's PageRank gel in relief: rank-sized cells are lit domes, large pages grow stout processes into their links, and links that pass on more rank are wider and brighter.",
   "7-glsl-3": "The PageRank web as a tissue that patterns itself: a reaction–diffusion system grows dividing cells inside pages, in proportion to their rank, and fibres along links, as many as the rank they pass on, drifting from source to target.",
+  "7-glsl-4": "The self-patterning PageRank tissue with its small pages as protists — membrane, drifting nucleus and a beating tail — spread over more of the screen.",
+  "7-glsl-5": "PageRank performed rather than drawn: a dividing colony of random surfers follows links by weight or jumps anywhere, and the only image is their trail — pages glow as brightly as their rank, links are veins as thick as the rank they carry.",
+  "7-glsl-6": "PageRank's power iteration made visible: every beat each page sends its rank along its links as pulses of light, and the displayed ranks converge, ripple and settle again as the web changes.",
+  "7-glsl-7": "Suminagashi on a page: each page drips ink in proportion to its rank and links carry it as currents across still water, so rank flows and swirls as ink.",
 };
 
 export function generateStaticParams() {

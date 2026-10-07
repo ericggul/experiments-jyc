@@ -53,6 +53,10 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "adaptive-coevolving-network/7-glsl", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank web as one gel of rank-sized cells and flowing links" },
   { key: "adaptive-coevolving-network/7-glsl-2", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-06", phrase: "The same PageRank gel with domed cells, stout roots and brighter main arteries" },
   { key: "adaptive-coevolving-network/7-glsl-3", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "The PageRank web as a Turing tissue: dividing cells in pages, fibres along links" },
+  { key: "adaptive-coevolving-network/7-glsl-4", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "The PageRank tissue with small pages as tailed protists, spread wider" },
+  { key: "adaptive-coevolving-network/7-glsl-5", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "PageRank performed by a dividing colony of random surfers whose trail is the web" },
+  { key: "adaptive-coevolving-network/7-glsl-6", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "PageRank's power iteration as pulses of light that converge" },
+  { key: "adaptive-coevolving-network/7-glsl-7", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-07", phrase: "PageRank as suminagashi: pages drip ink, links carry it" },
   { key: "amoeba/1", area: "complex-systems", family: "amoeba", date: "2026-10-05", phrase: "Amoebae eat a bacterial lawn, divide into plaques and return in waves" },
   { key: "amoeba/2", area: "complex-systems", family: "amoeba", date: "2026-10-06", phrase: "Full-screen lawn where amoeba sizes are inherited, drift and differ wildly" },
   { key: "barabasi-albert/1", area: "complex-systems", family: "barabasi-albert", date: "2026-09-10", phrase: "Degree-proportional growth where early hubs accumulate links" },
@@ -229,6 +233,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "mobile/transform/substitution/2", area: "mobile", family: "mobile/transform/substitution", date: "2026-09-25", phrase: "Clone targets replaced by uppercase command words" },
   { key: "mobile/transform/language/1", area: "mobile", family: "mobile/transform/language", date: "2026-10-03", phrase: "Every interface label drifting through 40 literal translations by Markov chain" },
   { key: "mobile/transform/decomposition", area: "mobile", family: "mobile/transform/decomposition", date: "2026-10-03", phrase: "Interface taken apart into atoms, each sorted beside its kind, still clickable" },
+  { key: "mobile/transform/finger-decomposition", area: "mobile", family: "mobile/transform/finger-decomposition", date: "2026-10-07", phrase: "Interface as a liquid sheet in WebGL: a finger carries the element it holds, the rest flows around it" },
 ];
 
 function toNavigationItem(experiment: SccExperiment): SccNavigationItem {

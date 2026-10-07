@@ -7,13 +7,15 @@ export type Body = { x: number; y: number; vx: number; vy: number };
 export type Frame = { width: number; height: number };
 export type Pair = { readonly from: number; readonly to: number };
 
-const GRAVITY = 0.9;
+/** Much weaker than 7-glsl's .9, so the web spreads over more of the screen. */
+const GRAVITY = 0.2;
 const REPULSION = 0.35;
 const SPRING = 1.6;
 const GAP = 4;
 
 export function idealLength(frame: Frame, count: number) {
-  return Math.sqrt((frame.width * frame.height * 0.42) / Math.max(1, count));
+  // 7-glsl: .42 of the area; 1.4 here, so the web fills more of the screen.
+  return Math.sqrt((frame.width * frame.height * 1.4) / Math.max(1, count));
 }
 
 export function bodyAt(frame: Frame, random: () => number): Body {
