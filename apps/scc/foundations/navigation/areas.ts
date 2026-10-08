@@ -27,6 +27,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "adaptive-coevolving-network",
   "amoeba",
   "barabasi-albert",
+  "bubble",
   "cellular-automata",
   "diffusion-graph",
   "erdos-renyi",

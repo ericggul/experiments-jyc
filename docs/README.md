@@ -56,6 +56,7 @@ history when their subject affects the task, not for every code change.
 | `apps/scc/components/ui/dashboard/palantir` | `1` | [palantir/1](../apps/scc/docs/experiments/dashboard/palantir/1.md) |
 | `apps/scc/components/ui/dashboard/stock` | `default`, `1`, `2`, `3`, `4` | [stock index](../apps/scc/docs/experiments/dashboard/stock/README.md) |
 | `apps/scc/components/complex-systems/amoeba` | `1`, `2` | [amoeba plaques and blooms](../apps/scc/docs/experiments/complex-systems/amoeba/README.md) · [amoeba/2](../apps/scc/docs/experiments/complex-systems/amoeba/2.md) |
+| `apps/scc/components/complex-systems/bubble` | `1`–`5` | [bubble family](../apps/scc/docs/experiments/complex-systems/bubble/README.md) |
 | `apps/scc/components/complex-systems/barabasi-albert` | `1` | [Barabási–Albert network growth](../apps/scc/docs/experiments/complex-systems/barabasi-albert/README.md) |
 | `apps/scc/components/complex-systems/self-evolving-network` | `1` | [self-evolving network](../apps/scc/docs/experiments/complex-systems/self-evolving-network/README.md) |
 | `apps/scc/components/complex-systems/erdos-renyi` | `1` | [Erdős–Rényi random graph](../apps/scc/docs/experiments/complex-systems/erdos-renyi/README.md) |

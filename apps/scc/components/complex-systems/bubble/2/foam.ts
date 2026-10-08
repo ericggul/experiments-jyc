@@ -1,3 +1,5 @@
+// Copied from bubble/1 (2026-10-08). The same renderer, with its main visual
+// constants opened as uniforms (`Look`); the defaults reproduce bubble/1 exactly.
 // Rank as a raft of soap bubbles. Every page is a bubble whose area is its
 // displayed rank; the bubbles float together and press into one another.
 //
@@ -88,6 +90,25 @@ uniform highp sampler2D second;
 uniform vec2 frame;                   // CSS px
 uniform float time;
 uniform float cssPerPixel;            // one device pixel, in CSS px
+uniform float filmThickness;          // thickest film, nm (bubble/1: 900)
+uniform float colourAmount;           // share of interference colour kept (bubble/1: .3)
+uniform float flowSpeed;              // pace of the film's currents (bubble/1: 1)
+uniform float swirl;                  // strength of the folding currents (bubble/1: 1)
+uniform float domeDepth;              // cap depth as a share of the radius (bubble/1: .45)
+uniform float fresnelGain;            // light at grazing angles (bubble/1: .9)
+uniform float wallGain;               // light where a wall is seen edge-on (bubble/1: .45)
+uniform float windowGain;             // the window's reflection (bubble/1: .85)
+uniform float ambient;                // light everywhere on the film (bubble/1: .07)
+uniform float exposure;               // overall (bubble/1: 1)
+uniform float envMode;                // what the films reflect: 0 window (bubble/1), 1 overcast sky, 2 studio, 3 city at night, 4 dappled leaves, 5 water light, 6 an image
+uniform vec3 lightColour;             // colour of the light the films reflect (bubble/1: white)
+uniform vec3 filmTint;                // colour of the film itself (bubble/1: white)
+uniform vec3 background;              // what lies behind the raft (bubble/1: black)
+uniform float sphere;                 // 0: /1's shallow cap; 1: a full sphere that holds the whole surroundings
+uniform float reflectionTint;         // 0: reflection laid over the film; 1: reflection coloured by the film's interference
+uniform float envContrast;            // 0: soft surroundings; 1: crisp, high-range surroundings
+uniform float backReflection;         // the far inside face mirroring the surroundings, inverted
+uniform sampler2D envImage;           // an image to reflect (envMode 6), as a panorama
 uniform highp sampler2D bubbleData;   // per bubble: x, y, radius, seed
 uniform highp sampler2D neighbours;   // per bubble: indices (from 1) of the bubbles it overlaps
 out vec4 pixel;
@@ -130,6 +151,57 @@ float fbm(vec3 x) {
   return sum;
 }
 
+// What the films reflect, by direction (screen y runs down, so up is −y).
+// envContrast narrows every soft edge and widens the range of light, so the
+// surroundings read as crisp, bright shapes on dark rather than haze.
+vec3 surroundings(vec3 r) {
+  float up = -r.y;
+  float azimuth = atan(r.x, r.z);
+  float soft = mix(1.0, 0.12, envContrast);
+  vec3 light;
+  if (envMode < 1.5) {
+    // Overcast sky: bright above, a pale horizon, soft cloud.
+    float cloud = fbm(vec3(azimuth * 1.6, up * 3.0, time * 0.01));
+    float sky = smoothstep(-0.1 - 0.15 * soft, -0.1 + 1.0 * soft, up);
+    light = vec3(0.12) * (1.0 - envContrast) + vec3(0.9) * sky * (0.75 + 0.5 * cloud);
+  } else if (envMode < 2.5) {
+    // Studio: two large soft boxes left and right, a dark floor.
+    float left = 1.0 - smoothstep(0.3 - 0.1 * soft, 0.3 + 0.05 * soft, max(abs(azimuth + 0.9) * 1.0, abs(up - 0.35) * 1.4));
+    float right = 1.0 - smoothstep(0.22 - 0.1 * soft, 0.22 + 0.05 * soft, max(abs(azimuth - 1.1) * 1.6, abs(up - 0.2)));
+    light = vec3(0.02) * (1.0 - envContrast) + vec3(2.2) * left + vec3(1.1) * right;
+  } else if (envMode < 3.5) {
+    // City at night: scattered lights, out of focus unless sharpened.
+    vec2 cell = vec2(azimuth * 9.0, up * 9.0);
+    vec2 id = floor(cell);
+    vec2 at = fract(cell) - 0.5 - (vec2(hash(vec3(id, 1.0)), hash(vec3(id, 2.0))) - 0.5) * 0.6;
+    float size = mix(0.22, 0.08, envContrast);
+    float lamp = step(0.62, hash(vec3(id, 3.0))) * (1.0 - smoothstep(size * (1.0 - 0.8 * soft), size, length(at)));
+    vec3 hue = mix(vec3(1.0, 0.78, 0.5), vec3(0.75, 0.85, 1.0), hash(vec3(id, 4.0)));
+    light = vec3(0.01) + hue * lamp * 2.2 * smoothstep(-0.6, 0.2, up);
+  } else if (envMode < 4.5) {
+    // Dappled light through leaves.
+    float leaves = fbm(vec3(azimuth * 2.5, up * 4.0, time * 0.03));
+    light = vec3(1.4) * smoothstep(0.52 - 0.1 * soft, 0.52 + 0.1 * soft, leaves) * smoothstep(-0.3, 0.5, up) + vec3(0.04) * (1.0 - envContrast);
+  } else if (envMode < 5.5) {
+    // Water light: a slowly shifting web of caustics.
+    float a = noise(vec3(azimuth * 4.0, up * 6.0, time * 0.08));
+    float b = noise(vec3(azimuth * 7.0 + 3.1, up * 11.0, time * 0.06));
+    float web = pow(max(1.0 - abs(a - b) * 2.0, 0.0), mix(6.0, 18.0, envContrast));
+    light = vec3(0.03) * (1.0 - envContrast) + vec3(1.6) * web;
+  } else {
+    // An image, wrapped round as a panorama. The derivatives are taken across
+    // the seam without its jump, and scaled down to sample it sharper.
+    vec2 uvImage = vec2(azimuth / 6.2831853 + 0.5, clamp(0.5 - up * 0.5, 0.0, 1.0));
+    vec2 dx = dFdx(uvImage);
+    vec2 dy = dFdy(uvImage);
+    dx.x -= round(dx.x);
+    dy.x -= round(dy.x);
+    light = textureGrad(envImage, uvImage, dx * soft, dy * soft).rgb * 1.4;
+  }
+  // A wider range: highlights climb, shadows sink.
+  return pow(light, vec3(1.0 + 1.2 * envContrast)) * (1.0 + 4.0 * envContrast);
+}
+
 // Reflectance of a soap film (n = 1.33) of thickness t (nm) at internal
 // cosine c, per wavelength: two-beam interference with the half-wave shift
 // at the front face, 2 sin²(2π n t c / λ).
@@ -167,7 +239,7 @@ void main() {
   }
   // Open ground: nothing to compute.
   if (count == 0) {
-    pixel = vec4(0.0, 0.0, 0.0, 1.0);
+    pixel = vec4(background, 1.0);
     return;
   }
   vec4 a = vec4(0.0);
@@ -220,38 +292,47 @@ void main() {
 
   // A shallow cap over the cell: steep at the edge, nearly level inside.
   float r = a.z;
-  float rise = clamp(toEdge / (0.45 * r + 2.0), 0.0, 1.0);
+  float rise = clamp(toEdge / (domeDepth * r + 2.0), 0.0, 1.0);
   float h = sqrt(max(1.0 - (1.0 - rise) * (1.0 - rise), 0.0));
   // The same slope the screen-space difference of h over one device pixel
   // gave, (dh/dx, dh/dy) · pixel · depth, now from h's exact gradient at this
   // pixel, so it no longer steps in 2 × 2 blocks. Where h leaves the edge
   // vertically, it is held to what one pixel's difference could reach.
-  float depth = 0.45 * r + 2.0;
+  float depth = domeDepth * r + 2.0;
   float e = cssPerPixel;
   vec2 slope = rise > 0.0 && rise < 1.0 ? e * (1.0 - rise) / max(h, 1e-3) * edgeGradient : vec2(0.0);
   float reach = depth * sqrt(min(1.0, 2.0 * e / depth));
   slope = slope / max(1.0, length(slope) / reach);
   vec3 normal = normalize(vec3(-slope, max(h, 0.05) + 0.6));
+  if (sphere > 0.0) {
+    // A sphere over the bubble's own disc, held to the cap within a few
+    // pixels of a wall so neighbours still meet along their shared wall.
+    vec2 out2 = da / max(r, 1e-3);
+    vec3 round3 = vec3(out2, sqrt(max(1.0 - dot(out2, out2), 0.0)) + 0.02);
+    float atWall = toWall < toFace ? exp(-toWall / 3.0) : 0.0;
+    normal = normalize(mix(normal, normalize(round3), sphere * (1.0 - atWall)));
+  }
   float facing = clamp(normal.z, 0.0, 1.0);
 
   // The film drains: towards black film at the top of each bubble, thicker
   // below, and the drainage is carried round in slow, folding currents, so
   // no two bubbles and no two moments share a pattern.
   vec2 q = da / r;
+  float flowTime = time * flowSpeed;
   float seed = bubbleAt(a.w).w * 37.0;
-  vec3 at = vec3(q * 1.3 + seed, time * 0.06 + seed);
+  vec3 at = vec3(q * 1.3 + seed, flowTime * 0.06 + seed);
   vec2 warp = (vec2(fbm2(at), fbm2(at + vec3(5.2, 1.3, 2.7))) - 0.375) * (0.9375 / 0.75);
-  vec3 folded = vec3(q * 1.7 + warp * 3.2 + seed, time * 0.045 + seed);
+  vec3 folded = vec3(q * 1.7 + warp * 3.2 * swirl + seed, flowTime * 0.045 + seed);
   vec2 warp2 = (vec2(fbm2(folded), fbm2(folded + vec3(3.1, 7.7, 1.9))) - 0.375) * (0.9375 / 0.75);
-  float swirl = fbm(vec3(q * 2.0 + warp2 * 2.6 + seed, time * 0.04));
+  float swirl = fbm(vec3(q * 2.0 + warp2 * 2.6 * swirl + seed, flowTime * 0.04));
   float drain = smoothstep(-0.95, 0.9, q.y + 0.55 * (warp.y + warp2.x));
-  float thickness = mix(20.0, 900.0, drain * drain) * (0.4 + 1.2 * swirl);
+  float thickness = mix(20.0, filmThickness, drain * drain) * (0.4 + 1.2 * swirl);
   float inner = sqrt(max(1.0 - (1.0 - facing * facing) / (1.33 * 1.33), 0.0));
   vec3 film = interference(thickness, inner);
   // Real films are pale on dark ground: most of the colour is tempered,
   // and only thick, swirling film keeps a little of it.
   float grey = dot(film, vec3(0.3333));
-  film = mix(vec3(grey), film, 0.3 * smoothstep(150.0, 500.0, thickness));
+  film = mix(vec3(grey), film, colourAmount * smoothstep(150.0, 500.0, thickness));
 
   // Fresnel weight and a soft window, mirrored faintly by the back face.
   vec3 view = vec3(0.0, 0.0, 1.0);
@@ -260,12 +341,30 @@ void main() {
   float front = pow(max(dot(normal, normalize(window + view)), 0.0), 90.0);
   vec3 mirrored = normalize(vec3(0.45, -0.6, 0.66));
   float back = pow(max(dot(normal, normalize(mirrored + view)), 0.0), 60.0) * 0.25;
-  float ambient = 0.07;
   // Seen edge-on, at a wall or the free face, the film catches more light.
   float edgeOn = exp(-toEdge / 1.4);
 
-  vec3 colour = film * (ambient + 0.9 * fresnel + 0.45 * edgeOn) + vec3(1.0) * (front * 0.85 + back);
-  pixel = vec4(colour * coverage, 1.0);
+  vec3 body = film * filmTint * lightColour * (ambient + fresnelGain * fresnel + wallGain * edgeOn);
+  vec3 colour;
+  if (envMode < 0.5) {
+    // bubble/1: one soft window and its faint mirror.
+    colour = body + lightColour * (front * windowGain + back);
+  } else {
+    // Any other surroundings, reflected by the film's own curvature.
+    vec3 reflected = normalize(2.0 * normal.z * normal - view);
+    float weight = 0.06 + 0.94 * pow(1.0 - facing, 3.0);
+    vec3 tint = mix(vec3(1.0), film * filmTint, reflectionTint);
+    vec3 seen = surroundings(reflected) * weight;
+    if (backReflection > 0.0) {
+      // The far face, seen through the near one, mirrors the scene upside down and faintly.
+      seen += surroundings(normalize(vec3(-reflected.xy, reflected.z))) * (0.04 + 0.3 * pow(1.0 - facing, 2.0)) * backReflection;
+    }
+    colour = body + seen * tint * lightColour * windowGain * 1.6;
+    // Highlights roll off instead of clipping when the range is widened.
+    colour = mix(colour, 1.0 - exp(-colour * 1.3), envContrast);
+  }
+  // The films are clear: what lies behind shows through them.
+  pixel = vec4(background * (1.0 - 0.12 * coverage) + colour * coverage * exposure, 1.0);
 }
 `;
 
@@ -282,21 +381,69 @@ function compile(gl: WebGL2RenderingContext, vertex: string, fragment: string) {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(shader);
       gl.deleteShader(shader);
-      throw new Error(`7-glsl-6 bubble shader: ${log}`);
+      throw new Error(`bubble/2 shader: ${log}`);
     }
     gl.attachShader(program, shader);
     gl.deleteShader(shader);
   }
   gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(`7-glsl-6 bubble program: ${gl.getProgramInfoLog(program)}`);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(`bubble/2 program: ${gl.getProgramInfoLog(program)}`);
   return program;
 }
+
+export type Colour = readonly [number, number, number];
+
+/** The renderer's main visual parameters; LOOK_DEFAULTS reproduce bubble/1. */
+export type Look = {
+  /** 0 window (bubble/1), 1 overcast sky, 2 studio, 3 city at night, 4 dappled leaves, 5 water light, 6 an uploaded image. */
+  envMode: number;
+  lightColour: Colour;
+  filmTint: Colour;
+  background: Colour;
+  sphere: number;
+  reflectionTint: number;
+  envContrast: number;
+  backReflection: number;
+  filmThickness: number;
+  colourAmount: number;
+  flowSpeed: number;
+  swirl: number;
+  domeDepth: number;
+  fresnelGain: number;
+  wallGain: number;
+  windowGain: number;
+  ambient: number;
+  exposure: number;
+};
+
+export const LOOK_DEFAULTS: Look = {
+  envMode: 0,
+  lightColour: [1, 1, 1],
+  filmTint: [1, 1, 1],
+  background: [0, 0, 0],
+  sphere: 0,
+  reflectionTint: 0,
+  envContrast: 0,
+  backReflection: 0,
+  filmThickness: 900,
+  colourAmount: 0.3,
+  flowSpeed: 1,
+  swirl: 1,
+  domeDepth: 0.45,
+  fresnelGain: 0.9,
+  wallGain: 0.45,
+  windowGain: 0.85,
+  ambient: 0.07,
+  exposure: 1,
+};
 
 export type FoamRenderer = {
   /** Per bubble: x y radius seed (CSS px; seed in [0, 1)). */
   readonly bubbles: Float32Array;
   resize(width: number, height: number, ratio: number): void;
-  render(bubbleCount: number, time: number): void;
+  render(bubbleCount: number, time: number, look?: Look): void;
+  /** An image the films reflect when envMode is 6. */
+  setEnvironmentImage(image: TexImageSource): void;
   dispose(): void;
 };
 
@@ -340,6 +487,15 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
   };
   const bubbleData = dataTexture(ROW, MAX_BUBBLES / ROW);
   const neighbourData = dataTexture(ROW * NEIGHBOUR_TEXELS, MAX_BUBBLES / ROW);
+  // The image the films reflect in envMode 6 (a grey placeholder until one is given).
+  const environment = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, environment);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([90, 90, 90, 255]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.generateMipmap(gl.TEXTURE_2D);
   const neighbourIds = new Float32Array(MAX_BUBBLES * NEIGHBOURS);
   const neighbourDepths = new Float32Array(MAX_BUBBLES * NEIGHBOURS);
   // Bubbles sorted by their left edge, reused between frames.
@@ -378,7 +534,7 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   };
 
-  const render: FoamRenderer["render"] = (bubbleCount, time) => {
+  const render: FoamRenderer["render"] = (bubbleCount, time, look = LOOK_DEFAULTS) => {
     const count = Math.min(bubbleCount, MAX_BUBBLES);
     gl.bindBuffer(gl.ARRAY_BUFFER, bubbleBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, bubbles, 0, count * BUBBLE_FLOATS);
@@ -465,6 +621,13 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.uniform2f(location(filmProgram, "frame"), frame.width, frame.height);
     gl.uniform1f(location(filmProgram, "time"), time);
     gl.uniform1f(location(filmProgram, "cssPerPixel"), frame.width / pixels.width);
+    for (const [name, value] of Object.entries(look)) {
+      if (typeof value === "number") gl.uniform1f(location(filmProgram, name), value);
+      else gl.uniform3f(location(filmProgram, name), value[0], value[1], value[2]);
+    }
+    gl.activeTexture(gl.TEXTURE4);
+    gl.bindTexture(gl.TEXTURE_2D, environment);
+    gl.uniform1i(location(filmProgram, "envImage"), 4);
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, bubbleData);
     gl.uniform1i(location(filmProgram, "bubbleData"), 2);
@@ -475,7 +638,15 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
 
+  const setEnvironmentImage: FoamRenderer["setEnvironmentImage"] = (image) => {
+    gl.bindTexture(gl.TEXTURE_2D, environment);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+  };
+
   const dispose = () => {
+    gl.deleteTexture(environment);
     gl.deleteTexture(bubbleData);
     gl.deleteTexture(neighbourData);
     for (const layer of layers) {
@@ -489,5 +660,5 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.deleteProgram(filmProgram);
   };
 
-  return { bubbles, resize, render, dispose };
+  return { bubbles, resize, render, setEnvironmentImage, dispose };
 }

@@ -27,6 +27,8 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 - [amoeba/1](experiments/complex-systems/amoeba/README.md): grazing amoebae divide into plaques, encyst, and return in waves when the lawn regrows; click to found a lineage.
 - [amoeba/2](experiments/complex-systems/amoeba/2.md): the same lawn across the whole screen, with inherited body sizes that drift and differ by an order of magnitude.
 
+- [bubble/1–5](experiments/complex-systems/bubble/README.md): networks as bubbles — the PageRank raft baseline, Apollonian growth at triple junctions, self-coarsening foam, circle-packed planar networks with remembering films, and a GPU cellular-Potts foam.
+
 - [barabasi-albert/1](experiments/complex-systems/barabasi-albert/README.md): seeded network growth with degree-proportional attachment.
 
 - [erdos-renyi/1](experiments/complex-systems/erdos-renyi/README.md): independent-edge random graph sampling in `G(n,p)`.

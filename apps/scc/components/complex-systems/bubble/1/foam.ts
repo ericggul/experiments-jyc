@@ -1,3 +1,5 @@
+// Copied from adaptive-coevolving-network/7-glsl-6 (2026-10-07, working tree with its
+// neighbour-list walls) as the baseline of the bubble family; it shares no imports with it.
 // Rank as a raft of soap bubbles. Every page is a bubble whose area is its
 // displayed rank; the bubbles float together and press into one another.
 //
@@ -282,13 +284,13 @@ function compile(gl: WebGL2RenderingContext, vertex: string, fragment: string) {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(shader);
       gl.deleteShader(shader);
-      throw new Error(`7-glsl-6 bubble shader: ${log}`);
+      throw new Error(`bubble/1 shader: ${log}`);
     }
     gl.attachShader(program, shader);
     gl.deleteShader(shader);
   }
   gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(`7-glsl-6 bubble program: ${gl.getProgramInfoLog(program)}`);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(`bubble/1 program: ${gl.getProgramInfoLog(program)}`);
   return program;
 }
 
