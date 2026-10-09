@@ -16,7 +16,7 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
 
-- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near.
+- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near; [hype/1](experiments/desktop-collage/hype/README.md) opens real pages and cloned services under one keyword at a stochastic rhythm while a reader scrolls, writes and follows links.
 
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
@@ -53,4 +53,4 @@ This tree is an archive of route-specific contracts, evidence, parameters, usefu
 - `experiments/sns/`, `ui/`, `standalone/`, `parametric-interface/`: found-interface and single-route preservation records.
 - [spoon-class/default–3](experiments/standalone/spoon-class/README.md): preserved legacy browser-runner baseline, synchronized module field, pixel human-life fork and dense scaled wall.
 
-Read the root documentation index and [AGENTS.md](/Users/jeongyoonchoi/Desktop/Side_Project/scc/AGENTS.md) for repository-wide policy. In particular, browser/runtime checks require explicit user authorization; any reported observation in these records is historical unless a new authorized check is recorded. Preserve a record’s exact parameters, local source ledger and historical failure where it changes a future implementation decision; remove repeated generic procedure rather than erasing evidence.
+Read the root documentation index and [AGENTS.md](/Users/jeongyoonchoi/Desktop/Side_Project/scc/AGENTS.md) for repository-wide policy. Open the browser when needed (see AGENTS.md); any reported observation in these records is historical unless a new check is recorded. Preserve a record’s exact parameters, local source ledger and historical failure where it changes a future implementation decision; remove repeated generic procedure rather than erasing evidence.

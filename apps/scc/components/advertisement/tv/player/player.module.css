@@ -36,39 +36,186 @@
   background: linear-gradient(180deg, #3b3a36 0%, #26241f 100%);
 }
 
-/* Scene navigator: a bottom drawer over the viewport, outside the broadcast frame's scale. */
+/* Scene navigator: video-style controls over the viewport, outside the broadcast frame's scale. */
 .navigator {
   position: fixed;
   left: 50%;
   bottom: max(12px, env(safe-area-inset-bottom));
-  width: min(960px, calc(100vw - 24px));
+  width: min(1100px, calc(100vw - 24px));
   transform: translateX(-50%);
   border-radius: 14px;
-  background: rgba(16, 16, 18, 0.82);
+  background: rgba(16, 16, 18, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   color: #f2f2f2;
-  font: 500 13px/1.3 system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
-  overflow: hidden;
-  opacity: 0.55;
+  font: 500 14px/1.3 system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  transition: bottom 200ms ease, background-color 200ms ease, width 200ms ease;
+}
+
+/* Minimized: only a thin scrubbable line flush with the bottom edge. */
+.navigator[data-mini="true"] {
+  bottom: 0;
+  width: 100vw;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.navigator[data-mini="true"] .scrubber {
+  height: 14px;
+  margin: 0;
+  opacity: 0.4;
   transition: opacity 160ms ease;
 }
 
-.navigator:hover,
-.navigator:focus-within,
-.navigator[data-open="true"] {
+.navigator[data-mini="true"] .segments {
+  top: auto;
+  bottom: 0;
+  height: 3px;
+  transform: none;
+}
+
+.navigator[data-mini="true"]:hover .scrubber,
+.navigator[data-mini="true"] .scrubber[data-active="true"] {
   opacity: 1;
+}
+
+.navigator[data-mini="true"] .scrubber[data-active="true"] .segments {
+  height: 6px;
+}
+
+.navExpand {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  width: 36px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(16, 16, 18, 0.92);
+  color: #f2f2f2;
+  font: inherit;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.navigator[data-mini="true"]:hover .navExpand,
+.navExpand:focus-visible {
+  opacity: 1;
+}
+
+/* Tall hit area; the visible track is the thin segment row inside it. */
+.scrubber {
+  position: relative;
+  height: 26px;
+  margin: 6px 14px 0;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+}
+
+.scrubber:focus-visible {
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.segments {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  display: flex;
+  gap: 3px;
+  height: 5px;
+  transform: translateY(-50%);
+  transition: height 120ms ease;
+}
+
+.scrubber[data-active="true"] .segments {
+  height: 9px;
+}
+
+.segment {
+  position: relative;
+  flex-basis: 0;
+  min-width: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.segment[data-hover="true"] {
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.segmentFill {
+  position: absolute;
+  inset: 0;
+  background: #f2f2f2;
+  transform-origin: 0 50%;
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 120ms ease;
+  pointer-events: none;
+}
+
+.scrubber[data-active="true"] .knob,
+.scrubber:focus-visible .knob {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 260px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(16, 16, 18, 0.92);
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tooltipTime {
+  font-variant-numeric: tabular-nums;
+  color: #9a9a9a;
+  font-size: 12px;
+}
+
+.tooltipLabel {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navBar[hidden] {
+  display: none;
 }
 
 .navBar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 6px 4px 4px;
+  gap: 2px;
+  padding: 0 8px 6px;
 }
 
 .navToggle,
-.navPause {
+.navButton {
   appearance: none;
   border: 0;
   background: transparent;
@@ -78,18 +225,26 @@
   border-radius: 10px;
 }
 
+.navButton {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
 .navToggle {
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
   padding: 8px 10px;
   text-align: left;
 }
 
 .navToggle:hover,
-.navPause:hover {
+.navButton:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -100,7 +255,6 @@
 }
 
 .navLabel {
-  flex: 1;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -112,28 +266,11 @@
   color: #9a9a9a;
 }
 
-.navPause {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  font-size: 12px;
-}
-
 .navTime {
   flex: none;
   padding: 0 8px;
-  color: #9a9a9a;
+  color: #c8c8c8;
   font-variant-numeric: tabular-nums;
-}
-
-.navProgress {
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.navProgress > div {
-  height: 100%;
-  background: #f2f2f2;
 }
 
 .strip {

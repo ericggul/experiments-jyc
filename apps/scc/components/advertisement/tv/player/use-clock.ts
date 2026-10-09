@@ -10,7 +10,7 @@ export type ClockOptions = {
   paused: boolean;
 };
 
-/** Looping playback clock for a spot, with scene stepping on ←/→ and pause on space. */
+/** Looping playback clock for a spot: scene stepping on ←/→, 0.1 s steps on , / ., pause on space. */
 export function useSpotClock(duration: number, scenes: readonly SceneMark[], options: ClockOptions) {
   const [time, setTime] = useState(options.start);
   const [paused, setPaused] = useState(options.paused);
@@ -48,10 +48,15 @@ export function useSpotClock(duration: number, scenes: readonly SceneMark[], opt
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLElement && event.target.closest("button, input")) return;
+      if (event.target instanceof HTMLElement && event.target.closest("button, input, [role=slider]")) return;
       if (event.key === " ") {
         event.preventDefault();
         togglePause();
+        return;
+      }
+      // , / . step 0.1 s (one capture frame at 10 fps) for frame-by-frame checks.
+      if (event.key === "," || event.key === ".") {
+        seek(timeRef.current + (event.key === "." ? 0.1 : -0.1));
         return;
       }
       if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;

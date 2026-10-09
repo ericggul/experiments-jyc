@@ -3,9 +3,9 @@
 export const CHROME_APP = '/Applications/Google Chrome.app';
 export const chromeAppProfile = () => `/private/tmp/scc-desktop-collage-chrome-${process.getuid?.() ?? 0}`;
 
-export type ChromeAppWindow = { x: number; y: number; width: number; height: number; url: string };
+export type ChromeAppWindow = { x: number; y: number; width: number; height: number; url: string; at?: number };
 
-export function chromeAppArgs(window: ChromeAppWindow) {
+export function chromeAppArgs(window: ChromeAppWindow, sound = false) {
   return [
     `--user-data-dir=${chromeAppProfile()}`,
     '--no-first-run',
@@ -22,6 +22,9 @@ export function chromeAppArgs(window: ChromeAppWindow) {
     '--disable-backgrounding-occluded-windows',
     '--disable-renderer-backgrounding',
     '--disable-background-timer-throttling',
+    // With sound, pages may start video by themselves; without it the whole
+    // instance is muted. Instance flags take effect on the first launch only.
+    ...(sound ? ['--autoplay-policy=no-user-gesture-required'] : ['--mute-audio']),
     `--app=${window.url}`,
     `--window-position=${Math.round(window.x)},${Math.round(window.y)}`,
     `--window-size=${Math.round(window.width)},${Math.round(window.height)}`,

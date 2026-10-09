@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { clearLabel, display, initialCalculatorState, press, type Key, type Operator } from "../model/calculator";
-import { KeyGlyph, type GlyphName } from "./glyphs";
+import { KeyGlyph, SnsGlyph, type GlyphName } from "./glyphs";
 import styles from "./calculator.module.css";
 
 type Tone = "function" | "digit" | "operator";
 type KeySpec = { id: string; tone: Tone; key: Key; label: string; glyph?: GlyphName; holdClears?: boolean };
 
 const digit = (value: string): KeySpec => ({ id: `digit-${value}`, tone: "digit", key: { type: "digit", digit: value }, label: value });
-const operator = (value: Operator, label: string): KeySpec => ({ id: `operator-${label}`, tone: "operator", key: { type: "operator", operator: value }, label, glyph: value });
+const operator = (value: Operator, label: string): KeySpec => ({ id: `operator-${label}`, tone: "operator", key: { type: "operator", operator: value }, label });
 
 // Layout of the iOS 27 basic keypad, top to bottom.
 const keypad: KeySpec[] = [
@@ -42,6 +42,19 @@ const keyboard: Record<string, Key> = {
 };
 
 const HOLD_MS = 500;
+
+const isOperator = (value: string): value is Operator => value === "÷" || value === "×" || value === "−" || value === "+";
+
+// ÷ × − + are drawn as Instagram's like, comment, repost and share; negatives and exponents use "-".
+function DisplayText({ text }: { text: string }) {
+  return text.split(/([÷×−+])/).map((part, index) =>
+    isOperator(part) ? (
+      <span key={index} className={styles.inlineGlyph}><SnsGlyph operator={part} /></span>
+    ) : (
+      part
+    ),
+  );
+}
 
 // Shrinks a right-aligned line until it fits its column, as the iOS display does for long input.
 function useFittedText(text: string) {
@@ -99,8 +112,8 @@ export default function Calculator() {
     <main className={styles.page}>
       <div className={styles.phone}>
         <div className={styles.display} aria-live="polite">
-          <div ref={expressionRef} className={styles.expression}>{expression}</div>
-          <div ref={mainRef} className={styles.main}>{main}</div>
+          <div ref={expressionRef} className={styles.expression}><DisplayText text={expression} /></div>
+          <div ref={mainRef} className={styles.main}><DisplayText text={main} /></div>
         </div>
 
         <div className={styles.keypad}>
@@ -136,7 +149,9 @@ export default function Calculator() {
                   dispatch(spec.key);
                 }}
               >
-                {spec.glyph ? (
+                {spec.key.type === "operator" ? (
+                  <span className={styles.snsGlyph}><SnsGlyph operator={spec.key.operator} /></span>
+                ) : spec.glyph ? (
                   <span className={styles.glyph} data-glyph={spec.glyph}><KeyGlyph name={spec.glyph} /></span>
                 ) : (
                   <span className={styles.label} data-wide={label !== null || undefined}>{label ?? (spec.id === "decimal" ? "." : spec.label)}</span>

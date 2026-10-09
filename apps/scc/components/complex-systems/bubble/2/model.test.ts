@@ -6,6 +6,7 @@ import {
   computeRank,
   concentration,
   createRankedWeb,
+  groupProfiles,
   DEFAULT_PARAMETERS,
   fadeCandidate,
   leader,
@@ -147,4 +148,28 @@ test("growth and damping stay within bounds; replay is deterministic", () => {
   run(first, 10);
   run(second, 10);
   assert.deepEqual(first.rank, second.rank);
+});
+
+test("groups never link to one another automatically; one group is the original web", () => {
+  const split = createRankedWeb(120, undefined, 3);
+  const pending = { value: 0 };
+  for (let step = 0; step < 300; step += 1) stepRankedWeb(split, 1 / 30, { ...DEFAULT_PARAMETERS, growth: 2 }, pending);
+  assert.ok(split.size > 120);
+  for (let page = 0; page < split.size; page += 1) {
+    for (const entry of split.out[page]!) assert.equal(split.group[entry.target], split.group[page]);
+  }
+  const one = createRankedWeb(120, undefined, 1);
+  const plain = createRankedWeb(120);
+  assert.deepEqual(one.out, plain.out);
+});
+
+test("groups differ in size and character around the parameters; diversity 0 makes them alike", () => {
+  const web = createRankedWeb(120, undefined, 4);
+  const sizes = Array.from(web.groupSize.subarray(0, 4));
+  assert.equal(sizes.reduce((sum, value) => sum + value, 0), 120);
+  assert.ok(Math.max(...sizes) >= Math.min(...sizes) * 2, `sizes ${sizes.join(", ")}`);
+  assert.equal(new Set(web.profiles.map((profile) => profile.floor.toFixed(3))).size, 4);
+  const alike = createRankedWeb(120, undefined, 4, 0);
+  assert.deepEqual(Array.from(alike.groupSize.subarray(0, 4)), [30, 30, 30, 30]);
+  for (const profile of groupProfiles(3, 0, 7)) assert.deepEqual(profile, { share: 1, quality: 0, floor: 1, volatility: 1, adaptation: 1, discovery: 1 });
 });

@@ -1,0 +1,6 @@
+Fonts bundled for the korean/4 clone (흥국생명 다사랑 3N5).
+
+GmarketSans{Light,Medium,Bold}.woff — Gmarket Sans, © Gmarket Inc.
+  Licence (corp.gmarket.com/fonts, as published on noonnu.cc): free for everyone
+  without restriction, including print, web, video and embedding; "누구나 제약 없이
+  자유롭게 수정하고 재배포 하실 수 있습니다" (free to modify and redistribute).

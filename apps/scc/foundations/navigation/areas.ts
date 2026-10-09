@@ -58,6 +58,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "advertisement/tv",
   "advertisement/tv/archive",
   "advertisement/tv/korean",
+  "advertisement/tv/american",
   "desktop-collage/primitives",
   "dj",
   "network-system",

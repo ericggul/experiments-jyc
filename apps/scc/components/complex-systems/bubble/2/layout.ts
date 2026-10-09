@@ -32,6 +32,26 @@ export function bodyAt(frame: Frame, random: () => number): Body {
   return { x: frame.width / 2 + Math.cos(angle) * distance, y: frame.height / 2 + Math.sin(angle) * distance, vx: 0, vy: 0 };
 }
 
+/**
+ * Where each group's raft gathers, as shares of the field: one centre, two
+ * side by side, three in a triangle, four in a square (transposed on a
+ * portrait field). Writes x, y pairs into `out`.
+ */
+export function groupAnchors(groups: number, frame: Frame, out: Float64Array) {
+  const layouts = [
+    [[0.5, 0.5]],
+    [[0.28, 0.5], [0.72, 0.5]],
+    [[0.25, 0.34], [0.75, 0.34], [0.5, 0.72]],
+    [[0.27, 0.3], [0.73, 0.3], [0.27, 0.72], [0.73, 0.72]],
+  ];
+  const points = layouts[Math.max(1, Math.min(layouts.length, groups)) - 1]!;
+  const portrait = frame.height > frame.width;
+  points.forEach(([a, b], group) => {
+    out[group * 2] = (portrait ? b! : a!) * frame.width;
+    out[group * 2 + 1] = (portrait ? a! : b!) * frame.height;
+  });
+}
+
 export function rescaleBodies(bodies: Body[], previous: Frame, next: Frame) {
   if (previous.width <= 0 || previous.height <= 0) return;
   const scale = Math.min(next.width / previous.width, next.height / previous.height);
@@ -55,6 +75,8 @@ export function relaxBodies(
   frame: Frame,
   delta: number,
   presence?: ArrayLike<number>,
+  /** Per body, the x, y its gravity pulls toward (the field's centre when absent). */
+  anchors?: ArrayLike<number>,
 ) {
   const reachOf = (index: number) => (presence ? presence[index]! : 1);
   const count = bodies.length;
@@ -169,8 +191,10 @@ export function relaxBodies(
   const maxSpeed = length * 6;
   for (let index = 0; index < count; index += 1) {
     const body = bodies[index]!;
-    body.vx = (body.vx + (forceX[index]! - (body.x - frame.width / 2) * gravityX) * step) * damping;
-    body.vy = (body.vy + (forceY[index]! - (body.y - frame.height / 2) * gravityY) * step) * damping;
+    const anchorX = anchors ? anchors[index * 2]! : frame.width / 2;
+    const anchorY = anchors ? anchors[index * 2 + 1]! : frame.height / 2;
+    body.vx = (body.vx + (forceX[index]! - (body.x - anchorX) * gravityX) * step) * damping;
+    body.vy = (body.vy + (forceY[index]! - (body.y - anchorY) * gravityY) * step) * damping;
     const speed = Math.hypot(body.vx, body.vy);
     if (speed > maxSpeed) {
       body.vx *= maxSpeed / speed;

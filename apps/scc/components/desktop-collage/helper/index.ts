@@ -3,6 +3,7 @@ import { act, onMac, statusOf, type Reply } from '../foundations/control/core.ts
 import { HELPER_PORT } from '../foundations/control/definition.ts';
 import { definition as one } from '../primitives/1/plan.ts';
 import { definition as two } from '../primitives/2/plan.ts';
+import { definition as hype } from '../hype/1/plan.ts';
 
 // The Mac helper: the same control the local development server has, for
 // pages served from anywhere. It listens on this Mac's loopback only and
@@ -15,11 +16,12 @@ const MAX_BODY = 64 * 1024;
 
 type Body = { action?: unknown; settings?: unknown };
 const experiments: Record<string, (body: Body, origin: string) => Promise<Reply>> = {
-  '1': (body, origin) => act(one, body, origin),
-  '2': (body, origin) => act(two, body, origin),
+  'primitives/1': (body, origin) => act(one, body, origin),
+  'primitives/2': (body, origin) => act(two, body, origin),
+  'hype/1': (body, origin) => act(hype, body, origin),
 };
 
-const route = /^\/desktop-collage\/primitives\/([^/]+)\/control$/;
+const route = /^\/desktop-collage\/((?:primitives|hype)\/[^/]+)\/control$/;
 
 function readBody(request: IncomingMessage) {
   return new Promise<string>((resolve, reject) => {

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./bubble-two.module.css";
-import { bodyAt, relaxBodies, rescaleBodies, type Body, type Frame } from "./layout";
+import { bodyAt, groupAnchors, relaxBodies, rescaleBodies, type Body, type Frame } from "./layout";
 import {
   addCandidate,
+  attend,
   addPage,
   candidate,
   concentration,
@@ -12,11 +13,13 @@ import {
   DAMPING_RANGE,
   DEFAULT_PAGES,
   DEFAULT_DAMPING,
+  DEFAULT_DIVERSITY,
   DEFAULT_PARAMETERS,
   fadeCandidate,
   FLOOR_RANGE,
   GROWTH_RANGE,
   leader,
+  MAX_GROUPS,
   MAX_PAGES,
   setDamping,
   stepRankedWeb,
@@ -26,6 +29,8 @@ import {
 import { iterate, transit } from "./iteration";
 import { BUBBLE_FLOATS, createFoamRenderer, LOOK_DEFAULTS, MAX_BUBBLES, type Colour, type FoamRenderer, type Look } from "./foam";
 import { LINK_VISIBILITY, viewTargets, VIEWS, type ViewId } from "./views";
+import { FISH_DEFAULTS, FISH_PALETTES, GoldfishSchool, MAX_FISH, type FishPaletteId, type FishParameters } from "./goldfish";
+import type { GoldfishScene } from "./goldfish-scene";
 
 /** Share of the field's area that all pages together cover; area = displayed rank × this. */
 const AREA_BUDGET = 0.3;
@@ -54,12 +59,45 @@ const HIT_SLOP = 6;
 const FRAME_INTERVAL = 1_000 / 60 - 3;
 const MAX_PIXEL_RATIO = 2;
 const MIN_PAGES = 20;
+/** createRankedWeb's default seed. */
+const DEFAULT_SEED = 0x2545f491;
+/**
+ * Log quality one fish-second of watching gives a page, divided by the school
+ * (at least FISH_AUDIENCE fish), so all fish on one page for a second give it
+ * ATTENTION_GAIN × influence; quality reverts at 0.08 per second.
+ */
+const ATTENTION_GAIN = 0.25;
+const FISH_AUDIENCE = 30;
+const DEFAULT_INFLUENCE = 0.2;
+
+/** Goldfish sliders: key, label, range, step. Count 0 (no fish) is the default. */
+const FISH_CONTROLS: readonly { key: keyof FishParameters; label: string; min: number; max: number; step: number }[] = [
+  { key: "scale", label: "크기", min: 0.4, max: 2, step: 0.05 },
+  { key: "speed", label: "속도", min: 0.25, max: 3, step: 0.05 },
+  { key: "follow", label: "링크를 따라 헤엄칠 확률", min: 0, max: 1, step: 0.01 },
+  { key: "novelty", label: "새 페이지에 끌림", min: 0, max: 3, step: 0.05 },
+  { key: "habituation", label: "싫증", min: 0, max: 3, step: 0.05 },
+  { key: "span", label: "주의 지속 (초)", min: 0.5, max: 8, step: 0.1 },
+  { key: "schooling", label: "무리 짓기", min: 0, max: 2, step: 0.05 },
+  { key: "patrol", label: "가장자리 오가기", min: 0, max: 2, step: 0.05 },
+];
 
 type Press = { x: number; y: number; source: number | null; dragging: boolean; pointerX: number; pointerY: number };
 
 type Transition = { from: Float64Array; linksFrom: number; startedAt: number };
 
 type WeightedLink = { from: number; to: number; weight: number };
+
+/** The group whose raft gathers nearest (x, y). */
+function nearestGroup(groups: number, field: Frame, x: number, y: number) {
+  const anchors = new Float64Array(MAX_GROUPS * 2);
+  groupAnchors(groups, field, anchors);
+  let best = 0;
+  for (let group = 1; group < groups; group += 1) {
+    if (Math.hypot(anchors[group * 2]! - x, anchors[group * 2 + 1]! - y) < Math.hypot(anchors[best * 2]! - x, anchors[best * 2 + 1]! - y)) best = group;
+  }
+  return best;
+}
 
 /** Disc area is exactly proportional to rank: πr² = rank × budget. */
 function radiusFor(rank: number, field: Frame, area = AREA_BUDGET) {
@@ -178,10 +216,27 @@ export default function RankedWebIteration() {
   const [damping, setDampingValue] = useState(DEFAULT_DAMPING);
   const dampingRef = useRef(DEFAULT_DAMPING);
   const [population, setPopulation] = useState(DEFAULT_PAGES);
+  /** Disconnected groups; 1 (one web) is the default. Changing it starts the web over. */
+  const [groups, setGroups] = useState(1);
+  const groupsRef = useRef(1);
+  /** How far the groups' sizes and characters spread around the panel's parameters. */
+  const [diversity, setDiversity] = useState(DEFAULT_DIVERSITY);
+  const diversityRef = useRef(DEFAULT_DIVERSITY);
+  /** The default web's seed; 다시 섞기 draws other groups. */
+  const seedRef = useRef(DEFAULT_SEED);
   /** A requested page count; the frame loop starts the web over with it. */
   const repopulateRef = useRef<number | null>(null);
   const [view, setView] = useState<ViewId>("network");
-  const [panel, setPanel] = useState<"network" | "visual" | null>(null);
+  const [panel, setPanel] = useState<"network" | "visual" | "fish" | null>(null);
+  const [fishCount, setFishCount] = useState(0);
+  const fishCountRef = useRef(0);
+  const [fish, setFish] = useState<FishParameters>(FISH_DEFAULTS);
+  const fishRef = useRef<FishParameters>(FISH_DEFAULTS);
+  const [fishPalette, setFishPalette] = useState<FishPaletteId>("classic");
+  const fishPaletteRef = useRef<FishPaletteId>("classic");
+  const [influence, setInfluence] = useState(DEFAULT_INFLUENCE);
+  const influenceRef = useRef(DEFAULT_INFLUENCE);
+  const fishCanvasRef = useRef<HTMLCanvasElement>(null);
   const [visual, setVisual] = useState<Visual>(VISUAL_DEFAULTS);
   const visualRef = useRef<Visual>(VISUAL_DEFAULTS);
   const rendererRef = useRef<FoamRenderer | null>(null);
@@ -189,6 +244,12 @@ export default function RankedWebIteration() {
   useEffect(() => {
     visualRef.current = visual;
   }, [visual]);
+  useEffect(() => {
+    fishCountRef.current = fishCount;
+    fishRef.current = fish;
+    fishPaletteRef.current = fishPalette;
+    influenceRef.current = influence;
+  }, [fishCount, fish, fishPalette, influence]);
   const [summary, setSummary] = useState("");
 
   useEffect(() => {
@@ -254,6 +315,15 @@ export default function RankedWebIteration() {
     const stepped = new Float64Array(MAX_PAGES);
     const pools = new Float64Array(MAX_PAGES);
     let motionTime = 0;
+    // Goldfish: the school and its renderer exist only once fish are asked for.
+    let school: GoldfishSchool | null = null;
+    let schoolWeb: RankedWeb | null = null;
+    let knownPages = 0;
+    let scene: GoldfishScene | null = null;
+    let sceneLoading = false;
+    let disposed = false;
+    const attention = new Float64Array(MAX_PAGES);
+    const fishCanvas = fishCanvasRef.current;
     const restart = () => {
       const web = webRef.current;
       shown.fill(0);
@@ -261,11 +331,20 @@ export default function RankedWebIteration() {
     };
     restart();
 
+    const groupPoints = new Float64Array(MAX_GROUPS * 2);
+    const anchors = new Float64Array(MAX_PAGES * 2);
     const seedPages = (field: Frame) => {
       const web = webRef.current;
       bodiesRef.current = [];
+      groupAnchors(web.groups, field, groupPoints);
       for (let page = 0; page < web.size; page += 1) {
         const body = bodyAt(field, random);
+        if (web.groups > 1) {
+          // Each group starts gathered round its own place, a third the size of one raft.
+          const group = web.group[page]!;
+          body.x = groupPoints[group * 2]! + (body.x - field.width / 2) * 0.45;
+          body.y = groupPoints[group * 2 + 1]! + (body.y - field.height / 2) * 0.45;
+        }
         bodiesRef.current[page] = body;
         pointsRef.current[page * 2] = body.x;
         pointsRef.current[page * 2 + 1] = body.y;
@@ -278,6 +357,8 @@ export default function RankedWebIteration() {
       const next = { width: bounds.width, height: bounds.height };
       const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
       renderer.resize(next.width, next.height, ratio);
+      school?.resize(next.width, next.height);
+      scene?.setSize(next.width, next.height);
       if (bodiesRef.current.length === 0) seedPages(next);
       else rescaleBodies(bodiesRef.current, sizeRef.current, next);
       sizeRef.current = next;
@@ -295,7 +376,7 @@ export default function RankedWebIteration() {
       if (requested !== null) {
         // A new page count starts the web, and the display, over from uniform.
         repopulateRef.current = null;
-        const fresh = createRankedWeb(requested);
+        const fresh = createRankedWeb(requested, seedRef.current, groupsRef.current, diversityRef.current);
         setDamping(fresh, dampingRef.current);
         webRef.current = fresh;
         pendingPagesRef.current = { value: 0 };
@@ -343,7 +424,18 @@ export default function RankedWebIteration() {
           if (entry.weight > 0.08) pulling.push({ from, to: entry.target, weight: entry.weight });
         }
       }
-      relaxBodies(bodiesRef.current, pulling, spacing, field, delta * tempo, presence);
+      if (web.groups > 1) {
+        // Each group's gravity pulls toward its own place, so disconnected groups float apart.
+        groupAnchors(web.groups, field, groupPoints);
+        for (let page = 0; page < web.size; page += 1) {
+          const group = web.group[page]!;
+          anchors[page * 2] = groupPoints[group * 2]!;
+          anchors[page * 2 + 1] = groupPoints[group * 2 + 1]!;
+        }
+        relaxBodies(bodiesRef.current, pulling, spacing, field, delta * tempo, presence, anchors);
+      } else {
+        relaxBodies(bodiesRef.current, pulling, spacing, field, delta * tempo, presence);
+      }
 
       const current = viewRef.current;
       const points = pointsRef.current;
@@ -422,9 +514,46 @@ export default function RankedWebIteration() {
       }
 
       // Pages: one bubble each, as large as its rank, pressed into its neighbours.
+      const pageStart = bubbleCount;
       for (let page = 0; page < pageCount; page += 1) {
         const r = radiusFor(Math.max(pools[page]!, 0), field, visualRef.current.area);
         put(points[page * 2]!, points[page * 2 + 1]!, r, hashOf(page, 3));
+      }
+
+      // Goldfish swim around exactly these discs, and their watching feeds back into quality.
+      const wanted = fishCountRef.current;
+      if (wanted > 0 && !school) {
+        school = new GoldfishSchool(field.width, field.height);
+        schoolWeb = web;
+        knownPages = web.size;
+      }
+      if (school) {
+        if (schoolWeb !== web) {
+          school.forgetPages();
+          schoolWeb = web;
+          knownPages = web.size;
+        }
+        if (web.size > knownPages) school.notePages(knownPages, web.size);
+        knownPages = web.size;
+        school.setCount(wanted);
+        const parameters = fishRef.current;
+        const drawnPages = bubbleCount - pageStart;
+        school.step(delta * tempo, web, shown, bubbles, bubbleCount, pageStart, drawnPages, parameters);
+        school.drainContact(drawnPages, attention);
+        const strength = influenceRef.current * ATTENTION_GAIN / Math.max(FISH_AUDIENCE, school.fish.length);
+        if (strength > 0) for (let page = 0; page < drawnPages; page += 1) attend(web, page, attention[page]! * strength);
+        if (!scene && !sceneLoading && school.fish.length > 0 && fishCanvas) {
+          sceneLoading = true;
+          void import("./goldfish-scene").then(({ GoldfishScene: Scene }) => {
+            if (disposed) return;
+            scene = new Scene(fishCanvas);
+            const size = sizeRef.current;
+            scene.setSize(size.width, size.height);
+          }, (error: unknown) => {
+            console.warn("bubble/2 goldfish renderer failed to load.", error);
+          });
+        }
+        scene?.render(school.fish, motionTime, delta * tempo, parameters.scale, fishPaletteRef.current);
       }
 
       const { area: _area, portions: _portions, ...look } = visualRef.current;
@@ -445,10 +574,12 @@ export default function RankedWebIteration() {
     observer.observe(canvas);
     frame = requestAnimationFrame(render);
     return () => {
+      disposed = true;
       observer.disconnect();
       cancelAnimationFrame(frame);
       rendererRef.current = null;
       renderer.dispose();
+      scene?.dispose();
     };
   }, [random, placePage]);
 
@@ -488,7 +619,9 @@ export default function RankedWebIteration() {
 
   const createPage = useCallback((x: number, y: number, linkedFrom: number | null) => {
     const web = webRef.current;
-    const page = addPage(web);
+    // A page made by hand joins the group it is linked from, or the group it is placed nearest.
+    const group = linkedFrom !== null ? web.group[linkedFrom]! : nearestGroup(web.groups, sizeRef.current, x, y);
+    const page = addPage(web, 0, group);
     if (page === null) return null;
     if (linkedFrom !== null) addCandidate(web, linkedFrom, page, HAND_LINK_WEIGHT);
     placePage(page, x, y);
@@ -558,6 +691,7 @@ export default function RankedWebIteration() {
           createPage((anchor?.x ?? 0) + 30, (anchor?.y ?? 0) + 30, top);
         }}
       />
+      <canvas ref={fishCanvasRef} className={styles.fish} aria-hidden="true" />
       <p id="bubble-two-summary" className={styles.screenReaderOnly}>
         {summary}
       </p>
@@ -646,6 +780,56 @@ export default function RankedWebIteration() {
                 }}
               />
             </label>
+            <p className={styles.note}>그룹 · 서로 링크되지 않는 버블 무리 (바꾸면 처음부터)</p>
+            <div className={styles.chips} role="group" aria-label="서로 링크되지 않는 그룹 수">
+              {Array.from({ length: MAX_GROUPS }, (_, index) => index + 1).map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  aria-pressed={groups === count}
+                  onClick={() => {
+                    setGroups(count);
+                    groupsRef.current = count;
+                    // One group is always the default web.
+                    if (count === 1) seedRef.current = DEFAULT_SEED;
+                    repopulateRef.current = population;
+                  }}
+                >
+                  {count}
+                </button>
+              ))}
+            </div>
+            {groups > 1 && (
+              <>
+                <label className={styles.row}>
+                  <span>그룹 다양성 <output>{diversity.toFixed(2)}</output></span>
+                  <input
+                    aria-label="그룹마다 크기와 성격이 다른 정도; 바꾸면 처음부터"
+                    max="1"
+                    min="0"
+                    step="0.05"
+                    type="range"
+                    value={diversity}
+                    onChange={(event) => {
+                      const value = Number(event.target.value);
+                      setDiversity(value);
+                      diversityRef.current = value;
+                      repopulateRef.current = population;
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className={styles.reset}
+                  onClick={() => {
+                    seedRef.current = (Math.random() * 4_294_967_296) >>> 0 || 1;
+                    repopulateRef.current = population;
+                  }}
+                >
+                  다시 섞기
+                </button>
+              </>
+            )}
           </div>
         )}
         {panel === "visual" && (
@@ -740,6 +924,73 @@ export default function RankedWebIteration() {
             </button>
           </div>
         )}
+        {panel === "fish" && (
+          <div id="bubble-two-fish" className={styles.panel} role="group" aria-label="금붕어">
+            <p className={styles.heading}>금붕어</p>
+            <p className={styles.note}>버블 가장자리를 오가며 링크를 따라 옮겨 다니고, 오래 머문 페이지의 품질을 올립니다</p>
+            <label className={styles.row}>
+              <span>수 <output>{fishCount}</output></span>
+              <input
+                aria-label="금붕어 수; 0이면 없음"
+                max={MAX_FISH}
+                min="0"
+                step="10"
+                type="range"
+                value={fishCount}
+                onChange={(event) => setFishCount(Number(event.target.value))}
+              />
+            </label>
+            <p className={styles.note}>색</p>
+            <div className={styles.chips} role="group" aria-label="금붕어 색">
+              {(Object.keys(FISH_PALETTES) as FishPaletteId[]).map((id) => (
+                <button key={id} type="button" aria-pressed={fishPalette === id} onClick={() => setFishPalette(id)}>
+                  {FISH_PALETTES[id].label}
+                </button>
+              ))}
+            </div>
+            {FISH_CONTROLS.map((control) => (
+              <label key={control.key} className={styles.row}>
+                <span>
+                  {control.label} <output>{fish[control.key].toFixed(2)}</output>
+                </span>
+                <input
+                  aria-label={control.label}
+                  max={control.max}
+                  min={control.min}
+                  step={control.step}
+                  type="range"
+                  value={fish[control.key]}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    setFish((current) => ({ ...current, [control.key]: value }));
+                  }}
+                />
+              </label>
+            ))}
+            <label className={styles.row}>
+              <span>품질에 주는 영향 <output>{influence.toFixed(2)}</output></span>
+              <input
+                aria-label="금붕어가 머문 페이지의 품질을 올리는 정도"
+                max="1"
+                min="0"
+                step="0.01"
+                type="range"
+                value={influence}
+                onChange={(event) => setInfluence(Number(event.target.value))}
+              />
+            </label>
+            <button
+              type="button"
+              className={styles.reset}
+              onClick={() => {
+                setFish(FISH_DEFAULTS);
+                setInfluence(DEFAULT_INFLUENCE);
+              }}
+            >
+              기본값으로
+            </button>
+          </div>
+        )}
         <div className={styles.triggers}>
           <button
             type="button"
@@ -768,6 +1019,20 @@ export default function RankedWebIteration() {
               <path d="M3 6h14M3 14h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
               <circle cx="7" cy="6" r="2.2" fill="#171717" stroke="currentColor" strokeWidth="1.6" />
               <circle cx="13" cy="14" r="2.2" fill="#171717" stroke="currentColor" strokeWidth="1.6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={styles.trigger}
+            aria-label="금붕어 옵션"
+            aria-expanded={panel === "fish"}
+            aria-controls="bubble-two-fish"
+            onClick={() => setPanel((current) => (current === "fish" ? null : "fish"))}
+          >
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+              <path d="M13.5 10c0 2-2.6 3.6-5.6 3.6S3 12 3 10s1.9-3.6 4.9-3.6 5.6 1.6 5.6 3.6z" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M13.5 10l3.5-3v6z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              <circle cx="6" cy="9.4" r="0.9" fill="currentColor" />
             </svg>
           </button>
         </div>

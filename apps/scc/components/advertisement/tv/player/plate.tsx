@@ -6,8 +6,21 @@ export type CameraMove = { from: [number, number, number]; to: [number, number, 
  * Background plate for a shot (a generated still standing in for footage).
  * `progress` 0..1 drives an optional slow camera move: [scale, x, y] in frame px.
  */
-export function Plate({ src, progress = 0, move }: { src?: string; progress?: number; move?: CameraMove }) {
-  if (!src) return <div className={styles.placeholder} />;
+export function Plate({
+  src,
+  progress = 0,
+  move,
+  tone,
+}: {
+  src?: string;
+  progress?: number;
+  move?: CameraMove;
+  /** Placeholder gradient [top, bottom] sampled from the original shot, used until the plate exists. */
+  tone?: readonly [string, string];
+}) {
+  if (!src) {
+    return <div className={styles.placeholder} style={tone ? { background: `linear-gradient(180deg, ${tone[0]}, ${tone[1]})` } : undefined} />;
+  }
   const p = Math.min(1, Math.max(0, progress));
   const [s0, x0, y0] = move?.from ?? [1, 0, 0];
   const [s1, x1, y1] = move?.to ?? [1, 0, 0];

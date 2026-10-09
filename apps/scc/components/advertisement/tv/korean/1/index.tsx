@@ -1,5 +1,6 @@
 "use client";
 
+import { PLATE_TONES } from "./tones";
 import { spoqa } from "../../fonts";
 import {
   BroadcastFrame,
@@ -35,7 +36,7 @@ export default function LinaOkSilver({ capture }: { capture: CaptureOptions }) {
           <Legal />
         ) : (
           <>
-            {capture.plates && shot ? <Plate src={plateUrl(shot.plate)} progress={(time - shot.at) / 6} move={{ from: [1, 0, 0], to: [1.03, 0, 0] }} /> : null}
+            {capture.plates && shot ? <Plate src={plateUrl(shot.plate)} tone={PLATE_TONES[shot.plate]} progress={(time - shot.at) / 6} move={{ from: [1, 0, 0], to: [1.03, 0, 0] }} /> : null}
             <SceneOverlay scene={scene.id} t={time} />
             <TopNumber />
             <BottomBar time={time} />

@@ -1,10 +1,11 @@
-import type { Definition, Rect } from '../control/definition.ts';
+import type { Acting, Definition, Rect } from '../control/definition.ts';
 import type { Display, PlanItem } from '../surfaces/index.ts';
 
 // Browser windows, for pages opened where no Mac helper answers: the same
 // definition and plan, opened as pop-up windows by this page. Pop-ups keep a
 // slim address bar, newest is always in front, and a browser lets one pop-up
-// through per click unless pop-ups are allowed for the site.
+// through per click unless pop-ups are allowed for the site. A pop-up can be
+// read and scrolled only when it shows this page's own origin.
 
 export type BrowserStatus = {
   enabled: true;
@@ -75,6 +76,10 @@ function openOne(item: PlanItem, run: string) {
   return target;
 }
 
+function sameOrigin(target: Window) {
+  try { return target.location.origin === window.location.origin; } catch { return false; }
+}
+
 function stopAll() {
   animation?.();
   animation = null;
@@ -116,7 +121,26 @@ export function startBrowser<S extends { clearFirst: boolean }>(definition: Defi
   const run = Date.now().toString(36);
   let failed = 0;
   const mine: (Window | null)[] = [];
+  const openedAt: number[] = [];
+  const plannedAt = (index: number) => plan.items[index].at ?? index * plan.intervalMs;
   status = { ...status, running: true, display, settings, progress: 0, total: plan.items.length, result: undefined, message: `Opening ${plan.items.length} windows` };
+  const live = (index: number) => { const target = mine[index]; return target && !target.closed ? target : null; };
+  const acting: Acting = {
+    opened: index => (live(index) ? openedAt[index] : undefined),
+    evaluate: async (index, expression) => {
+      const target = live(index);
+      if (!target || !sameOrigin(target)) return undefined;
+      return (target as Window & { eval: (code: string) => unknown }).eval(expression);
+    },
+    scroll: (index, dy) => { try { live(index)?.scrollBy({ top: dy, behavior: 'smooth' }); } catch { /* Another origin. */ } },
+    close: index => { try { live(index)?.close(); } catch { /* Already gone. */ } },
+    open: item => {
+      const target = openOne(item, run);
+      mine.push(target);
+      openedAt[mine.length - 1] = Date.now();
+      return mine.length - 1;
+    },
+  };
   const finish = () => {
     const count = plan.items.length;
     // A browser lets one pop-up through per click; the rest need pop-ups allowed for this site.
@@ -125,7 +149,7 @@ export function startBrowser<S extends { clearFirst: boolean }>(definition: Defi
       : 'Done';
     status = { ...status, running: false, progress: count, result: { opened: count - failed, failed, spreadMs: Math.round(performance.now() - started), resized: 0 }, message };
     if (definition.animate) {
-      animation = definition.animate(settings, plan, display, (index, rect) => { const target = mine[index]; if (target && !target.closed) place(target, rect); });
+      animation = definition.animate(settings, plan, display, (index, rect) => { const target = mine[index]; if (target && !target.closed) place(target, rect); }, acting);
       status = { ...status, moving: !!animation };
     }
     changed();
@@ -133,12 +157,14 @@ export function startBrowser<S extends { clearFirst: boolean }>(definition: Defi
   const at = (index: number) => {
     const target = openOne(plan.items[index], run);
     mine[index] = target;
-    if (!target) failed++;
+    if (target) openedAt[index] = Date.now();
+    else failed++;
     status = { ...status, progress: index + 1 };
     changed();
     if (index + 1 >= plan.items.length) { finish(); return; }
-    if (plan.intervalMs <= 0) { at(index + 1); return; }
-    const timer = setTimeout(() => { timers.delete(timer); at(index + 1); }, plan.intervalMs);
+    const delay = plannedAt(index + 1) - plannedAt(index);
+    if (delay <= 0) { at(index + 1); return; }
+    const timer = setTimeout(() => { timers.delete(timer); at(index + 1); }, delay);
     timers.add(timer);
   };
   if (plan.items.length) at(0); else finish();

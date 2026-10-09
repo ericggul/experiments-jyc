@@ -30,6 +30,66 @@ export const VOLATILITY_RANGE = [0, 1.5] as const;
 export const FLOOR_RANGE = [0.05, 20] as const;
 /** Candidate links one page keeps. */
 export const MAX_CANDIDATES = 5;
+/** Disconnected groups (echo chambers): links form only within a group. */
+export const MAX_GROUPS = 4;
+export const DEFAULT_DIVERSITY = 0.6;
+
+/**
+ * One group's character, relative to the parameters the panel sets: its share
+ * of the pages (and of new pages), a shift in its pages' mean log quality, and
+ * multipliers on the appeal floor (small: hub-dominated, large: even), quality
+ * volatility, how fast attention follows appeal, and link discovery.
+ */
+export type GroupProfile = {
+  share: number;
+  quality: number;
+  floor: number;
+  volatility: number;
+  adaptation: number;
+  discovery: number;
+};
+
+const NEUTRAL_PROFILE: GroupProfile = { share: 1, quality: 0, floor: 1, volatility: 1, adaptation: 1, discovery: 1 };
+
+/**
+ * Group profiles spread around the given parameters. Each trait takes evenly
+ * spaced values in [−1, 1] dealt to the groups in a seeded order, so groups
+ * always differ and differ in different ways; `diversity` 0 makes them alike.
+ * Its own random stream: the web's is untouched.
+ */
+export function groupProfiles(groups: number, diversity: number, seed: number): GroupProfile[] {
+  if (groups <= 1) return [{ ...NEUTRAL_PROFILE }];
+  let state = (seed ^ (groups * 0x9e3779b9)) >>> 0 || 1;
+  const random = () => {
+    const [value, next] = nextRandom(state);
+    state = next;
+    return value;
+  };
+  const dealt = () => {
+    const values = Array.from({ length: groups }, (_, index) => (index / (groups - 1)) * 2 - 1);
+    for (let index = values.length - 1; index > 0; index -= 1) {
+      const other = Math.floor(random() * (index + 1));
+      [values[index], values[other]] = [values[other]!, values[index]!];
+    }
+    return values;
+  };
+  const amount = Math.max(0, Math.min(1, diversity));
+  const share = dealt();
+  const quality = dealt();
+  const floor = dealt();
+  const volatility = dealt();
+  const adaptation = dealt();
+  const discovery = dealt();
+  return Array.from({ length: groups }, (_, group) => ({
+    // At full diversity: shares up to about 6:1, floors ×0.22–4.5 (a hub raft beside an even one).
+    share: Math.exp(amount * 0.9 * share[group]!),
+    quality: amount * 0.5 * quality[group]! + 0, // never −0
+    floor: Math.exp(amount * 1.5 * floor[group]!),
+    volatility: Math.exp(amount * 0.6 * volatility[group]!),
+    adaptation: Math.exp(amount * 0.6 * adaptation[group]!),
+    discovery: Math.exp(amount * 0.7 * discovery[group]!),
+  }));
+}
 /** Candidates a new page starts with. */
 export const NEW_PAGE_LINKS = 2;
 /** A fading candidate is dropped below this weight. */
@@ -48,6 +108,13 @@ export type RankedWeb = {
   readonly quality: Float64Array;
   damping: number;
   randomState: number;
+  /** Number of groups; 1 is one connected web. */
+  groups: number;
+  /** Each page's group. Automatic links stay inside it; only a hand-drawn link crosses. */
+  readonly group: Uint8Array;
+  readonly profiles: readonly GroupProfile[];
+  /** Pages per group. */
+  readonly groupSize: Uint16Array;
 };
 
 export type WebParameters = {
@@ -141,8 +208,36 @@ export function computeRank(web: RankedWeb) {
   return iteration + 1;
 }
 
-/** A random sparse web: every page starts with two settled candidates. */
-export function createRankedWeb(size = DEFAULT_PAGES, seed = 0x2545f491): RankedWeb {
+/** True when automatic links may not join `a` and `b`. */
+function apart(web: RankedWeb, a: number, b: number) {
+  return web.groups > 1 && web.group[a] !== web.group[b];
+}
+
+/** The group furthest below its share of the pages: new pages keep the groups in proportion. */
+function neediestGroup(web: RankedWeb) {
+  if (web.groups <= 1) return 0;
+  let total = 0;
+  for (const profile of web.profiles) total += profile.share;
+  let best = 0;
+  let deficit = -Infinity;
+  for (let group = 0; group < web.groups; group += 1) {
+    const want = ((web.size + 1) * web.profiles[group]!.share) / total - web.groupSize[group]!;
+    if (want > deficit) {
+      deficit = want;
+      best = group;
+    }
+  }
+  return best;
+}
+
+/**
+ * A random sparse web: every page starts with two settled candidates. With
+ * `groups` > 1 the pages are dealt to groups by their profiles' shares and
+ * link only within their group, so the web is that many disconnected parts,
+ * each with its own character (`groupProfiles`); one group is the original web.
+ */
+export function createRankedWeb(size = DEFAULT_PAGES, seed = 0x2545f491, groups = 1, diversity = DEFAULT_DIVERSITY): RankedWeb {
+  const groupCount = Math.max(1, Math.min(MAX_GROUPS, Math.round(groups)));
   const web: RankedWeb = {
     size,
     out: Array.from({ length: size }, () => []),
@@ -150,12 +245,27 @@ export function createRankedWeb(size = DEFAULT_PAGES, seed = 0x2545f491): Ranked
     quality: new Float64Array(MAX_PAGES),
     damping: DEFAULT_DAMPING,
     randomState: seed >>> 0 || 1,
+    groups: groupCount,
+    group: new Uint8Array(MAX_PAGES),
+    profiles: groupProfiles(groupCount, diversity, seed),
+    groupSize: new Uint16Array(MAX_GROUPS),
   };
+  const members: number[][] = Array.from({ length: web.groups }, () => []);
+  for (let page = 0; page < size; page += 1) {
+    web.size = page;
+    const group = neediestGroup(web);
+    web.group[page] = group;
+    web.groupSize[group] = web.groupSize[group]! + 1;
+    members[group]!.push(page);
+  }
+  web.size = size;
   const random = randomFor(web);
   for (let page = 0; page < size; page += 1) {
-    web.quality[page] = gaussian(random) * 0.5;
-    while (web.out[page]!.length < NEW_PAGE_LINKS) {
-      const target = randomIndex(random(), size);
+    web.quality[page] = gaussian(random) * 0.5 + web.profiles[web.group[page]!]!.quality;
+    const own = members[web.group[page]!]!;
+    // A group too small to give every page two others links what it can.
+    while (web.out[page]!.length < Math.min(NEW_PAGE_LINKS, own.length - 1)) {
+      const target = own[randomIndex(random(), own.length)]!;
       if (target !== page && !candidate(web, page, target)) {
         web.out[page]!.push({ target, weight: 1 / NEW_PAGE_LINKS, fading: false });
       }
@@ -170,8 +280,9 @@ export function setDamping(web: RankedWeb, damping: number) {
   computeRank(web);
 }
 
+/** A page's appeal; its group's floor multiplier applies (1 with one group). */
 function appeal(web: RankedWeb, page: number, floor: number) {
-  return (web.rank[page]! + floor / web.size) * Math.exp(web.quality[page]!);
+  return (web.rank[page]! + (floor * web.profiles[web.group[page]!]!.floor) / web.size) * Math.exp(web.quality[page]!);
 }
 
 /** Picks a page with probability ∝ appeal, excluding `exclude`. */
@@ -211,14 +322,21 @@ export function fadeCandidate(web: RankedWeb, from: number, to: number) {
   return true;
 }
 
-/** Appends a page with no candidates; null at MAX_PAGES. */
-export function addPage(web: RankedWeb, quality = 0) {
+/**
+ * Appends a page with no candidates; null at MAX_PAGES. Unless given, its
+ * group is the one furthest below its share; its quality is relative to its
+ * group's mean.
+ */
+export function addPage(web: RankedWeb, quality = 0, group?: number) {
   if (web.size >= MAX_PAGES) return null;
+  const chosen = Math.max(0, Math.min(web.groups - 1, group ?? neediestGroup(web)));
   const page = web.size;
   web.size += 1;
   web.out.push([]);
+  web.group[page] = chosen;
+  web.groupSize[chosen] = web.groupSize[chosen]! + 1;
   web.rank[page] = 1 / web.size;
-  web.quality[page] = quality;
+  web.quality[page] = quality + web.profiles[chosen]!.quality;
   computeRank(web);
   return page;
 }
@@ -241,14 +359,18 @@ export function stepRankedWeb(
   // Quality: Ornstein–Uhlenbeck in log space, exact over the step.
   const keep = Math.exp(-QUALITY_REVERSION * seconds);
   const spread = volatility * Math.sqrt((1 - keep * keep) / (2 * QUALITY_REVERSION));
+  // Each group's quality reverts to its own mean, with its own volatility.
   for (let page = 0; page < web.size; page += 1) {
-    web.quality[page] = web.quality[page]! * keep + spread * gaussian(random);
+    const profile = web.profiles[web.group[page]!]!;
+    web.quality[page] = profile.quality + (web.quality[page]! - profile.quality) * keep + spread * profile.volatility * gaussian(random);
   }
 
   // Attention: each weight relaxes toward its target's share of appeal.
-  const relax = 1 - Math.exp(-parameters.adaptation * seconds);
-  const discover = 1 - Math.exp(-parameters.discovery * seconds);
+  const relaxes = web.profiles.map((profile) => 1 - Math.exp(-parameters.adaptation * profile.adaptation * seconds));
+  const discovers = web.profiles.map((profile) => 1 - Math.exp(-parameters.discovery * profile.discovery * seconds));
   for (let page = 0; page < web.size; page += 1) {
+    const relax = relaxes[web.group[page]!]!;
+    const discover = discovers[web.group[page]!]!;
     const list = web.out[page]!;
     let total = 0;
     for (const entry of list) if (!entry.fading) total += appeal(web, entry.target, floor);
@@ -260,7 +382,7 @@ export function stepRankedWeb(
       if (list[index]!.fading && list[index]!.weight < DROP_WEIGHT) list.splice(index, 1);
     }
     if (random() < discover) {
-      const target = pickByAppeal(web, random, floor, (other) => other === page || list.some((entry) => entry.target === other));
+      const target = pickByAppeal(web, random, floor, (other) => other === page || apart(web, page, other) || list.some((entry) => entry.target === other));
       if (target !== null) {
         const active = list.filter((entry) => !entry.fading);
         if (active.length >= MAX_CANDIDATES) {
@@ -282,7 +404,7 @@ export function stepRankedWeb(
     if (page === null) break;
     const targets: number[] = [];
     for (let link = 0; link < NEW_PAGE_LINKS; link += 1) {
-      const target = pickByAppeal(web, random, floor, (other) => other === page || targets.includes(other));
+      const target = pickByAppeal(web, random, floor, (other) => other === page || apart(web, page, other) || targets.includes(other));
       if (target !== null) targets.push(target);
     }
     for (const target of targets) web.out[page]!.push({ target, weight: 0, fading: false });
@@ -291,6 +413,21 @@ export function stepRankedWeb(
 
   computeRank(web);
   return events;
+}
+
+/** Most log quality watching can give a page; it then reverts like any other quality. */
+const ATTENDED_QUALITY = 1.5;
+
+/**
+ * Attention from outside the web (bubble/2's goldfish) raises a page's log
+ * quality by `amount`, up to ATTENDED_QUALITY above its group mean; drift then pulls it back.
+ */
+export function attend(web: RankedWeb, page: number, amount: number) {
+  if (page < 0 || page >= web.size || !(amount > 0)) return;
+  // Measured from the page's group mean (0 with one group).
+  const ceiling = web.profiles[web.group[page]!]!.quality + ATTENDED_QUALITY;
+  const quality = web.quality[page]!;
+  if (quality < ceiling) web.quality[page] = Math.min(ceiling, quality + amount);
 }
 
 /** Share of rank held by the top page, and by the top 10% of pages. */

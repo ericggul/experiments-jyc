@@ -98,7 +98,8 @@ export function SceneOverlay({ scene, t }: { scene: SceneId; t: number }) {
         <>
           <L id="age-1" />
           {/* 55~83 → glyphs 0–4, 세 → 5 */}
-          <L id="age-2" colors={runs(run(0, 5, t >= 41.7), run(5, 6, t >= 43.2))} />
+          <L id="age-2a" colors={runs(run(0, 5, t >= 41.7), run(5, 6, t >= 43.2))} />
+          <L id="age-2b" />
           <div style={{ position: "absolute", left: 954, top: 590, width: 547, height: 10, background: WHITE, boxShadow: SHADOW }} />
         </>
       );

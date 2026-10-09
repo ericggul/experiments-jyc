@@ -1,4 +1,7 @@
-import { BAR_BLUE, NUMBER_BLUE } from "./text";
+import { pretendard } from "../../../fonts";
+import { FittedLine } from "../../../player";
+import { FITTED_BAR } from "../fitted-bar";
+import { NUMBER_BLUE } from "./text";
 
 // The persistent bottom bar: blue product side, light-blue diagonal, white
 // number side. Geometry measured on the 1080p master (top y 908, slope 0.48).
@@ -80,6 +83,20 @@ export function shimmerAt(time: number) {
   return t < 1.0 ? t / 1.0 : -1;
 }
 
+const BAR_FONT = { fontFamily: pretendard.style.fontFamily };
+
+/** Bar logo as measured on the capture: stacked tag at 228–323, wordmark from 334. */
+function BarOkMark() {
+  const tag = { position: "absolute", left: 228, fontSize: 37, fontWeight: 400, lineHeight: 1, letterSpacing: "-0.1em", color: "#fff", ...BAR_FONT } as const;
+  return (
+    <>
+      <div style={{ ...tag, top: 953 }}>라이나</div>
+      <div style={{ ...tag, top: 991 }}>무배당</div>
+      <FittedLine line={FITTED_BAR["bar-ok"]} style={BAR_FONT} />
+    </>
+  );
+}
+
 export function BottomBar({ time }: { time: number }) {
   const { logo, squash } = logoState(time);
   const sweep = shimmerAt(time);
@@ -94,38 +111,27 @@ export function BottomBar({ time }: { time: number }) {
           position: "absolute",
           inset: 0,
           clipPath: blue,
-          background: `linear-gradient(90deg, ${BAR_BLUE} 0%, ${BAR_BLUE} 62%, #1e64b8 100%)`,
+          // Capture colours: #2a58ac at the ends, a soft lift to #4b85b6 behind the wordmark.
+          background: "linear-gradient(90deg, #2a56aa 0%, #2a58ac 8%, #4b85b6 22%, #3b6fb3 38%, #2a58ac 48%, #2a57ab 100%)",
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          left: 216,
-          top: TOP,
-          height: 172,
-          display: "flex",
-          alignItems: "center",
-          transform: `scaleY(${squash})`,
-          transformOrigin: "50% 50%",
-        }}
-      >
-        {logo === "ok" ? <OkSilverMark /> : <div style={{ marginLeft: 60 }}><LinaLifeMark /></div>}
+      <div style={{ position: "absolute", inset: 0, transform: `scaleY(${squash})`, transformOrigin: `50% ${TOP + 86}px` }}>
+        {logo === "ok" ? (
+          <BarOkMark />
+        ) : (
+          <div style={{ position: "absolute", left: 276, top: TOP, height: 172, display: "flex", alignItems: "center" }}>
+            <LinaLifeMark />
+          </div>
+        )}
       </div>
-      <div style={{ position: "absolute", left: 1040, top: 952, display: "flex", alignItems: "center" }}>
+      <div style={{ position: "absolute", left: 1040, top: 966, display: "flex", alignItems: "center" }}>
         <PhoneGlyph width={92} color={NUMBER_BLUE} />
       </div>
-      <div
+      <FittedLine
+        line={FITTED_BAR["bar-phone"]}
+        color={NUMBER_BLUE}
         style={{
-          position: "absolute",
-          left: 1147,
-          top: 918,
-          fontSize: 132,
-          fontWeight: 500,
-          lineHeight: 1,
-          letterSpacing: "-0.03em",
-          transform: "scaleX(0.86)",
-          transformOrigin: "0 0",
-          color: NUMBER_BLUE,
+          ...BAR_FONT,
           backgroundImage:
             sweep >= 0
               ? `linear-gradient(90deg, ${NUMBER_BLUE} ${sweep * 110 - 14}%, #c8f4ff ${sweep * 110 - 6}%, #c8f4ff ${sweep * 110}%, ${NUMBER_BLUE} ${sweep * 110 + 8}%)`
@@ -134,21 +140,34 @@ export function BottomBar({ time }: { time: number }) {
           backgroundClip: sweep >= 0 ? "text" : undefined,
           WebkitTextFillColor: sweep >= 0 ? "transparent" : undefined,
         }}
-      >
-        {PHONE}
-      </div>
+      />
     </>
   );
 }
 
-/** Faint number at top left, carried through the whole spot. */
+/** Faint number at top left, carried through the whole spot (ink 190–532 × 73–116). */
 export function TopNumber() {
   return (
-    <div style={{ position: "absolute", left: 192, top: 70, display: "flex", alignItems: "center", gap: 6, opacity: 0.72 }}>
-      <PhoneGlyph width={44} color="#3d8ccc" />
-      <span style={{ fontSize: 50, fontWeight: 500, letterSpacing: "-0.04em", lineHeight: 1, color: "#3d8ccc", transform: "scaleX(0.86)", transformOrigin: "0 50%" }}>
+    <>
+      <div style={{ position: "absolute", left: 190, top: 81, opacity: 0.8 }}>
+        <PhoneGlyph width={47} color="#3a7499" />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 250,
+          top: 68,
+          fontSize: 54,
+          fontWeight: 500,
+          lineHeight: 1,
+          letterSpacing: "-0.05em",
+          color: "#3a7499",
+          opacity: 0.8,
+          fontFamily: pretendard.style.fontFamily,
+        }}
+      >
         {PHONE}
-      </span>
-    </div>
+      </div>
+    </>
   );
 }

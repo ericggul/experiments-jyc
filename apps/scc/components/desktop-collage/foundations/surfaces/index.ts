@@ -19,8 +19,13 @@ export const surfaceInfo: Record<Surface, {
 };
 
 export type Display = { width: number; height: number; visible: { x: number; y: number; width: number; height: number }; scale: number; measuredAt: number };
-/** `color` is `#rrggbb`; `url` replaces the colour with a page. `rank` 1 = front among this run. */
-export type PlanItem = { x: number; y: number; width: number; height: number; rank: number; color: string; url?: string };
-export type Plan = { surface: Surface; intervalMs: number; items: PlanItem[] };
+/**
+ * `color` is `#rrggbb`; `url` replaces the colour with a page. `rank` 1 = front
+ * among this run. `at` is when the window opens, ms after the run starts;
+ * absent means index × the plan's interval.
+ */
+export type PlanItem = { x: number; y: number; width: number; height: number; rank: number; color: string; url?: string; at?: number };
+/** `sound`: pages may play audio on their own; otherwise the windows are muted. */
+export type Plan = { surface: Surface; intervalMs: number; items: PlanItem[]; sound?: boolean };
 export type Outcome = { opened: number; failed: number; spreadMs: number; resized: number };
 export type Handlers = { progress: (index: number) => void; done: (outcome: Outcome) => void; failed: (message: string) => void };

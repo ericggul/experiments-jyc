@@ -1,0 +1,21 @@
+// Generated: median colours of each original shot (upper / lower picture area),
+// used as placeholders until the generated plates exist.
+export const PLATE_TONES: Record<string, readonly [string, string]> = {
+  "gift-soup": ["#d7c9b0", "#cac3c0"],
+  "gift-lock": ["#beb9b4", "#707478"],
+  "gift-stew": ["#a99785", "#9a7c65"],
+  "gift-pots": ["#e1ddda", "#dacdbe"],
+  "ward-mono": ["#a9a9a9", "#a8a6a8"],
+  "ward-cheer": ["#bcb6b2", "#b5abae"],
+  "ward-wide": ["#cdc5c5", "#adbdc6"],
+  "presenter-waist": ["#e6ecef", "#dfe6ef"],
+  "presenter-full": ["#e2e7ed", "#d7dde5"],
+  "living-room": ["#c4c6cd", "#c4bcbe"],
+  "presenter-left": ["#e7eef2", "#dfe4ef"],
+  "presenter-near": ["#e1ebef", "#dfe5e7"],
+  "presenter-laugh": ["#e2ebef", "#e0e1ed"],
+  "presenter-gesture": ["#e6ecf0", "#e5ebef"],
+  "senior-man": ["#dfddda", "#a0969e"],
+  "presenter-close": ["#e1e9ee", "#e0e5e9"],
+  "presenter-point": ["#e4ebef", "#e0d7eb"],
+};

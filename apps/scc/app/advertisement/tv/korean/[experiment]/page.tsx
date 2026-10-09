@@ -4,6 +4,7 @@ import LinaOkSilver from "@/components/advertisement/tv/korean/1";
 import HeungkukDementia from "@/components/advertisement/tv/korean/2";
 import AiaDementia from "@/components/advertisement/tv/korean/3";
 import HeungkukDasarang from "@/components/advertisement/tv/korean/4";
+import AnalysisSpot from "@/components/advertisement/tv/korean/5";
 import { koreanTvExperiments } from "@/components/advertisement/tv/korean/experiments";
 import { parseCaptureOptions } from "@/components/advertisement/tv/player";
 
@@ -26,5 +27,6 @@ export default async function KoreanTvExperimentPage({
   if (experiment === "2") return <HeungkukDementia capture={capture} />;
   if (experiment === "3") return <AiaDementia capture={capture} />;
   if (experiment === "4") return <HeungkukDasarang capture={capture} />;
+  if (experiment === "5") return <AnalysisSpot capture={capture} />;
   notFound();
 }

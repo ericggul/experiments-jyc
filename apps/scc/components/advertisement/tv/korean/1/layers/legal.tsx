@@ -23,14 +23,14 @@ function Header({ presenter }: { presenter?: string }) {
       <div
         style={{
           position: "absolute",
-          left: 571,
-          top: 128,
-          fontSize: 186,
+          left: 565,
+          top: 136,
+          fontSize: 177,
           fontWeight: 500,
           lineHeight: 1,
           letterSpacing: "-0.035em",
           color: "#fff",
-          transform: "scaleX(0.88)",
+          transform: "scaleX(0.99)",
           transformOrigin: "0 0",
           textShadow: "0 0 18px rgba(170, 215, 255, 0.55)",
         }}
@@ -48,7 +48,7 @@ const text = (size: number, color: string, weight = 500): CSSProperties => ({
   fontSize: size,
   fontWeight: weight,
   lineHeight: 1,
-  letterSpacing: "-0.04em",
+  letterSpacing: "0.005em",
   color,
   whiteSpace: "pre",
 });

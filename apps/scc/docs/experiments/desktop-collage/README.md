@@ -69,6 +69,11 @@ The references depict a computer; here the computer performs the collage.
   - [primitives/1](primitives/1.md): a heart of windows.
   - [primitives/2](primitives/2.md): entangled windows, one field across
     windows that connect when near.
+- `hype/`: keyword-driven cascades of real and cloned pages with a reading
+  agent.
+  - [hype/1](hype/README.md): under the keyword AI, real pages and cloned
+    services open at a stochastic rhythm while a reader scrolls, writes in
+    the clones and follows links in the real pages.
 - `foundations/`: the area's shared window machinery, grouped by function so
   later experiments can reuse and extend it. Every surface takes the same plan:
   rectangles in top-left desktop coordinates, a colour or page, and a stacking

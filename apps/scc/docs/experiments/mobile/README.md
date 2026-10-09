@@ -14,7 +14,7 @@ Removed 2026-10-07: `finger-skating/2` (skated curve read back as a formula); it
 
 `lucky-ticket/1`–`/3` are full-viewport scratch-off fortunes with one-line, long-form, and scattered-word presentations at [`/mobile/lucky-ticket/[experiment]`](../../../app/mobile/lucky-ticket/[experiment]/page.tsx). See [lucky ticket](lucky-ticket.md).
 
-`arithmetic/default` sets the four Instagram post actions — 사칙연산 — large in one row in Instagram's dark-mode colours; `arithmetic/1` is a working iOS 27 Calculator clone. Both are at [`/mobile/arithmetic/[experiment]`](../../../app/mobile/arithmetic/[experiment]/page.tsx). See [사칙연산](arithmetic.md).
+`arithmetic/default` sets the four Instagram post actions — 사칙연산 — large in one row in Instagram's dark-mode colours; `arithmetic/calculator` is an iOS 27 Calculator clone whose ÷ × − + keys are those four actions; on `arithmetic/1`, each tap places one of the four at random under the finger, and skating leaves a trail of them; `arithmetic/fractal` traces a chosen one with smaller copies of itself, edge by edge. All are at [`/mobile/arithmetic/[experiment]`](../../../app/mobile/arithmetic/[experiment]/page.tsx). See [사칙연산](arithmetic.md).
 
 `face-trace/1` keeps the live eye and mouth cutouts inside a full-screen `face-voronoi/3` `face-gradient 3` lattice made only of those features and their short echoes. Opening the mouth swells and melts the lattice outward from the mouth. It is at [`/mobile/face-trace/1`](../../../app/mobile/face-trace/[experiment]/page.tsx). See [face trace](face-trace.md).
 

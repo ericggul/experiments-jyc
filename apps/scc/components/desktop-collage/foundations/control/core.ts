@@ -1,6 +1,6 @@
 import { measureDisplay } from '../display/index.ts';
 import type { Display, Outcome, Plan } from '../surfaces/index.ts';
-import type { Definition, Rect } from './definition.ts';
+import type { Acting, Definition, Rect } from './definition.ts';
 import { clearAll, openPlan, type Opened, type Session } from './run.ts';
 
 // Control of desktop-collage windows on this Mac, whoever calls it: the Next
@@ -61,7 +61,19 @@ async function clear() {
   return closed;
 }
 
-function start(plan: Plan, display: Display, animate?: (move: (index: number, rect: Rect) => void) => () => void) {
+/** The session's acting members, with the count of held windows kept in step. */
+function actingOf(session: Session): Acting {
+  return {
+    opened: session.opened,
+    evaluate: session.evaluate,
+    scroll: session.scroll,
+    click: session.click,
+    close: session.close && (index => { session.close!(index); state.held = Math.max(0, state.held - 1); }),
+    open: session.open && (item => { state.held += 1; state.total += 1; return session.open!(item); }),
+  };
+}
+
+function start(plan: Plan, display: Display, animate?: (move: (index: number, rect: Rect) => void, acting: Acting) => () => void) {
   Object.assign(state, { progress: 0, total: plan.items.length, result: undefined, message: `Opening ${plan.items.length} windows` });
   if (plan.surface !== 'terminal') state.held += plan.items.length;
   const session = openPlan(plan, display, {
@@ -75,7 +87,7 @@ function start(plan: Plan, display: Display, animate?: (move: (index: number, re
     failed: message => { state.running = null; state.message = message; },
   }, state.opened);
   state.running = session;
-  if (animate && session.move) state.animation = animate(session.move);
+  if (animate && session.move) state.animation = animate(session.move, actingOf(session));
 }
 
 /** Performs one control action; `origin` is the controlling page's origin. */
@@ -99,7 +111,7 @@ export async function act<S extends { clearFirst: boolean }>(definition: Definit
     state.settings = settings;
     const planned = definition.plan(settings, display, origin);
     const { animate } = definition;
-    start(planned, display, animate && (move => animate(settings, planned, display, move) ?? (() => {})));
+    start(planned, display, animate && ((move, acting) => animate(settings, planned, display, move, acting) ?? (() => {})));
     return statusOf(true, 202);
   } catch (error) {
     state.message = (error as Error).message.slice(0, 300);

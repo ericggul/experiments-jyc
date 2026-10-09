@@ -36,8 +36,8 @@ material reads the same buffers. Resolve WebGPU/R3F typing with narrow,
 version-checked assertions and JSX augmentation, not a different runtime or
 CPU simulation.
 
-Typecheck the app and lint changed files. Only with explicit browser-testing
-authorization and an existing HTTPS server, observe the exact route for at
+Typecheck the app and lint changed files. When needed, with an existing HTTPS
+server, observe the exact route for at
 least 30 seconds; record canvas visibility, GPU/shader/runtime errors, device
 loss, and warnings separately. If it runs, stop; do not add speculative fallbacks.
 

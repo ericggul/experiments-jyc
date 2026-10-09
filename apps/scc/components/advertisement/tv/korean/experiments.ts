@@ -3,4 +3,5 @@ export const koreanTvExperiments = [
   { slug: "2", label: "korean/2" },
   { slug: "3", label: "korean/3" },
   { slug: "4", label: "korean/4" },
+  { slug: "5", label: "korean/5" },
 ] as const;
