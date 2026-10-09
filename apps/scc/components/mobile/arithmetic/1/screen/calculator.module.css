@@ -1,0 +1,120 @@
+/* Proportions come from Apple's iOS 27 support-page frame, whose screen is 468 units wide.
+   --u is one of those units, limited so the whole layout fits the viewport height. */
+.page {
+  --u: calc(min(100vw, (100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 468 / 792) / 468);
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Helvetica Neue", Arial, sans-serif;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phone {
+  display: flex;
+  flex-direction: column;
+  width: calc(468 * var(--u));
+  height: 100%;
+  padding-top: max(calc(env(safe-area-inset-top) + 6 * var(--u)), calc(12 * var(--u)));
+  padding-bottom: calc(env(safe-area-inset-bottom) + 41 * var(--u));
+}
+
+.glyph svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.display {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 0;
+  padding: 0 calc(30 * var(--u)) calc(16 * var(--u));
+}
+
+.expression,
+.main {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+  line-height: 1;
+}
+
+.expression {
+  min-height: 1em;
+  margin-bottom: calc(13 * var(--u));
+  font-size: calc(30 * var(--u));
+  color: rgb(166 166 166);
+}
+
+.main {
+  font-size: calc(74 * var(--u));
+  font-weight: 400;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, calc(96 * var(--u)));
+  grid-auto-rows: calc(96 * var(--u));
+  gap: calc(9 * var(--u));
+  justify-content: center;
+}
+
+.key {
+  --key: rgb(54 54 54);
+  --key-pressed: rgb(115 115 115);
+  --rim: rgb(255 255 255 / 0.2);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--key);
+  box-shadow:
+    inset 0 calc(0.8 * var(--u)) calc(0.6 * var(--u)) var(--rim),
+    inset 0 0 0 calc(0.5 * var(--u)) rgb(255 255 255 / 0.05);
+  color: #fff;
+  font: inherit;
+  transition: background-color 0.35s ease-out;
+}
+
+.key[data-tone="function"] {
+  --key: rgb(97 97 97);
+  --key-pressed: rgb(165 165 165);
+  --rim: rgb(255 255 255 / 0.22);
+}
+
+.key[data-tone="operator"] {
+  --key: rgb(255 147 0);
+  --key-pressed: rgb(255 199 135);
+  --rim: rgb(255 228 120 / 0.75);
+}
+
+.key[data-pressed] {
+  background: var(--key-pressed);
+  transition: none;
+}
+
+.label {
+  font-size: calc(40 * var(--u));
+  line-height: 1;
+}
+
+.label[data-wide] {
+  font-size: calc(42 * var(--u));
+}
+
+.glyph {
+  display: block;
+  width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+}

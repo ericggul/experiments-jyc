@@ -7,6 +7,10 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 - [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
   and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
 
+- [TV ad screens: insurance and pharma](references/tv-ads.md): reference ledger of archives and on-screen grammar (US Rx DTC, Medicare DR, Korean insurance/OTC) for future clones.
+
+- [advertisement/tv](experiments/advertisement/README.md): TV-ad clones; first attempts `archive/korean-1` (LINA Life) and `archive/american-1` (Ozempic) failed as flat vector illustration.
+
 - [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
 
 

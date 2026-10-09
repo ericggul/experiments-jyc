@@ -8,6 +8,8 @@ export const mobileExperiments = [
   { key: "lucky-ticket/1", label: "행운의 복권", href: "/mobile/lucky-ticket/1" },
   { key: "lucky-ticket/2", label: "행운의 복권 /2", href: "/mobile/lucky-ticket/2" },
   { key: "lucky-ticket/3", label: "행운의 복권 /3", href: "/mobile/lucky-ticket/3" },
+  { key: "arithmetic/default", label: "사칙연산", href: "/mobile/arithmetic/default" },
+  { key: "arithmetic/1", label: "사칙연산 /1", href: "/mobile/arithmetic/1" },
   { key: "face-trace/1", label: "face-trace/1", href: "/mobile/face-trace/1" },
   { key: "gaze-tracking", label: "gaze-tracking", href: "/mobile/gaze-tracking" },
   { key: "transform/pixelate", label: "transform/pixelate", href: "/mobile/transform/pixelate" },
