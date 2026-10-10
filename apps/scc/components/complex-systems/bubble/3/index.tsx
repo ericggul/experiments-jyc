@@ -28,7 +28,7 @@ import {
 } from "./model";
 import { iterate, transit } from "./iteration";
 import { BUBBLE_FLOATS, createFoamRenderer, LOOK_DEFAULTS, MAX_BUBBLES, MEDIA_FLOATS, mediaTileSize, type Colour, type FoamRenderer, type Look } from "./foam";
-import { DEFAULT_KEYWORD_FONT, DEFAULT_SURFACE, KEYWORD_FONTS, SURFACES, surfaceItems, type KeywordFontId, type SurfaceId } from "./media/catalogue";
+import { DEFAULT_KEYWORD_STYLE, DEFAULT_SURFACE, KEYWORD_FONTS, KEYWORD_SIZE_RANGE, SURFACES, surfaceItems, type KeywordStyle, type SurfaceId } from "./media/catalogue";
 import { loadMediaTiles, type MediaLoad } from "./media/loader";
 import {
   assignPage,
@@ -88,6 +88,11 @@ const DEFAULT_INFLUENCE = 0.2;
 /** Unlike bubble/2 (no fish), the school is there from the start (user, 2026-10-11). */
 const DEFAULT_FISH_COUNT = 250;
 const DEFAULT_FISH_PALETTE: FishPaletteId = "instagram";
+/**
+ * 닿을 때만: a page's picture appears while a fish touches it and goes when
+ * none does, each over 바뀜 부드럽게 (the media fade; 0 is instant) — user, 2026-10-11.
+ */
+const DEFAULT_ON_TOUCH = true;
 /** Two echo chambers from the start (user, 2026-10-11); bubble/2 starts with one web. */
 const DEFAULT_GROUPS = 2;
 
@@ -287,7 +292,7 @@ export default function RankedWebIteration() {
   const [view, setView] = useState<ViewId>("network");
   const [panel, setPanel] = useState<"network" | "visual" | "fish" | "media" | null>(null);
   const [surface, setSurface] = useState<SurfaceId>(DEFAULT_SURFACE);
-  const [keywordFont, setKeywordFont] = useState<KeywordFontId>(DEFAULT_KEYWORD_FONT);
+  const [keywordStyle, setKeywordStyle] = useState<KeywordStyle>(DEFAULT_KEYWORD_STYLE);
   const [mapping, setMapping] = useState<number>(DEFAULT_MAPPING);
   const mappingRef = useRef(DEFAULT_MAPPING);
   const [media, setMedia] = useState<MediaParameters>(MEDIA_DEFAULTS);
@@ -297,8 +302,11 @@ export default function RankedWebIteration() {
   /** Travelling portions show their source page's image. */
   const [carry, setCarry] = useState(true);
   const carryRef = useRef(true);
+  /** Pictures shown always, or only on bubbles a goldfish is touching. */
+  const [onTouch, setOnTouch] = useState(DEFAULT_ON_TOUCH);
+  const onTouchRef = useRef(DEFAULT_ON_TOUCH);
   /** Set by the frame loop: loads a surface's images into the renderer. */
-  const applySurfaceRef = useRef<((surface: SurfaceId, font: KeywordFontId) => void) | null>(null);
+  const applySurfaceRef = useRef<((surface: SurfaceId, keywords: KeywordStyle) => void) | null>(null);
   const [frameCost, setFrameCost] = useState("");
   const [fishCount, setFishCount] = useState(DEFAULT_FISH_COUNT);
   const fishCountRef = useRef(DEFAULT_FISH_COUNT);
@@ -321,10 +329,11 @@ export default function RankedWebIteration() {
     mediaRef.current = media;
     mediaLookRef.current = mediaLook;
     carryRef.current = carry;
-  }, [mapping, media, mediaLook, carry]);
+    onTouchRef.current = onTouch;
+  }, [mapping, media, mediaLook, carry, onTouch]);
   useEffect(() => {
-    applySurfaceRef.current?.(surface, keywordFont);
-  }, [surface, keywordFont]);
+    applySurfaceRef.current?.(surface, keywordStyle);
+  }, [surface, keywordStyle]);
   useEffect(() => {
     fishCountRef.current = fishCount;
     fishRef.current = fish;
@@ -405,12 +414,13 @@ export default function RankedWebIteration() {
     let sceneLoading = false;
     let disposed = false;
     const attention = new Float64Array(MAX_PAGES);
+    const revealField = new Float32Array(MAX_PAGES);
     const fishCanvas = fishCanvasRef.current;
     // Media: which image each page shows, and the images themselves.
     const mediaField = createMediaField(MAX_PAGES);
     let mediaLoad: MediaLoad | null = null;
     let mediaLayers = 0;
-    const applySurface = (next: SurfaceId, font: KeywordFontId) => {
+    const applySurface = (next: SurfaceId, keywords: KeywordStyle) => {
       mediaLoad?.cancel();
       const items = surfaceItems(next);
       mediaLayers = items.length;
@@ -418,7 +428,7 @@ export default function RankedWebIteration() {
       resetField(mediaField, webRef.current.size, mediaLayers, motionTime, mediaRef.current, random);
       mediaLoad = mediaLayers === 0
         ? null
-        : loadMediaTiles(items, (index, tile) => renderer.setMediaLayer(index, tile), () => renderer.commitMedia(), font, mediaTileSize(items.length));
+        : loadMediaTiles(items, (index, tile) => renderer.setMediaLayer(index, tile), () => renderer.commitMedia(), keywords, mediaTileSize(items.length));
     };
     applySurfaceRef.current = applySurface;
     const restart = () => {
@@ -428,7 +438,7 @@ export default function RankedWebIteration() {
       resetField(mediaField, web.size, mediaLayers, motionTime, mediaRef.current, random);
     };
     restart();
-    applySurface(DEFAULT_SURFACE, DEFAULT_KEYWORD_FONT);
+    applySurface(DEFAULT_SURFACE, DEFAULT_KEYWORD_STYLE);
     // Frame cost, when asked for: CPU work plus the GPU, synchronised by a 1-pixel read.
     const costs = new Float64Array(120);
     let costCount = 0;
@@ -583,6 +593,7 @@ export default function RankedWebIteration() {
       for (let page = 0; page < pageCount; page += 1) pools[page] = shown[page]!;
       const bubbles = renderer.bubbles;
       const bubbleMedia = renderer.media;
+      const bubbleReveal = renderer.reveal;
       let bubbleCount = 0;
       /** `page` is the page whose image the bubble shows; −1 shows the bare film. */
       const put = (x: number, y: number, radius: number, seed: number, page: number) => {
@@ -592,6 +603,7 @@ export default function RankedWebIteration() {
         bubbles[at + 1] = y;
         bubbles[at + 2] = radius;
         bubbles[at + 3] = seed;
+        bubbleReveal[bubbleCount] = page >= 0 ? revealField[page]! : 0;
         const m = bubbleCount * MEDIA_FLOATS;
         if (page >= 0) {
           bubbleMedia[m] = mediaField.layer[page]!;
@@ -683,6 +695,15 @@ export default function RankedWebIteration() {
         const drawnPages = bubbleCount - pageStart;
         school.step(delta * tempo, web, shown, bubbles, bubbleCount, pageStart, drawnPages, parameters);
         school.drainContact(drawnPages, attention);
+        // A page's picture comes while a fish touches it and goes when none does, over the media fade
+        // (read next frame, one frame behind the contact).
+        const fade = mediaRef.current.fade;
+        const step = fade > 0 ? delta / fade : 1;
+        for (let page = 0; page < drawnPages; page += 1) {
+          const target = attention[page]! > 0 ? 1 : 0;
+          const current = revealField[page]!;
+          revealField[page] = current < target ? Math.min(target, current + step) : Math.max(target, current - step);
+        }
         const strength = influenceRef.current * ATTENTION_GAIN / Math.max(FISH_AUDIENCE, school.fish.length);
         if (strength > 0) for (let page = 0; page < drawnPages; page += 1) attend(web, page, attention[page]! * strength);
         if (!scene && !sceneLoading && school.fish.length > 0 && fishCanvas) {
@@ -702,7 +723,7 @@ export default function RankedWebIteration() {
       const { area: _area, portions: _portions, ...look } = visualRef.current;
       void _area;
       void _portions;
-      renderer.render(bubbleCount, motionTime, { ...look, ...mediaLookRef.current, mediaMode: mediaLayers > 0 ? mappingRef.current : 0 });
+      renderer.render(bubbleCount, motionTime, { ...look, ...mediaLookRef.current, mediaMode: mediaLayers > 0 ? mappingRef.current : 0, mediaReveal: onTouchRef.current ? 1 : 0 });
       if (MEASURE) {
         renderer.sync();
         costs[costCount % costs.length] = performance.now() - frameStart;
@@ -1163,13 +1184,57 @@ export default function RankedWebIteration() {
                 <p className={styles.note}>키워드 글꼴</p>
                 <div className={styles.chips} role="group" aria-label="키워드 글꼴">
                   {KEYWORD_FONTS.map((option) => (
-                    <button key={option.id} type="button" aria-pressed={keywordFont === option.id} onClick={() => setKeywordFont(option.id)}>
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={keywordStyle.font === option.id}
+                      onClick={() => setKeywordStyle((current) => ({ ...current, font: option.id }))}
+                    >
                       {option.label}
                     </button>
                   ))}
                 </div>
+                <label className={styles.row}>
+                  <span>글자 크기 <output>{keywordStyle.size.toFixed(2)}</output></span>
+                  <input
+                    aria-label="키워드 글자 크기; 기본 0.5"
+                    max={KEYWORD_SIZE_RANGE[1]}
+                    min={KEYWORD_SIZE_RANGE[0]}
+                    step="0.05"
+                    type="range"
+                    value={keywordStyle.size}
+                    onChange={(event) => {
+                      const size = Number(event.target.value);
+                      setKeywordStyle((current) => ({ ...current, size }));
+                    }}
+                  />
+                </label>
+                <label className={styles.row}>
+                  <span>글자 불투명도 <output>{keywordStyle.opacity.toFixed(2)}</output></span>
+                  <input
+                    aria-label="키워드 글자의 불투명도; 1이면 흰색"
+                    max="1"
+                    min="0"
+                    step="0.01"
+                    type="range"
+                    value={keywordStyle.opacity}
+                    onChange={(event) => {
+                      const opacity = Number(event.target.value);
+                      setKeywordStyle((current) => ({ ...current, opacity }));
+                    }}
+                  />
+                </label>
               </>
             )}
+            <p className={styles.note}>보임</p>
+            <div className={styles.chips} role="group" aria-label="보임">
+              <button type="button" aria-pressed={!onTouch} onClick={() => setOnTouch(false)}>
+                항상
+              </button>
+              <button type="button" aria-pressed={onTouch} onClick={() => setOnTouch(true)}>
+                금붕어가 닿을 때만
+              </button>
+            </div>
             <p className={styles.note}>입히기</p>
             <div className={styles.chips} role="group" aria-label="입히기">
               {MAPPINGS.map((option) => (
@@ -1257,7 +1322,7 @@ export default function RankedWebIteration() {
                 </label>
               </>
             )}
-            {media.mode !== "fixed" && (
+            {(media.mode !== "fixed" || onTouch) && (
               <label className={styles.row}>
                 <span>바뀜 부드럽게 (초) <output>{media.fade.toFixed(2)}</output></span>
                 <input
@@ -1303,11 +1368,12 @@ export default function RankedWebIteration() {
               className={styles.reset}
               onClick={() => {
                 setSurface(DEFAULT_SURFACE);
-                setKeywordFont(DEFAULT_KEYWORD_FONT);
+                setKeywordStyle(DEFAULT_KEYWORD_STYLE);
                 setMapping(DEFAULT_MAPPING);
                 setMedia(MEDIA_DEFAULTS);
                 setMediaLook(MEDIA_LOOK_DEFAULTS);
                 setCarry(true);
+                setOnTouch(DEFAULT_ON_TOUCH);
               }}
             >
               기본값으로

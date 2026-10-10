@@ -5,7 +5,7 @@
 // tech atlas is decoded once for its 36 tiles and a surface change never
 // re-fetches a photo it already has.
 
-import { KEYWORD_FONTS, type KeywordFontId, type MediaItem } from "./catalogue";
+import { KEYWORD_FONTS, type KeywordStyle, type MediaItem } from "./catalogue";
 
 const MAX_CONCURRENT_DECODES = 4;
 
@@ -34,16 +34,16 @@ function drawCover(context: CanvasRenderingContext2D, image: ImageBitmap, sx: nu
   context.drawImage(image, sx + (sw - width) / 2, sy + (sh - height) / 2, width, height, 0, 0, tile, tile);
 }
 
-function drawText(context: CanvasRenderingContext2D, text: string, fontId: KeywordFontId, tile: number) {
-  const font = KEYWORD_FONTS.find((candidate) => candidate.id === fontId) ?? KEYWORD_FONTS[0]!;
+function drawText(context: CanvasRenderingContext2D, text: string, style: KeywordStyle, tile: number) {
+  const font = KEYWORD_FONTS.find((candidate) => candidate.id === style.font) ?? KEYWORD_FONTS[0]!;
   context.fillStyle = "#000000";
   context.fillRect(0, 0, tile, tile);
-  // Pale grey, not white: a word should sit among the photographs, not shout over them.
-  context.fillStyle = "#b4b4b4";
+  // White at the style's opacity on black: at 0.7 a pale grey, so a word sits among the photographs rather than shouting.
+  context.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(1, style.opacity))})`;
   context.textAlign = "center";
   context.textBaseline = "middle";
-  // The word spans about half the tile (the sphere mapping magnifies the middle); short words stay within a sensible size.
-  const size = Math.min(tile * 0.34, (tile * 0.5) / Math.max(1, text.length * 0.62)) * font.scale;
+  // At size 1 the word spans about half the tile (the sphere mapping magnifies the middle); short words stay within a sensible size.
+  const size = Math.min(tile * 0.34, (tile * 0.5) / Math.max(1, text.length * 0.62)) * font.scale * style.size;
   context.font = `${font.weight} ${size}px ${font.family}`;
   context.fillText(text, tile / 2, tile / 2 + size * 0.04);
 }
@@ -59,7 +59,7 @@ export function loadMediaTiles(
   items: readonly MediaItem[],
   onTile: (index: number, tile: HTMLCanvasElement) => void,
   onBatch: () => void,
-  fontId: KeywordFontId,
+  style: KeywordStyle,
   tile: number,
 ): MediaLoad {
   const canvas = document.createElement("canvas");
@@ -78,7 +78,7 @@ export function loadMediaTiles(
     const item = items[index]!;
     if (!context) return;
     if (item.kind === "text") {
-      drawText(context, item.text, fontId, tile);
+      drawText(context, item.text, style, tile);
     } else {
       const image = await decode(item.url);
       if (cancelled) return;

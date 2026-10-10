@@ -139,6 +139,8 @@ uniform float mediaBrightness;
 uniform float mediaZoom;              // 1: the whole image across the bubble; larger magnifies its middle
 uniform float mediaDrift;             // how fast the image turns (sphere) or scrolls (streak)
 uniform float filmOverMedia;          // how much the film at grazing angles hides what is behind it
+uniform highp sampler2D bubbleReveal; // per bubble: 1 while a goldfish touches it, 0 when none does, moving between over the media fade
+uniform float mediaReveal;            // 0: the picture is always there; 1: only as revealed by touch
 out vec4 pixel;
 
 vec4 bubbleAt(float index) {
@@ -416,6 +418,11 @@ void main() {
     picture = mix(current, next, m.z);
     float luminance = dot(picture, vec3(0.299, 0.587, 0.114));
     picture = softClip(mix(vec3(luminance), picture, mediaSaturation) * mediaBrightness);
+    if (mediaReveal > 0.0) {
+      // Shown only on bubbles a goldfish is touching.
+      float revealed = texelFetch(bubbleReveal, ivec2(mi % ${ROW}, mi / ${ROW}), 0).x;
+      picture *= mix(1.0, revealed, mediaReveal);
+    }
   }
 
   // Fresnel weight and a soft window, mirrored faintly by the back face.
@@ -508,6 +515,8 @@ export type Look = {
   mediaZoom: number;
   mediaDrift: number;
   filmOverMedia: number;
+  /** 0: pictures always shown; 1: only where goldfish have touched (bubble/2: irrelevant, no media). */
+  mediaReveal: number;
 };
 
 export const LOOK_DEFAULTS: Look = {
@@ -535,6 +544,7 @@ export const LOOK_DEFAULTS: Look = {
   mediaZoom: 1,
   mediaDrift: 1,
   filmOverMedia: 0.6,
+  mediaReveal: 0,
 };
 
 export type FoamRenderer = {
@@ -544,6 +554,8 @@ export type FoamRenderer = {
   render(bubbleCount: number, time: number, look?: Look): void;
   /** Per bubble: layer, next layer, blend, phase (parallel to `bubbles`). */
   readonly media: Float32Array;
+  /** Per bubble: how far a goldfish's touch shows its picture, 0–1 (parallel to `bubbles`). */
+  readonly reveal: Float32Array;
   /** An image the films reflect when envMode is 6. */
   setEnvironmentImage(image: TexImageSource): void;
   /** Makes room for this many media layers (black until set), at mediaTileSize(count). */
@@ -599,6 +611,12 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
   const neighbourData = dataTexture(ROW * NEIGHBOUR_TEXELS, MAX_BUBBLES / ROW);
   const mediaData = dataTexture(ROW, MAX_BUBBLES / ROW);
   const media = new Float32Array(MAX_BUBBLES * MEDIA_FLOATS);
+  const reveal = new Float32Array(MAX_BUBBLES);
+  const revealData = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, revealData);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, ROW, MAX_BUBBLES / ROW, 0, gl.RED, gl.FLOAT, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   // The images, one per layer; mirrored across their sides so a turning
   // sphere shows no seam, clamped top and bottom.
   const mediaArray = gl.createTexture();
@@ -723,6 +741,10 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     if (look.mediaMode > 0) {
       gl.bindTexture(gl.TEXTURE_2D, mediaData);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, ROW, rows, gl.RGBA, gl.FLOAT, media, 0);
+      if (look.mediaReveal > 0) {
+        gl.bindTexture(gl.TEXTURE_2D, revealData);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, ROW, rows, gl.RED, gl.FLOAT, reveal, 0);
+      }
     }
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
@@ -775,6 +797,9 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.activeTexture(gl.TEXTURE6);
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, mediaArray);
     gl.uniform1i(location(filmProgram, "media"), 6);
+    gl.activeTexture(gl.TEXTURE7);
+    gl.bindTexture(gl.TEXTURE_2D, revealData);
+    gl.uniform1i(location(filmProgram, "bubbleReveal"), 7);
     gl.bindVertexArray(screen);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
@@ -811,6 +836,7 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
   const dispose = () => {
     gl.deleteTexture(environment);
     gl.deleteTexture(mediaData);
+    gl.deleteTexture(revealData);
     gl.deleteTexture(mediaArray);
     gl.deleteTexture(bubbleData);
     gl.deleteTexture(neighbourData);
@@ -825,5 +851,5 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     gl.deleteProgram(filmProgram);
   };
 
-  return { bubbles, media, resize, render, setEnvironmentImage, setMediaLayerCount, setMediaLayer, commitMedia, sync, dispose };
+  return { bubbles, media, reveal, resize, render, setEnvironmentImage, setMediaLayerCount, setMediaLayer, commitMedia, sync, dispose };
 }

@@ -48,6 +48,12 @@ export const KEYWORD_FONTS: readonly { id: KeywordFontId; label: string; family:
 ];
 export const DEFAULT_KEYWORD_FONT: KeywordFontId = "gothic";
 
+/** How the keyword tiles are drawn: face, size relative to the tile, and the text's opacity on black. */
+export type KeywordStyle = { font: KeywordFontId; size: number; opacity: number };
+/** Size 1 spans about half the tile; the default is half that (user, 2026-10-11). */
+export const KEYWORD_SIZE_RANGE = [0.2, 2] as const;
+export const DEFAULT_KEYWORD_STYLE: KeywordStyle = { font: DEFAULT_KEYWORD_FONT, size: 0.5, opacity: 0.7 };
+
 const TECH_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas-v1.png";
 const TECH_ATLAS_COLUMNS = 6;
 const TECH_ATLAS_ROWS = 6;
