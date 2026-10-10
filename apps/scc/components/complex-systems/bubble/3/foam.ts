@@ -46,9 +46,16 @@ const NEIGHBOURS = NEIGHBOUR_TEXELS * 4;
 const MARGIN = 2;
 /** Floats per bubble of media state: layer, next layer, blend, phase. */
 export const MEDIA_FLOATS = 4;
-/** Media tiles are square, this many device-independent pixels a side. */
-export const MEDIA_TILE = 256;
 export const MAX_MEDIA_LAYERS = 320;
+/**
+ * Media tiles are square. Small sets get 512 px tiles (a hub bubble at DPR 2
+ * is 500–600 device px across, and the sphere mapping magnifies the middle);
+ * the mixed set, with over 200 layers, stays at 256 px to keep texture memory
+ * under about 100 MB.
+ */
+export function mediaTileSize(layers: number) {
+  return layers <= 100 ? 512 : 256;
+}
 
 const SPLAT_VERTEX = /* glsl */ `#version 300 es
 layout(location = 0) in vec2 corner;
@@ -226,6 +233,13 @@ vec3 surroundings(vec3 r) {
 // Reflectance of a soap film (n = 1.33) of thickness t (nm) at internal
 // cosine c, per wavelength: two-beam interference with the half-wave shift
 // at the front face, 2 sin²(2π n t c / λ).
+// A bright picture rolls off into white instead of clipping flat, so turning
+// 밝기 up does not flatten highlights into blocks.
+vec3 softClip(vec3 x) {
+  vec3 over = max(x - 0.75, 0.0);
+  return min(x, vec3(0.75)) + 0.25 * (1.0 - exp(-over / 0.25));
+}
+
 vec3 interference(float t, float c) {
   vec3 lambda = vec3(650.0, 532.0, 450.0);
   vec3 phase = 6.2831853 * 1.33 * t * c / lambda;
@@ -401,7 +415,7 @@ void main() {
     vec3 next = m.z > 0.0 ? textureGrad(media, vec3(uvm, m.y), dxm, dym).rgb : current;
     picture = mix(current, next, m.z);
     float luminance = dot(picture, vec3(0.299, 0.587, 0.114));
-    picture = mix(vec3(luminance), picture, mediaSaturation) * mediaBrightness;
+    picture = softClip(mix(vec3(luminance), picture, mediaSaturation) * mediaBrightness);
   }
 
   // Fresnel weight and a soft window, mirrored faintly by the back face.
@@ -532,9 +546,9 @@ export type FoamRenderer = {
   readonly media: Float32Array;
   /** An image the films reflect when envMode is 6. */
   setEnvironmentImage(image: TexImageSource): void;
-  /** Makes room for this many media layers (black until set). */
+  /** Makes room for this many media layers (black until set), at mediaTileSize(count). */
   setMediaLayerCount(count: number): void;
-  /** Puts a MEDIA_TILE-square image into one layer. */
+  /** Puts a square image of the current tile size into one layer. */
   setMediaLayer(index: number, image: TexImageSource): void;
   /** Rebuilds the media mipmaps; call after a batch of layers. */
   commitMedia(): void;
@@ -590,10 +604,12 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
   const mediaArray = gl.createTexture();
   const anisotropy = gl.getExtension("EXT_texture_filter_anisotropic");
   let mediaLayers = 0;
+  let mediaTile = 256;
   const allocateMedia = (count: number) => {
     mediaLayers = Math.max(1, Math.min(MAX_MEDIA_LAYERS, count));
+    mediaTile = mediaTileSize(count);
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, mediaArray);
-    gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA8, MEDIA_TILE, MEDIA_TILE, mediaLayers, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA8, mediaTile, mediaTile, mediaLayers, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
@@ -778,7 +794,7 @@ export function createFoamRenderer(canvas: HTMLCanvasElement): FoamRenderer | nu
     if (index < 0 || index >= mediaLayers) return;
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, mediaArray);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, index, MEDIA_TILE, MEDIA_TILE, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, index, mediaTile, mediaTile, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
   };
 
   const commitMedia: FoamRenderer["commitMedia"] = () => {

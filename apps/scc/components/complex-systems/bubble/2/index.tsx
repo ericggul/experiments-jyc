@@ -69,6 +69,8 @@ const DEFAULT_SEED = 0x2545f491;
 const ATTENTION_GAIN = 0.25;
 const FISH_AUDIENCE = 30;
 const DEFAULT_INFLUENCE = 0.2;
+/** The school is there from the start (user, 2026-10-11; it began at 0). */
+const DEFAULT_FISH_COUNT = 250;
 
 /** Goldfish sliders: key, label, range, step. Count 0 (no fish) is the default. */
 const FISH_CONTROLS: readonly { key: keyof FishParameters; label: string; min: number; max: number; step: number }[] = [
@@ -228,8 +230,8 @@ export default function RankedWebIteration() {
   const repopulateRef = useRef<number | null>(null);
   const [view, setView] = useState<ViewId>("network");
   const [panel, setPanel] = useState<"network" | "visual" | "fish" | null>(null);
-  const [fishCount, setFishCount] = useState(0);
-  const fishCountRef = useRef(0);
+  const [fishCount, setFishCount] = useState(DEFAULT_FISH_COUNT);
+  const fishCountRef = useRef(DEFAULT_FISH_COUNT);
   const [fish, setFish] = useState<FishParameters>(FISH_DEFAULTS);
   const fishRef = useRef<FishParameters>(FISH_DEFAULTS);
   const [fishPalette, setFishPalette] = useState<FishPaletteId>("classic");

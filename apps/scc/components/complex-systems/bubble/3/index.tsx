@@ -27,7 +27,7 @@ import {
   type RankedWeb,
 } from "./model";
 import { iterate, transit } from "./iteration";
-import { BUBBLE_FLOATS, createFoamRenderer, LOOK_DEFAULTS, MAX_BUBBLES, MEDIA_FLOATS, type Colour, type FoamRenderer, type Look } from "./foam";
+import { BUBBLE_FLOATS, createFoamRenderer, LOOK_DEFAULTS, MAX_BUBBLES, MEDIA_FLOATS, mediaTileSize, type Colour, type FoamRenderer, type Look } from "./foam";
 import { DEFAULT_KEYWORD_FONT, DEFAULT_SURFACE, KEYWORD_FONTS, SURFACES, surfaceItems, type KeywordFontId, type SurfaceId } from "./media/catalogue";
 import { loadMediaTiles, type MediaLoad } from "./media/loader";
 import {
@@ -418,7 +418,7 @@ export default function RankedWebIteration() {
       resetField(mediaField, webRef.current.size, mediaLayers, motionTime, mediaRef.current, random);
       mediaLoad = mediaLayers === 0
         ? null
-        : loadMediaTiles(items, (index, tile) => renderer.setMediaLayer(index, tile), () => renderer.commitMedia(), font);
+        : loadMediaTiles(items, (index, tile) => renderer.setMediaLayer(index, tile), () => renderer.commitMedia(), font, mediaTileSize(items.length));
     };
     applySurfaceRef.current = applySurface;
     const restart = () => {
