@@ -24,14 +24,15 @@ export const videoById = (id: string) => videos.find(video => video.id === id);
 const real = (id: string, keyword: string, type: PageType, title: string, url: string): Entry => ({ id, keyword, kind: 'real', type, title, url });
 const clone = (page: ClonePage, keyword: string, type: PageType, title: string, video?: string): Entry => ({ id: `clone-${page}-${video ?? keyword.toLowerCase().replace(/\s+/g, '-')}`, keyword, kind: 'clone', type, title, page, video });
 const wiki = (id: string, keyword: string, article: string, title: string) => real(id, keyword, 'encyclopedia', `${title} — Wikipedia`, `https://en.wikipedia.org/wiki/${article}`);
-const google = (id: string, keyword: string, query: string, news = false) => real(id, keyword, 'search', `Google${news ? ' News' : ''}: ${query}`, `https://www.google.com/search?q=${encodeURIComponent(query)}&hl=en${news ? '&tbm=nws' : ''}`);
+// Google web search answers the automated instance with its "unusual traffic"
+// page (observed 2026-10-10), so searches go to Google News, which loads.
+const gnews = (id: string, keyword: string, query: string) => real(id, keyword, 'news', `Google News: ${query}`, `https://news.google.com/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`);
 const watch = (video: Video) => real(`yt-${video.id}`, video.keyword, 'video', `YouTube: ${video.title}`, `https://www.youtube.com/watch?v=${video.id}`);
 
 export const catalogue: readonly Entry[] = [
   wiki('wiki-ai', 'AI', 'Artificial_intelligence', 'Artificial intelligence'),
   real('wiki-ai-ko', 'AI', 'encyclopedia', '인공지능 — 위키백과', 'https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5'),
-  google('google-ai', 'AI', 'artificial intelligence'),
-  real('gnews-ai', 'AI', 'news', 'Google News: AI', 'https://news.google.com/search?q=AI&hl=en-US&gl=US&ceid=US:en'),
+  gnews('gnews-ai', 'AI', 'AI'),
   real('naver-ai', 'AI', 'news', '네이버 뉴스: AI', 'https://search.naver.com/search.naver?where=news&query=AI'),
   real('hn', 'AI', 'news', 'Hacker News', 'https://news.ycombinator.com/'),
   real('verge-ai', 'AI', 'news', 'The Verge: AI', 'https://www.theverge.com/ai-artificial-intelligence'),
@@ -41,30 +42,30 @@ export const catalogue: readonly Entry[] = [
   real('arxiv-cs-ai', 'AI', 'paper', 'arXiv cs.AI, recent', 'https://arxiv.org/list/cs.AI/recent'),
   real('yt-search-ai', 'AI', 'video', 'YouTube: artificial intelligence', 'https://www.youtube.com/results?search_query=artificial+intelligence'),
   wiki('wiki-agi', 'AGI', 'Artificial_general_intelligence', 'Artificial general intelligence'),
-  google('google-agi', 'AGI', 'AGI'),
+  gnews('gnews-agi', 'AGI', 'AGI'),
   real('yt-search-agi', 'AGI', 'video', 'YouTube: AGI', 'https://www.youtube.com/results?search_query=agi'),
   wiki('wiki-genai', 'generative AI', 'Generative_artificial_intelligence', 'Generative artificial intelligence'),
-  google('google-genai', 'generative AI', 'generative ai'),
+  gnews('gnews-genai', 'generative AI', 'generative AI'),
   wiki('wiki-llm', 'LLM', 'Large_language_model', 'Large language model'),
   real('arxiv-attention', 'LLM', 'paper', 'Attention Is All You Need — arXiv', 'https://arxiv.org/abs/1706.03762'),
   wiki('wiki-openai', 'OpenAI', 'OpenAI', 'OpenAI'),
   real('openai', 'OpenAI', 'company', 'OpenAI', 'https://openai.com/'),
   wiki('wiki-chatgpt', 'ChatGPT', 'ChatGPT', 'ChatGPT'),
-  real('chatgpt', 'ChatGPT', 'company', 'ChatGPT', 'https://chatgpt.com/'),
+  gnews('gnews-chatgpt', 'ChatGPT', 'ChatGPT'),
   wiki('wiki-nvidia', 'NVIDIA', 'Nvidia', 'Nvidia'),
   real('nvidia-ai', 'NVIDIA', 'company', 'NVIDIA AI', 'https://www.nvidia.com/en-us/ai/'),
   real('naver-nvidia', 'NVIDIA', 'news', '네이버 뉴스: 엔비디아', 'https://search.naver.com/search.naver?where=news&query=%EC%97%94%EB%B9%84%EB%94%94%EC%95%84'),
   wiki('wiki-agent', 'AI agents', 'Intelligent_agent', 'Intelligent agent'),
-  google('google-agents', 'AI agents', 'ai agents'),
+  gnews('gnews-agents', 'AI agents', 'AI agents'),
   wiki('wiki-altman', 'Sam Altman', 'Sam_Altman', 'Sam Altman'),
   wiki('wiki-gpu', 'GPU', 'Graphics_processing_unit', 'Graphics processing unit'),
   real('nvidia-dc', 'GPU', 'company', 'NVIDIA Data Center', 'https://www.nvidia.com/en-us/data-center/'),
-  wiki('wiki-xai', 'xAI', 'XAI_(company)', 'xAI'),
-  real('xai', 'xAI', 'company', 'xAI', 'https://x.ai/'),
+  wiki('wiki-xai', 'xAI', 'XAI_(company)', 'xAI'), // Wikipedia now redirects this to SpaceXAI; it loads.
+  real('naver-xai', 'xAI', 'news', '네이버 뉴스: xAI', 'https://search.naver.com/search.naver?where=news&query=xAI'),
   real('nvidia-physical', 'physical AI', 'company', 'NVIDIA: What is Physical AI?', 'https://www.nvidia.com/en-us/glossary/physical-ai/'),
-  google('google-physical', 'physical AI', 'physical ai'),
+  gnews('gnews-physical', 'physical AI', 'physical AI'),
   wiki('wiki-boom', 'AI bubble', 'AI_boom', 'AI boom'),
-  google('gnews-bubble', 'AI bubble', 'ai bubble', true),
+  gnews('gnews-bubble', 'AI bubble', 'AI bubble'),
   wiki('wiki-anthropic', 'Anthropic', 'Anthropic', 'Anthropic'),
   real('anthropic', 'Anthropic', 'company', 'Anthropic', 'https://www.anthropic.com/'),
   wiki('wiki-huang', 'Jensen Huang', 'Jensen_Huang', 'Jensen Huang'),

@@ -5,7 +5,7 @@ import { Amount, Choice, Section } from "../../foundations/controller/fields";
 import { ControlShell, useDisplay } from "../../foundations/controller/shell";
 import { useControl } from "../../foundations/controller/use-control";
 import { Preview } from "./controller/preview";
-import { agents, clampSetting, defaults, links, ranges, sounds, type Settings } from "./model/settings";
+import { agents, attentions, clampSetting, defaults, links, pages, ranges, sounds, type Settings } from "./model/settings";
 import { compose, definition } from "./plan";
 
 const ENDPOINT = "/desktop-collage/hype/1/control";
@@ -40,14 +40,18 @@ export default function HypeOne() {
       <Section title="Windows">
         <Amount id="size" label="Size" unit="%" value={draft.size} range={ranges.size} onChange={amount("size")} />
         <Amount id="limit" label="Kept open" unit="" value={draft.limit} range={ranges.limit} onChange={amount("limit")} />
+        <Choice label="Pages" options={pages} value={draft.pages} names={{ scaled: "zoomed out when narrow", native: "at 100%" }} onChange={(value) => set("pages", value)} />
       </Section>
       <Section title="Material">
         <Amount id="clones" label="Cloned pages" unit="%" value={draft.clones} range={ranges.clones} onChange={amount("clones")} />
+        <Amount id="dark" label="Dark pages" unit="%" value={draft.dark} range={ranges.dark} onChange={amount("dark")} />
         <Choice label="Sound" options={sounds} value={draft.sound} onChange={(value) => set("sound", value)} />
       </Section>
       <Section title="Reader">
         <Choice label="Reads" options={agents} value={draft.agent} names={{ none: "no one", passive: "scrolls", active: "scrolls and writes" }} onChange={(value) => set("agent", value)} />
         <Choice label="Links" options={links} value={draft.links} names={{ follow: "may follow", leave: "leaves alone" }} onChange={(value) => set("links", value)} />
+        {draft.links === "follow" ? <Amount id="spawn" label="Derived" unit="%" value={draft.spawn} range={ranges.spawn} onChange={amount("spawn")} /> : null}
+        <Choice label="Attention" options={attentions} value={draft.attention} names={{ newest: "newest window", restless: "flicks around" }} onChange={(value) => set("attention", value)} />
       </Section>
       <Section title="Run">
         <Amount id="seed" label="Pattern" unit="#" value={draft.seed} range={ranges.seed} onChange={amount("seed")} />

@@ -74,6 +74,9 @@ The references depict a computer; here the computer performs the collage.
   - [hype/1](hype/README.md): under the keyword AI, real pages and cloned
     services open at a stochastic rhythm while a reader scrolls, writes in
     the clones and follows links in the real pages.
+  - [hype/2](hype/2.md): every window of AI fear-of-missing-out opens at
+    once, then the front one changes several times a second for two
+    minutes.
 - `foundations/`: the area's shared window machinery, grouped by function so
   later experiments can reuse and extend it. Every surface takes the same plan:
   rectangles in top-left desktop coordinates, a colour or page, and a stacking

@@ -6,6 +6,12 @@ export type GoldfishExperiment = {
   area: "screen" | "pc" | "desktop" | "mobile";
   section: "default" | "2d" | "dated";
   date: string | null;
+  /**
+   * ISO date of its latest major revision: behaviour or meaning changed at the
+   * user's request (not renames, moves, config, docs or refactors). The date
+   * view lists the experiment under this date; dated archives keep `date`.
+   */
+  updated?: string;
   phrase: string;
   load: () => Promise<{ default: ComponentType }>;
 };

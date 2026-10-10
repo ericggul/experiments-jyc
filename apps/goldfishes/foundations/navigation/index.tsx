@@ -18,6 +18,8 @@ export type NavigationExperiment = {
   area: GoldfishArea;
   section: "default" | "2d" | "dated";
   date: string | null;
+  /** Latest major revision (see the registry); the date view lists it here. */
+  updated?: string;
   phrase: string;
 };
 
@@ -116,15 +118,21 @@ function withView(href: string, view: NavigationView) {
   return view === "date" ? href : `${href}?view=${view}`;
 }
 
+/** The date an experiment is listed under: its latest major revision, else its creation. */
+function activity(experiment: NavigationExperiment) {
+  return experiment.updated ?? experiment.date;
+}
+
 function byKey(first: NavigationExperiment, second: NavigationExperiment) {
   return first.key.localeCompare(second.key);
 }
 
-// Dated archives live at `/<area>/<MMDD>`; a date group links there only when
-// every experiment in it shares that archive.
+// Dated archives live at `/<area>/<MMDD>` and list creation dates; a date group
+// links there only when every experiment created that day shares that archive
+// (revised experiments listed under the date do not count).
 function getDateArchive(experiments: NavigationExperiment[]) {
   const prefixes = new Set(
-    experiments.map((experiment) =>
+    experiments.filter((experiment) => !experiment.updated).map((experiment) =>
       experiment.section === "dated" && experiment.date
         ? `${experiment.area}/${experiment.date.slice(5).replace("-", "")}`
         : null,
@@ -136,22 +144,23 @@ function getDateArchive(experiments: NavigationExperiment[]) {
 
 function groupByDate(experiments: NavigationExperiment[]) {
   const groups: ExperimentGroup[] = [];
-  const undated = experiments.filter((experiment) => experiment.date === null);
+  const undated = experiments.filter((experiment) => activity(experiment) === null);
   if (undated.length > 0) {
     groups.push({ key: "current", label: "current", experiments: undated });
   }
 
   const dates = Array.from(
     new Set(
-      experiments.flatMap((experiment) =>
-        experiment.date === null ? [] : [experiment.date],
-      ),
+      experiments.flatMap((experiment) => {
+        const date = activity(experiment);
+        return date === null ? [] : [date];
+      }),
     ),
   ).sort((first, second) => second.localeCompare(first));
 
   for (const date of dates) {
     const dateExperiments = experiments
-      .filter((experiment) => experiment.date === date)
+      .filter((experiment) => activity(experiment) === date)
       .sort(byKey);
     const archive = getDateArchive(dateExperiments);
     groups.push({
@@ -281,12 +290,13 @@ function ExperimentRow({
       <span className="truncate text-(--gf-fg)/58 group-hover:text-(--gf-bg)/65 group-focus-visible:text-(--gf-bg)/65">
         {experiment.phrase}
       </span>
-      {experiment.date ? (
+      {activity(experiment) ? (
         <time
-          dateTime={experiment.date}
+          dateTime={activity(experiment)!}
+          title={experiment.updated ? `created ${experiment.date ? getDateLabel(experiment.date) : "current"}` : undefined}
           className="font-mono text-[10px] text-(--gf-fg)/45 group-hover:text-(--gf-bg)/55 group-focus-visible:text-(--gf-bg)/55"
         >
-          {getDateLabel(experiment.date)}
+          {getDateLabel(activity(experiment)!)}
         </time>
       ) : (
         <span className="font-mono text-[10px] text-(--gf-fg)/45 group-hover:text-(--gf-bg)/55 group-focus-visible:text-(--gf-bg)/55">
@@ -339,6 +349,8 @@ function NavigationScreen({
         experiment.phrase,
         experiment.date ?? "",
         experiment.date ? getDateLabel(experiment.date) : "current",
+        experiment.updated ?? "",
+        experiment.updated ? getDateLabel(experiment.updated) : "",
       ]
         .join(" ")
         .toLowerCase();

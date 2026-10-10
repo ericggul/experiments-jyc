@@ -22,6 +22,8 @@ export function chromeAppArgs(window: ChromeAppWindow, sound = false) {
     '--disable-backgrounding-occluded-windows',
     '--disable-renderer-backgrounding',
     '--disable-background-timer-throttling',
+    // No translate bubble over foreign-language pages (seen over Naver, 2026-10-10).
+    '--disable-features=Translate',
     // With sound, pages may start video by themselves; without it the whole
     // instance is muted. Instance flags take effect on the first launch only.
     ...(sound ? ['--autoplay-policy=no-user-gesture-required'] : ['--mute-audio']),

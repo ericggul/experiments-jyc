@@ -1,0 +1,29 @@
+.page { font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif; color: #1f1f1f; background: #f6f6f8; min-height: 100vh; }
+.nav { height: 56px; background: #fff; border-bottom: 1px solid #e6e6ea; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 32px; padding: 0 24px; }
+.wordmark { font-family: Inter, sans-serif; font-weight: 800; font-size: 24px; color: #ff2e4d; letter-spacing: -.04em; }
+.nav nav { display: flex; gap: 24px; font-size: 15px; font-weight: 500; color: #6b6b73; }
+.navActive { color: #1f1f1f; font-weight: 700; }
+.me { width: 32px; height: 32px; border-radius: 50%; background: #d9d9e0; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; max-width: 1040px; margin: 20px auto; padding: 0 20px; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .side { display: none; } }
+.post { background: #fff; border: 1px solid #e6e6ea; border-radius: 8px; padding: 24px; }
+.topic { font-size: 13px; color: #6b6b73; margin-bottom: 10px; }
+.post h1 { font-size: 22px; line-height: 1.4; margin: 0 0 12px; font-weight: 700; }
+.author { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b6b73; margin-bottom: 18px; }
+.badge { display: inline-block; font-size: 12px; font-weight: 600; color: #1f1f1f; background: #f0f0f4; border-radius: 4px; padding: 2px 6px; }
+.body p { font-size: 16px; line-height: 1.7; margin: 0 0 12px; }
+.counts { display: flex; gap: 18px; font-size: 14px; color: #6b6b73; padding: 14px 0; border-top: 1px solid #e6e6ea; border-bottom: 1px solid #e6e6ea; margin: 16px 0; }
+.counts span:first-child { color: #ff2e4d; font-weight: 600; }
+.comment { padding: 14px 0; border-bottom: 1px solid #f0f0f4; }
+.commentHead { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #6b6b73; }
+.comment p { font-size: 15px; line-height: 1.6; margin: 6px 0; }
+.commentActions { display: flex; gap: 14px; font-size: 12px; color: #6b6b73; }
+.composer { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding-top: 16px; }
+.composer input { border: 1px solid #e6e6ea; border-radius: 6px; padding: 10px 12px; font: inherit; font-size: 14px; }
+.composer button { border: 0; background: #ff2e4d; color: #fff; font: inherit; font-weight: 600; padding: 10px 14px; border-radius: 6px; }
+.side h3 { font-size: 15px; margin: 0 0 10px; }
+.side a { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid #e6e6ea; color: #1f1f1f; text-decoration: none; font-size: 14px; }
+.side strong { font-weight: 500; }
+.side em { font-style: normal; color: #ff2e4d; font-size: 12px; }
+.promo { margin-top: 16px; display: grid; gap: 4px; padding: 16px; background: #fff; border: 1px solid #e6e6ea; border-radius: 8px; font-size: 14px; }
+.promo span { color: #6b6b73; font-size: 13px; }

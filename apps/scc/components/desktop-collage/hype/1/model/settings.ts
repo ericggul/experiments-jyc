@@ -3,6 +3,8 @@ import { roots, type Root } from './keywords.ts';
 export const agents = ['none', 'passive', 'active'] as const;
 export const links = ['follow', 'leave'] as const;
 export const sounds = ['off', 'on'] as const;
+export const pages = ['scaled', 'native'] as const;
+export const attentions = ['newest', 'restless'] as const;
 
 export type Settings = {
   /** The root keyword; its derivatives come from the chain. */
@@ -19,17 +21,25 @@ export type Settings = {
   limit: number;
   /** Share of windows that show a cloned page rather than a real one, %. */
   clones: number;
+  /** Share of windows whose page is forced dark (Chrome's auto dark mode), the rest light, %. */
+  dark: number;
+  /** How readily links are followed and how many derived windows a followed link spawns, %. 0: no derived windows. */
+  spawn: number;
   /** `none`: windows only. `passive`: reads (scrolls) every window. `active`: also writes inside cloned pages. */
   agent: typeof agents[number];
   /** On real pages, the reader may follow a link to a derived keyword and spawn a window for it. */
   links: typeof links[number];
   /** Pages may play audio; off mutes the windows. */
   sound: typeof sounds[number];
+  /** `scaled`: a window narrower than a laptop browser shows its page zoomed out, as a small browser would not. `native`: pages at 100 %. */
+  pages: typeof pages[number];
+  /** `newest`: the reader attends to the latest window. `restless`: it also flicks between the open windows under a second apart, bringing each to the front. */
+  attention: typeof attentions[number];
   seed: number;
   clearFirst: boolean;
 };
 
-export const defaults: Settings = { keyword: 'AI', interval: 7, burst: 40, count: 20, size: 70, limit: 12, clones: 50, agent: 'active', links: 'follow', sound: 'off', seed: 1, clearFirst: true };
+export const defaults: Settings = { keyword: 'AI', interval: 7, burst: 40, count: 20, size: 70, limit: 12, clones: 50, dark: 50, spawn: 60, agent: 'active', links: 'follow', sound: 'off', pages: 'scaled', attention: 'newest', seed: 1, clearFirst: true };
 
 export const ranges = {
   interval: [2, 20, 1],
@@ -38,10 +48,12 @@ export const ranges = {
   size: [40, 100, 1],
   limit: [4, 24, 1],
   clones: [0, 100, 5],
+  dark: [0, 100, 5],
+  spawn: [0, 100, 5],
   seed: [1, 9999, 1],
 } as const satisfies Record<string, readonly [number, number, number]>;
 
-const choices = { keyword: roots, agent: agents, links, sound: sounds } as const;
+const choices = { keyword: roots, agent: agents, links, sound: sounds, pages, attention: attentions } as const;
 
 export function validateSettings(value: unknown): Settings {
   if (!value || typeof value !== 'object') throw new Error('Settings are required.');

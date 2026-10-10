@@ -5,7 +5,7 @@ import { findGoldfishExperiment, getGoldfishExperimentsForDate } from '@/compone
 export default async function DesktopExperiment({ params }: { params: Promise<{ experiment: string[] }> }) {
   const { experiment: path } = await params;
   if (path.length === 1) {
-    const experiments = getGoldfishExperimentsForDate(path[0], 'desktop').map(({ key, area, section, date, phrase }) => ({ key, area, section, date, phrase }));
+    const experiments = getGoldfishExperimentsForDate(path[0], 'desktop').map(({ key, area, section, date, updated, phrase }) => ({ key, area, section, date, updated, phrase }));
     if (!experiments.length) notFound();
     return <GoldfishesNavigation experiments={experiments} scope="desktop" archiveKey={`desktop/${path[0]}`} />;
   }

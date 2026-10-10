@@ -9,11 +9,12 @@ export const metadata: Metadata = {
 
 export default function GoldfishesIndexPage() {
   const experiments = goldfishExperiments.map(
-    ({ key, area, section, date, phrase }) => ({
+    ({ key, area, section, date, updated, phrase }) => ({
       key,
       area,
       section,
       date,
+      updated,
       phrase,
     }),
   );

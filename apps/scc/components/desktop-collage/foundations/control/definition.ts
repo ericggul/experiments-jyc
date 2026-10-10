@@ -23,8 +23,14 @@ export type Acting = {
   /** Clicks at a point in the window's page, in CSS pixels from its top-left. */
   click?: (index: number, x: number, y: number) => void;
   close?: (index: number) => void;
+  /** Brings the window in front of the others. */
+  front?: (index: number) => void;
+  /** Renders the window's page dark (the browser's automatic dark mode) or light. */
+  dark?: (index: number, enabled: boolean) => void;
   /** Opens one more window now; returns its index. */
   open?: (item: PlanItem) => number;
+  /** Tells the control that the experiment has stopped acting on its own, so the run no longer counts as moving. */
+  done?: () => void;
 };
 
 export type Definition<S extends { clearFirst: boolean }> = {

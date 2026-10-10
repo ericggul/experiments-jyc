@@ -19,17 +19,22 @@ export type Level = 'none' | 'passive' | 'active';
 /** Milliseconds per typed character, between these. */
 export const TYPING = [55, 120] as const;
 
-export function readingScript(entry: Pick<Entry, 'kind' | 'page'>, level: Level, follow: boolean, random: Random, texts: readonly string[]): Step[] {
+/**
+ * `follow` is the chance that a real page's script ends by following a link
+ * (0 never). A brief visit is a return to a window already read: fewer
+ * scrolls, writing and following only sometimes.
+ */
+export function readingScript(entry: Pick<Entry, 'kind' | 'page'>, level: Level, follow: number, random: Random, texts: readonly string[], brief = false): Step[] {
   if (level === 'none') return [];
   const steps: Step[] = [];
-  let t = between(random, 900, 1800);
-  const scrolls = 2 + Math.floor(random() * 4);
+  let t = between(random, brief ? 500 : 900, brief ? 1200 : 1800);
+  const scrolls = brief ? 1 + Math.floor(random() * 2) : 2 + Math.floor(random() * 4);
   for (let i = 0; i < scrolls; i++) {
     const back = i > 0 && chance(random, 0.2);
     steps.push({ at: Math.round(t), kind: 'scroll', dy: back ? -between(random, 160, 320) : between(random, 240, 620) });
     t += between(random, 1400, 3200);
   }
-  if (entry.kind === 'clone' && level === 'active' && texts.length) {
+  if (entry.kind === 'clone' && level === 'active' && texts.length && (!brief || chance(random, 0.5))) {
     const text = pick(random, texts);
     t += between(random, 400, 1200);
     steps.push({ at: Math.round(t), kind: 'focus' });
@@ -42,7 +47,7 @@ export function readingScript(entry: Pick<Entry, 'kind' | 'page'>, level: Level,
       steps.push({ at: Math.round(t), kind: 'act', name: 'like' });
     }
   }
-  if (entry.kind === 'real' && follow && chance(random, 0.55)) {
+  if (entry.kind === 'real' && follow > 0 && chance(random, brief ? follow * 0.5 : follow)) {
     t += between(random, 800, 2000);
     steps.push({ at: Math.round(t), kind: 'follow' });
   }

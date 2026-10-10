@@ -4,6 +4,7 @@ import { HELPER_PORT } from '../foundations/control/definition.ts';
 import { definition as one } from '../primitives/1/plan.ts';
 import { definition as two } from '../primitives/2/plan.ts';
 import { definition as hype } from '../hype/1/plan.ts';
+import { definition as hypeTwo } from '../hype/2/plan.ts';
 
 // The Mac helper: the same control the local development server has, for
 // pages served from anywhere. It listens on this Mac's loopback only and
@@ -19,6 +20,7 @@ const experiments: Record<string, (body: Body, origin: string) => Promise<Reply>
   'primitives/1': (body, origin) => act(one, body, origin),
   'primitives/2': (body, origin) => act(two, body, origin),
   'hype/1': (body, origin) => act(hype, body, origin),
+  'hype/2': (body, origin) => act(hypeTwo, body, origin),
 };
 
 const route = /^\/desktop-collage\/((?:primitives|hype)\/[^/]+)\/control$/;

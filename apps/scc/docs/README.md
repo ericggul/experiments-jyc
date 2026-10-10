@@ -16,7 +16,7 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
 
-- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near; [hype/1](experiments/desktop-collage/hype/README.md) opens real pages and cloned services under one keyword at a stochastic rhythm while a reader scrolls, writes and follows links.
+- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near; [hype/1](experiments/desktop-collage/hype/README.md) opens real pages and cloned services under one keyword at a stochastic rhythm while a reader scrolls, writes and follows links; [hype/2](experiments/desktop-collage/hype/2.md) opens every window of AI fear-of-missing-out at once, then flicks between them for two minutes.
 
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 
@@ -31,7 +31,7 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 - [amoeba/1](experiments/complex-systems/amoeba/README.md): grazing amoebae divide into plaques, encyst, and return in waves when the lawn regrows; click to found a lineage.
 - [amoeba/2](experiments/complex-systems/amoeba/2.md): the same lawn across the whole screen, with inherited body sizes that drift and differ by an order of magnitude.
 
-- [bubble/1–5](experiments/complex-systems/bubble/README.md): networks as bubbles — the PageRank raft baseline, Apollonian growth at triple junctions, self-coarsening foam, circle-packed planar networks with remembering films, and a GPU cellular-Potts foam.
+- [bubble/1–3, failures](experiments/complex-systems/bubble/README.md): networks as bubbles — the PageRank raft baseline, its parameters opened with a goldfish school and echo-chamber groups, Goldfishes' media under the films chasing trends down the links, and the rejected Apollonian, coarsening, circle-packed and Potts foams.
 
 - [barabasi-albert/1](experiments/complex-systems/barabasi-albert/README.md): seeded network growth with degree-proportional attachment.
 

@@ -26,6 +26,17 @@ test("every experiment has a unique key and an ISO creation date", () => {
   }
 });
 
+test("a major revision date is ISO, not before creation, and is what the date view lists", () => {
+  const items = new Map(getSccNavigationItems().map((item) => [item.key, item]));
+  for (const experiment of sccExperiments) {
+    if (experiment.updated === undefined) continue;
+    assert.match(experiment.updated, /^\d{4}-\d{2}-\d{2}$/, experiment.key);
+    assert.ok(experiment.updated > experiment.date, `${experiment.key}: updated must follow creation`);
+    assert.equal(items.get(experiment.key)?.date, experiment.updated);
+    assert.equal(items.get(experiment.key)?.created, experiment.date);
+  }
+});
+
 test("every slug in a family-root registry is dated in the navigation index", () => {
   const skipped = new Set(["mobile", "sns", "parametric-interface", "dj", "network-system"]);
   const missing: string[] = [];

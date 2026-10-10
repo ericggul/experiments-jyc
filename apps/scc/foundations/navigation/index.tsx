@@ -216,6 +216,7 @@ function ExperimentRow({
       </span>
       <time
         dateTime={experiment.date}
+        title={experiment.created && experiment.created !== experiment.date ? `created ${getDateLabel(experiment.created)}` : undefined}
         className={`${underDate ? "hidden md:block" : ""} font-mono text-[10px] text-(--scc-fg)/45 group-focus-within:text-(--scc-bg)/55 group-hover:text-(--scc-bg)/55`}
       >
         {getDateLabel(experiment.date)}
@@ -274,6 +275,8 @@ function NavigationScreen({
         experiment.phrase,
         experiment.date,
         getDateLabel(experiment.date),
+        experiment.created ?? "",
+        experiment.created ? getDateLabel(experiment.created) : "",
         ...experiment.routes.map((route) => route.href),
       ]
         .join(" ")

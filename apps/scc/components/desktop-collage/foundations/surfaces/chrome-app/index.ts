@@ -1,5 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { colorPage } from '../../pages/index.ts';
 import type { Handlers, Plan, PlanItem } from '../index.ts';
 import { CHROME_APP, chromeAppArgs, chromeAppProfile, type ChromeAppWindow } from './args.ts';
@@ -34,8 +34,17 @@ function prepareProfile() {
   mkdirSync(chromeAppProfile(), { recursive: true });
   const marker = `${chromeAppProfile()}/First Run`;
   if (!existsSync(marker)) writeFileSync(marker, '');
+  if (instancePid() !== undefined) return;
   // A killed instance can leave its port file behind; never connect to a stale port.
-  if (instancePid() === undefined) rmSync(`${chromeAppProfile()}/DevToolsActivePort`, { force: true });
+  rmSync(`${chromeAppProfile()}/DevToolsActivePort`, { force: true });
+  // No translate bubble over foreign-language pages: the flag alone did not
+  // stop it (seen over Naver, 2026-10-10), the profile preference does.
+  const preferences = `${chromeAppProfile()}/Default/Preferences`;
+  try {
+    const current = existsSync(preferences) ? JSON.parse(readFileSync(preferences, 'utf8')) as Record<string, unknown> : {};
+    mkdirSync(`${chromeAppProfile()}/Default`, { recursive: true });
+    writeFileSync(preferences, JSON.stringify({ ...current, translate: { ...(current.translate as Record<string, unknown> | undefined), enabled: false } }));
+  } catch { /* Chrome will write its own. */ }
 }
 
 function launch(window: ChromeAppWindow, sound: boolean) {
@@ -187,6 +196,29 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
       await devtools.send('Input.dispatchMouseEvent', { type, x: Math.round(x), y: Math.round(y), button: type === 'mouseMoved' ? 'none' : 'left', clickCount: 1 }, sessionId);
     }
   }
+  /** Runs commands on the page's session, attaching again once if the session was lost. */
+  async function withSession(index: number, commands: (sessionId: string) => Promise<void>, retry = true): Promise<void> {
+    const pending = session(index);
+    if (!pending || !devtools) return;
+    const sessionId = await pending;
+    try { await commands(sessionId); } catch (error) {
+      sessions.delete(index);
+      if (!retry) throw error;
+      return withSession(index, commands, false);
+    }
+  }
+  /** Raises the window: `Target.activateTarget` is the browser-level command that reorders windows (`Page.bringToFront` only activates a tab). */
+  function front(index: number) {
+    const targetId = targetIds.get(index);
+    if (!devtools || targetId === undefined || closed.has(index)) return;
+    void devtools.send('Target.activateTarget', { targetId }).catch(() => {});
+  }
+  function dark(index: number, enabled: boolean) {
+    void withSession(index, async sessionId => {
+      await devtools!.send('Emulation.setAutoDarkModeOverride', { enabled }, sessionId);
+      await devtools!.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: enabled ? 'dark' : 'light' }] }, sessionId);
+    }).catch(() => {});
+  }
   function close(index: number) {
     const targetId = targetIds.get(index);
     if (!devtools || targetId === undefined || closed.has(index)) return;
@@ -206,7 +238,7 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
   // quitting the instance (clear) ends it.
   return {
     cancel: () => { cancelled = true; timers.forEach(clearTimeout); devtools?.close(); },
-    move, opened, evaluate, scroll, click, close, open,
+    move, opened, evaluate, scroll, click, close, front, dark, open,
   };
 }
 

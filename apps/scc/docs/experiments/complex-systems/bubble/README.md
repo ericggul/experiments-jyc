@@ -14,6 +14,7 @@ tessellations) or from a rendering trick. Work on top of `/1`'s proven substrate
 | --- | --- | --- |
 | `/1` | 7-glsl-6 copied: route 7's PageRank web as a soap-bubble raft | [1.md](1.md) |
 | `/2` | `/1` copied, with network and visual-parameter panels, an optional adaptive goldfish school (off by default) and 1–4 disconnected, differently sized and characterised groups (default 1) | [2.md](2.md) |
+| `/3` | `/2` copied, with Goldfishes' media under the films (cats, kisses, politicians, tech renders, tech faces, keywords) in four mappings, fixed per page, churning, or chasing a trend that runs down the links | [3.md](3.md) |
 | `/failure/2`–`/failure/5` | rejected builds (2026-10-07/08), kept as recorded failures | [failure/](failure/2.md) |
 
 ## Goal (reset 2026-10-08)

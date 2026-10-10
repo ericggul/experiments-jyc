@@ -10,11 +10,12 @@ export const metadata: Metadata = {
 export default function GoldfishesScreenIndexPage() {
   const experiments = goldfishExperiments
     .filter((experiment) => experiment.area === "screen")
-    .map(({ key, area, section, date, phrase }) => ({
+    .map(({ key, area, section, date, updated, phrase }) => ({
       key,
       area,
       section,
       date,
+      updated,
       phrase,
     }));
 

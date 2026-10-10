@@ -1,6 +1,7 @@
 export const bubbleExperiments = [
   { slug: "1", label: "bubble/1" },
   { slug: "2", label: "bubble/2" },
+  { slug: "3", label: "bubble/3" },
 ] as const;
 
 /** Rejected builds kept as recorded failures (see docs/experiments/complex-systems/bubble/README.md). */

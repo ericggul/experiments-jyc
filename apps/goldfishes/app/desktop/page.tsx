@@ -2,6 +2,6 @@ import GoldfishesNavigation from '@/foundations/navigation';
 import { goldfishExperiments } from '@/components/experiments';
 
 export default function DesktopIndex() {
-  const experiments = goldfishExperiments.filter(item => item.area === 'desktop').map(({ key, area, section, date, phrase }) => ({ key, area, section, date, phrase }));
+  const experiments = goldfishExperiments.filter(item => item.area === 'desktop').map(({ key, area, section, date, updated, phrase }) => ({ key, area, section, date, updated, phrase }));
   return <GoldfishesNavigation experiments={experiments} scope="desktop" />;
 }

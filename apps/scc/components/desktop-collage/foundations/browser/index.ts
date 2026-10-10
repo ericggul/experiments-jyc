@@ -134,6 +134,7 @@ export function startBrowser<S extends { clearFirst: boolean }>(definition: Defi
     },
     scroll: (index, dy) => { try { live(index)?.scrollBy({ top: dy, behavior: 'smooth' }); } catch { /* Another origin. */ } },
     close: index => { try { live(index)?.close(); } catch { /* Already gone. */ } },
+    front: index => { try { live(index)?.focus(); } catch { /* Not allowed. */ } },
     open: item => {
       const target = openOne(item, run);
       mine.push(target);

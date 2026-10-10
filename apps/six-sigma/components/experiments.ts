@@ -4,11 +4,17 @@ export type SixSigmaExperiment = {
   key: string;
   legacyKeys?: readonly string[];
   date: string;
+  /**
+   * ISO date of its latest major revision: behaviour or meaning changed at the
+   * user's request (not renames, moves, config, docs or refactors). The
+   * navigation orders by it; dated archives keep `date`.
+   */
+  updated?: string;
   label: string;
   load: () => Promise<{ default: ComponentType }>;
 };
 
-export type NavigationExperiment = Pick<SixSigmaExperiment, "key" | "date" | "label">;
+export type NavigationExperiment = Pick<SixSigmaExperiment, "key" | "date" | "updated" | "label">;
 
 export const sixSigmaExperiments: readonly SixSigmaExperiment[] = [
   {
@@ -42,7 +48,7 @@ export const sixSigmaExperiments: readonly SixSigmaExperiment[] = [
 ];
 
 export const sixSigmaNavigationExperiments: readonly NavigationExperiment[] =
-  sixSigmaExperiments.map(({ key, date, label }) => ({ key, date, label }));
+  sixSigmaExperiments.map(({ key, date, updated, label }) => ({ key, date, updated, label }));
 
 export function findSixSigmaExperiment(path: readonly string[]) {
   const key = path.join("/");

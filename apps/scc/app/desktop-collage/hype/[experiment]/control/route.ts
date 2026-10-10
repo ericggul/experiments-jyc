@@ -1,10 +1,11 @@
 import * as one from "@/components/desktop-collage/hype/1/server";
+import * as two from "@/components/desktop-collage/hype/2/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Local control of real browser windows for each hype experiment.
-const experiments: Record<string, typeof one> = { "1": one };
+const experiments: Record<string, typeof one> = { "1": one, "2": two };
 type Context = { params: Promise<{ experiment: string }> };
 
 async function handle(request: Request, { params }: Context, method: "GET" | "POST") {

@@ -25,7 +25,12 @@ selects the variant from the matching `components/.../experiments.ts`. Every
 SCC variant also needs an entry with its ISO creation date and one-line phrase
 in `foundations/navigation/experiments.ts`, which drives the home, area and
 family indexes (date-grouped, searchable, modelled on Goldfishes); its pure
-test flags registry slugs missing from that index. When a variant is also an example of another
+test flags registry slugs missing from that index. An optional `updated` (ISO
+date of the latest major revision, rule in [AGENTS.md](../../AGENTS.md)) moves
+the entry to that date in the date view of all three archives (Goldfishes:
+`components/experiments.ts`; six-sigma: `components/experiments.ts`, which
+orders by it); `date` stays the creation date, the row's tooltip shows it, and
+dated archive routes (`/<area>/<MMDD>`) keep listing by creation. When a variant is also an example of another
 family (e.g. a finger-skated fractal clock), add an `also` alias to its index
 entry instead of copying code: the alias family index lists it, the route and
 code stay canonical, and agents find such cross-listings by grepping `also:`. Use dynamic variants, not literal numbered

@@ -23,6 +23,12 @@ export type SccExperiment = {
   also?: readonly SccExperimentAlias[];
   /** ISO date the experiment was created. */
   date: string;
+  /**
+   * ISO date of its latest major revision: behaviour or meaning changed at the
+   * user's request (not renames, moves, config, docs or refactors). The date
+   * view lists the experiment under this date instead of `date`.
+   */
+  updated?: string;
   phrase: string;
   /** Device roles for multi-device experiments; the first is the primary link. */
   routes?: readonly SccExperimentRoute[];
@@ -32,14 +38,18 @@ export type SccNavigationItem = {
   key: string;
   area: SccArea;
   family: string;
+  /** Latest activity: the major revision date, else the creation date. */
   date: string;
+  /** Creation date, when the registry knows it. */
+  created?: string;
   phrase: string;
   routes: readonly SccExperimentRoute[];
 };
 
 // Navigation index for every SCC experiment. Family `experiments.ts`
 // registries stay authoritative for executable variants; add each new variant
-// here with its creation date so it appears in the archive navigation.
+// here with its creation date so it appears in the archive navigation, and
+// set `updated` when a later request changes what it does (see AGENTS.md).
 export const sccExperiments: readonly SccExperiment[] = [
   { key: "adaptive-coevolving-network/1", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-01", phrase: "Opinions and ties coevolve: adopt or rewire, consensus or fragmentation" },
   { key: "adaptive-coevolving-network/1-3d", area: "complex-systems", family: "adaptive-coevolving-network", date: "2026-10-05", phrase: "The same adopt-or-rewire voter network as a turning volume of luminous islands" },
@@ -60,7 +70,8 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "amoeba/1", area: "complex-systems", family: "amoeba", date: "2026-10-05", phrase: "Amoebae eat a bacterial lawn, divide into plaques and return in waves" },
   { key: "amoeba/2", area: "complex-systems", family: "amoeba", date: "2026-10-06", phrase: "Full-screen lawn where amoeba sizes are inherited, drift and differ wildly" },
   { key: "bubble/1", area: "complex-systems", family: "bubble", date: "2026-10-07", phrase: "The PageRank soap-bubble raft of 7-glsl-6, as the bubble family's baseline" },
-  { key: "bubble/2", area: "complex-systems", family: "bubble", date: "2026-10-08", phrase: "The same raft with its network and visual parameters open to adjustment" },
+  { key: "bubble/2", area: "complex-systems", family: "bubble", date: "2026-10-08", updated: "2026-10-09", phrase: "The same raft with its network and visual parameters open to adjustment" },
+  { key: "bubble/3", area: "complex-systems", family: "bubble", date: "2026-10-10", phrase: "The raft wearing Goldfishes' media — fixed per page, churning, or chasing a trend along the links" },
   { key: "bubble/failure/2", area: "complex-systems", family: "bubble", date: "2026-10-07", phrase: "Failure: Apollonian bubble rafts in five renderings, all rejected" },
   { key: "bubble/failure/3", area: "complex-systems", family: "bubble", date: "2026-10-07", phrase: "Failure: a coarsening foam drawn as pebbles, then neon blobs" },
   { key: "bubble/failure/4", area: "complex-systems", family: "bubble", date: "2026-10-07", phrase: "Failure: a circle-packed foam, slow, then a wireframe" },
@@ -146,6 +157,7 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "desktop-collage/primitives/2", area: "desktop-collage", family: "desktop-collage/primitives", date: "2026-10-05", phrase: "Chrome app windows each hold a sphere of one desktop-wide field; brought close, they connect" },
   { key: "desktop-collage/primitives/1", area: "desktop-collage", family: "desktop-collage/primitives", date: "2026-10-05", phrase: "Real Safari windows open one by one or all at once until their rectangles trace a heart" },
   { key: "desktop-collage/hype/1", area: "desktop-collage", family: "desktop-collage/hype", date: "2026-10-09", phrase: "Under one keyword, real pages and cloned services open at a stochastic rhythm while a reader scrolls, writes and follows links" },
+  { key: "desktop-collage/hype/2", area: "desktop-collage", family: "desktop-collage/hype", date: "2026-10-10", phrase: "Every window of AI fear-of-missing-out opens at once, then the front one changes several times a second for two minutes" },
   { key: "advertisement/tv/korean/1", area: "advertisement", family: "advertisement/tv/korean", date: "2026-10-09", phrase: "LINA OK Silver 120-second direct-response spot, scene by scene, with measured caption and bar layers" },
   { key: "advertisement/tv/korean/2", area: "advertisement", family: "advertisement/tv/korean", date: "2026-10-09", phrase: "Heungkuk Life family-love dementia care 120-second direct-response spot, scene by scene" },
   { key: "advertisement/tv/korean/3", area: "advertisement", family: "advertisement/tv/korean", date: "2026-10-09", phrase: "AIA Life family dementia 60-second direct-response spot, scene by scene" },
@@ -261,7 +273,8 @@ function toNavigationItem(experiment: SccExperiment): SccNavigationItem {
     key: experiment.key,
     area: experiment.area,
     family: experiment.family,
-    date: experiment.date,
+    date: experiment.updated ?? experiment.date,
+    created: experiment.date,
     phrase: experiment.phrase,
     routes: experiment.routes ?? [
       { label: experiment.key, href: `/${experiment.key}` },
@@ -312,7 +325,8 @@ export function getCloneNavigationItems(parentKey: string) {
         key,
         area: parent.area,
         family: parentKey,
-        date: parent.date,
+        date: parent.updated ?? parent.date,
+        created: parent.date,
         phrase: clone.phrase,
         routes: [{ label: key, href: `/${key}` }],
       };

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { NavigationExperiment } from "@/components/experiments";
-import { getSixSigmaArchive } from "./archive";
+import { getActivity, getSixSigmaArchive } from "./archive";
 import styles from "./navigation.module.css";
 
 type Props = {
@@ -15,12 +15,14 @@ type Props = {
 export default function SixSigmaNavigation({ experiments, scope, archiveDate }: Props) {
   const [query, setQuery] = useState("");
   const search = query.trim().toLowerCase();
-  const filtered = experiments.filter((item) =>
-    [item.key, item.label, item.date].join(" ").toLowerCase().includes(search),
-  );
-  const groups = [...new Set(filtered.map(getSixSigmaArchive))].sort(
-    (a, b) => b.localeCompare(a),
-  );
+  // Most recent activity first: a major revision lifts an experiment, and its
+  // dated archive group, to the top; the group still links to its creation archive.
+  const filtered = experiments
+    .filter((item) =>
+      [item.key, item.label, item.date, item.updated ?? ""].join(" ").toLowerCase().includes(search),
+    )
+    .sort((a, b) => getActivity(b).localeCompare(getActivity(a)) || a.key.localeCompare(b.key));
+  const groups = [...new Set(filtered.map(getSixSigmaArchive))];
 
   return (
     <main className={styles.archive}>

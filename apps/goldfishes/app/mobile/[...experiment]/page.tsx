@@ -24,7 +24,7 @@ export default async function MobileExperiment({ params }: Props) {
   const { experiment: path } = await params;
   if (path.length === 1) {
     const experiments = getGoldfishExperimentsForDate(path[0], "mobile")
-      .map(({ key, area, section, date, phrase }) => ({ key, area, section, date, phrase }));
+      .map(({ key, area, section, date, updated, phrase }) => ({ key, area, section, date, updated, phrase }));
     if (!experiments.length) notFound();
     return <GoldfishesNavigation experiments={experiments} scope="mobile" archiveKey={`mobile/${path[0]}`} />;
   }

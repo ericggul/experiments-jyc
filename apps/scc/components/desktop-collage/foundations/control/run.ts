@@ -18,7 +18,7 @@ export function openPlan(plan: Plan, display: Display, handlers: Handlers, opene
   if (plan.surface === 'bare') return openBare(plan, display, handlers);
   if (plan.surface === 'terminal') return openTerminal(plan, handlers, ids => { opened.terminal.push(...ids); });
   const launch = openChromeApp(plan, handlers);
-  return { stop: launch.cancel, move: launch.move, opened: launch.opened, evaluate: launch.evaluate, scroll: launch.scroll, click: launch.click, close: launch.close, open: launch.open };
+  return { stop: launch.cancel, move: launch.move, opened: launch.opened, evaluate: launch.evaluate, scroll: launch.scroll, click: launch.click, close: launch.close, front: launch.front, dark: launch.dark, open: launch.open };
 }
 
 /** Closes every window on every surface; returns how many tracked Terminal windows closed. */

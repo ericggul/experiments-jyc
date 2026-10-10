@@ -48,18 +48,37 @@ times; `plan.ts` consumes them) is kept open; the sync is not designed.
   derived keyword by weight. Reading a window raises its keyword, a derived
   keyword found in a window's title raises that one, and a followed link
   raises its keyword most; weights relax to base with a 40 s constant.
-- **Deck** (`model/catalogue.ts`): 53 real pages and 40 clones over 21
+- **Deck** (`model/catalogue.ts`): 52 real pages and 40 clones over 21
   keywords (Slack 7, article 12, Google 11, YouTube 5, landing page 5). A
   window is a clone with probability `clones` %, then the other kind, then
   the root's pages, when the keyword has none left; 0 % and 100 % mean
   exactly that. The five YouTube IDs were verified through oEmbed on
-  2026-10-09.
-- **Windows** (`model/layout.ts`): 55–85 % of the visible width and 60–90 %
-  of its height around `size`, cascading from the top-left by 22 pt with
-  jitter, one in five on the right edge; newest in front. Above `limit`
-  the oldest closes through DevTools. The whole run is composed from the
-  seed (`compose` in `plan.ts`), so the control page previews exactly what
-  the Mac will do: the rectangles in order and the arrivals on a time strip.
+  2026-10-09. Every real page was opened in the throwaway instance on
+  2026-10-10 (ten at a time, titles read through DevTools after 16 s):
+  Google web search answered every query with its "unusual traffic" page
+  (`/sorry/`), and chatgpt.com and x.ai stopped at Cloudflare's challenge,
+  so those eight pages were removed; Google News search, Google Trends,
+  Naver, Wikipedia, YouTube, arXiv, Hugging Face, openai.com, nvidia.com,
+  anthropic.com, The Verge, TechCrunch and Hacker News all loaded.
+  Wikipedia now redirects the xAI article to SpaceXAI, which loads.
+- **Windows** (`model/layout.ts`): widths spread from 0.4 × the mean
+  (`size` % of the visible width) up to the mean and never beyond it, so no
+  window covers the desktop; proportions a laptop browser's (width over
+  height 1.3–1.75, kept when a bound clamps), never under 380 × 300. Places: a cascade from the top-left by 22 pt with jitter
+  (40 %), anywhere on the desktop (35 %), or against the right, left or
+  bottom edge (25 %); newest in front. Above `limit` the oldest closes
+  through DevTools. With `pages: scaled` a window narrower than 1280 pt
+  shows its page zoomed out in proportion (down to 0.5), so a small window
+  holds a whole desktop page as a small browser would not: cloned pages
+  zoom themselves from their URL, real pages are told to through their
+  session, again after a followed link. A share `dark` of the windows
+  (default 50 %) is rendered in Chrome's automatic dark mode through its
+  session (`Emulation.setAutoDarkModeOverride` plus a dark
+  `prefers-color-scheme`), real pages and clones alike, so the stack mixes
+  dark and light grounds. The whole run is composed from the seed
+  (`compose` in `plan.ts`), so the control page previews exactly what the
+  Mac will do: the rectangles in order (dark ones fainter) and the arrivals
+  on a time strip.
 - **Reader** (`agent/reader.ts`, `read` in `plan.ts`): a timed script per
   window, started 2.5 s after placement; attention always moves to the newest
   settled window and the previous script is abandoned. `passive` scrolls
@@ -70,6 +89,24 @@ times; `plan.ts` consumes them) is kept open; the sync is not designed.
   visible link whose text mentions a chain keyword (derived first, by
   weight), in the same window; the keyword then spawns a window 1.5–4 s
   later. Real pages are never written to. The pure test holds that.
+  With `attention: restless` the reader also keeps returning: whenever it
+  is idle, every 3–9 s, it picks an earlier window (newer ones more likely),
+  brings it to the front (`Page.bringToFront`) and pays it a brief visit of
+  one or two scrolls, writing there only if it has not written there before
+  and only sometimes, following a link less often. A new window still takes
+  attention first, once.
+
+  Replaced the same night: `restless` now **flicks**. Every 0.25–1 s it
+  brings another open window to the front (newer ones more likely) with one
+  small scroll, without waiting for anything to finish; the newest window's
+  reading script runs underneath regardless. On a real page a flick leaves
+  through a link with a small chance (6 % × `spawn`), so navigation itself
+  keeps spawning windows.
+
+  `spawn` (0–100 %, default 60) sets how readily links are followed (the
+  chance a real page's script ends in a link rises from 0.2 to 0.95 with it;
+  0 never) and how many windows a followed keyword spawns (one, and a second
+  with probability `spawn`).
 - **Cloned pages** (`window/`): each registers `window.__hype` with
   `focus`, `type`, `submit` and `act`. Slack sends as the member 지안 and
   likes with a 👍 reaction; the article posts a comment and likes the first;
@@ -89,8 +126,10 @@ times; `plan.ts` consumes them) is kept open; the sync is not designed.
   The Mac helper serves `hype/1` too.
 
 Parameters: interval 2–20 s (7), burst 0–100 % (40), windows 4–40 (20), size
-40–100 % (70), kept open 4–24 (12), cloned pages 0–100 % (50), sound, reader
-(no one / scrolls / scrolls and writes), links (may follow / leaves alone),
+40–100 % (70), kept open 4–24 (12), pages (zoomed out when narrow / at
+100 %), cloned pages 0–100 % (50), dark pages 0–100 % (50), sound, reader
+(no one / scrolls / scrolls and writes), links (may follow / leaves alone)
+with derived 0–100 % (60), attention (newest window / flicks around),
 pattern, clear before a run.
 
 Not built: clones of X and LinkedIn. The repository's rule for the four
@@ -136,9 +175,40 @@ Changed after the captures: the Google clone now keeps its results on the
 keyword and shows a sent query as a correction line, because the overview
 rewritten around a typed sentence read as broken rather than as a search.
 
-Not yet observed: a followed link and its spawned window (the captures did
-not catch one); sound on; the browser fallback; the helper path; frame
-times with 24 windows kept.
+2026-10-10 00:23–00:27, after the feedback that the stack read as
+monotonous and that some pages did not load: deck pruned as above, sizes
+and places spread, pages scaled, attention restless (the rest default).
+Observed in captures: a small TechCrunch window (about 520 pt wide) holding
+the whole desktop page zoomed out over a large 전자신문 article window; that
+article was reached by the reader following a link from the Naver 엔비디아
+news page (the run counted 21 windows for 20 planned, the spawn); the Naver
+window brought back to the front in full over the others; sizes from a
+third of the screen to nearly all of it. Chrome's translate bubble opened
+over the Korean page; the instance now starts with Translate disabled. The
+run ended `Done` with 12 kept; `clear all` closed 12.
+
+2026-10-10 00:33–00:37, after the next feedback (flick constantly, mix
+dark and light, no window as wide as the screen, more derived windows):
+defaults with attention flicking. The run reached 27 windows for 20 planned
+(seven derived from followed links); captures five seconds apart showed a
+different window in front each time (the dark xAI Google clone, then Google
+Trends, NVIDIA and two Naver news windows), dark and light grounds side by
+side (Trends, NVIDIA and the Google clone dark; Naver and Wikipedia light),
+and no window wider than about two thirds of the screen. The translate
+bubble still appeared over Naver despite the flag, so the profile's
+preference now turns translate off before each cold start (not yet
+observed). The run ended `Done` with 12 kept; `clear all` closed 12.
+
+2026-10-10 23:59, found while building hype/2: `Page.bringToFront`, which
+restless mode had used to bring a window forward, only activates a tab and
+never reordered the windows, so the flicks seen in the 00:33 captures were
+the windows' own openings and moves, not the flicks. The surface now raises
+with `Target.activateTarget`, measured to reorder within 150 ms; restless
+mode in this route has not been re-observed since.
+
+Not yet observed: sound on; the browser fallback; the helper path; frame
+times with 24 windows kept; the translate preference; restless mode with
+the working raise.
 
 ## References
 
@@ -209,5 +279,7 @@ and a real page receives a fake reader.
   count) or stay indistinguishable. They are indistinguishable now.
 - Whether the windows should drift or breathe, as native-windows/2 does, or
   whether stillness is what makes the arrivals legible.
+- Whether restless visits should also move or resize the window they
+  return to, and how long a visit should hold before the next.
 - How the Goldfishes events replace the point process: one event per
   goldfish contact would be far denser than one per 7 s.

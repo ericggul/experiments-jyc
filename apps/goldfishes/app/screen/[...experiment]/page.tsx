@@ -36,11 +36,12 @@ export default async function GoldfishesScreenExperimentPage({
 
   if (dateExperiments.length > 0) {
     const experiments = dateExperiments.map(
-      ({ key, area, section, date, phrase }) => ({
+      ({ key, area, section, date, updated, phrase }) => ({
         key,
         area,
         section,
         date,
+        updated,
         phrase,
       }),
     );
