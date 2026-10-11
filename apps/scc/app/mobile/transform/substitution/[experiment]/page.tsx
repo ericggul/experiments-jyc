@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SccNavigation from "@/foundations/navigation";
 import { getCloneNavigationItems } from "@/foundations/navigation/experiments";
+import { substitutionExperiments } from "@/components/mobile/transform/substitution/experiments";
 
 export function generateStaticParams() {
-  return [{ experiment: "1" }, { experiment: "2" }];
+  return Object.keys(substitutionExperiments).map((experiment) => ({ experiment }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ experiment: string }> }): Promise<Metadata> {
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ experimen
 
 export default async function SubstitutionExperimentPage({ params }: { params: Promise<{ experiment: string }> }) {
   const { experiment } = await params;
-  if (experiment !== "1" && experiment !== "2") notFound();
+  if (!substitutionExperiments[experiment]) notFound();
   const key = `mobile/transform/substitution/${experiment}`;
   return (
     <SccNavigation

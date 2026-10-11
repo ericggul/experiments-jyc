@@ -1,0 +1,98 @@
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) :where(*):not([data-substitution-form-ui], [data-substitution-form-ui] *) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  fill: transparent !important;
+  filter: none !important;
+  outline: none !important;
+  stroke: transparent !important;
+  text-decoration-color: transparent !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) :where(*):not([data-substitution-form-ui], [data-substitution-form-ui] *)::before,
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) :where(*):not([data-substitution-form-ui], [data-substitution-form-ui] *)::after {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  visibility: hidden !important;
+}
+
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) :where(img, picture, svg, video, canvas, iframe, input, select, textarea):not([data-substitution-form-ui], [data-substitution-form-ui] *) {
+  opacity: 0 !important;
+}
+
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) :where(input, textarea):not([data-substitution-form-ui] *)::placeholder {
+  color: transparent !important;
+}
+
+html:is([data-mobile-substitution-form="outline"], [data-mobile-substitution-form="color"]) body :where(*):not([data-substitution-form-overlay], [data-substitution-form-ui], [data-substitution-form-ui] *) {
+  border-radius: 0 !important;
+}
+
+html[data-mobile-substitution-form] canvas[data-substitution-form-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  opacity: 1 !important;
+  outline: none !important;
+  pointer-events: none !important;
+}
+
+.substitution-form-control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483001;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: #171717;
+}
+
+.substitution-form-control * { box-sizing: border-box; }
+.substitution-form-control, .substitution-form-control * { -webkit-text-fill-color: currentColor !important; }
+
+.substitution-form-trigger {
+  min-height: 42px;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 15px;
+  background: #171717;
+  color: #fff;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.substitution-form-panel {
+  width: 160px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.substitution-form-panel button {
+  width: 100%;
+  min-height: 38px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0 10px;
+  background: transparent;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.substitution-form-panel button[aria-pressed="true"] { background: #171717; color: #fff; }
+.substitution-form-control button:focus-visible { outline: 2px solid #1469d8; outline-offset: 2px; }

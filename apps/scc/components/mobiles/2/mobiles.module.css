@@ -67,7 +67,14 @@
   gap: 4px;
 }
 
-.views button {
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.views button,
+.choices button {
   flex: 1;
   min-height: 34px;
   border: 0;
@@ -80,7 +87,8 @@
   cursor: pointer;
 }
 
-.views button[aria-pressed="true"] { background: #171717; color: #fff; }
+.views button[aria-pressed="true"],
+.choices button[aria-pressed="true"] { background: #171717; color: #fff; }
 
 .row {
   display: grid;

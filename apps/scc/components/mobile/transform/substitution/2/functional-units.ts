@@ -2,8 +2,21 @@ import { commandFor, type CommandGroup } from "./semantic";
 
 /** Where a unit is drawn: its own painted box, or the text, media and painted boxes it visibly consists of. */
 export type Part = Element | Text;
-/** Stacking depth: 0 scrolls with the page; each fixed, sticky, full-size absolute or dialog ancestor adds one. */
-export type FunctionalUnit = { element: Element; label: string | null; parts: Part[]; clips: Element[]; layer: number };
+/**
+ * Where the unit paints in CSS stacking order: `stack` holds the z level of each stacking context (or positioned box) from the root down,
+ * and `order` is document order, which decides ties as the browser does. `layer` is the outermost bar, sheet or other z-indexed box
+ * the unit belongs to (null for the page's own flow), so a header over the feed can be told apart from a button over a video.
+ */
+export type FunctionalUnit = { element: Element; label: string | null; parts: Part[]; clips: Element[]; stack: number[]; order: number; layer: Element | null };
+
+/** Paint order of two units, as CSS stacks them: a level missing from a path is in-flow content, under z-index 0 and above negative z. */
+export function compareStacking(a: Pick<FunctionalUnit, "stack" | "order">, b: Pick<FunctionalUnit, "stack" | "order">) {
+  for (let index = 0; index < Math.max(a.stack.length, b.stack.length); index++) {
+    const difference = (a.stack[index] ?? -0.5) - (b.stack[index] ?? -0.5);
+    if (difference) return difference;
+  }
+  return a.order - b.order;
+}
 
 export const interactiveSelector = "button, a, input, textarea, select, summary, [role='button'], [role='link'], [role='tab'], [role='checkbox'], [role='slider']";
 const content = "h1, h2, h3, h4, h5, h6, p, blockquote, figcaption, [role='heading']";
@@ -12,7 +25,7 @@ const surface = "[role='dialog'], [role='menu'], [role='listbox']";
 const textLeaf = "span, strong, small, time, label, dt, dd, div";
 const graphic = "img, video, canvas, iframe, svg, input, textarea, select, picture";
 const clipping = /^(auto|scroll|hidden|clip)$/;
-const excluded = "script, style, noscript, [data-substitution-overlay], [data-substitution-ui]";
+const excluded = "script, style, noscript, [data-substitution-command-overlay], [data-substitution-command-ui]";
 
 const isColor = (value: string) =>
   value !== "transparent" && value !== "none" && !/^rgba?\(0, 0, 0, 0\)$/.test(value) && !/^rgba\(.*, 0\)$/.test(value);
@@ -24,6 +37,13 @@ function painted(style: CSSStyleDeclaration) {
     parseFloat(style.getPropertyValue(`border-${side.toLowerCase()}-width`)) > 0 &&
     style.getPropertyValue(`border-${side.toLowerCase()}-style`) !== "none" &&
     isColor(style.getPropertyValue(`border-${side.toLowerCase()}-color`)));
+}
+
+/** Whether the element's fill hides what lies under it (a ring or a hairline border does not). */
+function opaque(style: CSSStyleDeclaration) {
+  if (style.backgroundImage !== "none") return true;
+  const alpha = style.backgroundColor.match(/^rgba\(.*,\s*([\d.]+)\)$/);
+  return isColor(style.backgroundColor) && (!alpha || Number(alpha[1]) >= 0.6);
 }
 
 function selectUnits() {
@@ -72,20 +92,23 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
     return false;
   };
 
+  const order = new Map<Element, number>();
+  for (const element of document.body.querySelectorAll("*")) order.set(element, order.size);
+
   const placement = (element: Element) => {
     const clips: Element[] = [];
-    let layer = 0;
+    const stack: number[] = [];
+    let layer: Element | null = null;
     for (let node: Element | null = element; node && node !== document.documentElement; node = node.parentElement) {
       const style = styleOf(node);
       if (node !== element && (clipping.test(style.overflowX) || clipping.test(style.overflowY))) clips.push(node);
-      // Each fixed, sticky, full-size absolute or dialog ancestor lifts the element one stacking level.
-      if (style.position === "fixed" || style.position === "sticky" || node.matches(surface)) layer++;
-      else if (style.position === "absolute") {
-        const box = node.getBoundingClientRect();
-        if (box.width * box.height > viewportArea * 0.5) layer++;
-      }
+      // A positioned box paints over in-flow content at its z-index (auto counts as 0), as do boxes that form a stacking context.
+      const z = parseInt(style.zIndex, 10);
+      if (style.position !== "static") stack.push(Number.isNaN(z) ? 0 : z);
+      else if (style.transform !== "none" || style.opacity !== "1" || style.filter !== "none" || node.matches(surface)) stack.push(0);
+      if (style.position === "fixed" || style.position === "sticky" || node.matches(surface) || (style.position !== "static" && !Number.isNaN(z))) layer = node;
     }
-    return { clips, layer };
+    return { clips, stack: stack.reverse(), order: order.get(element) ?? 0, layer };
   };
 
   const candidates = selectUnits();
@@ -109,7 +132,13 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
     else {
       // A control whose painted field is its wrapper (a search input inside a grey label) takes the wrapper's box.
       for (let wrapper = element.parentElement, depth = 0; wrapper && depth < 3 && wrapper !== document.body && wrapper.tagName !== "MAIN"; wrapper = wrapper.parentElement, depth++) {
-        if (claimed.has(wrapper) || (held.get(wrapper) ?? 0) > 1) break;
+        if (claimed.has(wrapper)) break;
+        if ((held.get(wrapper) ?? 0) > 1) {
+          // A segment of a shared painted control (like | dislike in one pill) is its own slice of that pill.
+          const box = element.getBoundingClientRect();
+          if (depth === 0 && painted(styleOf(wrapper)) && box.height >= wrapper.getBoundingClientRect().height * 0.9) parts = [element];
+          break;
+        }
         const box = wrapper.getBoundingClientRect();
         if (box.width * box.height > viewportArea * 0.5) break;
         if (painted(styleOf(wrapper))) {
@@ -138,19 +167,18 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
       if (!parts.length) parts = [element];
     }
 
-    const { clips, layer } = placement(element);
-    units.push({ element, label, parts, clips, layer });
+    units.push({ element, label, parts, ...placement(element) });
   }
 
-  // Painted surfaces of fixed chrome that are not units themselves (a header bar, a floating tab pill) still hide what scrolls beneath them.
+  // Painted surfaces that stack over the flow but are not units themselves (a header bar, a floating tab pill) still hide what passes beneath them.
   for (const element of document.body.querySelectorAll("*")) {
     if (unitSet.has(element) || claimed.has(element) || element.closest(excluded) || element.closest("svg")) continue;
-    if (!painted(styleOf(element)) || hidden(element)) continue;
+    if (!opaque(styleOf(element)) || hidden(element)) continue;
     let insideUnit = false;
     for (let node = element.parentElement; node && !insideUnit; node = node.parentElement) insideUnit = unitSet.has(node);
     if (insideUnit) continue;
-    const { clips, layer } = placement(element);
-    if (layer) units.push({ element, label: null, parts: [element], clips, layer });
+    const place = placement(element);
+    if (place.stack.some((level) => level >= 0)) units.push({ element, label: null, parts: [element], ...place });
   }
 
   return units;

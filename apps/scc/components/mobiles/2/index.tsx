@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { commandGroups, embedSource, presentations, readyMessage, settingMessage, type CommandSetting } from "@/components/mobile/transform/substitution/2/setting";
 import styles from "./mobiles.module.css";
 
 /** Native size of each phone; the clones lay out against this viewport. */
@@ -11,11 +12,12 @@ const MARGIN_RANGE = [0, 60] as const;
 const ROW_OPTIONS = [1, 2, 3] as const;
 type Rows = (typeof ROW_OPTIONS)[number];
 
+// Each phone is the sns/mobile clone inside substitution/2's embed frame; with the filter on 원본 it is the clone alone.
 const phones = [
-  { id: "instagram", src: "/sns/mobile/11", title: "Instagram" },
-  { id: "tiktok", src: "/sns/mobile/12", title: "TikTok" },
-  { id: "x", src: "/sns/mobile/13", title: "X" },
-  { id: "youtube", src: "/sns/mobile/14", title: "YouTube" },
+  { id: "instagram", src: embedSource("11"), title: "Instagram" },
+  { id: "tiktok", src: embedSource("12"), title: "TikTok" },
+  { id: "x", src: embedSource("13"), title: "X" },
+  { id: "youtube", src: embedSource("14"), title: "YouTube" },
 ] as const;
 
 /** One row keeps the four phones; more rows fit as many phone-shaped columns as the screen holds. */
@@ -33,6 +35,25 @@ export default function MobilesTwo() {
   const [gap, setGap] = useState(4);
   const [margin, setMargin] = useState(0);
   const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState<CommandSetting>({ presentation: "original", group: "discipline" });
+  const filterRef = useRef(filter);
+
+  // substitution/2's filter, sent to every phone; a phone that loads later asks for it.
+  useEffect(() => {
+    filterRef.current = filter;
+    for (const frame of field.current?.querySelectorAll("iframe") ?? []) {
+      frame.contentWindow?.postMessage({ type: settingMessage, ...filter }, window.location.origin);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.data?.type !== readyMessage || !event.source) return;
+      (event.source as Window).postMessage({ type: settingMessage, ...filterRef.current }, window.location.origin);
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
 
   useEffect(() => {
     const element = field.current;
@@ -71,7 +92,7 @@ export default function MobilesTwo() {
       ))}
       <div className={styles.control}>
         {open && (
-          <div id="mobiles-two-layout" className={styles.panel} role="group" aria-label="레이아웃 옵션">
+          <div id="mobiles-two-layout" className={styles.panel} role="group" aria-label="레이아웃과 필터 옵션">
             <p className={styles.heading}>레이아웃</p>
             <div className={styles.views}>
               {ROW_OPTIONS.map((option) => (
@@ -104,12 +125,31 @@ export default function MobilesTwo() {
                 onChange={(event) => setMargin(Number(event.target.value))}
               />
             </label>
+            <p className={styles.heading}>필터</p>
+            <div className={styles.choices} role="group" aria-label="표시 방식">
+              <button type="button" aria-pressed={filter.presentation === "original"} onClick={() => setFilter({ ...filter, presentation: "original" })}>원본</button>
+              {presentations.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={filter.presentation === id} onClick={() => setFilter({ ...filter, presentation: id })}>{label}</button>
+              ))}
+            </div>
+            <div className={styles.views} role="group" aria-label="명령 그룹">
+              {commandGroups.map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={filter.presentation !== "original" && filter.group === id}
+                  onClick={() => setFilter({ presentation: filter.presentation === "original" ? "replace" : filter.presentation, group: id })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         <button
           type="button"
           className={styles.trigger}
-          aria-label="레이아웃 옵션"
+          aria-label="레이아웃과 필터 옵션"
           aria-expanded={open}
           aria-controls="mobiles-two-layout"
           onClick={() => setOpen((value) => !value)}
