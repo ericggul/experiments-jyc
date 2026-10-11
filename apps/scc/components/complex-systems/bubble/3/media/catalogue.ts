@@ -1,8 +1,8 @@
 // What the films can show: Goldfishes' media, copied in (apps share no imports).
 // Photo lists are those of /screen/media-grid/1 and /screen/pillars/1–4 (cats,
 // kisses, politicians — Wikimedia Commons, see the JSON ledgers); the 36 tech
-// renders are /screen/tech-eyes/1's generated keyword atlas (one tile per
-// keyword, in keyword order); the 80 tech faces are that route's Commons
+// images are individually generated editorial photographs (one per keyword,
+// see public/images/1011/tech-keywords/ledger.json); the 80 tech faces are /screen/tech-eyes/1's Commons
 // portraits (attribution in public/images/0908/tech-power-faces/attribution.json);
 // the keywords are its abbreviation list, drawn as text.
 
@@ -11,13 +11,14 @@ import kissSources from "./sources/kiss-sources.json";
 import politicianSources from "./sources/politician-sources.json";
 import { techPowerFaces } from "./sources/tech-power-faces.generated";
 
-export type SurfaceId = "none" | "cat" | "kiss" | "politician" | "tech" | "face" | "keyword" | "mix";
+export type SurfaceId = "none" | "cat" | "kiss" | "politician" | "tech" | "face" | "keyword" | "fullname" | "emoji" | "mix";
 
 /** One layer of the media texture: a whole image, a tile of one, or a word. */
 export type MediaItem =
   | { kind: "image"; id: string; url: string }
   | { kind: "tile"; id: string; url: string; column: number; row: number; columns: number; rows: number }
-  | { kind: "text"; id: string; text: string };
+  | { kind: "text"; id: string; text: string }
+  | { kind: "emoji"; id: string; glyph: string };
 
 export const SURFACES: readonly { id: SurfaceId; label: string }[] = [
   { id: "none", label: "없음" },
@@ -27,6 +28,8 @@ export const SURFACES: readonly { id: SurfaceId; label: string }[] = [
   { id: "tech", label: "기술" },
   { id: "face", label: "테크 얼굴" },
   { id: "keyword", label: "키워드" },
+  { id: "fullname", label: "풀네임" },
+  { id: "emoji", label: "이모지" },
   { id: "mix", label: "섞음" },
 ];
 
@@ -54,10 +57,6 @@ export type KeywordStyle = { font: KeywordFontId; size: number; opacity: number 
 export const KEYWORD_SIZE_RANGE = [0.2, 2] as const;
 export const DEFAULT_KEYWORD_STYLE: KeywordStyle = { font: DEFAULT_KEYWORD_FONT, size: 0.5, opacity: 0.7 };
 
-const TECH_ATLAS_URL = "/images/0908/tech-keyword-atlas/tech-keyword-atlas-v1.png";
-const TECH_ATLAS_COLUMNS = 6;
-const TECH_ATLAS_ROWS = 6;
-
 /** tech-eyes/1's established industry abbreviations, in the atlas's tile order. */
 export const TECH_KEYWORDS: readonly string[] = [
   "AI", "ML", "DL", "AGI", "GPT", "LLM",
@@ -66,6 +65,27 @@ export const TECH_KEYWORDS: readonly string[] = [
   "UI", "UX", "HCI", "MVP", "API", "SDK",
   "IDE", "OOP", "QA", "DB", "SQL", "CDN",
   "DNS", "URL", "VPN", "VM", "NFT", "DAO",
+];
+
+/** The abbreviations spelled out (풀네임 surface, user 2026-10-11): drawn over several lines, so each tile holds a phrase. */
+export const TECH_KEYWORD_NAMES: readonly string[] = [
+  "Artificial Intelligence", "Machine Learning", "Deep Learning", "Artificial General Intelligence", "Generative Pre-trained Transformer", "Large Language Model",
+  "Natural Language Processing", "Retrieval-Augmented Generation", "Central Processing Unit", "Graphics Processing Unit", "Neural Processing Unit", "Random Access Memory",
+  "Operating System", "Personal Computer", "Internet of Things", "Augmented Reality", "Virtual Reality", "Extended Reality",
+  "User Interface", "User Experience", "Human-Computer Interaction", "Minimum Viable Product", "Application Programming Interface", "Software Development Kit",
+  "Integrated Development Environment", "Object-Oriented Programming", "Quality Assurance", "Database", "Structured Query Language", "Content Delivery Network",
+  "Domain Name System", "Uniform Resource Locator", "Virtual Private Network", "Virtual Machine", "Non-Fungible Token", "Decentralized Autonomous Organization",
+];
+
+/**
+ * 이모지 (user, 2026-10-11): the feed's own vocabulary — reactions, status, hype — as
+ * the content under the film, one glyph per tile in the system's colour emoji font.
+ */
+export const EMOJIS: readonly string[] = [
+  "😀", "😂", "🤣", "😍", "🥰", "😎", "🤩", "🥳", "😭", "😱", "🤔", "🙄",
+  "😴", "🤯", "🥺", "😡", "🤡", "💀", "👻", "🤖", "👀", "👍", "👏", "🙏",
+  "🔥", "💯", "✨", "⭐", "💥", "🚀", "💸", "💰", "📈", "📉", "💎", "🧠",
+  "❤️", "💔", "🔔", "📱", "💻", "🌐", "🔗", "⚡", "🎯", "🏆", "🍿", "☕",
 ];
 
 type PhotoSource = { id: string; imageUrl: string };
@@ -79,17 +99,15 @@ const sets: Record<Exclude<SurfaceId, "none" | "mix">, () => MediaItem[]> = {
   kiss: () => photos(kissSources),
   politician: () => photos(politicianSources),
   tech: () =>
-    TECH_KEYWORDS.map((keyword, index) => ({
-      kind: "tile",
+    TECH_KEYWORDS.map((keyword) => ({
+      kind: "image",
       id: `tech-${keyword}`,
-      url: TECH_ATLAS_URL,
-      column: index % TECH_ATLAS_COLUMNS,
-      row: Math.floor(index / TECH_ATLAS_COLUMNS),
-      columns: TECH_ATLAS_COLUMNS,
-      rows: TECH_ATLAS_ROWS,
+      url: `/images/1011/tech-keywords/${keyword}.jpg`,
     })),
   face: () => techPowerFaces.map((face) => ({ kind: "image", id: `face-${face.id}`, url: face.image })),
   keyword: () => TECH_KEYWORDS.map((keyword) => ({ kind: "text", id: `keyword-${keyword}`, text: keyword })),
+  fullname: () => TECH_KEYWORD_NAMES.map((name, index) => ({ kind: "text", id: `fullname-${TECH_KEYWORDS[index]}`, text: name })),
+  emoji: () => EMOJIS.map((glyph, index) => ({ kind: "emoji", id: `emoji-${index}`, glyph })),
 };
 
 /** 섞음 leaves out the kisses (user, 2026-10-11); 키스 stays as its own surface. */

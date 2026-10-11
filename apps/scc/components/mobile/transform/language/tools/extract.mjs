@@ -1,4 +1,4 @@
-// Static inventory of the visible interface strings in clone/1–13.
+// Static inventory of the visible interface strings in every numbered clone.
 // Usage (from apps/scc): node components/mobile/transform/language/tools/extract.mjs > /tmp/strings.json
 // Template literals become patterns with indexed holes: `${n}개` → "{0}개".
 import fs from "node:fs";
@@ -57,7 +57,7 @@ function contextOf(node) {
 const inventory = {};
 for (const clone of fs.readdirSync(root).filter((name) => /^\d+$/.test(name)).sort((a, b) => a - b)) {
   const found = new Map();
-  const files = [path.join(root, clone, "screen/index.tsx"), ...fs.readdirSync(path.join(root, clone, "model")).filter((file) => /\.ts$/.test(file) && !/test/.test(file)).map((file) => path.join(root, clone, "model", file))];
+  const files = [...fs.readdirSync(path.join(root, clone, "screen")).filter((file) => /\.tsx$/.test(file)).map((file) => path.join(root, clone, "screen", file)), ...fs.readdirSync(path.join(root, clone, "model")).filter((file) => /\.ts$/.test(file) && !/test/.test(file)).map((file) => path.join(root, clone, "model", file))];
   for (const file of files) {
     const source = ts.createSourceFile(file, fs.readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true, file.endsWith("x") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
     const add = (text, context) => {

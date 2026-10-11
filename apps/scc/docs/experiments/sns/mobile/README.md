@@ -21,6 +21,7 @@ social-platform navigation and interaction patterns with local sample content.
 | `/sns/mobile/11` | [Instagram](11.md) | Move among the feed, stories, discovery, posts, Reels and profiles |
 | `/sns/mobile/12` | [TikTok](12.md) | Watch and navigate videos, creators, search, comments and saved states |
 | `/sns/mobile/13` | [X](13.md) | Read feeds and threads, search, visit profiles, compose and manage post actions |
+| `/sns/mobile/14` | [YouTube](14.md) | Watch with a draggable miniplayer, browse Shorts, subscribe, save and search |
 
 The existing SNS experiments establish the method: Instagram contributes
 recognizable viewport and action grammar; LinkedIn connects feed, detail and
@@ -138,3 +139,23 @@ review also checked linked detail flows and corrected profile/search state
 issues before handoff. No browser, playback, device or same-viewport visual
 gate was run for 11–13. Their rendered fit, gesture timing, external photo
 loading and exact visual fidelity remain unverified.
+
+## Variants 1–10 mobile check — 2026-10-11
+
+Chrome loaded each of `/1`–`/10` in same-origin 390px and 320px iframes. A
+scripted pass clicked every initially visible control and the controls each
+revealed, then measured document overflow, unclipped off-screen elements,
+open-dialog fit and reachability, broken images and controls with no effect.
+The main workflows were then walked at 320px with screenshots: shop
+detail/bag/checkout/order, meal options/pickup/order, stay search/reservation/
+cancellation, task detail checklist/comment/creation, listing offer/chat/
+composer, THREAD filters/bag/checkout, SIDEWALK menu/bag/address/order,
+PLATFORM passengers/outward/return/sample booking, REP class
+reservation/bookings, and COMMON offer/conversation/listing composer. All 39
+Unsplash photo IDs returned HTTP 200; direct route loads and click sweeps logged
+no React key, hydration or runtime errors. No horizontal overflow, clipped
+dialog or dead control was found. The only fix: in `/5`, the chat history's
+minimum height left a white band above the fixed composer; it now reaches the
+composer. Deliberately compressed 7–9px secondary labels at 320px were left
+unchanged. Physical phones, touch gestures and photo-file selection remain
+unverified.

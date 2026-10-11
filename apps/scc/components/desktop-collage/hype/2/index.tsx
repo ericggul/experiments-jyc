@@ -38,12 +38,12 @@ export default function HypeTwo() {
       </Section>
       <Section title="Flicking">
         <Amount id="duration" label="For" unit="s" value={draft.duration} range={ranges.duration} onChange={amount("duration")} />
-        <Amount id="pace" label="Pace" unit="ms" value={draft.pace} range={ranges.pace} onChange={amount("pace")} />
+        <Amount id="pace" label="Dwell" unit="ms" value={draft.pace} range={ranges.pace} onChange={amount("pace")} />
         <Amount id="moves" label="Moves" unit="%" value={draft.moves} range={ranges.moves} onChange={amount("moves")} />
       </Section>
       <Section title="Windows">
-        <Amount id="size" label="Size" unit="%" value={draft.size} range={ranges.size} onChange={amount("size")} />
-        <Choice label="Pages" options={pages} value={draft.pages} names={{ scaled: "zoomed out when narrow", native: "at 100%" }} onChange={(value) => set("pages", value)} />
+        <Amount id="size" label="Typical width" unit="%" value={draft.size} range={ranges.size} onChange={amount("size")} />
+        <Choice label="Pages" options={pages} value={draft.pages} names={{ native: "at 100%", scaled: "zoomed out when narrow" }} onChange={(value) => set("pages", value)} />
       </Section>
       <Section title="Material">
         <Amount id="clones" label="Cloned pages" unit="%" value={draft.clones} range={ranges.clones} onChange={amount("clones")} />

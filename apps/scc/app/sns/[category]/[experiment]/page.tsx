@@ -14,6 +14,7 @@ import SnsMobileTen from "@/components/mobile/clone/10";
 import SnsMobileEleven from "@/components/mobile/clone/11";
 import SnsMobileTwelve from "@/components/mobile/clone/12";
 import SnsMobileThirteen from "@/components/mobile/clone/13";
+import SnsMobileFourteen from "@/components/mobile/clone/14";
 import SnsFeedOne from "@/components/ui/sns/feed/1";
 import SnsInstagramOne from "@/components/ui/sns/instagram/1";
 import SnsInstagramTwo from "@/components/ui/sns/instagram/2";
@@ -56,6 +57,7 @@ const components: Record<SnsExperimentKey, ComponentType> = {
   "mobile/11": SnsMobileEleven,
   "mobile/12": SnsMobileTwelve,
   "mobile/13": SnsMobileThirteen,
+  "mobile/14": SnsMobileFourteen,
   "feed/1": SnsFeedOne,
   "instagram/1": SnsInstagramOne,
   "instagram/2": SnsInstagramTwo,

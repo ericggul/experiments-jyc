@@ -4,7 +4,7 @@ import { compose, WINDOW_PATH } from '../plan.ts';
 import { catalogue, createDeck, drawEntry, images, videos } from './catalogue.ts';
 import { stockFor } from './corpus.ts';
 import { createChain, draw } from './keywords.ts';
-import { windowRect, zoomFor } from './layout.ts';
+import { FULL, nudge, windowRect, zoomFor } from './layout.ts';
 import { createRandom } from './random.ts';
 import { burst } from './rhythm.ts';
 import { defaults, hop, validateSettings } from './settings.ts';
@@ -27,10 +27,12 @@ test('the burst opens every window at once, or in order around the mean gap', ()
   gaps(a).forEach(gap => assert.ok(gap >= 100 && gap <= 700, `gap ${gap}`));
   const wide = gaps(burst(400, 350, createRandom(7)));
   assert.ok(Math.abs(mean(wide) - 350 * 1.1) < 40, `mean ${mean(wide)}`);
-  assert.equal(hop(120, 0), 15);
-  assert.equal(hop(120, 1), 120);
-  const hops = Array.from({ length: 2000 }, (_, i) => hop(120, (i + 0.5) / 2000));
-  assert.ok(hops.filter(h => h < 40).length > hops.length * 0.4, 'most gaps short');
+  assert.equal(hop(220, 0), 73);
+  assert.equal(hop(220, 1), 484);
+  const hops = Array.from({ length: 2000 }, (_, i) => hop(220, (i + 0.5) / 2000)).sort((a, b) => a - b);
+  const median = hops[1000];
+  assert.ok(median > 150 && median < 230, `median ${median}`);
+  assert.ok(hops.filter(h => h < 100).length > hops.length * 0.1 && hops.filter(h => h > 350).length > hops.length * 0.1, 'short and long dwells both occur');
 });
 
 test('the chain draws the root and its FOMO topics', () => {
@@ -40,17 +42,35 @@ test('the chain draws the root and its FOMO topics', () => {
   assert.ok(drawn.has('AI') && drawn.has('AI jobs') && drawn.has('AI stocks'));
 });
 
-test('windows stay on the visible desktop, some fill it, most touch an edge, and sizes span the tiers', () => {
-  for (const display of displays) for (const size of [50, 100]) {
+test('windows look like browser windows: around the typical width, tall, a few whole, on the desktop, covering it', () => {
+  for (const display of displays) for (const size of [55, 70, 85]) {
     const random = createRandom(size);
-    const rects = Array.from({ length: 60 }, (_, index) => windowRect(display.visible, index, size, random));
-    rects.forEach(rect => assert.ok(inside(rect, display.visible), `${display.width} ${size}`));
     const v = display.visible;
-    const full = rects.filter(r => r.width === Math.round(v.width * size / 100) && r.height === Math.round(v.height * size / 100)).length;
-    assert.ok(full >= 5 && full <= 25, `full ${full}`);
-    const touching = rects.filter(r => r.x === v.x || r.y === v.y || r.x + r.width === v.x + v.width || r.y + r.height === v.y + v.height).length;
-    assert.ok(touching >= rects.length * 0.55, `touching ${touching}`);
-    assert.ok(rects.some(r => r.width < v.width * 0.5), 'some small');
+    const rects = Array.from({ length: 200 }, (_, index) => windowRect(v, index, size, random));
+    rects.forEach(rect => assert.ok(inside(rect, v), `${display.width} ${size}`));
+    const whole = rects.filter(r => r.width === v.width && r.height === v.height);
+    assert.ok(whole.length >= 1 && whole.length <= 200 * FULL * 2.2, `whole ${whole.length}`);
+    const rest = rects.filter(r => !(r.width === v.width && r.height === v.height));
+    rest.forEach(r => {
+      assert.ok(r.width >= v.width * 0.45 - 1 && r.width <= v.width * 0.85 + 1, `width ${r.width / v.width}`);
+      assert.ok(r.height >= v.height * 0.58 - 1 && r.height <= v.height * 0.93 + 1, `height ${r.height / v.height}`);
+      assert.ok(r.width / r.height > 0.9 && r.width / r.height < 2.6, `shape ${r.width}×${r.height}`);
+    });
+    const widths = rest.map(r => r.width / v.width);
+    const near = widths.filter(w => Math.abs(w - size / 100) <= 0.08).length;
+    assert.ok(near >= rest.length * 0.5, `near typical ${near}/${rest.length}`);
+    assert.ok(Math.max(...widths) - Math.min(...widths) >= 0.15, 'widths vary');
+    const touching = rects.filter(r => r.x === v.x || r.y === v.y || r.x + r.width === v.x + v.width).length;
+    assert.ok(touching >= rects.length * 0.5, `touching ${touching}`);
+    // The first two dozen cover the desktop: every cell of a coarse grid lies under some window.
+    const first = rects.slice(0, 24);
+    for (let gx = 0; gx < 8; gx++) for (let gy = 0; gy < 6; gy++) {
+      const px = v.x + (gx + 0.5) * v.width / 8, py = v.y + (gy + 0.5) * v.height / 6;
+      assert.ok(first.some(r => px >= r.x && px <= r.x + r.width && py >= r.y && py <= r.y + r.height), `uncovered ${gx},${gy} at ${size}`);
+    }
+    const dragged = nudge(v, rects[1], random);
+    assert.ok(inside(dragged, v));
+    assert.ok(Math.abs(dragged.width - rects[1].width) <= v.width * 0.08 + 1 && Math.abs(dragged.x - rects[1].x) <= v.width * 0.12 + 1);
   }
   assert.equal(zoomFor(1280), 1);
   assert.equal(zoomFor(1024), 1);
@@ -92,7 +112,9 @@ test('settings validate and a composed run fits the display with clone pages on 
     items.forEach(item => assert.ok(inside(item, display.visible)));
     const clones = items.filter(item => item.url!.startsWith(`https://example.test${WINDOW_PATH}?`));
     assert.ok(clones.length > 0 && clones.length < 24);
-    clones.forEach(item => {
+    clones.forEach(item => assert.equal(new URL(item.url!).searchParams.get('z'), null, 'pages are native by default'));
+    const scaled = compose({ ...defaults, count: 24, clones: 60, pages: 'scaled' }, display, 'https://example.test').items.filter(item => item.url!.startsWith(`https://example.test${WINDOW_PATH}?`));
+    scaled.forEach(item => {
       const query = new URL(item.url!).searchParams;
       assert.ok(query.get('page') && query.get('k'));
       const z = query.get('z');
@@ -101,6 +123,11 @@ test('settings validate and a composed run fits the display with clone pages on 
       if (query.get('page') === 'video' || query.get('page') === 'youtube') assert.ok(query.get('v'));
     });
     assert.deepEqual(compose({ ...defaults, count: 24, clones: 60 }, display, 'https://example.test').arrivals.map(a => a.entry.id), arrivals.map(a => a.entry.id));
+  }
+  for (let seed = 1; seed <= 20; seed++) {
+    const v = displays[0].visible;
+    const whole = compose({ ...defaults, count: 40, seed }, displays[0], 'x').arrivals.filter(a => a.rect.width === v.width && a.rect.height === v.height).length;
+    assert.ok(whole <= 1, `seed ${seed}: ${whole} whole-desktop windows`);
   }
   const dark = compose({ ...defaults, count: 40, dark: 50 }, displays[0], 'x').arrivals.filter(a => a.dark).length;
   assert.ok(dark > 8 && dark < 32, `dark ${dark}`);

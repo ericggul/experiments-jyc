@@ -172,6 +172,9 @@ type Visual = Look & { area: number; portions: number };
 
 const VISUAL_DEFAULTS: Visual = { ...LOOK_DEFAULTS, area: AREA_BUDGET, portions: LEAST_PORTION };
 
+// 기본값 2 (user, 2026-10-11): the defaults (fish included) on a mid grey (#5e5e5e) instead of black; a button in the goldfish panel, not the default.
+const SECOND_BACKGROUND: Colour = [94 / 255, 94 / 255, 94 / 255];
+
 /** Visual sliders: key, label, range, step. Defaults reproduce bubble/1. */
 type NumericKey = { [K in keyof Visual]: Visual[K] extends number ? K : never }[keyof Visual];
 
@@ -1161,10 +1164,24 @@ export default function RankedWebIteration() {
               className={styles.reset}
               onClick={() => {
                 setFish(FISH_DEFAULTS);
+                setFishPalette(DEFAULT_FISH_PALETTE);
+                setVisual((current) => ({ ...current, background: VISUAL_DEFAULTS.background }));
                 setInfluence(DEFAULT_INFLUENCE);
               }}
             >
               기본값으로
+            </button>
+            <button
+              type="button"
+              className={styles.reset}
+              onClick={() => {
+                setFish(FISH_DEFAULTS);
+                setFishPalette(DEFAULT_FISH_PALETTE);
+                setVisual((current) => ({ ...current, background: SECOND_BACKGROUND }));
+                setInfluence(DEFAULT_INFLUENCE);
+              }}
+            >
+              기본값 2
             </button>
           </div>
         )}
@@ -1179,7 +1196,7 @@ export default function RankedWebIteration() {
                 </button>
               ))}
             </div>
-            {(surface === "keyword" || surface === "mix") && (
+            {(surface === "keyword" || surface === "fullname" || surface === "mix") && (
               <>
                 <p className={styles.note}>키워드 글꼴</p>
                 <div className={styles.chips} role="group" aria-label="키워드 글꼴">

@@ -75,8 +75,8 @@ export async function loadCommonsBatch(cursor: number, signal: AbortSignal): Pro
     const artist = plainText(info.extmetadata?.Artist?.value ?? info.user ?? 'Wikimedia Commons').slice(0, 70) || 'Wikimedia Commons';
     const creatorId = `commons-${page.pageid}`;
     const handle = `commons.${page.pageid}`;
-    creators.push({ id: creatorId, handle, name: artist, bio: `${info.extmetadata?.LicenseShortName?.value ?? 'Free license'} · Wikimedia Commons`, followers: '—', likes: '—', tone: '#737b83', initials: artist[0]?.toUpperCase() ?? 'C', sourceUrl: `https://commons.wikimedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}` });
-    clips.push({ id: creatorId, creatorId, src: info.url, poster: info.thumburl ?? '', caption: item.caption, sound: `Video by ${artist} · Wikimedia Commons`, tags: [...item.tags], likes: 0, comments: 0, saves: 0, views: '—' });
+    creators.push({ id: creatorId, handle, name: artist, bio: `${info.extmetadata?.LicenseShortName?.value ?? 'Free license'} · Wikimedia Commons`, following: '—', followers: '—', likes: '—', avatar: info.thumburl, sourceUrl: `https://commons.wikimedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}` });
+    clips.push({ id: creatorId, creatorId, src: info.url, poster: info.thumburl ?? '', caption: item.caption, sound: `Video by ${artist} · Wikimedia Commons`, tags: [...item.tags], likes: 0, comments: 0, saves: 0, shares: 0, views: '—' });
   }
   return { clips, creators, cursor: cursor + selected.length < curatedVideos.length ? cursor + selected.length : null };
 }

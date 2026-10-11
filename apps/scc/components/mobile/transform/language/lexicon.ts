@@ -18,6 +18,7 @@ const loaders: Record<string, () => Promise<{ default: LexiconFile }>> = {
   "11": () => import("./lexicon/11.json"),
   "12": () => import("./lexicon/12.json"),
   "13": () => import("./lexicon/13.json"),
+  "14": () => import("./lexicon/14.json"),
 };
 
 export const normalize = (text: string) => text.replace(/\s+/g, " ").trim();

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
 import HypeOne from "@/components/desktop-collage/hype/1";
 import HypeTwo from "@/components/desktop-collage/hype/2";
+import HypeThree from "@/components/desktop-collage/hype/3";
 import {
   hypeExperiments,
   isHypeExperimentSlug,
@@ -12,6 +13,7 @@ import {
 const components: Record<HypeExperimentSlug, ComponentType> = {
   "1": HypeOne,
   "2": HypeTwo,
+  "3": HypeThree,
 };
 
 export function generateStaticParams() {

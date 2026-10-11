@@ -57,6 +57,12 @@ needs them. Direct-field or keyboard actions must remain discoverable and
 accessible. Do not default to serif titles, corner counters, graph notation,
 pause/reset controls, or distributed metrics.
 
+An experiment's options live in one bottom-right control: a 42 px round dark
+icon button that inverts when open, above a white panel with a heading and
+option chips. Copy it from `components/complex-systems/bubble/3`, which reuses
+road-signs/direction/4's control. Never use a text pill showing the current
+value, or a bare popover list.
+
 ## Typography and multi-device work
 
 Texts with the same role share exact family, size, weight, tracking, line height,

@@ -180,3 +180,17 @@ export const initialPosts: Post[] = [
   { id:'r1', accountId:'portrait', image:photo('photo-1758671916868-b853bc18d031'), alt:'Dancers practicing at a studio barre', caption:'One more count before we call it a day.', location:'Paris', video:'/video/videos/67-dance.mp4', likes:7621, age:'4h', comments:[], reel:true },
   { id:'r2', accountId:'interior', image:photo('photo-1673815981462-80343d95a0e6'), alt:'Grey cat lying on a bed', caption:'A very unhurried morning.', location:'Seoul', video:'/video/videos/cat-on-bed.mp4', likes:12842, age:'8h', comments:[], reel:true },
 ];
+
+// Fictional social graph used by the 2026-10-11 fidelity pass.
+export const closeFriends = ['portrait'];
+export const verifiedAccounts = ['interior', 'fashion'];
+export type ThreadMessage = { id: string; from: 'me' | 'them'; body: string };
+export const seedThreads: Record<string, ThreadMessage[]> = {
+  flowers: [{id:'t1',from:'them',body:'We saved you a bundle of the blue stems'},{id:'t2',from:'them',body:'Pick up before 5?'}],
+  street: [{id:'t3',from:'me',body:'That Chrysler shot is unreal'},{id:'t4',from:'them',body:'Worth the wet shoes 😅'}],
+  books: [{id:'t5',from:'them',body:'Finished the one you lent me'}],
+  cafe: [{id:'t6',from:'me',body:'Friday still on?'},{id:'t7',from:'them',body:'Window table is ours'}],
+  portrait: [{id:'t8',from:'them',body:'Sent you the unposed frames'}],
+};
+export const threadAges: Record<string, string> = { flowers: '12m', street: '1h', books: '3h', cafe: '1d', portrait: '2d' };
+export const initiallyUnread = ['flowers', 'books'];

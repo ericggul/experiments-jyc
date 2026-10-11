@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
-import { collectFunctionalUnits, interactiveSelector, type FunctionalUnit } from "./functional-units";
+import { collectFunctionalUnits, unitRect, type FunctionalUnit } from "./functional-units";
 import type { CommandGroup } from "./semantic";
 import "./substitution.css";
 
@@ -9,7 +9,8 @@ type Mode = "outline" | "color" | "semantic";
 export type Presentation = "replace" | "overlay" | "reveal";
 type Clip = { left: number; top: number; right: number; bottom: number };
 type CellStyle = { background: string | null; foreground: string; hasText: boolean };
-type Cell = { rect: DOMRect; element: Element; color: string; label?: string };
+type Box = { left: number; top: number; right: number; bottom: number; width: number; height: number };
+type Cell = { rect: Box; element: Element; color: string; label?: string; clip?: Clip; mask?: boolean; layer?: number };
 
 const isColor = (value: string) =>
   value !== "transparent" && value !== "none" && !/^rgba?\(0, 0, 0, 0\)$/.test(value);
@@ -35,6 +36,10 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
     let frame = 0;
     let active = true;
     let pointer: { x: number; y: number } | null = null;
+    let lastCollect = -Infinity;
+    let collectTimer = 0;
+    const range = document.createRange();
+    const labelFits = new Map<string, { fontSize: number; scaleX: number; measuredWidth: number }>();
 
     const sampleImage = (image: HTMLImageElement) => {
       const source = image.currentSrc || image.src;
@@ -91,7 +96,11 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
 
     const refreshCache = () => {
       if (mode === "semantic") {
+        // Read the clone with its own fills and borders visible; each unit's box depends on them.
+        root.removeAttribute("data-mobile-substitution");
         functionalUnits = collectFunctionalUnits(clone, group);
+        root.setAttribute("data-mobile-substitution", rootMode);
+        lastCollect = performance.now();
         cacheDirty = false;
         return;
       }
@@ -159,7 +168,12 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
 
     const draw = () => {
       frame = 0;
-      if (cacheDirty) refreshCache();
+      if (cacheDirty) {
+        // A clone that mutates while scrolling (a hiding header, a playing video) is re-read at most four times a second.
+        const wait = mode === "semantic" ? lastCollect + 250 - performance.now() : 0;
+        if (wait <= 0) refreshCache();
+        else if (!collectTimer) collectTimer = window.setTimeout(() => { collectTimer = 0; scheduleDraw(); }, wait);
+      }
       if (mode === "color" && colorsDirty) refreshColors();
 
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -203,30 +217,35 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
       };
 
       const cells: Cell[] = [];
-      const addCell = (rect: DOMRect, element: Element, color: string, label?: string) => {
+      const addCell = (rect: DOMRect, element: Element, color: string) => {
         if (!visible(rect)) return;
         const clip = clipFor(element);
         if (rect.right <= clip.left || rect.left >= clip.right || rect.bottom <= clip.top || rect.top >= clip.bottom) return;
-        if (mode === "semantic" && (
-          Math.min(rect.right, clip.right) - Math.max(rect.left, clip.left) < 18 ||
-          Math.min(rect.bottom, clip.bottom) - Math.max(rect.top, clip.top) < 15
-        )) return;
-        cells.push({ rect, element, color, label });
+        cells.push({ rect, element, color });
       };
 
       if (mode === "semantic") {
+        const clipRects = new Map<Element, Clip>();
         for (const unit of functionalUnits) {
-          const rect = unit.element.getBoundingClientRect();
-          if (rect.width < 18 || rect.height < 15) continue;
-          if (unit.element.matches(interactiveSelector)) {
-            const x = Math.max(0, Math.min(width - 1, (Math.max(0, rect.left) + Math.min(width, rect.right)) / 2));
-            const y = Math.max(0, Math.min(height - 1, (Math.max(0, rect.top) + Math.min(height, rect.bottom)) / 2));
-            const topmost = document.elementFromPoint(x, y);
-            if (topmost && !unit.element.contains(topmost)) continue;
+          if (!unit.label && presentation !== "replace") continue;
+          const bounds = unitRect(unit, range);
+          if (!bounds || bounds.right - bounds.left < 4 || bounds.bottom - bounds.top < 4) continue;
+          let clip = viewport;
+          for (const ancestor of unit.clips) {
+            let box = clipRects.get(ancestor);
+            if (!box) clipRects.set(ancestor, (box = ancestor.getBoundingClientRect()));
+            clip = { left: Math.max(clip.left, box.left), top: Math.max(clip.top, box.top), right: Math.min(clip.right, box.right), bottom: Math.min(clip.bottom, box.bottom) };
           }
-          addCell(rect, unit.element, presentation === "overlay" ? "rgba(255,255,255,0.42)" : "#fff", unit.label);
+          if (bounds.right <= clip.left || bounds.left >= clip.right || bounds.bottom <= clip.top || bounds.top >= clip.bottom) continue;
+          const rect = { ...bounds, width: bounds.right - bounds.left, height: bounds.bottom - bounds.top };
+          cells.push({
+            rect, element: unit.element, clip, mask: !unit.label, label: unit.label ?? undefined,
+            color: presentation === "overlay" ? "rgba(255,255,255,0.42)" : "#fff",
+            layer: unit.layer,
+          });
         }
-        cells.sort((a, b) => b.rect.width * b.rect.height - a.rect.width * a.rect.height);
+        // Paint as the page stacks: scrolling content, then fixed chrome, then dialogs; larger surfaces under the controls on them.
+        cells.sort((a, b) => ((a.layer ?? 0) - (b.layer ?? 0)) || b.rect.width * b.rect.height - a.rect.width * a.rect.height);
       } else {
         for (const element of elements) {
           const rect = element.getBoundingClientRect();
@@ -245,7 +264,7 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
       }
 
       const paint = (cell: Cell, fill: boolean) => {
-        const clip = clipFor(cell.element);
+        const clip = cell.clip ?? clipFor(cell.element);
         context.save();
         context.beginPath();
         context.rect(clip.left, clip.top, clip.right - clip.left, clip.bottom - clip.top);
@@ -265,26 +284,29 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
         context.restore();
       };
       const paintLabel = (cell: Cell) => {
-        if (!cell.label || cell.rect.width < 18 || cell.rect.height < 15) return;
-        const clip = clipFor(cell.element);
-        const left = Math.max(cell.rect.left, clip.left);
-        const top = Math.max(cell.rect.top, clip.top);
-        const right = Math.min(cell.rect.right, clip.right);
-        const bottom = Math.min(cell.rect.bottom, clip.bottom);
-        if (right - left < 18 || bottom - top < 15) return;
+        if (!cell.label || cell.rect.width < 12 || cell.rect.height < 9) return;
+        // Sized and placed from the whole cell, so a label scrolls with its cell instead of resizing at the edge.
+        const clip = cell.clip ?? clipFor(cell.element);
+        const { left, top, right, bottom } = cell.rect;
         context.save();
         context.beginPath();
-        context.rect(left + 2, top + 1, right - left - 4, bottom - top - 2);
+        context.rect(Math.max(left + 2, clip.left), Math.max(top + 1, clip.top), Math.min(right - 2, clip.right) - Math.max(left + 2, clip.left), Math.min(bottom - 1, clip.bottom) - Math.max(top + 1, clip.top));
         context.clip();
-        let fontSize = Math.min(58, (bottom - top) * 0.46);
-        const availableWidth = Math.max(12, right - left - 8);
-        context.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
-        while (fontSize > 9 && context.measureText(cell.label).width > availableWidth) {
-          fontSize -= 1;
-          context.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
+        const availableWidth = Math.max(8, right - left - 8);
+        const fitKey = `${cell.label}|${Math.round(right - left)}|${Math.round(bottom - top)}`;
+        let fit = labelFits.get(fitKey);
+        if (!fit) {
+          let size = Math.min(58, (bottom - top) * 0.46);
+          context.font = `900 ${size}px Impact, Arial Black, sans-serif`;
+          while (size > 9 && context.measureText(cell.label).width > availableWidth) {
+            size -= 1;
+            context.font = `900 ${size}px Impact, Arial Black, sans-serif`;
+          }
+          const width = context.measureText(cell.label).width;
+          labelFits.set(fitKey, (fit = { fontSize: size, scaleX: Math.min(1, availableWidth / width), measuredWidth: width }));
         }
-        const measuredWidth = context.measureText(cell.label).width;
-        const scaleX = Math.min(1, availableWidth / measuredWidth);
+        const { fontSize, scaleX, measuredWidth } = fit;
+        context.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
         const labelWidth = measuredWidth * scaleX + 14;
         const labelHeight = fontSize + 10;
         const centerX = (left + right) / 2;
@@ -292,7 +314,7 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
         const labelCenterY = cell.rect.width >= 240 && cell.rect.height >= 240
           ? [centerY, top + (bottom - top) * 0.35, top + (bottom - top) * 0.65]
           .find((candidateY) => !cells.some((other) => {
-            if (other === cell || other.rect.width * other.rect.height >= cell.rect.width * cell.rect.height * 0.5) return false;
+            if (other === cell || other.mask || other.rect.width * other.rect.height >= cell.rect.width * cell.rect.height * 0.5) return false;
             return other.rect.left < centerX + labelWidth / 2 &&
               other.rect.right > centerX - labelWidth / 2 &&
               other.rect.top < candidateY + labelHeight / 2 &&
@@ -318,15 +340,16 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
         const drawnCells = presentation === "reveal"
           ? cells.filter((cell) => {
             if (!pointer) return false;
-            const clip = clipFor(cell.element);
+            const clip = cell.clip ?? clipFor(cell.element);
             return pointer.x >= Math.max(cell.rect.left, clip.left) &&
               pointer.x < Math.min(cell.rect.right, clip.right) &&
               pointer.y >= Math.max(cell.rect.top, clip.top) &&
               pointer.y < Math.min(cell.rect.bottom, clip.bottom);
-          }).slice(-1)
+          }).slice(-1).filter((cell) => !cell.mask)
           : cells;
         for (const cell of drawnCells) {
           paint(cell, true);
+          if (cell.mask) continue;
           paint(cell, false);
           paintLabel(cell);
         }
@@ -364,7 +387,8 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
     };
 
     const observer = new MutationObserver((mutations) => {
-      if (mutations.every((mutation) => overlay.contains(mutation.target) || mutation.target === root)) return;
+      const own = (node: Node) => node === root || overlay.contains(node) || Boolean((node instanceof Element ? node : node.parentElement)?.closest("[data-substitution-ui]"));
+      if (mutations.every((mutation) => own(mutation.target))) return;
       if (mutations.some((mutation) => mutation.type === "childList" || mutation.type === "characterData" || mutation.type === "attributes")) {
         cacheDirty = true;
       }
@@ -406,6 +430,7 @@ export default function SubstitutionRenderer({ mode, clone, group, presentation 
       window.removeEventListener("touchcancel", clearPointer, true);
       window.removeEventListener("blur", clearPointer);
       if (frame) window.cancelAnimationFrame(frame);
+      if (collectTimer) window.clearTimeout(collectTimer);
       root.removeAttribute("data-mobile-substitution");
     };
   }, [mode, clone, group, presentation]);

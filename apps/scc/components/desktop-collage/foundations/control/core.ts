@@ -71,6 +71,7 @@ function actingOf(session: Session): Acting {
     close: session.close && (index => { session.close!(index); state.held = Math.max(0, state.held - 1); }),
     front: session.front,
     dark: session.dark,
+    mobile: session.mobile,
     open: session.open && (item => { state.held += 1; state.total += 1; return session.open!(item); }),
     done: () => { state.animation = null; if (!state.running) state.message = 'Done'; },
   };

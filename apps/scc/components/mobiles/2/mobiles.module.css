@@ -1,0 +1,110 @@
+.field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #888;
+}
+
+.phone {
+  position: absolute;
+  top: 0;
+  border: 0;
+  transform-origin: 0 0;
+  background: #fff;
+}
+
+/* road-signs/direction/4's bottom-right option control, as in bubble/3. */
+.control {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 1;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  color: #171717;
+  font: 13px Arial, Helvetica, sans-serif;
+}
+
+.control * { box-sizing: border-box; }
+
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #171717;
+  color: #fff;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.trigger[aria-expanded="true"] {
+  background: #fff;
+  color: #171717;
+}
+
+.panel {
+  width: min(260px, calc(100vw - 32px));
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.heading {
+  margin: 0 2px 2px;
+  font-weight: 600;
+}
+
+.views {
+  display: flex;
+  gap: 4px;
+}
+
+.views button {
+  flex: 1;
+  min-height: 34px;
+  border: 0;
+  border-radius: 7px;
+  padding: 6px 10px;
+  background: transparent;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.views button[aria-pressed="true"] { background: #171717; color: #fff; }
+
+.row {
+  display: grid;
+  gap: 2px;
+  padding: 4px 2px;
+}
+
+.row span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.row output {
+  opacity: 0.62;
+  font-variant-numeric: tabular-nums;
+}
+
+.row input {
+  width: 100%;
+  accent-color: #171717;
+  cursor: ew-resize;
+}
+
+.control button:focus-visible,
+.row input:focus-visible { outline: 2px solid #1469d8; outline-offset: 2px; }

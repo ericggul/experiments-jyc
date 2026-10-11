@@ -54,6 +54,13 @@ function launch(window: ChromeAppWindow, sound: boolean) {
 
 type Rect = { x: number; y: number; width: number; height: number };
 
+/** A phone's CSS width, below which a window shows the phone layout scaled down instead of narrower. */
+const PHONE_CSS_WIDTH = 390;
+/** Height of an app window's title bar on macOS, in points. */
+const TITLE_BAR = 28;
+/** Safari on a current iPhone, so sites serve their phone pages. */
+const MOBILE_USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+
 /**
  * Launches one app window per item on a schedule (each item's `at`, or
  * index × interval) and places each one exactly when it appears. A cold start
@@ -219,6 +226,26 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
       await devtools!.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: enabled ? 'dark' : 'light' }] }, sessionId);
     }).catch(() => {});
   }
+  /**
+   * A phone's user agent, touch and viewport for the page, then a reload so
+   * the site serves its mobile version. The page is laid out at a phone's
+   * CSS width (PHONE_CSS_WIDTH) whatever the window's width, and scaled to
+   * fit the window, so a narrow window shows a whole phone screen small
+   * rather than a cramped one.
+   */
+  function mobile(index: number) {
+    const window = tagged[index];
+    const content = { width: window.width, height: Math.max(1, window.height - TITLE_BAR) };
+    const scale = Math.min(1, content.width / PHONE_CSS_WIDTH);
+    const width = Math.round(content.width / scale);
+    const height = Math.round(content.height / scale);
+    return withSession(index, async sessionId => {
+      await devtools!.send('Emulation.setUserAgentOverride', { userAgent: MOBILE_USER_AGENT, platform: 'iPhone' }, sessionId);
+      await devtools!.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 2, mobile: true, scale, screenWidth: width, screenHeight: height }, sessionId);
+      await devtools!.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 }, sessionId);
+      await devtools!.send('Page.reload', {}, sessionId);
+    }).catch(() => {});
+  }
   function close(index: number) {
     const targetId = targetIds.get(index);
     if (!devtools || targetId === undefined || closed.has(index)) return;
@@ -238,7 +265,7 @@ export function launchChromeApp(windows: ChromeAppWindow[], intervalMs: number, 
   // quitting the instance (clear) ends it.
   return {
     cancel: () => { cancelled = true; timers.forEach(clearTimeout); devtools?.close(); },
-    move, opened, evaluate, scroll, click, close, front, dark, open,
+    move, opened, evaluate, scroll, click, close, front, dark, mobile, open,
   };
 }
 

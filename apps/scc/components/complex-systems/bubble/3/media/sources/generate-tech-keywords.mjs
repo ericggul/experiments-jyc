@@ -1,5 +1,5 @@
-// Generates the 기술 surface: one documentary-style image per tech keyword,
-// the hype's physical backstage rather than a glossy product render.
+// Generates the 기술 surface: one quiet fine-art photograph per tech keyword,
+// evoking it obliquely through a material or social analogue rather than a literal render.
 // Run from the workspace root with OPENAI_API_KEY in .env:
 //   node apps/scc/components/complex-systems/bubble/3/media/sources/generate-tech-keywords.mjs [--only AI,GPU] [--out <dir>]
 // Writes <out>/<KEYWORD>.jpg (default apps/scc/public/images/1011/tech-keywords) and a ledger.json beside them.
@@ -12,48 +12,51 @@ const QUALITY = "medium";
 const CONCURRENCY = 4;
 
 const STYLE =
-  "Candid documentary press photograph, 35 mm, direct on-camera flash, slight film grain, muted natural colours, " +
-  "dark surroundings falling off into shadow, square framing. No text, no letters, no numbers, no logos, no watermark, " +
-  "no recognisable faces (people turned away, cropped or out of focus).";
+  "Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, " +
+  "soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, " +
+  "one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, " +
+  "real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, " +
+  "no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, " +
+  "no people or faces.";
 
-/** Keyword order is tech-eyes/1's; each scene is the keyword's material reality. */
+/** Keyword order is tech-eyes/1's; each scene evokes the keyword obliquely, through a material or social analogue. */
 export const SCENES = [
-  ["AI", "an aisle of a hyperscale data centre, rows of server racks with status lights, cold blue-white light, a maintenance worker seen from behind"],
-  ["ML", "a whiteboard dense with hand-drawn curves, boxes and arrows in dry-erase marker (abstract scribbles, no readable words), a hand holding a marker, office at night"],
-  ["DL", "a dense cluster of GPU servers with tangled orange and blue cables and blinking LEDs, a cramped hot aisle"],
-  ["AGI", "an empty keynote stage with a lone podium under a single spotlight, a huge dark screen behind, rows of empty chairs"],
-  ["GPT", "a person in a dark bedroom at 3 a.m. lit only by a phone screen, seen from the side, face mostly in shadow"],
-  ["LLM", "a wall of server cabinets behind a glass door, reflections of fluorescent lights, cooling pipes overhead"],
-  ["NLP", "an open-plan call centre after hours, rows of headsets on empty desks, screens asleep"],
-  ["RAG", "stacks of document boxes beside a flatbed scanner in a fluorescent-lit archive room"],
-  ["CPU", "a silicon wafer held in a gloved hand under the yellow light of a clean room, rainbow reflections"],
-  ["GPU", "a bare graphics card with three fans on a cluttered workbench, a tube of thermal paste, a screwdriver, harsh flash"],
-  ["NPU", "a macro of a phone mainboard with tiny chips and gold traces on an anti-static mat"],
-  ["RAM", "memory modules in anti-static bags piled in a cardboard box on warehouse shelving"],
-  ["OS", "a laptop alone on an empty desk at night showing a blank progress bar on a blue screen (no readable text)"],
-  ["PC", "a pile of discarded beige desktop towers and bulky monitors at an electronic waste yard"],
-  ["IoT", "a kitchen counter at night with a smart speaker, a smart plug and a router with blinking lights"],
-  ["AR", "a person wearing smart glasses on a crowded crosswalk, city lights reflected in the lenses, seen from the side"],
-  ["VR", "a trade-show visitor in a virtual-reality headset reaching into empty air, blurred crowd, carpeted expo hall"],
-  ["XR", "an expo booth demo with a motion-tracking rig, cameras on tripods and taped floor markers"],
-  ["UI", "a finger touching a glossy self-service kiosk screen of coloured tiles (no readable text), fast-food restaurant"],
-  ["UX", "a glass wall covered in colourful sticky notes joined by arrows, a startup office, people blurred behind"],
-  ["HCI", "a university lab with an eye-tracking monitor, a chin rest and cables under fluorescent light"],
-  ["MVP", "a cramped startup office at midnight, pizza boxes, laptops, a whiteboard, a sleeping bag under a desk"],
-  ["API", "a network patch panel with hundreds of colour-coded cables marked with bits of tape (no readable text)"],
-  ["SDK", "a developer's sticker-covered laptop on a café table, cables, a half-finished coffee"],
-  ["IDE", "a dark monitor filled with colourful syntax-highlighted code seen out of focus, a keyboard in the foreground"],
-  ["OOP", "a meeting-room whiteboard with boxes connected by arrows (no readable words), marker smudges"],
-  ["QA", "a device-testing lab with dozens of smartphones mounted on racks, every screen lit, cables everywhere"],
-  ["DB", "a tape library's robot arm among racks of data cartridges in a dim vault"],
-  ["SQL", "a raised-floor server room with one floor tile lifted, bundles of cables beneath, a torch beam"],
-  ["CDN", "a submarine cable landing station, a thick armoured cable emerging from concrete on a grey beach"],
-  ["DNS", "a wall of network switches with thousands of blinking green link lights in a dark room"],
-  ["URL", "a QR-code poster peeling off a street lamp post at night, wet pavement (no readable text)"],
-  ["VPN", "an airport lounge at night, a person on a laptop seen from behind, aircraft outside the window"],
-  ["VM", "rows of industrial cooling fans and chillers on the roof of a data centre, steam, dusk"],
-  ["NFT", "a crypto-art auction room with screens of pixelated images, a crowd of lanyards, champagne glasses"],
-  ["DAO", "a conference afterparty, people with lanyards in a dark bar lit by phone screens, blurred"],
+  ["AI", "a starling murmuration forming one dense dark shape against a pale overcast winter sky above a flat field"],
+  ["ML", "wind-formed ripples in pale sand seen close from above in low raking light, repeating curves slowly correcting themselves"],
+  ["DL", "looking straight down a deep circular stone well, concentric rings of masonry receding into darkness"],
+  ["AGI", "a salt flat at dawn where the white ground and the pale sky meet without a visible horizon, utterly empty"],
+  ["GPT", "a tall stack of tens of thousands of blank paper sheets seen edge-on, the edges forming fine grey and white striations"],
+  ["LLM", "an enormous old library reading room seen from a high balcony, endless shelves of books too distant to read, Gursky-like scale"],
+  ["NLP", "an empty soundproof interpreter's booth with two microphones on a desk, its window looking onto a dim empty assembly hall"],
+  ["RAG", "a long archive corridor of rolling compact shelving, one aisle cranked open, grey document boxes in rows"],
+  ["CPU", "a dense orthogonal city grid photographed straight down from very high above on an overcast day, rooftops like a tiled pattern"],
+  ["GPU", "an aerial view of thousands of identical greenhouse roofs in parallel rows, white plastic sheeting in a dry landscape"],
+  ["NPU", "a macro photograph of a dragonfly wing, the fine network of veins and translucent cells against a pale background"],
+  ["RAM", "a wall of small identical grey metal locker doors in a grid, a few left ajar, flat daylight"],
+  ["OS", "a railway marshalling yard from above, many parallel tracks branching and merging, empty of trains, grey morning"],
+  ["PC", "a still life of a single beige 1990s desktop computer with its monitor switched off on a bare wooden desk beside a window"],
+  ["IoT", "overhead power and telephone lines criss-crossing above a narrow residential alley, silhouetted against a pale sky"],
+  ["AR", "a shop window in which the reflection of the street outside lies over the objects inside, two scenes layered in one plane"],
+  ["VR", "a theatre stage seen from the wings, a painted backdrop of distant mountains with its bare wooden frame and ropes visible behind it"],
+  ["XR", "a large free-standing mirror placed in an open grass field, reflecting the sky so the landscape seems to continue into it"],
+  ["UI", "a close-up of a row of chunky vintage push buttons and toggle switches set into a cream enamel control panel, unlabelled"],
+  ["UX", "a worn desire path cutting diagonally across a neatly mown lawn, seen from above"],
+  ["HCI", "the polished, worn bright patch on an old bronze door handle where countless hands have touched it, close-up"],
+  ["MVP", "a rough cardboard and masking-tape prototype of a chair standing on a plywood workshop table"],
+  ["API", "a close-up of the heavy steel coupling joining two railway carriages, weathered paint, overcast light"],
+  ["SDK", "a flat-lay of hand tools neatly arranged in the compartments of a worn wooden toolbox tray, seen from directly above"],
+  ["IDE", "an architect's drafting table under north light with tracing paper, steel rulers, set squares and pencils laid out"],
+  ["OOP", "shelves in a museum storeroom holding many identical white plaster casts of the same architectural ornament, with small variations"],
+  ["QA", "rows of identical white porcelain cups on a factory inspection table, one of them with a hairline crack"],
+  ["DB", "a cold seed-bank vault with tall shelving of identical sealed grey boxes receding down a narrow aisle"],
+  ["SQL", "a wooden library card-catalogue drawer pulled fully open, hundreds of index cards seen edge-on, a brass rod through them"],
+  ["CDN", "a thick armoured submarine cable emerging from concrete and running down into the sea on a grey pebble beach"],
+  ["DNS", "a wall of wooden pigeonhole mail-sorting boxes in an old post office, a few letters resting in some of them"],
+  ["URL", "a lone mailbox on a post at the end of a dirt road in a wide empty landscape"],
+  ["VPN", "a long empty concrete tunnel with a small distant square of daylight at its end"],
+  ["VM", "an architectural scale model of a building displayed inside the vast empty hall of that same building"],
+  ["NFT", "an empty white gallery wall with a single picture hook and a faint paler rectangle where a painting once hung"],
+  ["DAO", "a circle of empty folding chairs in a bare community hall, soft daylight from high windows"],
 ];
 
 function loadKey() {

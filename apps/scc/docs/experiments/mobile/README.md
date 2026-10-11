@@ -1,6 +1,6 @@
 # Mobile experiments
 
-The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/13` entries preserve the SNS mobile variants; the public routes remain `/sns/mobile/1`–`/sns/mobile/13` so existing links continue to work. Their individual records remain in [SNS mobile](../sns/mobile/README.md).
+The component family is `apps/scc/components/mobile/`. Its `clone/1`–`clone/14` entries preserve the SNS mobile variants; the public routes remain `/sns/mobile/1`–`/sns/mobile/14` so existing links continue to work. Their individual records remain in [SNS mobile](../sns/mobile/README.md).
 
 `finger-skating/default` (formerly `/1`) is a single-device arrow field changed by a moving finger at [`/mobile/finger-skating/default`](../../../app/mobile/finger-skating/[experiment]/page.tsx); opt 3 deposits vorticity into a still fluid layer. See [finger skating](finger-skating.md).
 
@@ -26,11 +26,11 @@ Removed 2026-10-07: `finger-skating/2` (skated curve read back as a formula); it
 
 `finger-network/4` starts from `/3` with people on and keeps each session's person: when the fingers lift it joins, by a bottom option, either a one-sex society of couples, children, betrayal, divorce, ageing, and death, or a political landscape where height is opinion (상파 above, 하파 below), at [`/mobile/finger-network/4`](../../../app/mobile/finger-network/[experiment]/page.tsx). See [finger network /4](finger-network-4.md).
 
-`gaze-tracking/1` preserves the independent camera-input study. The [`/mobile/gaze-tracking`](../../../app/mobile/gaze-tracking/page.tsx) index also links to `gaze-tracking/2`, which applies gaze-driven difference circles, liquid displacement, or a local-curl mesh distortion to each of the 13 clones. See [gaze tracking](gaze-tracking.md) for the sensing and accuracy boundary.
+`gaze-tracking/1` preserves the independent camera-input study. The [`/mobile/gaze-tracking`](../../../app/mobile/gaze-tracking/page.tsx) index also links to `gaze-tracking/2`, which applies gaze-driven difference circles, liquid displacement, or a local-curl mesh distortion to each clone. See [gaze tracking](gaze-tracking.md) for the sensing and accuracy boundary.
 
-`transform/pixelate/` applies one shared viewport raster effect to any of the 13 archived clones without editing them. The selection index is at [`/mobile/transform/pixelate`](../../../app/mobile/transform/pixelate/page.tsx). See [pixelate](pixelate.md) for its rendering and interaction boundary.
+`transform/pixelate/` applies one shared viewport raster effect to any of the archived clones without editing them. The selection index is at [`/mobile/transform/pixelate`](../../../app/mobile/transform/pixelate/page.tsx). See [pixelate](pixelate.md) for its rendering and interaction boundary.
 
-`transform/substitution/1` switches between the original clone, object outlines, and representative colors. `substitution/2` adds uppercase command readings in three vocabulary groups, with an original mode. Both share one renderer across all 13 clones. The selection index is at [`/mobile/transform/substitution`](../../../app/mobile/transform/substitution/page.tsx). See [substitution](substitution.md).
+`transform/substitution/1` switches between the original clone, object outlines, and representative colors. `substitution/2` adds uppercase command readings in three vocabulary groups, with an original mode. Both share one renderer across all clones. The selection index is at [`/mobile/transform/substitution`](../../../app/mobile/transform/substitution/page.tsx). See [substitution](substitution.md).
 
 `transform/language/1` hides the glyphs of every recognised interface string in a clone and redraws them in one of 40 literal translations; each button or text block changes language on its own Markov chain, optionally coupled to its on-screen neighbours, at up to 60 steps per second. The selection index is at [`/mobile/transform/language`](../../../app/mobile/transform/language/page.tsx). See [language](language.md).
 

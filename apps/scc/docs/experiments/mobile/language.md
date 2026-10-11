@@ -1,12 +1,14 @@
 # Language — /mobile/transform/language/[experiment]/[clone]
 
-Experimental, 2026-10-03. Rapid language transfer. The baseline is each preserved `clone/1`–`clone/13` mobile surface, wrapped like [substitution](substitution.md) without editing the clone. Tested relation: what an interface becomes when every label keeps its place and function but the language it speaks changes autonomously, element by element, at spectacle speed.
+Experimental, 2026-10-03. Rapid language transfer. The baseline is each preserved `clone/1`–`clone/14` mobile surface, wrapped like [substitution](substitution.md) without editing the clone. Tested relation: what an interface becomes when every label keeps its place and function but the language it speaks changes autonomously, element by element, at spectacle speed.
 
 ## Material
 
 `tools/extract.mjs` reads every clone's `screen/index.tsx` and `model/*.ts` with the TypeScript parser and keeps rendered strings only: JSX text, `placeholder`, notice/error setters, visible data fields (names, labels, options, categories, statuses, places, times) and template literals as patterns (`` `${n}개` `` → `{0}개`). Aria labels, alt text, ids, class names, comparison literals, and long prose fields (`description`, `body`, `bio`, captions) are excluded. Wikimedia file titles in clone 12 were removed by hand. Result: 1,206 unique strings (493 Korean, 713 English).
 
 Each string was translated as literally as possible (최대한 직역) into 40 languages: ko, en, ja, zh, vi, th, id, tl, hi, bn, ta, ur, fa, ar, he, tr, ru, uk, pl, cs, hu, ro, el, fi, de, nl, sv, eu, fr, es, pt, it, sw, am, ka, hy, mn, km, my, si. Meaningful brand and shop names were translated word by word; personal and place names transliterated. Translation was machine work by parallel Sonnet agents (the repository's preferred `gpt-5.6-terra` delegate was unavailable), with placeholder and script checks in `tools/build-lexicon.mjs`; no native-speaker review. `lexicon/<clone>.json` holds `[source, ...40 translations]` rows in `languages.ts` order and is loaded per clone.
+
+**Lexicon refresh — 2026-10-11.** Fidelity passes rewrote clones 11–13 and added the YouTube clone 14. The extractor now reads every `screen/*.tsx`, not only `screen/index.tsx`, because the clones were split into several screen files. Lexicons 11–14 were rebuilt from 566 strings. Strings still present kept their earlier translations, and 431 new ones were translated into the same 40 languages by four parallel Sonnet agents with the same literal rule. Fifty-five extracted non-text items were dropped by hand: Commons `File:` titles, photo IDs, handles, an SVG path and a transform string. Greek channel and personal names, first left in Latin, were translated or transliterated like the other languages. `build-lexicon.mjs` gates passed for all 40 languages. Lexicons 1–10 are unchanged. In Chrome at 390 px, `/1/11`–`/1/14` all showed labels changing language. There was still no native-speaker review.
 
 ## Mechanism
 

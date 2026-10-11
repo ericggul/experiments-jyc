@@ -62,6 +62,7 @@ const cloneMediaCommands: Record<string, Record<CommandGroup, string>> = {
   "11": { consumption: "DESIRE", discipline: "PERFORM", attention: "WATCH" },
   "12": { consumption: "DESIRE", discipline: "REPEAT", attention: "WATCH" },
   "13": { consumption: "EXCHANGE", discipline: "REPORT", attention: "SCROLL" },
+  "14": { consumption: "CONSUME", discipline: "REPEAT", attention: "WATCH" },
 };
 
 function actionFor(element: Element): Action | null {

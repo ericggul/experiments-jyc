@@ -1,32 +1,28 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- This bounded interface uses editorial sample photography. */
-import { useEffect, useRef, useState, type FormEvent, type TouchEvent } from 'react';
-import { accounts, initialPosts, type Account, type Post } from '../model/data';
-import { igds } from './igds-glyphs';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent, type TouchEvent } from 'react';
+import { accounts, closeFriends, initialPosts, initiallyUnread, seedThreads, threadAges, verifiedAccounts, type Account, type Post, type ThreadMessage } from '../model/data';
+import { Icon } from './glyph';
+import { Reels } from './reels';
+import { Sheet } from './sheet';
+import { StoryViewer, type StoryItem } from './story-viewer';
 import s from './instagram.module.css';
 
 type Tab = 'home' | 'reels' | 'inbox' | 'explore' | 'profile' | 'create' | 'activity';
-type IconName = 'home' | 'search' | 'plus' | 'reels' | 'inbox' | 'heart' | 'message' | 'send' | 'save' | 'back' | 'more' | 'grid' | 'close' | 'chevron' | 'check' | 'play' | 'pause' | 'repost';
-
-function Icon({ name, filled = false }: { name: IconName; filled?: boolean }) {
-  const common = { 'data-icon': name, viewBox: '0 0 24 24', width: 25, height: 25, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true as const };
-  if (name === 'heart') return filled ? <svg {...common} viewBox="0 0 48 48"><path fill="currentColor" stroke="none" d={igds.heartFilled}/></svg> : <svg {...common}><path fill="currentColor" stroke="none" d={igds.heartOutline}/></svg>;
-  if (name === 'message') return <svg {...common}><path d={igds.comment}/></svg>;
-  if (name === 'repost') return <svg {...common}><path fill="currentColor" stroke="none" d={filled ? igds.repostDone : igds.repost}/></svg>;
-  if (name === 'send' || name === 'inbox') return <svg {...common}>{filled ? <path fill="currentColor" stroke="none" d={igds.directFilled}/> : <><path d={igds.directOutline}/><line {...igds.directFold}/></>}</svg>;
-  if (name === 'save') return <svg {...common}>{filled ? <path fill="currentColor" stroke="none" d={igds.saveFilled}/> : <polygon points={igds.savePoints}/>}</svg>;
-  if (name === 'reels') return <svg {...common}><path fill="currentColor" stroke="none" d={filled ? igds.reelsFilled : igds.reelsOutline}/></svg>;
-  if (name === 'home') return <svg {...common}><path fill="currentColor" stroke="none" d={filled ? igds.homeFilled : igds.homeOutline}/></svg>;
-  return <svg {...common}>{name === 'search' ? <><path d={igds.search}/><line {...igds.searchHandle}/></> : name === 'plus' ? <path d="M12 3v18M3 12h18"/> : name === 'back' ? <path d="m15 4-8 8 8 8"/> : name === 'more' ? <><circle cx="4.3" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="19.7" cy="12" r=".9" fill="currentColor" stroke="none"/></> : name === 'grid' ? <><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></> : name === 'close' ? <path d="M5 5 19 19M19 5 5 19"/> : name === 'chevron' ? <path d="m9 5 7 7-7 7"/> : name === 'check' ? <path d="m4 12 5 5L20 6"/> : name === 'pause' ? <path d="M8 5v14M16 5v14"/> : <path d="m8 5 11 7-11 7Z"/>}</svg>;
-}
+type ProfileSection = 'grid' | 'reels' | 'reposts' | 'tagged';
 
 const avatarFor = (id: string) => accounts.find(a => a.id === id)?.avatar || accounts[0].avatar;
 const nameFor = (id: string) => accounts.find(a => a.id === id)?.name || 'mira.cho';
+const avatarByName = (name: string) => accounts.find(a => a.name === name)?.avatar || accounts[0].avatar;
 const suggested = accounts.filter(account => account.id !== 'you').map(account => account.id);
 const storyAccounts = ['you', ...suggested];
 const imageChoices = initialPosts.slice(0, 8);
 const navTabs = ['home', 'reels', 'inbox', 'explore', 'profile'] as const;
+const emojis = [{ id: 'heart', glyph: '❤️' }, { id: 'raised', glyph: '🙌' }, { id: 'fire', glyph: '🔥' }, { id: 'clap', glyph: '👏' }, { id: 'cry', glyph: '😢' }, { id: 'love', glyph: '😍' }, { id: 'wow', glyph: '😮' }, { id: 'laugh', glyph: '😂' }];
 const compactCount = (count: number) => { const [unit, size] = count >= 1e6 ? ['M', 1e6] as const : count >= 1e3 ? ['K', 1e3] as const : ['', 1] as const; return size === 1 ? String(count) : `${(count / size).toFixed(count / size >= 100 ? 0 : 1).replace(/\.0$/, '')}${unit}`; };
+// Feed timestamps read "1 day ago" in the 2026 frame; comment and story ages stay short ("5h").
+const longAge = (age: string) => { const match = /^(\d+)([mhd])$/.exec(age); if (!match) return age; const n = Number(match[1]); const unit = { m: 'minute', h: 'hour', d: 'day' }[match[2] as 'm' | 'h' | 'd']; return `${n} ${unit}${n === 1 ? '' : 's'} ago`; };
+const storyItemsFor = (posts: Post[], id: string): StoryItem[] => posts.filter(p => p.accountId === id && !p.reel).slice(0, id === 'you' ? 1 : 3).map(p => ({ id: `story-${p.id}`, image: p.image, alt: p.alt, age: p.age }));
 
 export default function InstagramMobile() {
   const [tab, setTab] = useState<Tab>('home');
@@ -34,82 +30,249 @@ export default function InstagramMobile() {
   const [liked, setLiked] = useState<string[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
   const [reposted, setReposted] = useState<string[]>([]);
-  const [following, setFollowing] = useState<string[]>(['atelier', 'hana']);
+  const [hidden, setHidden] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const [likedComments, setLikedComments] = useState<string[]>([]);
+  const [following, setFollowing] = useState<string[]>(['flowers', 'interior', 'cafe', 'street']);
+  const [seen, setSeen] = useState<string[]>([]);
   const [profileId, setProfileId] = useState('you');
-  const [profileSection, setProfileSection] = useState<'grid' | 'reels'>('grid');
+  const [profileSection, setProfileSection] = useState<ProfileSection>('grid');
+  const [savedView, setSavedView] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
-  const [storyIndex, setStoryIndex] = useState<number | null>(null);
+  const [storyStart, setStoryStart] = useState<number | null>(null);
   const [commentsId, setCommentsId] = useState<string | null>(null);
   const [shareId, setShareId] = useState<string | null>(null);
+  const [shareTo, setShareTo] = useState<string[]>([]);
   const [optionsId, setOptionsId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [comment, setComment] = useState('');
   const [caption, setCaption] = useState('');
   const [choice, setChoice] = useState(0);
-  const [reelIndex, setReelIndex] = useState(0);
-  const [reelPaused, setReelPaused] = useState(false);
+  const [createStep, setCreateStep] = useState<'pick' | 'caption'>('pick');
+  const [reelStart, setReelStart] = useState<string | null>(null);
   const [reelSection, setReelSection] = useState<'reels' | 'friends'>('reels');
   const [inboxAccount, setInboxAccount] = useState<string | null>(null);
+  const [unread, setUnread] = useState<string[]>(initiallyUnread);
   const [message, setMessage] = useState('');
-  const [threads, setThreads] = useState<Record<string, {id: string; body: string}[]>>({});
+  const [threads, setThreads] = useState<Record<string, ThreadMessage[]>>(seedThreads);
+  const [burst, setBurst] = useState<{ id: string; n: number } | null>(null);
   const [notice, setNotice] = useState('');
   const scroll = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const lastTap = useRef<{ id: string; at: number } | null>(null);
   const gestureStart = useRef<{x: number; y: number} | null>(null);
   const detail = posts.find(p => p.id === detailId);
   const commentPost = posts.find(p => p.id === commentsId);
   const sharePost = posts.find(p => p.id === shareId);
   const optionPost = posts.find(p => p.id === optionsId);
   const profile: Account = accounts.find(a => a.id === profileId) || accounts[0];
-  const reels = posts.filter(p => p.reel);
-  const reel = reels[reelIndex % reels.length];
+  const reels = useMemo(() => posts.filter(p => p.reel), [posts]);
   const query = search.trim().toLowerCase();
   const matchingAccounts = accounts.filter(a => a.id !== 'you' && `${a.name} ${a.fullName}`.toLowerCase().includes(query));
-  const matchingPosts = posts.filter(p => !p.reel && (!query || `${p.caption} ${p.location} ${nameFor(p.accountId)}`.toLowerCase().includes(query)));
+  const explorePosts = posts.filter(p => !p.reel && (!query || `${p.caption} ${p.location} ${nameFor(p.accountId)}`.toLowerCase().includes(query)));
+  const exploreTiles = query ? explorePosts : [...explorePosts.slice(0, 2), reels[0], ...explorePosts.slice(2, 4), reels[1], ...explorePosts.slice(4)].filter(Boolean);
+  const inboxOrder = [...Object.keys(threads).sort((a, b) => Number(unread.includes(b)) - Number(unread.includes(a))), ...suggested.filter(id => !threads[id])];
 
-  useEffect(() => { scroll.current?.scrollTo(0, 0); }, [tab, profileId, detailId]);
+  useEffect(() => { scroll.current?.scrollTo(0, 0); }, [tab, profileId, detailId, savedView, inboxAccount]);
   useEffect(() => { if (!notice) return; const timeout = window.setTimeout(() => setNotice(''), 2800); return () => window.clearTimeout(timeout); }, [notice]);
-  useEffect(() => { if (storyIndex === null) return; const timeout = window.setTimeout(() => setStoryIndex(v => v === null ? null : v >= storyAccounts.length - 1 ? null : v + 1), 6500); return () => window.clearTimeout(timeout); }, [storyIndex]);
 
-  function changeTab(next: Tab) { setTab(next); setDetailId(null); setStoryIndex(null); setCommentsId(null); setShareId(null); setOptionsId(null); setInboxAccount(null); setSearch(''); if (next === 'profile') { setProfileId('you'); setProfileSection('grid'); } }
-  function showProfile(id: string) { setTab('profile'); setProfileId(id); setProfileSection('grid'); setDetailId(null); setStoryIndex(null); setCommentsId(null); setShareId(null); }
+  function changeTab(next: Tab) { setTab(next); setDetailId(null); setStoryStart(null); setCommentsId(null); setShareId(null); setOptionsId(null); setInboxAccount(null); setSavedView(false); setSearch(''); setCreateStep('pick'); if (next === 'profile') { setProfileId('you'); setProfileSection('grid'); } if (next === 'reels') setReelStart(null); }
+  function showProfile(id: string) { setTab('profile'); setProfileId(id); setProfileSection('grid'); setSavedView(false); setDetailId(null); setStoryStart(null); setCommentsId(null); setShareId(null); setOptionsId(null); }
+  function openReel(id: string) { setReelStart(id); setReelSection('reels'); setDetailId(null); setTab('reels'); }
+  function openStory(id: string) { const index = storyAccounts.indexOf(id); if (index >= 0) setStoryStart(index); }
   function toggle(id: string, values: string[], update: (next: string[]) => void) { update(values.includes(id) ? values.filter(value => value !== id) : [...values, id]); }
-  function selectReelSection(next: 'reels' | 'friends') { setReelSection(next); if (next === 'friends') videoRef.current?.pause(); else void videoRef.current?.play().catch(() => setNotice('Playback is unavailable')); }
-  function toggleReelPlayback() { const video = videoRef.current; if (!video) return; if (video.paused) { void video.play().catch(() => setNotice('Playback is unavailable')); } else video.pause(); }
+  function like(id: string, only = false) { setLiked(current => current.includes(id) ? (only ? current : current.filter(value => value !== id)) : [...current, id]); }
+  function photoTap(event: MouseEvent<HTMLDivElement>, id: string) {
+    const previous = lastTap.current;
+    const now = event.timeStamp;
+    if (previous && previous.id === id && now - previous.at < 320) { lastTap.current = null; like(id, true); setBurst({ id, n: now }); return; }
+    lastTap.current = { id, at: now };
+  }
   function addComment(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!commentsId || !comment.trim()) return; const body = comment.trim(); setPosts(current => current.map(p => p.id === commentsId ? { ...p, comments: [...p.comments, { id: crypto.randomUUID(), author: 'mira.cho', body }] } : p)); setComment(''); }
-  function publish(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!caption.trim()) return; const selected = imageChoices[choice]; const post: Post = { id: crypto.randomUUID(), accountId: 'you', image: selected.image, alt: selected.alt, caption: caption.trim(), location: 'Seoul, South Korea', likes: 0, age: 'Just now', comments: [], own: true }; setPosts(current => [post, ...current]); setCaption(''); setChoice(0); setTab('profile'); setProfileId('you'); setDetailId(post.id); setNotice('Post added to this local preview'); }
+  function publish(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const selected = imageChoices[choice]; const post: Post = { id: crypto.randomUUID(), accountId: 'you', image: selected.image, alt: selected.alt, caption: caption.trim(), location: 'Seoul, South Korea', likes: 0, age: 'Just now', comments: [], own: true }; setPosts(current => [post, ...current]); setCaption(''); setChoice(0); setCreateStep('pick'); setTab('home'); setNotice('Post added to this local preview'); }
+  function sendShare() { if (!sharePost) return; const body = `Shared ${nameFor(sharePost.accountId)}'s ${sharePost.reel ? 'reel' : 'post'}`; setThreads(current => { const next = { ...current }; shareTo.forEach(id => { next[id] = [...(next[id] || []), { id: crypto.randomUUID(), from: 'me', body }]; }); return next; }); setNotice(shareTo.length === 1 ? `Sent to ${nameFor(shareTo[0])}` : `Sent to ${shareTo.length} people`); setShareTo([]); setShareId(null); }
+  function sendMessage(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!inboxAccount || !message.trim()) return; const body = message.trim(); setThreads(current => ({...current, [inboxAccount]: [...(current[inboxAccount] || []), {id: crypto.randomUUID(), from: 'me', body}]})); setMessage(''); }
   function finishGesture(event: TouchEvent<HTMLDivElement>) {
     const start = gestureStart.current;
     gestureStart.current = null;
-    if (!start || detailId || commentsId || shareId || optionsId || tab === 'create' || tab === 'activity') return;
-    if (event.target instanceof Element && event.target.closest(`.${s.stories}, input, textarea`)) return;
+    if (!start || detailId || commentsId || shareId || optionsId || inboxAccount || tab === 'create' || tab === 'activity') return;
+    if (event.target instanceof Element && event.target.closest(`.${s.stories}, .${s.highlights}, input, textarea`)) return;
     const touch = event.changedTouches[0];
     if (!touch) return;
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
-    if (tab === 'reels' && reelSection === 'reels' && dy < -75 && Math.abs(dy) > Math.abs(dx) * 1.4) {
-      setReelIndex(index => (index + 1) % reels.length);
-      return;
-    }
     if (Math.abs(dx) < 85 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
     const index = navTabs.findIndex(item => item === tab);
     const next = navTabs[index + (dx < 0 ? 1 : -1)];
     if (next) changeTab(next);
   }
-  function sendMessage(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!inboxAccount || !message.trim()) return; const body = message.trim(); setThreads(current => ({...current, [inboxAccount]: [...(current[inboxAccount] || []), {id: crypto.randomUUID(), body}]})); setMessage(''); }
-  function renderPostActions(post: Post) { return <div className={s.postActions}><button aria-label={liked.includes(post.id) ? 'Unlike post' : 'Like post'} aria-pressed={liked.includes(post.id)} className={liked.includes(post.id) ? s.isLiked : ''} onClick={() => toggle(post.id, liked, setLiked)}><Icon name="heart" filled={liked.includes(post.id)}/><span>{compactCount(post.likes + Number(liked.includes(post.id)))}</span></button><button aria-label="View comments" onClick={() => { setComment(''); setCommentsId(post.id); }}><Icon name="message"/><span>{compactCount(post.comments.length)}</span></button><button aria-label={reposted.includes(post.id) ? 'Undo repost' : 'Repost'} aria-pressed={reposted.includes(post.id)} onClick={() => toggle(post.id, reposted, setReposted)}><Icon name="repost" filled={reposted.includes(post.id)}/><span>{compactCount(Math.round(post.likes / 78) + Number(reposted.includes(post.id)))}</span></button><button aria-label="Share post" onClick={() => setShareId(post.id)}><Icon name="send"/><span>{compactCount(Math.round(post.likes / 31))}</span></button><button className={s.saveAction} aria-label={saved.includes(post.id) ? 'Remove saved post' : 'Save post'} aria-pressed={saved.includes(post.id)} onClick={() => toggle(post.id, saved, setSaved)}><Icon name="save" filled={saved.includes(post.id)}/></button></div>; }
-  function renderFeedPost(post: Post) { return <article className={s.feedPost}><div className={s.postHead}><button className={s.identity} onClick={() => showProfile(post.accountId)}><img src={avatarFor(post.accountId)} alt=""/><span><strong>{nameFor(post.accountId)}</strong><small>{post.location}</small></span></button><button className={s.postMore} aria-label="Post options" onClick={() => setOptionsId(post.id)}><Icon name="more"/></button></div><button className={s.photoButton} onClick={() => setDetailId(post.id)} aria-label={`Open post by ${nameFor(post.accountId)}`}><img src={post.image} alt={post.alt} loading="lazy"/></button>{renderPostActions(post)}<div className={s.postCopy}><p><button onClick={() => showProfile(post.accountId)}>{nameFor(post.accountId)}</button> {post.caption}</p><button className={s.muted} onClick={() => { setComment(''); setCommentsId(post.id); }}>View all {post.comments.length} comments</button><small>{post.age}</small></div></article>; }
+  const ringFor = (id: string) => seen.includes(id) ? s.ringSeen : closeFriends.includes(id) ? s.ringClose : s.ringNew;
+  const badge = (id: string) => verifiedAccounts.includes(id) && <span className={s.verified}><Icon name="verified" size={12}/></span>;
 
-  return <main className={s.outer} lang="en"><div className={s.app}>
-    {storyIndex !== null ? <section className={s.story} aria-label="Story viewer"><img src={posts.find(p => p.accountId === storyAccounts[storyIndex])?.image || initialPosts[0].image} alt={posts.find(p => p.accountId === storyAccounts[storyIndex])?.alt || 'Photograph in story'}/><div className={s.storyShade}/><div className={s.storyTop}><div className={s.storyProgress}>{storyAccounts.map((id, index) => <span key={id} className={index <= storyIndex ? s.watched : ''}/>)}</div><div className={s.storyIdentity}><img src={avatarFor(storyAccounts[storyIndex])} alt=""/><strong>{nameFor(storyAccounts[storyIndex])}</strong><small>5h</small><button onClick={() => setStoryIndex(null)} aria-label="Close story"><Icon name="close"/></button></div></div><div className={s.storyTaps}><button onClick={() => setStoryIndex(v => v === null ? null : Math.max(0, v - 1))} aria-label="Previous story"/><button onClick={() => setStoryIndex(v => v === null ? null : v >= storyAccounts.length - 1 ? null : v + 1)} aria-label="Next story"/></div><div className={s.storyBottom}><input aria-label="Reply to story" placeholder="Reply to story…" onKeyDown={event => { if (event.key === 'Enter' && event.currentTarget.value.trim()) { setNotice('Reply saved in this local preview'); setStoryIndex(null); } }}/><button aria-label="Like story" onClick={() => setNotice('Story liked in this local preview')}><Icon name="heart"/></button></div></section> : <>
-      <div className={s.scroll} ref={scroll} onTouchStartCapture={event => { const touch = event.touches[0]; if (touch) gestureStart.current = {x: touch.clientX, y: touch.clientY}; }} onTouchEndCapture={finishGesture}>
-        {detail ? <><header className={s.subHeader}><button aria-label="Back" onClick={() => setDetailId(null)}><Icon name="back"/></button><strong>Posts</strong><span/></header>{renderFeedPost(detail)}</> : tab === 'home' ? <><header className={s.homeHeader}><button aria-label="Create post" onClick={() => changeTab('create')}><Icon name="plus"/></button><img className={s.wordmark} src="/images/sns/mobile/11/instagram-wordmark.svg" alt="Instagram"/><button aria-label="Activity" onClick={() => changeTab('activity')}><Icon name="heart"/></button></header><div className={s.stories}><button className={s.storyEntry} onClick={() => setStoryIndex(0)}><span className={s.storyOwn}><img src={accounts[0].avatar} alt=""/><i>+</i></span><small>Your story</small></button>{suggested.map((id, index) => <button className={s.storyEntry} key={id} onClick={() => setStoryIndex(index + 1)}><span className={s.storyRing}><img src={avatarFor(id)} alt=""/></span><small>{nameFor(id)}</small></button>)}</div><div className={s.feed}>{posts.filter(p => !p.reel).map(p => <div key={p.id}>{renderFeedPost(p)}</div>)}</div></> : tab === 'explore' ? <><div className={s.exploreHeader}><label className={s.searchBox}><Icon name="search"/><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search" aria-label="Search people and posts"/>{search && <button onClick={() => setSearch('')} aria-label="Clear search"><Icon name="close"/></button>}</label></div>{query && <div className={s.accountResults}><h2>Accounts</h2>{matchingAccounts.length ? matchingAccounts.map(a => <button key={a.id} onClick={() => showProfile(a.id)}><img src={a.avatar} alt=""/><span><strong>{a.name}</strong><small>{a.fullName}</small></span><Icon name="chevron"/></button>) : <p>No matching accounts</p>}</div>}<div className={s.exploreGrid}>{matchingPosts.map(p => <button key={p.id} onClick={() => setDetailId(p.id)} aria-label={`Open ${nameFor(p.accountId)} post`}><img src={p.image} alt={p.alt} loading="lazy"/></button>)}</div>{!matchingPosts.length && <p className={s.empty}>No posts match that search.</p>}</> : tab === 'activity' ? <><header className={s.subHeader}><button aria-label="Back to home" onClick={() => changeTab('home')}><Icon name="back"/></button><strong>Activity</strong><span/></header><h2 className={s.inboxSection}>New</h2>{posts.filter(p => p.accountId === 'you').flatMap(p => p.comments.map(c => <button className={s.activityRow} key={c.id} onClick={() => setDetailId(p.id)}><img src={accounts.find(a => a.name === c.author)?.avatar || accounts[0].avatar} alt=""/><span><strong>{c.author}</strong> commented: {c.body}</span><img src={p.image} alt=""/></button>))}</> : tab === 'inbox' ? <><header className={s.inboxHeader}><strong>{inboxAccount ? nameFor(inboxAccount) : 'Messages'}</strong>{inboxAccount && <button onClick={() => setInboxAccount(null)} aria-label="Back to inbox"><Icon name="back"/></button>}</header>{inboxAccount ? <div className={s.thread}><div className={s.threadIdentity}><img src={avatarFor(inboxAccount)} alt=""/><strong>{nameFor(inboxAccount)}</strong><small>Conversation in this preview</small></div><div className={s.bubbles}>{(threads[inboxAccount] || []).map(entry => <p key={entry.id}>{entry.body}</p>)}</div><form className={s.messageForm} onSubmit={sendMessage}><input value={message} onChange={event => setMessage(event.target.value)} maxLength={500} placeholder="Message…" aria-label="Message"/><button disabled={!message.trim()} type="submit">Send</button></form></div> : <><label className={s.searchBox}><Icon name="search"/><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search" aria-label="Search messages"/></label><h2 className={s.inboxSection}>Messages</h2>{matchingAccounts.map(account => <button className={s.threadRow} key={account.id} onClick={() => setInboxAccount(account.id)}><img src={account.avatar} alt=""/><span><strong>{account.name}</strong><small>{threads[account.id]?.at(-1)?.body || 'Start a conversation'}</small></span><Icon name="chevron"/></button>)}</>}</> : tab === 'create' ? <><header className={s.subHeader}><button aria-label="Cancel new post" onClick={() => changeTab('home')}><Icon name="close"/></button><strong>New post</strong><span/></header><form className={s.create} onSubmit={publish}><img className={s.createPreview} src={imageChoices[choice].image} alt={imageChoices[choice].alt}/><p className={s.createHint}>Choose a sample photo for this local preview</p><div className={s.photoChoices}>{imageChoices.map((image, index) => <button key={image.id} type="button" className={choice === index ? s.selectedPhoto : ''} onClick={() => setChoice(index)} aria-label={`Choose sample photo ${index + 1}`} aria-pressed={choice === index}><img src={image.image} alt={image.alt}/></button>)}</div><label className={s.captionLabel}>Caption<textarea value={caption} onChange={event => setCaption(event.target.value)} maxLength={500} placeholder="Write a caption…" rows={4}/></label><button className={s.shareButton} disabled={!caption.trim()} type="submit">Share post</button><p className={s.localNote}>Published only in this browser session.</p></form></> : tab === 'reels' ? <section className={s.reelsView}><div className={s.reelsHeader}><button className={reelSection === 'reels' ? s.activeReelSection : ''} onClick={() => selectReelSection('reels')}>Reels</button><button className={reelSection === 'friends' ? s.activeReelSection : ''} onClick={() => selectReelSection('friends')}>Friends</button></div><video key={reel.id} ref={videoRef} className={s.reelImage} src={reel.video} autoPlay={reelSection === 'reels'} muted playsInline loop preload="metadata" aria-label={reel.alt} onPlay={() => setReelPaused(false)} onPause={() => setReelPaused(true)}/><div className={s.reelShade}/>{reelSection === 'friends' && <div className={s.friendsNote}>Reels your friends have interacted with appear here in Instagram. This preview has no friend activity.</div>}<button className={s.reelPause} onClick={toggleReelPlayback} aria-label={reelPaused ? 'Play reel' : 'Pause reel'}>{reelPaused && <Icon name="play" filled/>}</button><div className={s.reelSide}><button aria-label={liked.includes(reel.id) ? 'Unlike reel' : 'Like reel'} aria-pressed={liked.includes(reel.id)} onClick={() => toggle(reel.id, liked, setLiked)}><Icon name="heart" filled={liked.includes(reel.id)}/><small>{(reel.likes + (liked.includes(reel.id) ? 1 : 0)).toLocaleString()}</small></button><button aria-label="View reel comments" onClick={() => setCommentsId(reel.id)}><Icon name="message"/><small>{reel.comments.length}</small></button><button aria-label="Share reel" onClick={() => setShareId(reel.id)}><Icon name="send"/></button><button aria-label={saved.includes(reel.id) ? 'Remove saved reel' : 'Save reel'} aria-pressed={saved.includes(reel.id)} onClick={() => toggle(reel.id, saved, setSaved)}><Icon name="save" filled={saved.includes(reel.id)}/></button><button aria-label="Next reel" onClick={() => { setReelIndex(v => (v + 1) % reels.length); setReelPaused(false); }}><Icon name="chevron"/></button></div><div className={s.reelCopy}><button onClick={() => showProfile(reel.accountId)}><img src={avatarFor(reel.accountId)} alt=""/><strong>{nameFor(reel.accountId)}</strong></button><p>{reel.caption}</p><small>Original video · {reel.location}</small></div></section> : <><header className={s.profileHeader}>{profileId === 'you' ? <strong>{profile.name}</strong> : <button onClick={() => showProfile('you')} aria-label="Back to your profile"><Icon name="back"/><strong>{profile.name}</strong></button>}<button aria-label="Create post" onClick={() => changeTab('create')}><Icon name="plus"/></button></header><div className={s.profileSummary}><img src={profile.avatar} alt={`${profile.fullName} profile`}/><div className={s.profileCounts}><span><strong>{posts.filter(p => p.accountId === profile.id && !p.reel).length}</strong><small>posts</small></span><span><strong>{profile.followers}</strong><small>followers</small></span><span><strong>{profile.following}</strong><small>following</small></span></div></div><div className={s.bio}><strong>{profile.fullName}</strong><p>{profile.bio}</p><small>{profile.location}</small></div>{profileId !== 'you' && <div className={s.profileButtons}><button className={following.includes(profileId) ? '' : s.followButton} onClick={() => toggle(profileId, following, setFollowing)}>{following.includes(profileId) ? 'Following' : 'Follow'}</button></div>}<div className={s.highlights}><button onClick={() => setStoryIndex(storyAccounts.indexOf(profileId))}><img src={posts.find(p => p.accountId === profileId && !p.reel)?.image || profile.avatar} alt=""/><small>Story</small></button></div><div className={s.profileTabs}><button className={profileSection === 'grid' ? s.activeProfileTab : ''} onClick={() => setProfileSection('grid')} aria-label="Profile posts" aria-pressed={profileSection === 'grid'}><Icon name="grid"/></button><button className={profileSection === 'reels' ? s.activeProfileTab : ''} onClick={() => setProfileSection('reels')} aria-label="Profile reels" aria-pressed={profileSection === 'reels'}><Icon name="reels"/></button></div><div className={s.profileGrid}>{posts.filter(p => p.accountId === profileId && Boolean(p.reel) === (profileSection === 'reels')).map(p => <button key={p.id} onClick={() => { if (p.reel) { setReelIndex(reels.findIndex(r => r.id === p.id)); setReelSection('reels'); setTab('reels'); } else setDetailId(p.id); }} aria-label={`Open ${p.reel ? 'reel' : 'post'}: ${p.caption}`}><img src={p.image} alt={p.alt}/></button>)}</div>{profileSection === 'reels' && !posts.some(p => p.accountId === profileId && p.reel) && <p className={s.empty}>No reels yet.</p>}{profileId === 'you' && profileSection === 'grid' && saved.length > 0 && <section className={s.savedSection}><h2>Saved</h2><div className={s.profileGrid}>{posts.filter(p => saved.includes(p.id)).map(p => <button key={p.id} onClick={() => { if (p.reel) { setReelIndex(reels.findIndex(r => r.id === p.id)); setReelSection('reels'); setTab('reels'); } else setDetailId(p.id); }} aria-label={`Open saved ${p.reel ? 'reel' : 'post'}: ${p.caption}`}><img src={p.image} alt={p.alt}/></button>)}</div></section>}</>}
+  function renderPostActions(post: Post) {
+    const isLiked = liked.includes(post.id);
+    return <div className={s.postActions}>
+      <button aria-label={isLiked ? 'Unlike post' : 'Like post'} aria-pressed={isLiked} className={isLiked ? s.isLiked : ''} onClick={() => like(post.id)}><Icon name="heart" filled={isLiked}/><span>{compactCount(post.likes + Number(isLiked))}</span></button>
+      <button aria-label="View comments" onClick={() => { setComment(''); setCommentsId(post.id); }}><Icon name="message"/>{post.comments.length > 0 && <span>{compactCount(post.comments.length)}</span>}</button>
+      <button aria-label={reposted.includes(post.id) ? 'Undo repost' : 'Repost'} aria-pressed={reposted.includes(post.id)} onClick={() => toggle(post.id, reposted, setReposted)}><Icon name="repost" filled={reposted.includes(post.id)}/><span>{compactCount(Math.round(post.likes / 78) + Number(reposted.includes(post.id)))}</span></button>
+      <button aria-label="Share post" onClick={() => setShareId(post.id)}><Icon name="send"/><span>{compactCount(Math.round(post.likes / 31))}</span></button>
+      <button className={s.saveAction} aria-label={saved.includes(post.id) ? 'Remove saved post' : 'Save post'} aria-pressed={saved.includes(post.id)} onClick={() => toggle(post.id, saved, setSaved)}><Icon name="save" filled={saved.includes(post.id)}/></button>
+    </div>;
+  }
+  function renderFeedPost(post: Post) {
+    const long = post.caption.length > 92 && !expanded.includes(post.id);
+    const hasStory = !seen.includes(post.accountId) && post.accountId !== 'you';
+    return <article className={s.feedPost}>
+      <div className={s.postHead}>
+        <button className={`${s.postAvatar} ${hasStory ? ringFor(post.accountId) : ''}`} aria-label={hasStory ? `View ${nameFor(post.accountId)} story` : `${nameFor(post.accountId)} profile`} onClick={() => hasStory ? openStory(post.accountId) : showProfile(post.accountId)}><img src={avatarFor(post.accountId)} alt=""/></button>
+        <button className={s.identity} onClick={() => showProfile(post.accountId)}><strong>{nameFor(post.accountId)}{badge(post.accountId)}</strong>{post.location && <small>{post.location}</small>}</button>
+        <button className={s.postMore} aria-label="Post options" onClick={() => setOptionsId(post.id)}><Icon name="more"/></button>
       </div>
-      <nav className={`${s.bottomNav} ${tab === 'reels' ? s.darkNav : ''}`} aria-label="Main navigation">{navTabs.map(item => <button key={item} onClick={() => changeTab(item)} aria-label={item === 'explore' ? 'Search and explore' : item === 'inbox' ? 'Messages' : item[0].toUpperCase() + item.slice(1)} aria-current={tab === item ? 'page' : undefined}>{item === 'profile' ? <img className={tab === item ? s.activeAvatar : ''} src={accounts[0].avatar} alt=""/> : <Icon name={item === 'explore' ? 'search' : item} filled={tab === item}/>}</button>)}</nav>
+      <div className={s.photo} onClick={event => photoTap(event, post.id)}>
+        <img src={post.image} alt={post.alt} loading="lazy" draggable={false}/>
+        {burst?.id === post.id && <span key={burst.n} className={s.heartBurst}><Icon name="heart" filled size={96}/></span>}
+      </div>
+      {renderPostActions(post)}
+      <div className={s.postCopy}>
+        {post.caption && <p><button onClick={() => showProfile(post.accountId)}>{nameFor(post.accountId)}</button> {long ? <>{post.caption.slice(0, 78).trimEnd()}… <button className={s.more} onClick={() => setExpanded(current => [...current, post.id])}>more</button></> : post.caption}</p>}
+        {post.comments.length > 0 && <button className={s.muted} onClick={() => { setComment(''); setCommentsId(post.id); }}>{post.comments.length === 1 ? 'View 1 comment' : `View all ${post.comments.length} comments`}</button>}
+        <small>{longAge(post.age)}</small>
+      </div>
+    </article>;
+  }
+  function renderGrid(items: Post[], tall = false) {
+    return <div className={`${s.profileGrid} ${tall ? s.reelGrid : ''}`}>{items.map(p => <button key={p.id} onClick={() => p.reel ? openReel(p.id) : setDetailId(p.id)} aria-label={`Open ${p.reel ? 'reel' : 'post'}: ${p.caption}`}><img src={p.image} alt={p.alt} loading="lazy"/>{p.reel && !tall && <span className={s.tileBadge}><Icon name="reels" filled size={18}/></span>}{tall && <span className={s.tileViews}><Icon name="play" size={14}/>{compactCount(p.likes * 9)}</span>}</button>)}</div>;
+  }
+  function renderHome() {
+    return <>
+      <header className={s.homeHeader}>
+        <button aria-label="Create post" onClick={() => changeTab('create')}><Icon name="add"/></button>
+        <img className={s.wordmark} src="/images/sns/mobile/11/instagram-wordmark.svg" alt="Instagram"/>
+        <button aria-label="Notifications" onClick={() => changeTab('activity')}><Icon name="heart" size={28}/></button>
+      </header>
+      <div className={s.stories}>
+        <button className={s.storyEntry} onClick={() => openStory('you')}><span className={s.storyOwn}><img src={accounts[0].avatar} alt=""/><i><Icon name="add" size={13}/></i></span><small className={s.muted}>Your story</small></button>
+        {suggested.map(id => <button className={s.storyEntry} key={id} onClick={() => openStory(id)}><span className={`${s.storyRing} ${ringFor(id)}`}><img src={avatarFor(id)} alt=""/></span><small>{nameFor(id)}</small></button>)}
+      </div>
+      <div className={s.feed}>{posts.filter(p => !p.reel && !hidden.includes(p.id)).map(p => <div key={p.id}>{renderFeedPost(p)}</div>)}</div>
+    </>;
+  }
+  function renderExplore() {
+    return <>
+      <div className={s.exploreHeader}><label className={s.searchBox}><Icon name="search" size={16}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search" aria-label="Search people and posts"/>{search && <button onClick={() => setSearch('')} aria-label="Clear search"><Icon name="close" size={14}/></button>}</label></div>
+      {query && <div className={s.accountResults}>{matchingAccounts.length ? matchingAccounts.map(a => <button key={a.id} onClick={() => showProfile(a.id)}><img src={a.avatar} alt=""/><span><strong>{a.name}{badge(a.id)}</strong><small>{a.fullName}{following.includes(a.id) ? ' • Following' : ''}</small></span></button>) : <p>No matching accounts</p>}</div>}
+      <div className={s.exploreGrid}>{exploreTiles.map((p, index) => { const tall = !query && index % 5 === (Math.floor(index / 5) % 2 ? 0 : 2); return <button key={p.id} className={tall ? (Math.floor(index / 5) % 2 ? s.tallLeft : s.tallRight) : ''} onClick={() => p.reel ? openReel(p.id) : setDetailId(p.id)} aria-label={`Open ${nameFor(p.accountId)} ${p.reel ? 'reel' : 'post'}`}><img src={p.image} alt={p.alt} loading="lazy"/>{p.reel && <span className={s.tileBadge}><Icon name="reels" filled size={18}/></span>}</button>; })}</div>
+      {!explorePosts.length && <p className={s.empty}>No posts match that search.</p>}
+    </>;
+  }
+  function renderActivity() {
+    const yours = posts.filter(p => p.accountId === 'you' && !p.reel);
+    return <>
+      <header className={s.subHeader}><button aria-label="Back to home" onClick={() => changeTab('home')}><Icon name="back"/></button><strong>Notifications</strong><span/></header>
+      <h2 className={s.activitySection}>New</h2>
+      {yours.slice(0, 2).map((p, index) => <button className={s.activityRow} key={`like-${p.id}`} onClick={() => setDetailId(p.id)}><img src={avatarFor(suggested[index * 3])} alt=""/><span><strong>{nameFor(suggested[index * 3])}</strong> and <strong>{compactCount(p.likes - 1)} others</strong> liked your post. <small>{p.age}</small></span><img className={s.activityThumb} src={p.image} alt=""/></button>)}
+      <h2 className={s.activitySection}>This week</h2>
+      {yours.flatMap(p => p.comments.map(c => <button className={s.activityRow} key={c.id} onClick={() => setDetailId(p.id)}><img src={avatarByName(c.author)} alt=""/><span><strong>{c.author}</strong> commented: {c.body} <small>{p.age}</small></span><img className={s.activityThumb} src={p.image} alt=""/></button>))}
+      {suggested.filter(id => !following.includes(id)).slice(0, 3).map(id => <div className={s.activityRow} key={`follow-${id}`}><img src={avatarFor(id)} alt=""/><span><strong>{nameFor(id)}</strong> started following you. <small>2d</small></span><button className={s.followSmall} onClick={() => toggle(id, following, setFollowing)}>Follow back</button></div>)}
+    </>;
+  }
+  function renderInbox() {
+    if (inboxAccount) {
+      const thread = threads[inboxAccount] || [];
+      return <div className={s.thread}>
+        <header className={s.threadHeader}><button onClick={() => setInboxAccount(null)} aria-label="Back to inbox"><Icon name="back"/></button><button className={s.threadWho} onClick={() => showProfile(inboxAccount)}><img src={avatarFor(inboxAccount)} alt=""/><span><strong>{accounts.find(a => a.id === inboxAccount)?.fullName}</strong><small>{nameFor(inboxAccount)}</small></span></button><button aria-label="Audio call"><Icon name="call"/></button><button aria-label="Video call"><Icon name="videoCall"/></button></header>
+        <div className={s.bubbles}>
+          <div className={s.threadIdentity}><img src={avatarFor(inboxAccount)} alt=""/><strong>{accounts.find(a => a.id === inboxAccount)?.fullName}</strong><small>{nameFor(inboxAccount)} · Instagram</small><button onClick={() => showProfile(inboxAccount)}>View profile</button></div>
+          {thread.map((entry, index) => <div key={entry.id} className={entry.from === 'me' ? s.sent : s.received}>{entry.from === 'them' && <span className={s.bubbleAvatar}>{thread[index + 1]?.from !== 'them' && <img src={avatarFor(inboxAccount)} alt=""/>}</span>}<p>{entry.body}</p></div>)}
+        </div>
+        <form className={s.messageForm} onSubmit={sendMessage}><span className={s.cameraButton}><Icon name="camera" size={20}/></span><input value={message} onChange={event => setMessage(event.target.value)} maxLength={500} placeholder="Message…" aria-label="Message"/>{message.trim() ? <button type="submit" className={s.sendText}>Send</button> : <><button type="button" aria-label="Voice message"><Icon name="microphone"/></button><button type="button" aria-label="Gallery"><Icon name="photo"/></button><button type="button" aria-label="Sticker"><Icon name="sticker"/></button></>}</form>
+      </div>;
+    }
+    return <>
+      <header className={s.inboxHeader}><strong>{accounts[0].name}<Icon name="chevronDown" size={14}/></strong><button aria-label="New message"><Icon name="compose"/></button></header>
+      <label className={`${s.searchBox} ${s.inboxSearch}`}><Icon name="search" size={16}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search" aria-label="Search messages"/></label>
+      <div className={s.inboxTitle}><strong>Messages</strong><span>Requests</span></div>
+      {inboxOrder.filter(id => !query || `${nameFor(id)} ${accounts.find(a => a.id === id)?.fullName}`.toLowerCase().includes(query)).map(id => { const last = threads[id]?.at(-1); const isUnread = unread.includes(id); return <button className={`${s.threadRow} ${isUnread ? s.unread : ''}`} key={id} onClick={() => { setInboxAccount(id); setUnread(current => current.filter(value => value !== id)); setSearch(''); }}><img src={avatarFor(id)} alt=""/><span><strong>{accounts.find(a => a.id === id)?.fullName}</strong><small>{last ? <>{isUnread ? (threads[id].length > 1 ? `${threads[id].length} new messages` : last.body) : `${last.from === 'me' ? 'You: ' : ''}${last.body}`}<em> · {threadAges[id] || 'now'}</em></> : 'Tap to chat'}</small></span>{isUnread && <i className={s.unreadDot}/>}<span className={s.rowCamera}><Icon name="camera" size={22}/></span></button>; })}
+    </>;
+  }
+  function renderCreate() {
+    if (createStep === 'caption') return <form className={s.create} onSubmit={publish}>
+      <header className={s.subHeader}><button type="button" aria-label="Back to photos" onClick={() => setCreateStep('pick')}><Icon name="back"/></button><strong>New post</strong><span/></header>
+      <div className={s.captionRow}><img src={imageChoices[choice].image} alt={imageChoices[choice].alt}/><textarea value={caption} onChange={event => setCaption(event.target.value)} maxLength={500} placeholder="Add a caption…" aria-label="Caption" rows={4}/></div>
+      <button className={s.shareButton} type="submit">Share</button>
+    </form>;
+    return <>
+      <header className={s.subHeader}><button aria-label="Cancel new post" onClick={() => changeTab('home')}><Icon name="close"/></button><strong>New post</strong><button className={s.nextText} onClick={() => setCreateStep('caption')}>Next</button></header>
+      <img className={s.createPreview} src={imageChoices[choice].image} alt={imageChoices[choice].alt}/>
+      <div className={s.recents}><strong>Recents<Icon name="chevronDown" size={12}/></strong></div>
+      <div className={s.photoChoices}>{imageChoices.map((image, index) => <button key={image.id} type="button" className={choice === index ? s.selectedPhoto : ''} onClick={() => setChoice(index)} aria-label={`Choose sample photo ${index + 1}`} aria-pressed={choice === index}><img src={image.image} alt={image.alt}/></button>)}</div>
+    </>;
+  }
+  function renderProfile() {
+    const own = profileId === 'you';
+    if (savedView) return <>
+      <header className={s.subHeader}><button aria-label="Back to profile" onClick={() => setSavedView(false)}><Icon name="back"/></button><strong>Saved</strong><span/></header>
+      {saved.length ? renderGrid(posts.filter(p => saved.includes(p.id))) : <p className={s.empty}>Save photos and videos that you want to see again.</p>}
+    </>;
+    const mine = posts.filter(p => p.accountId === profileId);
+    const sectionItems = profileSection === 'grid' ? mine.filter(p => !p.reel) : profileSection === 'reels' ? mine.filter(p => p.reel) : profileSection === 'reposts' ? (own ? posts.filter(p => reposted.includes(p.id)) : []) : [];
+    return <>
+      <header className={s.profileHeader}>
+        {own ? <button aria-label="Create post" onClick={() => changeTab('create')}><Icon name="add"/></button> : <button aria-label="Back" onClick={() => showProfile('you')}><Icon name="back"/></button>}
+        <strong>{profile.name}{own ? <Icon name="chevronDown" size={14}/> : badge(profile.id)}</strong>
+        {own ? <span><button aria-label="Threads"><Icon name="threads"/></button><button aria-label="Saved and settings" onClick={() => setSavedView(true)}><Icon name="menu"/></button></span> : <span><button aria-label="Profile options"><Icon name="more"/></button></span>}
+      </header>
+      <div className={s.profileSummary}>
+        <button className={`${s.profileAvatar} ${!own && !seen.includes(profile.id) ? s.ringNew : ''}`} onClick={() => openStory(profile.id)} aria-label={`${profile.fullName} story`}><img src={profile.avatar} alt={`${profile.fullName} profile`}/>{own && <i><Icon name="add" size={13}/></i>}</button>
+        <div className={s.profileStats}>
+          <strong>{profile.fullName}</strong>
+          <div className={s.profileCounts}><span><strong>{mine.filter(p => !p.reel).length}</strong><small>posts</small></span><span><strong>{profile.followers}</strong><small>followers</small></span><span><strong>{profile.following}</strong><small>following</small></span></div>
+        </div>
+      </div>
+      <div className={s.bio}><p>{profile.bio}</p></div>
+      <div className={s.profileButtons}>
+        {own ? <><button>Edit profile</button><button>Share profile</button></> : <><button className={following.includes(profileId) ? '' : s.followButton} onClick={() => toggle(profileId, following, setFollowing)}>{following.includes(profileId) ? <>Following<Icon name="chevronDown" size={12}/></> : 'Follow'}</button><button onClick={() => { setTab('inbox'); setInboxAccount(profileId); setUnread(current => current.filter(value => value !== profileId)); }}>Message</button></>}
+        <button className={s.iconButton} aria-label="Discover people"><Icon name="userFollow" size={16}/></button>
+      </div>
+      <div className={s.highlights}>
+        {own && <button onClick={() => changeTab('create')}><span className={s.newHighlight}><Icon name="add" size={22}/></span><small>New</small></button>}
+        <button onClick={() => openStory(profile.id)}><span><img src={mine.find(p => !p.reel)?.image || profile.avatar} alt=""/></span><small>{profile.location}</small></button>
+      </div>
+      <div className={s.profileTabs}>{([['grid', 'gridTall', 'Posts'], ['reels', 'reels', 'Reels'], ['reposts', 'repost', 'Reposts'], ['tagged', 'tagged', 'Tagged']] as const).map(([id, icon, label]) => <button key={id} className={profileSection === id ? s.activeProfileTab : ''} onClick={() => setProfileSection(id)} aria-label={label} aria-pressed={profileSection === id}><Icon name={icon}/></button>)}</div>
+      {sectionItems.length ? renderGrid(sectionItems, profileSection === 'reels') : <p className={s.empty}>{profileSection === 'tagged' ? 'Photos and videos of you' : profileSection === 'reposts' ? 'Reposts will appear here' : profileSection === 'reels' ? 'No reels yet' : 'No posts yet'}</p>}
+    </>;
+  }
+
+  const overlay = storyStart !== null;
+  return <main className={s.outer} lang="en"><div className={s.app}>
+    {overlay ? <StoryViewer key={storyStart} order={storyAccounts} start={storyStart} itemsFor={id => storyItemsFor(posts, id)} avatarFor={avatarFor} nameFor={nameFor} onSeen={id => setSeen(current => current.includes(id) ? current : [...current, id])} onClose={() => setStoryStart(null)} onReply={(id, body) => { setThreads(current => ({ ...current, [id]: [...(current[id] || []), { id: crypto.randomUUID(), from: 'me', body }] })); setNotice(`Reply sent to ${nameFor(id)}`); }} onProfile={id => showProfile(id)}/> : <>
+      {tab === 'reels' && !detail ? <Reels reels={reels} start={reelStart} section={reelSection} onSection={setReelSection} liked={liked} reposted={reposted} following={following} verified={verifiedAccounts} onLike={like} onRepost={id => toggle(id, reposted, setReposted)} onFollow={id => toggle(id, following, setFollowing)} onComments={id => { setComment(''); setCommentsId(id); }} onShare={setShareId} onProfile={showProfile} onCreate={() => changeTab('create')} avatarFor={avatarFor} nameFor={nameFor} compactCount={compactCount}/> : <div className={`${s.scroll} ${tab === 'create' || inboxAccount ? s.noNav : ''}`} ref={scroll} onTouchStartCapture={event => { const touch = event.touches[0]; if (touch) gestureStart.current = {x: touch.clientX, y: touch.clientY}; }} onTouchEndCapture={finishGesture}>
+        {detail ? <><header className={s.subHeader}><button aria-label="Back" onClick={() => setDetailId(null)}><Icon name="back"/></button><strong>Posts</strong><span/></header>{renderFeedPost(detail)}</> : tab === 'home' ? renderHome() : tab === 'explore' ? renderExplore() : tab === 'activity' ? renderActivity() : tab === 'inbox' ? renderInbox() : tab === 'create' ? renderCreate() : renderProfile()}
+      </div>}
+      {tab !== 'create' && !inboxAccount && <nav className={`${s.bottomNav} ${tab === 'reels' && !detail ? s.darkNav : ''}`} aria-label="Main navigation">{navTabs.map(item => <button key={item} onClick={() => changeTab(item)} aria-label={item === 'explore' ? 'Search and explore' : item === 'inbox' ? 'Messages' : item[0].toUpperCase() + item.slice(1)} aria-current={tab === item ? 'page' : undefined}>{item === 'profile' ? <img className={tab === item ? s.activeAvatar : ''} src={accounts[0].avatar} alt=""/> : <Icon name={item === 'explore' ? 'search' : item} filled={tab === item}/>}{item === 'inbox' && unread.length > 0 && <i className={s.navDot}/>}</button>)}</nav>}
     </>}
-    {commentPost && <div className={s.sheetBackdrop} onClick={() => setCommentsId(null)}><section className={s.sheet} role="dialog" aria-modal="true" aria-label="Comments" onClick={event => event.stopPropagation()}><div className={s.sheetHandle}/><header><strong>Comments</strong><button onClick={() => setCommentsId(null)} aria-label="Close comments"><Icon name="close"/></button></header><div className={s.comments}><div className={s.commentRow}><img src={avatarFor(commentPost.accountId)} alt=""/><p><strong>{nameFor(commentPost.accountId)}</strong> {commentPost.caption}</p></div>{commentPost.comments.map(c => <div className={s.commentRow} key={c.id}><img src={accounts.find(a => a.name === c.author)?.avatar || accounts[0].avatar} alt=""/><p><strong>{c.author}</strong> {c.body}</p></div>)}</div><form className={s.commentForm} onSubmit={addComment}><img src={accounts[0].avatar} alt=""/><input aria-label="Add a comment" placeholder="Add a comment…" value={comment} onChange={event => setComment(event.target.value)} maxLength={300}/><button disabled={!comment.trim()} type="submit">Post</button></form></section></div>}
-    {optionPost && <div className={s.sheetBackdrop} onClick={() => setOptionsId(null)}><section className={s.optionSheet} role="dialog" aria-modal="true" aria-label="Post options" onClick={event => event.stopPropagation()}><button onClick={() => { toggle(optionPost.id, saved, setSaved); setOptionsId(null); }}>{saved.includes(optionPost.id) ? 'Remove from saved' : 'Save'}</button><button onClick={() => { setShareId(optionPost.id); setOptionsId(null); }}>Share</button><button onClick={() => { setDetailId(optionPost.id); setOptionsId(null); }}>Go to post</button><button onClick={() => setOptionsId(null)}>Cancel</button></section></div>}
-    {sharePost && <div className={s.sheetBackdrop} onClick={() => setShareId(null)}><section className={s.sheet} role="dialog" aria-modal="true" aria-label="Share post" onClick={event => event.stopPropagation()}><div className={s.sheetHandle}/><header><strong>Share</strong><button onClick={() => setShareId(null)} aria-label="Close share"><Icon name="close"/></button></header><p className={s.shareContext}>Send {nameFor(sharePost.accountId)}&apos;s post</p><div className={s.sharePeople}>{accounts.filter(a => a.id !== 'you').map(a => <button key={a.id} onClick={() => { setThreads(current => ({...current, [a.id]: [...(current[a.id] || []), {id: crypto.randomUUID(), body: `Shared ${nameFor(sharePost.accountId)}'s ${sharePost.reel ? 'reel' : 'post'}`}]})); setShareId(null); setNotice(`Sent to ${a.name}`); }}><img src={a.avatar} alt=""/><span>{a.name}</span></button>)}</div><p className={s.localNote}>Sharing stays in this browser session.</p></section></div>}
+    {commentPost && <Sheet label="Comments" title="Comments" expandable onClose={() => setCommentsId(null)}>
+      <div className={s.comments}>
+        {commentPost.caption && <div className={s.commentRow}><img src={avatarFor(commentPost.accountId)} alt=""/><div><p className={s.commentMeta}><strong>{nameFor(commentPost.accountId)}</strong>{badge(commentPost.accountId)} <span>{commentPost.age}</span></p><p>{commentPost.caption}</p></div></div>}
+        {commentPost.comments.map(c => <div className={s.commentRow} key={c.id}><img src={avatarByName(c.author)} alt=""/><div><p className={s.commentMeta}><strong>{c.author}</strong> <span>{commentPost.age}</span></p><p>{c.body}</p><button className={s.replyButton} onClick={() => setComment(`@${c.author} `)}>Reply</button></div><button className={`${s.commentLike} ${likedComments.includes(c.id) ? s.isLiked : ''}`} aria-label={likedComments.includes(c.id) ? 'Unlike comment' : 'Like comment'} aria-pressed={likedComments.includes(c.id)} onClick={() => toggle(c.id, likedComments, setLikedComments)}><Icon name="heart" size={16} filled={likedComments.includes(c.id)}/></button></div>)}
+        {!commentPost.comments.length && <div className={s.noComments}><strong>No comments yet</strong><span>Start the conversation.</span></div>}
+      </div>
+      <div className={s.emojiBar}>{emojis.map(e => <button key={e.id} onClick={() => setComment(current => current + e.glyph)} aria-label={`Add ${e.id} emoji`}>{e.glyph}</button>)}</div>
+      <form className={s.commentForm} onSubmit={addComment}><img src={accounts[0].avatar} alt=""/><label><input aria-label="Add a comment" placeholder="Add a comment" value={comment} onChange={event => setComment(event.target.value)} maxLength={300}/>{comment.trim() ? <button type="submit">Post</button> : <span aria-hidden="true"><Icon name="sticker"/></span>}</label></form>
+    </Sheet>}
+    {optionPost && <Sheet label="Post options" className={s.optionSheet} onClose={() => setOptionsId(null)}>
+      <div className={s.optionTop}><button onClick={() => { toggle(optionPost.id, saved, setSaved); setOptionsId(null); }}><span><Icon name="save" filled={saved.includes(optionPost.id)}/></span>{saved.includes(optionPost.id) ? 'Unsave' : 'Save'}</button><button onClick={() => { setShareId(optionPost.id); setOptionsId(null); }}><span><Icon name="send"/></span>Share</button></div>
+      <div className={s.optionList}>
+        {optionPost.accountId !== 'you' && <button onClick={() => { toggle(optionPost.accountId, following, setFollowing); setOptionsId(null); }}>{following.includes(optionPost.accountId) ? 'Unfollow' : 'Follow'}</button>}
+        <button onClick={() => { showProfile(optionPost.accountId); }}>About this account</button>
+        <button onClick={() => { setDetailId(optionPost.id); setOptionsId(null); }}>Go to post</button>
+        <button onClick={() => { setHidden(current => [...current, optionPost.id]); setOptionsId(null); setNotice('Post hidden in this local preview'); }}>Hide</button>
+      </div>
+    </Sheet>}
+    {sharePost && <Sheet label="Share post" className={s.shareSheet} onClose={() => { setShareId(null); setShareTo([]); }}>
+      <label className={`${s.searchBox} ${s.shareSearch}`}><Icon name="search" size={16}/><input placeholder="Search" aria-label="Search people to share with"/></label>
+      <div className={s.sharePeople}>{suggested.map(id => <button key={id} aria-pressed={shareTo.includes(id)} onClick={() => toggle(id, shareTo, setShareTo)}><span><img src={avatarFor(id)} alt=""/>{shareTo.includes(id) && <i><Icon name="circleCheck" size={22}/></i>}</span><small>{accounts.find(a => a.id === id)?.fullName}</small></button>)}</div>
+      {shareTo.length > 0 && <button className={s.shareButton} onClick={sendShare}>{shareTo.length > 1 ? 'Send separately' : 'Send'}</button>}
+    </Sheet>}
     {notice && <div className={s.toast} role="status">{notice}</div>}
   </div></main>;
 }

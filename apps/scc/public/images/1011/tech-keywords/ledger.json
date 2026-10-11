@@ -1,0 +1,222 @@
+{
+  "generatedAt": "2026-10-11T04:55:47.051Z",
+  "style": "Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+  "images": {
+    "AI": {
+      "file": "AI.jpg",
+      "prompt": "a starling murmuration forming one dense dark shape against a pale overcast winter sky above a flat field. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "ML": {
+      "file": "ML.jpg",
+      "prompt": "wind-formed ripples in pale sand seen close from above in low raking light, repeating curves slowly correcting themselves. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "DL": {
+      "file": "DL.jpg",
+      "prompt": "looking straight down a deep circular stone well, concentric rings of masonry receding into darkness. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "AGI": {
+      "file": "AGI.jpg",
+      "prompt": "a salt flat at dawn where the white ground and the pale sky meet without a visible horizon, utterly empty. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "GPT": {
+      "file": "GPT.jpg",
+      "prompt": "a tall stack of tens of thousands of blank paper sheets seen edge-on, the edges forming fine grey and white striations. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "LLM": {
+      "file": "LLM.jpg",
+      "prompt": "an enormous old library reading room seen from a high balcony, endless shelves of books too distant to read, Gursky-like scale, entirely empty architecture and furniture, plain unmarked book spines; absolutely no busts, statues, portraits, figurative sculptures, globes, signs or inscriptions. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "NLP": {
+      "file": "NLP.jpg",
+      "prompt": "an empty soundproof interpreter's booth with two microphones on a desk, its window looking onto a dim empty assembly hall. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "RAG": {
+      "file": "RAG.jpg",
+      "prompt": "a long archive corridor of rolling compact shelving, one aisle cranked open, completely plain grey document boxes in rows, all boxes have uninterrupted blank surfaces without labels or label holders, utilitarian institutional storage without decorative objects. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "CPU": {
+      "file": "CPU.jpg",
+      "prompt": "a dense orthogonal city grid photographed straight down from very high above on an overcast day, rooftops like a tiled pattern. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "GPU": {
+      "file": "GPU.jpg",
+      "prompt": "an aerial view of thousands of identical greenhouse roofs in parallel rows, white plastic sheeting in a dry landscape. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "NPU": {
+      "file": "NPU.jpg",
+      "prompt": "a macro photograph of a dragonfly wing, the fine network of veins and translucent cells against a pale background. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "RAM": {
+      "file": "RAM.jpg",
+      "prompt": "a wall of small identical grey metal locker doors in a grid, a few left ajar, flat daylight. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "OS": {
+      "file": "OS.jpg",
+      "prompt": "a railway marshalling yard from above, many parallel tracks branching and merging, empty of trains, grey morning. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "PC": {
+      "file": "PC.jpg",
+      "prompt": "a still life of a single beige 1990s desktop computer with its monitor switched off on a bare wooden desk beside a window. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "IoT": {
+      "file": "IoT.jpg",
+      "prompt": "overhead power and telephone lines criss-crossing above a narrow residential alley, silhouetted against a pale sky. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "AR": {
+      "file": "AR.jpg",
+      "prompt": "a shop window in which the reflection of the street outside lies over the objects inside, two scenes layered in one plane. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "VR": {
+      "file": "VR.jpg",
+      "prompt": "a theatre stage seen from the wings, a painted backdrop of distant mountains with its bare wooden frame and ropes visible behind it. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "XR": {
+      "file": "XR.jpg",
+      "prompt": "a large free-standing mirror placed in an open grass field, reflecting the sky so the landscape seems to continue into it. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "UI": {
+      "file": "UI.jpg",
+      "prompt": "a close-up of a row of chunky vintage push buttons and toggle switches set into a cream enamel control panel, unlabelled. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "UX": {
+      "file": "UX.jpg",
+      "prompt": "a worn desire path cutting diagonally across a neatly mown lawn, seen from above. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "HCI": {
+      "file": "HCI.jpg",
+      "prompt": "the polished, worn bright patch on an old bronze door handle where countless hands have touched it, close-up. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "MVP": {
+      "file": "MVP.jpg",
+      "prompt": "a rough cardboard and masking-tape prototype of a chair standing on a plywood workshop table. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "API": {
+      "file": "API.jpg",
+      "prompt": "a close-up of the heavy steel coupling joining two railway carriages, weathered paint, overcast light. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "SDK": {
+      "file": "SDK.jpg",
+      "prompt": "a flat-lay of unbranded hand tools neatly arranged in the compartments of a worn wooden toolbox tray, seen from directly above, a hammer, chisels, pliers, spanners and a coil of twine, each tool completely plain and unmarked, no rulers or measuring tapes, no stamped markings or inscriptions. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "IDE": {
+      "file": "IDE.jpg",
+      "prompt": "an architect's drafting table under north light with blank tracing paper, plain unmarked steel straightedges, plain unmarked steel set squares and unbranded pencils laid out, a close composed view of the tools, all metal surfaces entirely blank without graduations, measurement ticks, digits or engravings, no drawings or writing on the paper. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "OOP": {
+      "file": "OOP.jpg",
+      "prompt": "shelves in a museum storeroom holding many identical white plaster casts of the same architectural ornament, with small variations. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "QA": {
+      "file": "QA.jpg",
+      "prompt": "rows of identical white porcelain cups on a factory inspection table, one of them with a hairline crack. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "DB": {
+      "file": "DB.jpg",
+      "prompt": "a cold seed-bank vault with tall shelving of identical sealed grey boxes receding down a narrow aisle. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "SQL": {
+      "file": "SQL.jpg",
+      "prompt": "a wooden library card-catalogue drawer pulled fully open, hundreds of index cards seen edge-on, a brass rod through them. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "CDN": {
+      "file": "CDN.jpg",
+      "prompt": "a thick armoured submarine cable emerging from concrete and running down into the sea on a grey pebble beach. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "DNS": {
+      "file": "DNS.jpg",
+      "prompt": "a wall of wooden pigeonhole mail-sorting boxes in an old post office, a few entirely blank envelopes resting in some of them, straight-on view filling the square frame, every wooden compartment has clean unmarked surfaces, no label holders, no labels, no handwriting, no stamped or carved marks. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "URL": {
+      "file": "URL.jpg",
+      "prompt": "a lone mailbox on a post at the end of a dirt road in a wide empty landscape. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "VPN": {
+      "file": "VPN.jpg",
+      "prompt": "a long empty concrete tunnel with a small distant square of daylight at its end. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "VM": {
+      "file": "VM.jpg",
+      "prompt": "an architectural scale model of a building displayed inside the vast empty hall of that same building. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "NFT": {
+      "file": "NFT.jpg",
+      "prompt": "a close straight-on photograph of an empty aged off-white gallery wall with a single dark picture hook and a paler rectangle where a painting once hung, the pale rectangle fills the central two thirds of the square frame and is clearly distinguishable against the gently grey weathered wall, subtle but readable tonal boundary, no window or floor in frame. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    },
+    "DAO": {
+      "file": "DAO.jpg",
+      "prompt": "a circle of empty folding chairs in a bare community hall, soft daylight from high windows. Quiet fine-art photograph in the register of contemporary editorial and museum photography, medium-format camera, soft even natural daylight, restrained muted palette of greys, off-whites and pale earth tones with at most one quiet accent colour, one clear subject or one strong simple pattern filling a square frame so it reads instantly at thumbnail size, calm and composed, real materials and real places, fine grain, no dramatic lighting. No text, no letters, no numbers, no logos, no signage, no watermark, no screens showing content, no glowing lights, no neon, no circuit-board motifs, no robots, no holograms, no 3D render look, no people or faces.",
+      "tool": "codex image_generation",
+      "model": null
+    }
+  }
+}

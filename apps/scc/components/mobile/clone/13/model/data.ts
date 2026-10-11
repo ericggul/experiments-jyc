@@ -1,27 +1,37 @@
-export type Person = { id: string; name: string; handle: string; avatar: string; bio: string; location: string; followers: string; following: string; verified?: boolean; banner: string };
+export type Person = { id: string; name: string; handle: string; avatar: string; bio: string; location: string; followers: string; following: string; verified?: 'blue' | 'gold'; banner: string; joined: string; followsYou?: boolean };
 export type Post = { id: string; authorId: string; time: string; text: string; image?: string; imageAlt?: string; replies: number; reposts: number; likes: number; views: string; parentId?: string; quoteId?: string; pinned?: boolean };
 
+// Fictional accounts. Portraits and banners are Unsplash photos chosen for these invented people;
+// `gold` marks the two organisation accounts (square avatar + gold check, as X shows verified organisations).
+const face = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&crop=faces&w=160&h=160&q=80`;
+const wide = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=900&h=300&q=80`;
+const banners = {
+ city:wide('1449824913935-59a10b8d2000'), structure:wide('1480714378408-67cf0d13bc1b'), street:wide('1519501025264-65ba15a82390'),
+ night:wide('1519608487953-e999c86e7455'), field:wide('1441974231531-c6227db76b6e'), map:wide('1500530855697-b586d89ba3ee'),
+ lake:wide('1470770841072-f978cf4d019e'), ridge:wide('1506905925346-21bda4d32df4'),
+};
+
 export const people: Person[] = [
- { id:'you', name:'Maya Chen', handle:'mayachen', avatar:'MC', bio:'Collecting small observations about the city, books, and ordinary objects.', location:'Brooklyn, NY', followers:'1,204', following:'382', banner:'city' },
- { id:'atlas', name:'Atlas Archive', handle:'atlasarchive', avatar:'AA', bio:'Images and notes from the built world. Architecture, transit, public space.', location:'New York', followers:'48.2K', following:'194', verified:true, banner:'structure' },
- { id:'nora', name:'Nora Park', handle:'norapark', avatar:'NP', bio:'Designer. Mostly thinking about type, streets, and the spaces between.', location:'London', followers:'8,721', following:'640', banner:'street' },
- { id:'sam', name:'Sam Rivera', handle:'samrivera', avatar:'SR', bio:'Photographs, sound, and long walks.', location:'Queens, NY', followers:'3,109', following:'516', banner:'night' },
- { id:'field', name:'Field Notes', handle:'fieldnotes', avatar:'FN', bio:'A notebook for looking closer at the natural world.', location:'Everywhere', followers:'27.4K', following:'88', verified:true, banner:'field' },
- { id:'leah', name:'Leah Okafor', handle:'leahokafor', avatar:'LO', bio:'Writer and occasional maker of maps.', location:'Chicago, IL', followers:'12.8K', following:'1,092', banner:'map' },
- { id:'imani', name:'Imani Brooks', handle:'imanibakes', avatar:'IB', bio:'Bread on weekdays, supper on Sundays.', location:'Philadelphia', followers:'6,410', following:'402', banner:'street' },
- { id:'owen', name:'Owen Price', handle:'owenonrails', avatar:'OP', bio:'Transit rider and amateur timetable collector.', location:'Boston', followers:'2,908', following:'711', banner:'structure' },
- { id:'ravi', name:'Ravi Shah', handle:'ravireads', avatar:'RS', bio:'Bookseller. I read the last page first only sometimes.', location:'Toronto', followers:'4,881', following:'936', banner:'map' },
- { id:'jules', name:'Jules Navarro', handle:'julesmakes', avatar:'JN', bio:'Small software, long walks, decent coffee.', location:'Oakland', followers:'9,044', following:'517', banner:'city' },
- { id:'mika', name:'Mika Tan', handle:'mikatan', avatar:'MT', bio:'Music journalist with too many concert stubs.', location:'Los Angeles', followers:'18.1K', following:'1,310', banner:'night' },
- { id:'ada', name:'Ada Williams', handle:'adainmotion', avatar:'AW', bio:'Women’s basketball, local courts, and numbers.', location:'Atlanta', followers:'7,206', following:'488', banner:'field' },
- { id:'sol', name:'Sol Moreno', handle:'solgardens', avatar:'SM', bio:'A balcony garden and a very patient dog.', location:'Mexico City', followers:'5,039', following:'614', banner:'field' },
- { id:'yasmin', name:'Yasmin Ali', handle:'yasminreports', avatar:'YA', bio:'Local reporter. Send me the small stories too.', location:'New York', followers:'23.5K', following:'1,202', banner:'city' },
- { id:'felix', name:'Felix Ward', handle:'felixfilms', avatar:'FW', bio:'Cinema projectionist; watches the credits.', location:'Glasgow', followers:'3,187', following:'774', banner:'night' },
- { id:'ana', name:'Ana Costa', handle:'anacosta', avatar:'AC', bio:'Ceramics, repair, and things made to be held.', location:'Lisbon', followers:'10.2K', following:'601', banner:'street' },
- { id:'dev', name:'Dev Patel', handle:'devweather', avatar:'DP', bio:'Forecasts, clouds, and what the instruments miss.', location:'Seattle', followers:'15.8K', following:'825', banner:'field' },
- { id:'bee', name:'Bee Jackson', handle:'beejackson', avatar:'BJ', bio:'Parent, puzzle addict, reluctant morning person.', location:'Detroit', followers:'1,891', following:'469', banner:'map' },
- { id:'mar', name:'Mar Gómez', handle:'marcycles', avatar:'MG', bio:'Bikes, street safety, and everyday journeys.', location:'Madrid', followers:'11.7K', following:'723', banner:'structure' },
- { id:'hana', name:'Hana Lee', handle:'hanaplays', avatar:'HL', bio:'Indie games and the people who make them.', location:'Seoul', followers:'13.3K', following:'904', banner:'night' },
+ { id:'you', name:'Maya Chen', handle:'mayachen', avatar:face('1534528741775-53994a69daeb'), bio:'Collecting small observations about the city, books, and ordinary objects.', location:'Brooklyn, NY', followers:'1,204', following:'382', banner:banners.lake, joined:'May 2021' },
+ { id:'atlas', name:'Atlas Archive', handle:'atlasarchive', avatar:face('1486406146926-c627a92ad1ab'), bio:'Images and notes from the built world. Architecture, transit, public space.', location:'New York', followers:'48.2K', following:'194', verified:'gold', banner:banners.structure, joined:'March 2014' },
+ { id:'nora', name:'Nora Park', handle:'norapark', avatar:face('1544005313-94ddf0286df2'), bio:'Designer. Mostly thinking about type, streets, and the spaces between.', location:'London', followers:'8,721', following:'640', banner:banners.street, joined:'June 2016', followsYou:true },
+ { id:'sam', name:'Sam Rivera', handle:'samrivera', avatar:face('1507003211169-0a1dd7228f2d'), bio:'Photographs, sound, and long walks.', location:'Queens, NY', followers:'3,109', following:'516', banner:banners.night, joined:'January 2019', followsYou:true },
+ { id:'field', name:'Field Notes', handle:'fieldnotes', avatar:face('1465146344425-f00d5f5c8f07'), bio:'A notebook for looking closer at the natural world.', location:'Everywhere', followers:'27.4K', following:'88', verified:'gold', banner:banners.field, joined:'April 2012' },
+ { id:'leah', name:'Leah Okafor', handle:'leahokafor', avatar:face('1531123897727-8f129e1688ce'), bio:'Writer and occasional maker of maps.', location:'Chicago, IL', followers:'12.8K', following:'1,092', banner:banners.map, joined:'August 2015', followsYou:true },
+ { id:'imani', name:'Imani Brooks', handle:'imanibakes', avatar:face('1502685104226-ee32379fefbe'), bio:'Bread on weekdays, supper on Sundays.', location:'Philadelphia', followers:'6,410', following:'402', banner:banners.street, joined:'February 2020' },
+ { id:'owen', name:'Owen Price', handle:'owenonrails', avatar:face('1472099645785-5658abf4ff4e'), bio:'Transit rider and amateur timetable collector.', location:'Boston', followers:'2,908', following:'711', banner:banners.structure, joined:'October 2013' },
+ { id:'ravi', name:'Ravi Shah', handle:'ravireads', avatar:face('1547425260-76bcadfb4f2c'), bio:'Bookseller. I read the last page first only sometimes.', location:'Toronto', followers:'4,881', following:'936', banner:banners.map, joined:'July 2017', followsYou:true },
+ { id:'jules', name:'Jules Navarro', handle:'julesmakes', avatar:face('1539571696357-5a69c17a67c6'), bio:'Small software, long walks, decent coffee.', location:'Oakland', followers:'9,044', following:'517', banner:banners.city, joined:'November 2018' },
+ { id:'mika', name:'Mika Tan', handle:'mikatan', avatar:face('1517841905240-472988babdf9'), bio:'Music journalist with too many concert stubs.', location:'Los Angeles', followers:'18.1K', following:'1,310', verified:'blue', banner:banners.night, joined:'September 2011' },
+ { id:'ada', name:'Ada Williams', handle:'adainmotion', avatar:face('1494790108377-be9c29b29330'), bio:'Women’s basketball, local courts, and numbers.', location:'Atlanta', followers:'7,206', following:'488', banner:banners.field, joined:'March 2022' },
+ { id:'sol', name:'Sol Moreno', handle:'solgardens', avatar:face('1506794778202-cad84cf45f1d'), bio:'A balcony garden and a very patient dog.', location:'Mexico City', followers:'5,039', following:'614', banner:banners.field, joined:'May 2019' },
+ { id:'yasmin', name:'Yasmin Ali', handle:'yasminreports', avatar:face('1488426862026-3ee34a7d66df'), bio:'Local reporter. Send me the small stories too.', location:'New York', followers:'23.5K', following:'1,202', verified:'blue', banner:banners.city, joined:'January 2014' },
+ { id:'felix', name:'Felix Ward', handle:'felixfilms', avatar:face('1500648767791-00dcc994a43e'), bio:'Cinema projectionist; watches the credits.', location:'Glasgow', followers:'3,187', following:'774', banner:banners.night, joined:'December 2016' },
+ { id:'ana', name:'Ana Costa', handle:'anacosta', avatar:face('1438761681033-6461ffad8d80'), bio:'Ceramics, repair, and things made to be held.', location:'Lisbon', followers:'10.2K', following:'601', banner:banners.street, joined:'June 2018' },
+ { id:'dev', name:'Dev Patel', handle:'devweather', avatar:face('1531427186611-ecfd6d936c79'), bio:'Forecasts, clouds, and what the instruments miss.', location:'Seattle', followers:'15.8K', following:'825', verified:'blue', banner:banners.ridge, joined:'April 2010' },
+ { id:'bee', name:'Bee Jackson', handle:'beejackson', avatar:face('1580489944761-15a19d654956'), bio:'Parent, puzzle addict, reluctant morning person.', location:'Detroit', followers:'1,891', following:'469', banner:banners.map, joined:'August 2021' },
+ { id:'mar', name:'Mar Gómez', handle:'marcycles', avatar:face('1552058544-f2b08422138a'), bio:'Bikes, street safety, and everyday journeys.', location:'Madrid', followers:'11.7K', following:'723', banner:banners.structure, joined:'February 2015' },
+ { id:'hana', name:'Hana Lee', handle:'hanaplays', avatar:face('1524504388940-b1c1722653e1'), bio:'Indie games and the people who make them.', location:'Seoul', followers:'13.3K', following:'904', banner:banners.ridge, joined:'October 2017' },
 ];
 
 // Original fictional writing. The tuple list is deliberately authored post by post;
@@ -162,8 +172,12 @@ export const seedPosts: Post[] = [
 ];
 
 export const trends = [
- { category:'Local · Trending', title:'library', count:'18.4K posts' },
- { category:'Sports · Trending', title:'rookie', count:'42.7K posts' },
- { category:'Food · Trending', title:'bread', count:'12.2K posts' },
- { category:'Travel · Trending', title:'train', count:'8,981 posts' },
+ { id:'t1', category:'Trending in United States', title:'library', count:'18.4K posts' },
+ { id:'t2', category:'Sports · Trending', title:'rookie', count:'42.7K posts' },
+ { id:'t3', category:'Food · Trending', title:'bread', count:'12.2K posts' },
+ { id:'t4', category:'Trending in New York', title:'train', count:'8,981 posts' },
+ { id:'t5', category:'Music · Trending', title:'The Blue Hour', count:'5,402 posts' },
+ { id:'t6', category:'Weather · Trending', title:'storm', count:'31.9K posts' },
+ { id:'t7', category:'Gaming · Trending', title:'save system', count:'2,118 posts' },
+ { id:'t8', category:'Trending', title:'basil', count:'1,764 posts' },
 ];

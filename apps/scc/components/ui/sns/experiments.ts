@@ -12,6 +12,7 @@ export const snsExperiments = [
   { key: "mobile/11", category: "mobile", slug: "11", label: "sns/mobile/11 — Instagram" },
   { key: "mobile/12", category: "mobile", slug: "12", label: "sns/mobile/12 — TikTok" },
   { key: "mobile/13", category: "mobile", slug: "13", label: "sns/mobile/13 — X" },
+  { key: "mobile/14", category: "mobile", slug: "14", label: "sns/mobile/14 — YouTube" },
   { key: "feed/1", category: "feed", slug: "1", label: "sns/feed/1" },
   {
     key: "instagram/1",

@@ -1,6 +1,6 @@
 # Finger decomposition — /mobile/transform/finger-decomposition/[clone]
 
-Experimental, 2026-10-07. Baseline: each preserved `clone/1`–`clone/13` surface. [Decomposition](decomposition.md) sorts every atom by category in one move. Here the interface is taken apart only as far as fingers take it, in the manner of [finger skating](finger-skating.md), and is treated as one continuous liquid sheet rather than as separate pieces.
+Experimental, 2026-10-07. Baseline: each preserved `clone/1`–`clone/14` surface. [Decomposition](decomposition.md) sorts every atom by category in one move. Here the interface is taken apart only as far as fingers take it, in the manner of [finger skating](finger-skating.md), and is treated as one continuous liquid sheet rather than as separate pieces.
 
 - **Changed variable:** what takes the interface apart. A finger drags a continuous deformation of the page; there is no sort.
 - **Invariants:** the clones themselves, and the live page underneath, which taps still operate.

@@ -2,10 +2,10 @@ import { defineControl, type Acting, type Rect as ControlRect } from '../../foun
 import type { Display, PlanItem } from '../../foundations/surfaces/index.ts';
 import { createDeck, drawEntry, type Entry } from './model/catalogue.ts';
 import { createChain, draw } from './model/keywords.ts';
-import { windowRect, zoomFor, type Rect } from './model/layout.ts';
+import { nudge, windowRect, zoomFor, type Rect } from './model/layout.ts';
 import { between, chance, createRandom, pick, type Random } from './model/random.ts';
 import { burst } from './model/rhythm.ts';
-import { ENOUGH, FLURRY, hop, RESHUFFLE, validateSettings, type Settings } from './model/settings.ts';
+import { FLURRY, FLURRY_GAP, hop, MOST, RESHUFFLE, RETURN, SNAG, SNAG_DWELL, validateSettings, type Settings } from './model/settings.ts';
 
 export const WINDOW_PATH = '/desktop-collage/hype/2/window';
 
@@ -38,44 +38,62 @@ export function compose(settings: Settings, display: Display, origin: string): {
   const times = burst(settings.count, settings.gap, random);
   const chain = createChain(settings.keyword);
   const deck = createDeck();
+  let whole = false;
   const arrivals = times.map((at, index) => {
     const entry = drawEntry(deck, draw(chain, random), settings.clones, random);
-    const rect = windowRect(display.visible, index, settings.size, random);
+    const rect = windowRect(display.visible, index, settings.size, random, !whole);
+    whole ||= rect.width === display.visible.width && rect.height === display.visible.height;
     return { index, at, keyword: entry.keyword, entry, rect, zoom: settings.pages === 'scaled' ? zoomFor(rect.width) : 1, dark: chance(random, settings.dark / 100) };
   });
   return { items: arrivals.map(arrival => itemOf(origin, settings, arrival)), arrivals };
 }
 
-/** Ms after placement before a page counts as loaded. */
-const SETTLE = 1200;
+/** Ms between looks at whether a placed page has finished loading. */
+const LOOK = 400;
+/** Ms after placement by which a page counts as loaded even if it never says so. */
+const SETTLE_LIMIT = 8000;
 const TICK = 10;
-/** Ms after the run starts by which flicking begins even if some windows never settled. */
+/** Ms after the run starts by which the flicking seconds start counting even if fewer windows have loaded. */
 const LOADING_LIMIT = 25000;
-/** Chance a flick also scrolls the window it lands on. */
-const SCROLL = 0.35;
+/** Chance an ordinary flick also scrolls the window it lands on a little. */
+const SCROLL = 0.3;
 
 /**
- * Flicking from the moment a few windows have settled (the rest join as
- * they arrive) for `duration` seconds: the front window changes at random
- * among the open windows with gaps log-uniform from `pace`/8 to `pace` ms
- * and flurries of flicks 20 ms apart, never pausing; a small scroll now and
- * then, a new place and size in the share asked for, and every few seconds
- * a reshuffle of several windows together. Pages are zoomed out in narrow
- * windows and forced dark in the share asked for.
+ * Flicking among the windows whose pages have loaded, from the second one
+ * on, and for `duration` seconds once most have loaded, like one person's
+ * attention: a window
+ * stays in front for a dwell log-uniform from `pace`/3 to 2.2 × `pace` ms,
+ * long enough to catch a headline; a flick in four goes back to the window
+ * that was just in front; a flick in seven starts a flurry of three to six
+ * flicks 45–75 ms apart; a flick in eight snags, staying half a second or
+ * more while the page is scrolled; a small scroll now and then; in the
+ * share asked for the window in front is dragged a little and perhaps
+ * resized; and every several seconds two to four windows are rearranged
+ * together. It never pauses. Pages are forced dark in the share asked for
+ * and zoomed out in narrow windows when pages are scaled.
  */
 function flick(settings: Settings, display: Display, move: (index: number, rect: ControlRect) => void, acting: Acting) {
   const { arrivals } = compose(settings, display, '');
   const random: Random = createRandom(settings.seed * 7919 + 17);
+  const rects = new Map(arrivals.map(arrival => [arrival.index, arrival.rect]));
   let flurry = 0;
   const open = new Set<number>();
-  const settled = new Map<number, number>();
+  const placedAt = new Map<number, number>();
+  const looked = new Map<number, number>();
+  const settled = new Set<number>();
   const styled = new Set<number>();
   const started = Date.now();
-  let phase: 'loading' | 'flicking' = 'loading';
+  let counting = false;
   let flickingSince = 0;
   let nextHop = 0;
   let nextReshuffle = 0;
   let front: number | undefined;
+  let previous: number | undefined;
+
+  function place(index: number, rect: Rect) {
+    rects.set(index, rect);
+    move(index, rect);
+  }
 
   function style(index: number) {
     const arrival = arrivals[index];
@@ -84,36 +102,46 @@ function flick(settings: Settings, display: Display, move: (index: number, rect:
     if (arrival.dark) acting.dark?.(index, true);
   }
 
+  // A window joins the flicking once its page has loaded (asked every LOOK ms
+  // through its DevTools session), or SETTLE_LIMIT after placement at the latest.
+  function look(index: number, now: number) {
+    looked.set(index, now);
+    void acting.evaluate?.(index, 'document.readyState').then(state => { if (state === 'complete' && open.has(index)) settled.add(index); }).catch(() => {});
+  }
+
   const timer = setInterval(() => {
     const now = Date.now();
     for (let index = 0; index < arrivals.length; index++) {
       const at = acting.opened?.(index);
-      if (at !== undefined && !open.has(index)) { open.add(index); settled.set(index, at + SETTLE); }
-      else if (at === undefined && open.has(index)) open.delete(index);
-      if (open.has(index) && !styled.has(index) && (settled.get(index) ?? Infinity) <= now) { styled.add(index); style(index); }
+      if (at !== undefined && !open.has(index)) { open.add(index); placedAt.set(index, at); }
+      else if (at === undefined && open.has(index)) { open.delete(index); settled.delete(index); }
+      if (!open.has(index) || settled.has(index)) continue;
+      if (now - (placedAt.get(index) ?? now) >= SETTLE_LIMIT) settled.add(index);
+      else if (now - (looked.get(index) ?? -Infinity) >= LOOK) look(index, now);
     }
-    const ready = [...open].filter(index => (settled.get(index) ?? Infinity) <= now);
-    if (phase === 'loading') {
-      if (ready.length >= Math.min(ENOUGH, arrivals.length) || (now - started > LOADING_LIMIT && ready.length)) { phase = 'flicking'; flickingSince = now; nextHop = now; nextReshuffle = now + between(random, RESHUFFLE[0], RESHUFFLE[1]); }
-      return;
-    }
-    if (now - flickingSince >= settings.duration * 1000) { clearInterval(timer); acting.done?.(); return; }
-    if (now >= nextReshuffle) {
-      const few = [...ready].sort(() => random() - 0.5).slice(0, 3 + Math.floor(random() * 4));
-      few.forEach(index => move(index, windowRect(display.visible, index, settings.size, random)));
+    for (const index of settled) if (!styled.has(index)) { styled.add(index); style(index); }
+    const ready = [...settled];
+    if (!counting && ready.length && (ready.length >= Math.ceil(arrivals.length * MOST) || now - started > LOADING_LIMIT)) { counting = true; flickingSince = now; nextReshuffle = now + between(random, RESHUFFLE[0], RESHUFFLE[1]); }
+    if (counting && now - flickingSince >= settings.duration * 1000) { clearInterval(timer); acting.done?.(); return; }
+    if (counting && now >= nextReshuffle) {
+      const few = [...ready].sort(() => random() - 0.5).slice(0, 2 + Math.floor(random() * 3));
+      few.forEach(index => place(index, windowRect(display.visible, index, settings.size, random, false)));
       nextReshuffle = now + between(random, RESHUFFLE[0], RESHUFFLE[1]);
     }
     if (now < nextHop) return;
     const candidates = ready.filter(index => index !== front);
-    if (candidates.length) {
-      const target = pick(random, candidates);
-      front = target;
-      acting.front?.(target);
-      if (chance(random, SCROLL)) acting.scroll?.(target, (chance(random, 0.3) ? -1 : 1) * between(random, 80, 480));
-      if (chance(random, settings.moves / 100)) move(target, windowRect(display.visible, target, settings.size, random));
-    }
-    if (flurry > 0) { flurry -= 1; nextHop = now + between(random, 12, 30); }
-    else if (chance(random, FLURRY)) { flurry = 2 + Math.floor(random() * 4); nextHop = now + between(random, 12, 30); }
+    if (!candidates.length) return;
+    const back = previous !== undefined && previous !== front && candidates.includes(previous) && chance(random, RETURN);
+    const target = back ? previous! : pick(random, candidates);
+    previous = front;
+    front = target;
+    acting.front?.(target);
+    const snag = flurry === 0 && chance(random, SNAG);
+    if (snag || chance(random, SCROLL)) acting.scroll?.(target, (chance(random, 0.3) ? -1 : 1) * between(random, snag ? 240 : 80, snag ? 720 : 480));
+    if (chance(random, settings.moves / 100)) place(target, nudge(display.visible, rects.get(target) ?? arrivals[target].rect, random));
+    if (snag) nextHop = now + between(random, SNAG_DWELL[0], SNAG_DWELL[1]);
+    else if (flurry > 0) { flurry -= 1; nextHop = now + between(random, FLURRY_GAP[0], FLURRY_GAP[1]); }
+    else if (chance(random, FLURRY)) { flurry = 2 + Math.floor(random() * 4); nextHop = now + between(random, FLURRY_GAP[0], FLURRY_GAP[1]); }
     else nextHop = now + hop(settings.pace, random());
   }, TICK);
   return () => clearInterval(timer);

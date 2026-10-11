@@ -12,6 +12,7 @@ import CloneTen from "../clone/10";
 import CloneEleven from "../clone/11";
 import CloneTwelve from "../clone/12";
 import CloneThirteen from "../clone/13";
+import CloneFourteen from "../clone/14";
 
 export const clones: Record<string, ComponentType> = {
   "1": CloneOne,
@@ -27,4 +28,5 @@ export const clones: Record<string, ComponentType> = {
   "11": CloneEleven,
   "12": CloneTwelve,
   "13": CloneThirteen,
+  "14": CloneFourteen,
 };

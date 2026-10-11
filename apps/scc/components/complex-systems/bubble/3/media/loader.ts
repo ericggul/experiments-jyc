@@ -42,10 +42,37 @@ function drawText(context: CanvasRenderingContext2D, text: string, style: Keywor
   context.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(1, style.opacity))})`;
   context.textAlign = "center";
   context.textBaseline = "middle";
-  // At size 1 the word spans about half the tile (the sphere mapping magnifies the middle); short words stay within a sensible size.
-  const size = Math.min(tile * 0.34, (tile * 0.5) / Math.max(1, text.length * 0.62)) * font.scale * style.size;
-  context.font = `${font.weight} ${size}px ${font.family}`;
-  context.fillText(text, tile / 2, tile / 2 + size * 0.04);
+  const words = text.split(" ");
+  if (words.length === 1) {
+    // At size 1 the word spans about half the tile (the sphere mapping magnifies the middle); short words stay within a sensible size.
+    const size = Math.min(tile * 0.34, (tile * 0.5) / Math.max(1, text.length * 0.62)) * font.scale * style.size;
+    context.font = `${font.weight} ${size}px ${font.family}`;
+    context.fillText(text, tile / 2, tile / 2 + size * 0.04);
+    return;
+  }
+  // A phrase (풀네임): one word per line, each line shrunk until it fits the middle of the tile, the block centred.
+  const width = tile * 0.56 * style.size;
+  let size = tile * 0.13 * font.scale * style.size;
+  for (;;) {
+    context.font = `${font.weight} ${size}px ${font.family}`;
+    const widest = Math.max(...words.map((word) => context.measureText(word).width));
+    if (widest <= width || size <= tile * 0.02) break;
+    size *= Math.max(0.8, width / widest);
+  }
+  const lineHeight = size * 1.12;
+  const top = tile / 2 - (lineHeight * (words.length - 1)) / 2;
+  words.forEach((word, index) => context.fillText(word, tile / 2, top + lineHeight * index + size * 0.04));
+}
+
+/** One colour emoji filling most of the tile on black, at full strength (the keyword style does not apply). */
+function drawEmoji(context: CanvasRenderingContext2D, glyph: string, tile: number) {
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, tile, tile);
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  const size = tile * 0.62;
+  context.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+  context.fillText(glyph, tile / 2, tile / 2 + size * 0.06);
 }
 
 export type MediaLoad = { cancel(): void; done: Promise<void> };
@@ -79,6 +106,8 @@ export function loadMediaTiles(
     if (!context) return;
     if (item.kind === "text") {
       drawText(context, item.text, style, tile);
+    } else if (item.kind === "emoji") {
+      drawEmoji(context, item.glyph, tile);
     } else {
       const image = await decode(item.url);
       if (cancelled) return;

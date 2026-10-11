@@ -1,6 +1,6 @@
 # Pixelate — /mobile/transform/pixelate/[clone]
 
-2026-09-24. The baseline is each preserved `clone/1`–`clone/13` component at `/sns/mobile/1`–`/sns/mobile/13`. This trial varies only the visible rasterization: an 8 CSS-pixel SVG filter is active on entry, and one shared slider changes the block size immediately from 4 to 16 CSS pixels. The clone components and their original routes are untouched. A fixed, click-through backdrop filter covers the viewport, while the lower-right button and slider sit above it and remain sharp. The clone's own click, scroll, input, and fixed-position layout rules remain in place.
+2026-09-24. The baseline is each preserved `clone/1`–`clone/14` component at `/sns/mobile/1`–`/sns/mobile/14`. This trial varies only the visible rasterization: an 8 CSS-pixel SVG filter is active on entry, and one shared slider changes the block size immediately from 4 to 16 CSS pixels. The clone components and their original routes are untouched. A fixed, click-through backdrop filter covers the viewport, while the lower-right button and slider sit above it and remain sharp. The clone's own click, scroll, input, and fixed-position layout rules remain in place.
 
 The common effect implementation is `components/mobile/transform/pixelate/`; one route composes it with a clone selected from the shared `components/mobile/transform/clones.ts`. Future effects can follow this source × transform × settings pattern without copying an implementation 13 times.
 

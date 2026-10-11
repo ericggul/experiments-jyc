@@ -2,10 +2,10 @@
 
 Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, `/multi-device`, `/mobile`, …) and family indexes all render `foundations/navigation`, grouped by creation date. Register each new variant's date and phrase in `foundations/navigation/experiments.ts`. Removed on 2026-09-30: `calendar` (realtime), `barrier`, `camera-monolith`, `moma`, `table`, `translate`.
 
-- [Mobile experiments](experiments/mobile/README.md): clone/1–13 component archive, finger-skating vector field (with finger-skated fractal clocks and road signs linked in from their own families), ui-collage loaders, progress bars and sliders played by finger skating, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
+- [Mobile experiments](experiments/mobile/README.md): clone/1–14 component archive, finger-skating vector field (with finger-skated fractal clocks and road signs linked in from their own families), ui-collage loaders, progress bars and sliders played by finger skating, five-finger network, lucky-ticket scratch reveal, gaze tracking, and shared pixelate, substitution, and Markov language-transfer transforms.
 
-- [SNS mobile surfaces 1–13](experiments/sns/mobile/README.md): independent Korean
-  and US/UK services plus Instagram, TikTok and X replicas for collage experiments.
+- [SNS mobile surfaces 1–14](experiments/sns/mobile/README.md): independent Korean
+  and US/UK services plus Instagram, TikTok, X and YouTube replicas for collage experiments.
 
 - [TV ad screens: insurance and pharma](references/tv-ads.md): reference ledger of archives and on-screen grammar (US Rx DTC, Medicare DR, Korean insurance/OTC) for future clones.
 
@@ -14,9 +14,9 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 - [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
 
 
-- [mobiles/1](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones.
+- [mobiles/1–2](experiments/mobiles/README.md): ninety phones living one stochastic New York weekday on a shared clock, with standalone iOS-grammar app clones; /2 shows the Instagram, TikTok, X and YouTube clones live side by side.
 
-- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near; [hype/1](experiments/desktop-collage/hype/README.md) opens real pages and cloned services under one keyword at a stochastic rhythm while a reader scrolls, writes and follows links; [hype/2](experiments/desktop-collage/hype/2.md) opens every window of AI fear-of-missing-out at once, then flicks between them for two minutes.
+- [desktop-collage](experiments/desktop-collage/README.md): tabs and windows as collage material on the running computer; [primitives/1](experiments/desktop-collage/primitives/1.md) opens real windows that trace a heart; [primitives/2](experiments/desktop-collage/primitives/2.md) spreads one field across windows that connect when near; [hype/1](experiments/desktop-collage/hype/README.md) opens real pages and cloned services under one keyword at a stochastic rhythm while a reader scrolls, writes and follows links; [hype/2](experiments/desktop-collage/hype/2.md) pours in two dozen browser-sized windows of AI fear-of-missing-out, then flicks between them for twenty seconds; [hype/3](experiments/desktop-collage/hype/3.md) does the same with a scatter of same-sized phone windows, every page served and scaled as a phone page.
 
 - [dimensions/xyzt-city/1](experiments/dimensions/xyzt-city/README.md): Lower Manhattan building lifespans as prisms in (x, y, t), revealed by a height threshold instead of time.
 

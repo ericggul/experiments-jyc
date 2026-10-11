@@ -27,6 +27,8 @@ export type Acting = {
   front?: (index: number) => void;
   /** Renders the window's page dark (the browser's automatic dark mode) or light. */
   dark?: (index: number, enabled: boolean) => void;
+  /** Renders the window's page as a phone would (mobile user agent, touch, viewport honoured) and reloads it; resolves once the reload has been asked for. */
+  mobile?: (index: number) => Promise<void>;
   /** Opens one more window now; returns its index. */
   open?: (item: PlanItem) => number;
   /** Tells the control that the experiment has stopped acting on its own, so the run no longer counts as moving. */

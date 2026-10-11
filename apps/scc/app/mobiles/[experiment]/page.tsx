@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MobilesOne from "@/components/mobiles/1";
+import MobilesTwo from "@/components/mobiles/2";
 import { isMobilesExperimentSlug, mobilesExperiments } from "@/components/mobiles/experiments";
 
 export const metadata: Metadata = {
@@ -14,5 +15,5 @@ export function generateStaticParams() {
 export default async function MobilesPage({ params }: { params: Promise<{ experiment: string }> }) {
   const { experiment } = await params;
   if (!isMobilesExperimentSlug(experiment)) notFound();
-  return <MobilesOne />;
+  return experiment === "2" ? <MobilesTwo /> : <MobilesOne />;
 }
