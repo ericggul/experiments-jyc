@@ -34,7 +34,7 @@ export type MediaParameters = {
 };
 
 /** 유행 따라가기 from the start (user, 2026-10-11). */
-export const MEDIA_DEFAULTS: MediaParameters = { mode: "trend", churnRate: 2, trendInterval: 6, follow: 0.6, boredom: 0, fade: 0.25 };
+export const MEDIA_DEFAULTS: MediaParameters = { mode: "trend", churnRate: 2, trendInterval: 6, follow: 0.6, boredom: 0, fade: 0.15 };
 
 export const CHURN_RANGE = [0.2, 24] as const;
 export const TREND_INTERVAL_RANGE = [1, 30] as const;

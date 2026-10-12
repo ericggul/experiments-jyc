@@ -28,7 +28,7 @@ import {
 } from "./model";
 import { iterate, transit } from "./iteration";
 import { BUBBLE_FLOATS, createFoamRenderer, LOOK_DEFAULTS, MAX_BUBBLES, MEDIA_FLOATS, mediaTileSize, type Colour, type FoamRenderer, type Look } from "./foam";
-import { DEFAULT_KEYWORD_STYLE, DEFAULT_SURFACE, KEYWORD_FONTS, KEYWORD_SIZE_RANGE, SURFACES, surfaceItems, type KeywordStyle, type SurfaceId } from "./media/catalogue";
+import { DEFAULT_KEYWORD_STYLE, DEFAULT_SURFACE, isSolidSurface, isTextSurface, KEYWORD_FONTS, KEYWORD_SIZE_RANGE, SURFACES, surfaceItems, textSizeFor, type KeywordStyle, type SurfaceId } from "./media/catalogue";
 import { loadMediaTiles, type MediaLoad } from "./media/loader";
 import {
   assignPage,
@@ -48,8 +48,8 @@ import { LINK_VISIBILITY, viewTargets, VIEWS, type ViewId } from "./views";
 import { FISH_DEFAULTS, FISH_PALETTES, GoldfishSchool, MAX_FISH, type FishPaletteId, type FishParameters } from "./goldfish";
 import type { GoldfishScene } from "./goldfish-scene";
 
-/** Share of the field's area that all pages together cover; area = displayed rank × this. */
-const AREA_BUDGET = 0.3;
+/** Share of the field's area that all pages together cover; area = displayed rank × this. 0.4 (user, 2026-10-12; /2 keeps 0.3). */
+const AREA_BUDGET = 0.4;
 const MIN_RADIUS = 5;
 /** Weight a link drawn by hand starts with; it then follows appeal like any other. */
 const HAND_LINK_WEIGHT = 0.5;
@@ -91,8 +91,9 @@ const DEFAULT_FISH_PALETTE: FishPaletteId = "instagram";
 /**
  * 닿을 때만: a page's picture appears while a fish touches it and goes when
  * none does, each over 바뀜 부드럽게 (the media fade; 0 is instant) — user, 2026-10-11.
+ * 항상 by default since 2026-10-12 (user); 닿을 때만 was the default before.
  */
-const DEFAULT_ON_TOUCH = true;
+const DEFAULT_ON_TOUCH = false;
 /** Two echo chambers from the start (user, 2026-10-11); bubble/2 starts with one web. */
 const DEFAULT_GROUPS = 2;
 
@@ -423,10 +424,12 @@ export default function RankedWebIteration() {
     const mediaField = createMediaField(MAX_PAGES);
     let mediaLoad: MediaLoad | null = null;
     let mediaLayers = 0;
+    let mediaSolid = 0;
     const applySurface = (next: SurfaceId, keywords: KeywordStyle) => {
       mediaLoad?.cancel();
       const items = surfaceItems(next);
       mediaLayers = items.length;
+      mediaSolid = isSolidSurface(next) ? 1 : 0;
       renderer.setMediaLayerCount(mediaLayers);
       resetField(mediaField, webRef.current.size, mediaLayers, motionTime, mediaRef.current, random);
       mediaLoad = mediaLayers === 0
@@ -726,7 +729,7 @@ export default function RankedWebIteration() {
       const { area: _area, portions: _portions, ...look } = visualRef.current;
       void _area;
       void _portions;
-      renderer.render(bubbleCount, motionTime, { ...look, ...mediaLookRef.current, mediaMode: mediaLayers > 0 ? mappingRef.current : 0, mediaReveal: onTouchRef.current ? 1 : 0 });
+      renderer.render(bubbleCount, motionTime, { ...look, ...mediaLookRef.current, mediaMode: mediaLayers > 0 ? mappingRef.current : 0, mediaReveal: onTouchRef.current ? 1 : 0, mediaSolid });
       if (MEASURE) {
         renderer.sync();
         costs[costCount % costs.length] = performance.now() - frameStart;
@@ -1191,12 +1194,22 @@ export default function RankedWebIteration() {
             <p className={styles.note}>막 아래 비치는 것</p>
             <div className={styles.chips} role="group" aria-label="표면">
               {SURFACES.map((option) => (
-                <button key={option.id} type="button" aria-pressed={surface === option.id} onClick={() => setSurface(option.id)}>
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={surface === option.id}
+                  onClick={() => {
+                    setSurface(option.id);
+                    if (option.id !== surface && isTextSurface(option.id)) {
+                      setKeywordStyle((current) => ({ ...current, size: textSizeFor(option.id) }));
+                    }
+                  }}
+                >
                   {option.label}
                 </button>
               ))}
             </div>
-            {(surface === "keyword" || surface === "fullname" || surface === "mix") && (
+            {isTextSurface(surface) && (
               <>
                 <p className={styles.note}>키워드 글꼴</p>
                 <div className={styles.chips} role="group" aria-label="키워드 글꼴">
@@ -1211,10 +1224,31 @@ export default function RankedWebIteration() {
                     </button>
                   ))}
                 </div>
+                {surface === "fomo" && (
+                  <>
+                    <p className={styles.note}>글자 색</p>
+                    <div className={styles.chips} role="group" aria-label="글자 색">
+                      <button
+                        type="button"
+                        aria-pressed={!keywordStyle.brand}
+                        onClick={() => setKeywordStyle((current) => ({ ...current, brand: false }))}
+                      >
+                        흰색
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={keywordStyle.brand}
+                        onClick={() => setKeywordStyle((current) => ({ ...current, brand: true }))}
+                      >
+                        브랜드
+                      </button>
+                    </div>
+                  </>
+                )}
                 <label className={styles.row}>
                   <span>글자 크기 <output>{keywordStyle.size.toFixed(2)}</output></span>
                   <input
-                    aria-label="키워드 글자 크기; 기본 0.5"
+                    aria-label={`키워드 글자 크기; 기본 ${textSizeFor(surface)}`}
                     max={KEYWORD_SIZE_RANGE[1]}
                     min={KEYWORD_SIZE_RANGE[0]}
                     step="0.05"
@@ -1252,14 +1286,18 @@ export default function RankedWebIteration() {
                 금붕어가 닿을 때만
               </button>
             </div>
-            <p className={styles.note}>입히기</p>
-            <div className={styles.chips} role="group" aria-label="입히기">
-              {MAPPINGS.map((option) => (
-                <button key={option.mode} type="button" aria-pressed={mapping === option.mode} onClick={() => setMapping(option.mode)}>
-                  {option.label}
-                </button>
-              ))}
-            </div>
+            {!isSolidSurface(surface) && (
+              <>
+                <p className={styles.note}>입히기</p>
+                <div className={styles.chips} role="group" aria-label="입히기">
+                  {MAPPINGS.map((option) => (
+                    <button key={option.mode} type="button" aria-pressed={mapping === option.mode} onClick={() => setMapping(option.mode)}>
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
             <p className={styles.note}>바뀜</p>
             <div className={styles.chips} role="group" aria-label="바뀜">
               {MEDIA_MODES.map((option) => (
@@ -1356,7 +1394,7 @@ export default function RankedWebIteration() {
                 />
               </label>
             )}
-            {MEDIA_LOOK_CONTROLS.map((control) => (
+            {MEDIA_LOOK_CONTROLS.filter((control) => !(isSolidSurface(surface) && control.key === "filmOverMedia")).map((control) => (
               <label key={control.key} className={styles.row}>
                 <span>
                   {control.label} <output>{mediaLook[control.key].toFixed(2)}</output>

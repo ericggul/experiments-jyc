@@ -38,6 +38,7 @@
 - Derive new interfaces from the participant's perceptual/action task. Avoid generic themed dashboards, fake live/debug chrome, decorative labels, captions, footers, badges, and dividers. Use spacing and typography for hierarchy.
 - Non-scrollable content fits the viewport. Fixed-format artifacts scale internal text, spacing, and controls with their container at usable visual size.
 - Never add unmeasured GPU/particle cost that risks freezing the device. Read the particle safety budget before particle/compute work.
+- Never use iframes to show clones, apps, or experiments inside another page (grids, side-by-side, multi-phone fields). Render the components directly; scope viewport units, pointer scale, and document-wide effects to each instance.
 
 ## Read only what the task requires
 

@@ -46,9 +46,9 @@ function opaque(style: CSSStyleDeclaration) {
   return isColor(style.backgroundColor) && (!alpha || Number(alpha[1]) >= 0.6);
 }
 
-function selectUnits() {
+function selectUnits(root: Element, scale: number) {
   const selected: Element[] = [];
-  for (const element of document.body.querySelectorAll("*")) {
+  for (const element of root.querySelectorAll("*")) {
     if (element.closest(excluded)) continue;
     if (element.matches(interactiveSelector)) {
       if (element.parentElement?.closest(interactiveSelector)) continue;
@@ -57,7 +57,7 @@ function selectUnits() {
     } else if (element.matches(media)) {
       if (element.parentElement?.closest(interactiveSelector)) continue;
       const rect = element.getBoundingClientRect();
-      if (element.tagName.toLowerCase() !== "video" && (rect.width < 64 || rect.height < 48)) continue;
+      if (element.tagName.toLowerCase() !== "video" && (rect.width / scale < 64 || rect.height / scale < 48)) continue;
     } else if (element.matches(content)) {
       if (element.parentElement?.closest(interactiveSelector) || element.parentElement?.closest(content)) continue;
     } else if (element.matches(textLeaf)) {
@@ -75,17 +75,24 @@ function selectUnits() {
 /**
  * One unit per action target or coherent content surface, each drawn at the size it is seen.
  * Must run while the clone's own styles are visible: fills and borders decide each unit's box.
+ * `root` is the page's body, or the one phone a host page draws; `viewportArea` is its on-screen area and `scale` how much
+ * it is drawn scaled, since boxes are measured on screen while thresholds are in the clone's own CSS pixels.
  */
-export function collectFunctionalUnits(clone: string, group: CommandGroup): FunctionalUnit[] {
+export function collectFunctionalUnits(
+  clone: string,
+  group: CommandGroup,
+  root: Element = document.body,
+  viewportArea = window.innerWidth * window.innerHeight,
+  scale = 1,
+): FunctionalUnit[] {
   const styles = new Map<Element, CSSStyleDeclaration>();
   const styleOf = (element: Element) => {
     let style = styles.get(element);
     if (!style) styles.set(element, (style = window.getComputedStyle(element)));
     return style;
   };
-  const viewportArea = window.innerWidth * window.innerHeight;
   const hidden = (element: Element) => {
-    for (let node: Element | null = element; node && node !== document.body; node = node.parentElement) {
+    for (let node: Element | null = element; node && node !== root; node = node.parentElement) {
       const style = styleOf(node);
       if (style.visibility === "hidden" || style.opacity === "0" || style.display === "none") return true;
     }
@@ -93,13 +100,13 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
   };
 
   const order = new Map<Element, number>();
-  for (const element of document.body.querySelectorAll("*")) order.set(element, order.size);
+  for (const element of root.querySelectorAll("*")) order.set(element, order.size);
 
   const placement = (element: Element) => {
     const clips: Element[] = [];
     const stack: number[] = [];
     let layer: Element | null = null;
-    for (let node: Element | null = element; node && node !== document.documentElement; node = node.parentElement) {
+    for (let node: Element | null = element; node && node !== root.parentElement; node = node.parentElement) {
       const style = styleOf(node);
       if (node !== element && (clipping.test(style.overflowX) || clipping.test(style.overflowY))) clips.push(node);
       // A positioned box paints over in-flow content at its z-index (auto counts as 0), as do boxes that form a stacking context.
@@ -111,12 +118,12 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
     return { clips, stack: stack.reverse(), order: order.get(element) ?? 0, layer };
   };
 
-  const candidates = selectUnits();
+  const candidates = selectUnits(root, scale);
   const unitSet = new Set(candidates);
   // How many candidates each ancestor holds; a wrapper may lend its box only to its single unit.
   const held = new Map<Element, number>();
   for (const candidate of candidates) {
-    for (let node = candidate.parentElement; node && node !== document.body; node = node.parentElement) held.set(node, (held.get(node) ?? 0) + 1);
+    for (let node = candidate.parentElement; node && node !== root; node = node.parentElement) held.set(node, (held.get(node) ?? 0) + 1);
   }
   const units: FunctionalUnit[] = [];
   const claimed = new Set<Element>();
@@ -131,12 +138,13 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
     if (painted(styleOf(element)) || (!field && element.matches(graphic))) parts = [element];
     else {
       // A control whose painted field is its wrapper (a search input inside a grey label) takes the wrapper's box.
-      for (let wrapper = element.parentElement, depth = 0; wrapper && depth < 3 && wrapper !== document.body && wrapper.tagName !== "MAIN"; wrapper = wrapper.parentElement, depth++) {
+      for (let wrapper = element.parentElement, depth = 0; wrapper && depth < 3 && wrapper !== root && wrapper.tagName !== "MAIN"; wrapper = wrapper.parentElement, depth++) {
         if (claimed.has(wrapper)) break;
         if ((held.get(wrapper) ?? 0) > 1) {
           // A segment of a shared painted control (like | dislike in one pill) is its own slice of that pill.
           const box = element.getBoundingClientRect();
-          if (depth === 0 && painted(styleOf(wrapper)) && box.height >= wrapper.getBoundingClientRect().height * 0.9) parts = [element];
+          // One 1/64 px layout unit of slack keeps an exact 90% (a 54 px tab in a 60 px bar) a slice when drawn scaled.
+          if (depth === 0 && painted(styleOf(wrapper)) && box.height >= wrapper.getBoundingClientRect().height * 0.9 - 1 / 64) parts = [element];
           break;
         }
         const box = wrapper.getBoundingClientRect();
@@ -171,7 +179,7 @@ export function collectFunctionalUnits(clone: string, group: CommandGroup): Func
   }
 
   // Painted surfaces that stack over the flow but are not units themselves (a header bar, a floating tab pill) still hide what passes beneath them.
-  for (const element of document.body.querySelectorAll("*")) {
+  for (const element of root.querySelectorAll("*")) {
     if (unitSet.has(element) || claimed.has(element) || element.closest(excluded) || element.closest("svg")) continue;
     if (!opaque(styleOf(element)) || hidden(element)) continue;
     let insideUnit = false;

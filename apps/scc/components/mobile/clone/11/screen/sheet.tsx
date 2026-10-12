@@ -1,13 +1,15 @@
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import s from './instagram.module.css';
+import { useCloneScale } from '../../scale';
 
 // Bottom sheet with a grabber: drag down to dismiss, drag up to expand (comments), as in the iOS app.
 export function Sheet({ label, title, onClose, expandable = false, className = '', children }: { label: string; title?: string; onClose: () => void; expandable?: boolean; className?: string; children: ReactNode }) {
+  const scale = useCloneScale();
   const [full, setFull] = useState(false);
   const [drag, setDrag] = useState(0);
   const start = useRef<number | null>(null);
-  function down(event: PointerEvent<HTMLDivElement>) { start.current = event.clientY; event.currentTarget.setPointerCapture(event.pointerId); }
-  function move(event: PointerEvent<HTMLDivElement>) { if (start.current === null) return; const dy = event.clientY - start.current; setDrag(expandable || dy > 0 ? dy : dy / 4); }
+  function down(event: PointerEvent<HTMLDivElement>) { start.current = event.clientY / scale; event.currentTarget.setPointerCapture(event.pointerId); }
+  function move(event: PointerEvent<HTMLDivElement>) { if (start.current === null) return; const dy = event.clientY / scale - start.current; setDrag(expandable || dy > 0 ? dy : dy / 4); }
   function up() {
     if (start.current === null) return;
     start.current = null;

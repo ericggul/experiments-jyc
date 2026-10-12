@@ -1,40 +1,43 @@
 // What the films can show: Goldfishes' media, copied in (apps share no imports).
 // Photo lists are those of /screen/media-grid/1 and /screen/pillars/1–4 (cats,
-// kisses, politicians — Wikimedia Commons, see the JSON ledgers); the 36 tech
-// images are individually generated editorial photographs (one per keyword,
-// see public/images/1011/tech-keywords/ledger.json); the 80 tech faces are /screen/tech-eyes/1's Commons
+// politicians — Wikimedia Commons, see the JSON ledgers; the kisses were removed,
+// user 2026-10-12); the 36 tech keywords are the industry's marks on balls of
+// their brand colours (tech-marks.ts; the generated photographs in
+// public/images/1011/tech-keywords were rejected, 2026-10-12); the 80 tech faces are /screen/tech-eyes/1's Commons
 // portraits (attribution in public/images/0908/tech-power-faces/attribution.json);
 // the keywords are its abbreviation list, drawn as text.
 
 import catSources from "./sources/cat-sources.json";
-import kissSources from "./sources/kiss-sources.json";
 import politicianSources from "./sources/politician-sources.json";
 import { techPowerFaces } from "./sources/tech-power-faces.generated";
+import { TECH_MARKS } from "./tech-marks";
 
-export type SurfaceId = "none" | "cat" | "kiss" | "politician" | "tech" | "face" | "keyword" | "fullname" | "emoji" | "mix";
+export type SurfaceId = "none" | "cat" | "politician" | "tech" | "techBubble" | "face" | "keyword" | "fullname" | "fomo" | "emoji" | "mix";
 
 /** One layer of the media texture: a whole image, a tile of one, or a word. */
 export type MediaItem =
   | { kind: "image"; id: string; url: string }
   | { kind: "tile"; id: string; url: string; column: number; row: number; columns: number; rows: number }
-  | { kind: "text"; id: string; text: string }
-  | { kind: "emoji"; id: string; glyph: string };
+  | { kind: "text"; id: string; text: string; hex?: string }
+  | { kind: "emoji"; id: string; glyph: string }
+  | { kind: "mark"; id: string; path: string; hex: string; bubble?: boolean };
 
 export const SURFACES: readonly { id: SurfaceId; label: string }[] = [
   { id: "none", label: "없음" },
   { id: "cat", label: "고양이" },
-  { id: "kiss", label: "키스" },
   { id: "politician", label: "정치인" },
   { id: "tech", label: "기술" },
+  { id: "techBubble", label: "기술-버블" },
   { id: "face", label: "테크 얼굴" },
   { id: "keyword", label: "키워드" },
   { id: "fullname", label: "풀네임" },
+  { id: "fomo", label: "FOMO" },
   { id: "emoji", label: "이모지" },
   { id: "mix", label: "섞음" },
 ];
 
-/** 키워드 by default (user, 2026-10-11): the words chase the trend, the photographs are a choice. */
-export const DEFAULT_SURFACE: SurfaceId = "keyword";
+/** FOMO by default (user, 2026-10-12; first 키워드, 2026-10-11): the words chase the trend, the photographs are a choice. */
+export const DEFAULT_SURFACE: SurfaceId = "fomo";
 
 export type KeywordFontId = "gothic" | "thin" | "serif" | "mono" | "impact";
 
@@ -51,11 +54,37 @@ export const KEYWORD_FONTS: readonly { id: KeywordFontId; label: string; family:
 ];
 export const DEFAULT_KEYWORD_FONT: KeywordFontId = "gothic";
 
-/** How the keyword tiles are drawn: face, size relative to the tile, and the text's opacity on black. */
-export type KeywordStyle = { font: KeywordFontId; size: number; opacity: number };
-/** Size 1 spans about half the tile; the default is half that (user, 2026-10-11). */
+/**
+ * How the keyword tiles are drawn: face, size relative to the tile, the text's opacity on black,
+ * and, for a text item that carries a brand colour (FOMO), whether it is drawn in 기술-버블's way.
+ */
+export type KeywordStyle = { font: KeywordFontId; size: number; opacity: number; brand: boolean };
+/** Size 1 spans about half the tile; a single word's default is half that (user, 2026-10-11). */
 export const KEYWORD_SIZE_RANGE = [0.2, 2] as const;
-export const DEFAULT_KEYWORD_STYLE: KeywordStyle = { font: DEFAULT_KEYWORD_FONT, size: 0.5, opacity: 0.7 };
+const WORD_SIZE = 0.5;
+/** Choosing a surface drawn as phrases sets 글자 크기 to its own default: 0.8 (user, 2026-10-12); the words keep 0.5. */
+export const PHRASE_SURFACE_SIZE = 0.8;
+
+/**
+ * 이모지 and 기술 (user, 2026-10-12): the bubble is the emoji or the tech mark — an
+ * opaque ball — not a picture seen through the film.
+ */
+export function isSolidSurface(surface: SurfaceId) {
+  return surface === "emoji" || surface === "tech";
+}
+
+/** The surfaces drawn as text, which the keyword font, size and opacity apply to. */
+export function isTextSurface(surface: SurfaceId) {
+  return surface === "keyword" || surface === "fullname" || surface === "fomo" || surface === "mix";
+}
+
+/** 글자 크기 a text surface starts at when chosen. */
+export function textSizeFor(surface: SurfaceId) {
+  return surface === "fullname" || surface === "fomo" ? PHRASE_SURFACE_SIZE : WORD_SIZE;
+}
+
+/** The default surface's style: FOMO's phrases at 0.8. */
+export const DEFAULT_KEYWORD_STYLE: KeywordStyle = { font: DEFAULT_KEYWORD_FONT, size: textSizeFor(DEFAULT_SURFACE), opacity: 0.7, brand: false };
 
 /** tech-eyes/1's established industry abbreviations, in the atlas's tile order. */
 export const TECH_KEYWORDS: readonly string[] = [
@@ -78,14 +107,35 @@ export const TECH_KEYWORD_NAMES: readonly string[] = [
 ];
 
 /**
- * 이모지 (user, 2026-10-11): the feed's own vocabulary — reactions, status, hype — as
- * the content under the film, one glyph per tile in the system's colour emoji font.
+ * FOMO (user, 2026-10-12): what the same scene says to the people in it — the
+ * fear of missing out, the anxiety of being replaced, the desire to be early.
+ * Goldfishes' proposal names the signals (AI, quantum and metaverse hype, market
+ * panic, breaking news, startups, research, hiring) and its reading list frames
+ * FOMO not as a mood but as the platforms' working rule: react now or miss it.
+ * Each phrase is a line from that feed, drawn like 풀네임, one word per line, with
+ * no community acronyms (State of the Art, not SOTA). A set of forum slang
+ * (HODL, NGMI, TC or GTFO …) replaced this one briefly and was withdrawn (user, 2026-10-12).
+ */
+export const FOMO_PHRASES: readonly string[] = [
+  "Don't Miss Out", "Before It's Too Late", "Last Chance", "Left Behind", "Already Obsolete", "Still Not Using AI?",
+  "Your Job Is Next", "Adapt or Die", "Everyone Is Building Agents", "Pivot to AI", "Stay Ahead", "Ship Faster",
+  "10x Engineer", "Join the Waitlist", "Early Access", "Limited Seats", "Now Hiring", "Open to Work",
+  "Raised 100 Million", "Unicorn Overnight", "To the Moon", "Buy the Dip", "All-Time High", "Market Crash",
+  "Breaking News", "Just Announced", "New State of the Art", "Beats GPT", "This Changes Everything", "The Next Big Thing",
+  "Artificial General Intelligence by 2027", "Quantum Advantage", "Metaverse Is Back", "Sold Out", "Trending Now", "Everyone Is Watching",
+];
+
+/**
+ * 이모지 (user, 2026-10-11): the feed's reactions as balls, one glyph per tile in
+ * the system's colour emoji font. Round faces only (user, 2026-10-12): each
+ * bubble is its emoji, so the face's own outline is the ball's rim; faces with
+ * hands, hats, steam or tears outside the circle, and every object, are left out.
  */
 export const EMOJIS: readonly string[] = [
-  "😀", "😂", "🤣", "😍", "🥰", "😎", "🤩", "🥳", "😭", "😱", "🤔", "🙄",
-  "😴", "🤯", "🥺", "😡", "🤡", "💀", "👻", "🤖", "👀", "👍", "👏", "🙏",
-  "🔥", "💯", "✨", "⭐", "💥", "🚀", "💸", "💰", "📈", "📉", "💎", "🧠",
-  "❤️", "💔", "🔔", "📱", "💻", "🌐", "🔗", "⚡", "🎯", "🏆", "🍿", "☕",
+  "😀", "😃", "😄", "😁", "😆", "😂", "🙂", "🙃", "😉", "😊", "😍", "🤩",
+  "😋", "😛", "😜", "🤪", "🤑", "🤨", "😐", "😑", "😶", "😏", "😒", "🙄",
+  "😬", "😌", "😔", "😷", "🤢", "🥵", "🥶", "🥴", "😵", "😎", "🤓", "😕",
+  "😟", "😮", "😲", "😳", "🥺", "😨", "😢", "😭", "😩", "😫", "😡", "🤬", "🤡",
 ];
 
 type PhotoSource = { id: string; imageUrl: string };
@@ -96,21 +146,21 @@ function photos(sources: readonly PhotoSource[]): MediaItem[] {
 
 const sets: Record<Exclude<SurfaceId, "none" | "mix">, () => MediaItem[]> = {
   cat: () => photos(catSources),
-  kiss: () => photos(kissSources),
   politician: () => photos(politicianSources),
-  tech: () =>
-    TECH_KEYWORDS.map((keyword) => ({
-      kind: "image",
-      id: `tech-${keyword}`,
-      url: `/images/1011/tech-keywords/${keyword}.jpg`,
-    })),
+  tech: () => TECH_MARKS.map((mark) => ({ kind: "mark", id: `tech-${mark.keyword}`, path: mark.path, hex: mark.hex })),
+  // 기술-버블 (user, 2026-10-12): the same marks as soap bubbles — a clear ball tinted by the
+  // brand towards its rim, the mark floating inside, all under the film; not in 섞음.
+  techBubble: () =>
+    TECH_MARKS.map((mark) => ({ kind: "mark", id: `tech-bubble-${mark.keyword}`, path: mark.path, hex: mark.hex, bubble: true })),
   face: () => techPowerFaces.map((face) => ({ kind: "image", id: `face-${face.id}`, url: face.image })),
   keyword: () => TECH_KEYWORDS.map((keyword) => ({ kind: "text", id: `keyword-${keyword}`, text: keyword })),
   fullname: () => TECH_KEYWORD_NAMES.map((name, index) => ({ kind: "text", id: `fullname-${TECH_KEYWORDS[index]}`, text: name })),
+  // Each phrase carries a brand colour, the marks' in turn, for 글자 색 브랜드 (user, 2026-10-12).
+  fomo: () =>
+    FOMO_PHRASES.map((phrase, index) => ({ kind: "text", id: `fomo-${index}`, text: phrase, hex: TECH_MARKS[index % TECH_MARKS.length]!.hex })),
   emoji: () => EMOJIS.map((glyph, index) => ({ kind: "emoji", id: `emoji-${index}`, glyph })),
 };
 
-/** 섞음 leaves out the kisses (user, 2026-10-11); 키스 stays as its own surface. */
 const MIX_ORDER = ["tech", "face", "keyword", "cat", "politician"] as const;
 
 /** The layers a surface puts in the media texture, in layer order. */

@@ -7,6 +7,7 @@ import { Reels } from './reels';
 import { Sheet } from './sheet';
 import { StoryViewer, type StoryItem } from './story-viewer';
 import s from './instagram.module.css';
+import { useCloneScale } from '../../scale';
 
 type Tab = 'home' | 'reels' | 'inbox' | 'explore' | 'profile' | 'create' | 'activity';
 type ProfileSection = 'grid' | 'reels' | 'reposts' | 'tagged';
@@ -25,6 +26,7 @@ const longAge = (age: string) => { const match = /^(\d+)([mhd])$/.exec(age); if 
 const storyItemsFor = (posts: Post[], id: string): StoryItem[] => posts.filter(p => p.accountId === id && !p.reel).slice(0, id === 'you' ? 1 : 3).map(p => ({ id: `story-${p.id}`, image: p.image, alt: p.alt, age: p.age }));
 
 export default function InstagramMobile() {
+  const scale = useCloneScale();
   const [tab, setTab] = useState<Tab>('home');
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [liked, setLiked] = useState<string[]>([]);
@@ -98,8 +100,8 @@ export default function InstagramMobile() {
     if (event.target instanceof Element && event.target.closest(`.${s.stories}, .${s.highlights}, input, textarea`)) return;
     const touch = event.changedTouches[0];
     if (!touch) return;
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
+    const dx = touch.clientX / scale - start.x;
+    const dy = touch.clientY / scale - start.y;
     if (Math.abs(dx) < 85 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
     const index = navTabs.findIndex(item => item === tab);
     const next = navTabs[index + (dx < 0 ? 1 : -1)];
@@ -245,7 +247,7 @@ export default function InstagramMobile() {
   const overlay = storyStart !== null;
   return <main className={s.outer} lang="en"><div className={s.app}>
     {overlay ? <StoryViewer key={storyStart} order={storyAccounts} start={storyStart} itemsFor={id => storyItemsFor(posts, id)} avatarFor={avatarFor} nameFor={nameFor} onSeen={id => setSeen(current => current.includes(id) ? current : [...current, id])} onClose={() => setStoryStart(null)} onReply={(id, body) => { setThreads(current => ({ ...current, [id]: [...(current[id] || []), { id: crypto.randomUUID(), from: 'me', body }] })); setNotice(`Reply sent to ${nameFor(id)}`); }} onProfile={id => showProfile(id)}/> : <>
-      {tab === 'reels' && !detail ? <Reels reels={reels} start={reelStart} section={reelSection} onSection={setReelSection} liked={liked} reposted={reposted} following={following} verified={verifiedAccounts} onLike={like} onRepost={id => toggle(id, reposted, setReposted)} onFollow={id => toggle(id, following, setFollowing)} onComments={id => { setComment(''); setCommentsId(id); }} onShare={setShareId} onProfile={showProfile} onCreate={() => changeTab('create')} avatarFor={avatarFor} nameFor={nameFor} compactCount={compactCount}/> : <div className={`${s.scroll} ${tab === 'create' || inboxAccount ? s.noNav : ''}`} ref={scroll} onTouchStartCapture={event => { const touch = event.touches[0]; if (touch) gestureStart.current = {x: touch.clientX, y: touch.clientY}; }} onTouchEndCapture={finishGesture}>
+      {tab === 'reels' && !detail ? <Reels reels={reels} start={reelStart} section={reelSection} onSection={setReelSection} liked={liked} reposted={reposted} following={following} verified={verifiedAccounts} onLike={like} onRepost={id => toggle(id, reposted, setReposted)} onFollow={id => toggle(id, following, setFollowing)} onComments={id => { setComment(''); setCommentsId(id); }} onShare={setShareId} onProfile={showProfile} onCreate={() => changeTab('create')} avatarFor={avatarFor} nameFor={nameFor} compactCount={compactCount}/> : <div className={`${s.scroll} ${tab === 'create' || inboxAccount ? s.noNav : ''}`} ref={scroll} onTouchStartCapture={event => { const touch = event.touches[0]; if (touch) gestureStart.current = {x: touch.clientX / scale, y: touch.clientY / scale}; }} onTouchEndCapture={finishGesture}>
         {detail ? <><header className={s.subHeader}><button aria-label="Back" onClick={() => setDetailId(null)}><Icon name="back"/></button><strong>Posts</strong><span/></header>{renderFeedPost(detail)}</> : tab === 'home' ? renderHome() : tab === 'explore' ? renderExplore() : tab === 'activity' ? renderActivity() : tab === 'inbox' ? renderInbox() : tab === 'create' ? renderCreate() : renderProfile()}
       </div>}
       {tab !== 'create' && !inboxAccount && <nav className={`${s.bottomNav} ${tab === 'reels' && !detail ? s.darkNav : ''}`} aria-label="Main navigation">{navTabs.map(item => <button key={item} onClick={() => changeTab(item)} aria-label={item === 'explore' ? 'Search and explore' : item === 'inbox' ? 'Messages' : item[0].toUpperCase() + item.slice(1)} aria-current={tab === item ? 'page' : undefined}>{item === 'profile' ? <img className={tab === item ? s.activeAvatar : ''} src={accounts[0].avatar} alt=""/> : <Icon name={item === 'explore' ? 'search' : item} filled={tab === item}/>}{item === 'inbox' && unread.length > 0 && <i className={s.navDot}/>}</button>)}</nav>}

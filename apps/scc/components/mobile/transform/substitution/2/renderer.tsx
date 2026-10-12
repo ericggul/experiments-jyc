@@ -10,7 +10,15 @@ type Clip = { left: number; top: number; right: number; bottom: number };
 type Box = { left: number; top: number; right: number; bottom: number; width: number; height: number };
 type Cell = { rect: Box; element: Element; color: string; label?: string; clip: Clip; mask: boolean; stack: number[]; order: number; layer: Element | null };
 
-export default function CommandRenderer({ clone, group, presentation }: { clone: string; group: CommandGroup; presentation: Presentation }) {
+// The animation frame in which some filter on this page last re-read its clone. Phones on a host page share one main thread
+// and a re-read costs tens of milliseconds, so they take turns, one per frame; a lone page filter always has the frame to itself.
+let readFrame = -1;
+
+/**
+ * Without `scope` the filter reads and covers the whole page. With it, it reads one element (a phone a host page such as
+ * `/mobiles/2` draws, marked `data-substitution-command-scope` and holding this canvas) and draws in that element's own CSS pixels.
+ */
+export default function CommandRenderer({ clone, group, presentation, scope }: { clone: string; group: CommandGroup; presentation: Presentation; scope?: HTMLElement }) {
   const overlayRef = useRef<HTMLCanvasElement>(null);
 
   useLayoutEffect(() => {
@@ -18,7 +26,17 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
     const context = overlay?.getContext("2d");
     if (!overlay || !context) return;
 
-    const root = document.documentElement;
+    const host = scope ?? null;
+    const body = host ?? document.body;
+    const root = host ?? document.documentElement;
+    // Where the host sits on screen and how much it is scaled; boxes and pointers are measured on screen.
+    const view = () => {
+      if (!host) return { left: 0, top: 0, scale: 1, width: window.innerWidth, height: window.innerHeight };
+      const box = host.getBoundingClientRect();
+      const width = host.offsetWidth;
+      return { left: box.left, top: box.top, scale: width ? box.width / width : 1, width, height: host.offsetHeight };
+    };
+    const inside = (target: EventTarget | null) => !host || (target instanceof Node && host.contains(target));
     const rootMode = presentation;
     let functionalUnits: FunctionalUnit[] = [];
     let cacheDirty = true;
@@ -34,25 +52,36 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
     const refreshCache = () => {
       // Read the clone with its own fills and borders visible; each unit's box depends on them.
       root.removeAttribute("data-mobile-substitution-command");
-      functionalUnits = collectFunctionalUnits(clone, group);
+      const screen = host?.getBoundingClientRect();
+      functionalUnits = host && screen
+        ? collectFunctionalUnits(clone, group, body, screen.width * screen.height, host.offsetWidth ? screen.width / host.offsetWidth : 1)
+        : collectFunctionalUnits(clone, group);
       root.setAttribute("data-mobile-substitution-command", rootMode);
       lastCollect = performance.now();
       cacheDirty = false;
     };
 
-    const draw = () => {
+    const draw = (time: number) => {
       frame = 0;
       if (performance.now() < movingUntil) scheduleDraw();
       if (cacheDirty) {
         // A clone that mutates while scrolling (a hiding header, a playing video) is re-read at most four times a second.
         const wait = lastCollect + 250 - performance.now();
-        if (wait <= 0) refreshCache();
-        else if (!collectTimer) collectTimer = window.setTimeout(() => { collectTimer = 0; scheduleDraw(); }, wait);
+        if (wait > 0) {
+          if (!collectTimer) collectTimer = window.setTimeout(() => { collectTimer = 0; scheduleDraw(); }, wait);
+        } else if (time === readFrame) scheduleDraw();
+        else {
+          readFrame = time;
+          refreshCache();
+        }
       }
 
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      // A scaled host is drawn at its on-screen resolution.
+      const { left: originX, top: originY, scale, width, height } = view();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2) * scale;
+      const local = (box: { left: number; top: number; right: number; bottom: number }) => host
+        ? { left: (box.left - originX) / scale, top: (box.top - originY) / scale, right: (box.right - originX) / scale, bottom: (box.bottom - originY) / scale }
+        : box;
       if (overlay.width !== Math.round(width * ratio) || overlay.height !== Math.round(height * ratio)) {
         overlay.width = Math.round(width * ratio);
         overlay.height = Math.round(height * ratio);
@@ -69,12 +98,13 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
       const clipRects = new Map<Element, Clip>();
       for (const unit of functionalUnits) {
         if (!unit.label && presentation !== "replace") continue;
-        const bounds = unitRect(unit, range);
+        const screenBounds = unitRect(unit, range);
+        const bounds = screenBounds && local(screenBounds);
         if (!bounds || bounds.right - bounds.left < 4 || bounds.bottom - bounds.top < 4) continue;
         let clip = viewport;
         for (const ancestor of unit.clips) {
           let box = clipRects.get(ancestor);
-          if (!box) clipRects.set(ancestor, (box = ancestor.getBoundingClientRect()));
+          if (!box) clipRects.set(ancestor, (box = local(ancestor.getBoundingClientRect())));
           clip = { left: Math.max(clip.left, box.left), top: Math.max(clip.top, box.top), right: Math.min(clip.right, box.right), bottom: Math.min(clip.bottom, box.bottom) };
         }
         if (bounds.right <= clip.left || bounds.left >= clip.right || bounds.bottom <= clip.top || bounds.top >= clip.bottom) continue;
@@ -206,14 +236,15 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
         context.restore();
       };
 
+      const point = pointer && { x: (pointer.x - originX) / scale, y: (pointer.y - originY) / scale };
       const drawnCells = presentation === "reveal"
         ? cells.filter((cell) => {
-          if (!pointer) return false;
+          if (!point) return false;
           const clip = cell.clip;
-          return pointer.x >= Math.max(cell.rect.left, clip.left) &&
-            pointer.x < Math.min(cell.rect.right, clip.right) &&
-            pointer.y >= Math.max(cell.rect.top, clip.top) &&
-            pointer.y < Math.min(cell.rect.bottom, clip.bottom);
+          return point.x >= Math.max(cell.rect.left, clip.left) &&
+            point.x < Math.min(cell.rect.right, clip.right) &&
+            point.y >= Math.max(cell.rect.top, clip.top) &&
+            point.y < Math.min(cell.rect.bottom, clip.bottom);
         }).slice(-1).filter((cell) => !cell.mask)
         : cells;
       for (const cell of drawnCells) {
@@ -227,6 +258,9 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
     const scheduleDraw = () => {
       if (!frame) frame = window.requestAnimationFrame(draw);
     };
+    const onScroll = (event: Event) => {
+      if (inside(event.target)) scheduleDraw();
+    };
 
     // Only motion that moves, sizes or shows a box. Changes the hiding stylesheet itself makes while each collection lifts it
     // (colours, media opacity, pseudo-element visibility) do not move cells.
@@ -237,6 +271,7 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
     const seconds = (list: string) => Math.max(0, ...list.split(",").map((value) => parseFloat(value) * (value.trim().endsWith("ms") ? 0.001 : 1) || 0));
     // A box that finished hiding or showing (a sheet's delayed visibility) changes which units exist.
     const onMotionEnd = (event: TransitionEvent | AnimationEvent) => {
+      if (!inside(event.target)) return;
       if (event.target instanceof Element && event.target.closest("[data-substitution-command-ui]")) return;
       if (event instanceof TransitionEvent && !moves(event)) return;
       cacheDirty = true;
@@ -244,7 +279,7 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
     };
     const onMotion = (event: TransitionEvent | AnimationEvent) => {
       const target = event.target;
-      if (!(target instanceof Element) || target.closest("[data-substitution-command-ui]")) return;
+      if (!(target instanceof Element) || !inside(target) || target.closest("[data-substitution-command-ui]")) return;
       const style = window.getComputedStyle(target);
       let length: number;
       if (event.type === "animationstart") {
@@ -261,7 +296,10 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
 
     const pointAt = (x: number, y: number, target: EventTarget | null) => {
       if (presentation !== "reveal") return;
-      pointer = target instanceof Element && target.closest("[data-substitution-command-ui]") ? null : { x, y };
+      const next = !inside(target) || (target instanceof Element && target.closest("[data-substitution-command-ui]")) ? null : { x, y };
+      // Every phone on a host page hears every move; one the pointer is not over stays as it is.
+      if (!next && !pointer) return;
+      pointer = next;
       scheduleDraw();
     };
     const onPointerMove = (event: PointerEvent) => pointAt(event.clientX, event.clientY, event.target);
@@ -271,7 +309,7 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
       scheduleDraw();
     };
     const onPointerOut = (event: PointerEvent) => {
-      if (!event.relatedTarget) clearPointer();
+      if (!event.relatedTarget || !inside(event.relatedTarget)) clearPointer();
     };
     const onTouchMove = (event: TouchEvent) => {
       const touch = event.touches[0];
@@ -291,8 +329,11 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
       scheduleDraw();
     });
     root.setAttribute("data-mobile-substitution-command", rootMode);
-    observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true });
-    window.addEventListener("scroll", scheduleDraw, true);
+    observer.observe(body, { subtree: true, childList: true, characterData: true, attributes: true });
+    // A host page resizes its frames without resizing the window.
+    const resizes = new ResizeObserver(scheduleDraw);
+    if (host) resizes.observe(host);
+    window.addEventListener("scroll", onScroll, true);
     window.addEventListener("resize", scheduleDraw);
     window.addEventListener("load", scheduleDraw);
     document.addEventListener("transitionrun", onMotion, true);
@@ -315,7 +356,8 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", scheduleDraw, true);
+      resizes.disconnect();
+      window.removeEventListener("scroll", onScroll, true);
       window.removeEventListener("resize", scheduleDraw);
       window.removeEventListener("load", scheduleDraw);
       document.removeEventListener("transitionrun", onMotion, true);
@@ -336,7 +378,7 @@ export default function CommandRenderer({ clone, group, presentation }: { clone:
       if (collectTimer) window.clearTimeout(collectTimer);
       root.removeAttribute("data-mobile-substitution-command");
     };
-  }, [clone, group, presentation]);
+  }, [clone, group, presentation, scope]);
 
   return <canvas ref={overlayRef} data-substitution-command-overlay aria-hidden="true" />;
 }

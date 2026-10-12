@@ -2,6 +2,7 @@
 import { useRef, useState, type FormEvent, type PointerEvent } from 'react';
 import { Icon } from './glyph';
 import s from './instagram.module.css';
+import { localRect, useCloneScale } from '../../scale';
 
 export type StoryItem = { id: string; image: string; alt: string; age: string };
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
 // Instagram story viewer: one progress segment per item of the current account, tap thirds to step,
 // hold to pause (chrome hides), swipe sideways to change account, swipe down to dismiss.
 export function StoryViewer({ order, start, itemsFor, avatarFor, nameFor, onSeen, onClose, onReply, onProfile }: Props) {
+  const scale = useCloneScale();
   const [userIndex, setUserIndex] = useState(start);
   const [itemIndex, setItemIndex] = useState(0);
   const [held, setHeld] = useState(false);
@@ -45,7 +47,7 @@ export function StoryViewer({ order, start, itemsFor, avatarFor, nameFor, onSeen
   }
   function down(event: PointerEvent<HTMLDivElement>) {
     const timer = window.setTimeout(() => { if (gesture.current) gesture.current.hold = true; setHeld(true); }, 220);
-    gesture.current = { x: event.clientX, y: event.clientY, timer, hold: false };
+    gesture.current = { x: event.clientX / scale, y: event.clientY / scale, timer, hold: false };
   }
   function up(event: PointerEvent<HTMLDivElement>) {
     const g = gesture.current;
@@ -53,13 +55,13 @@ export function StoryViewer({ order, start, itemsFor, avatarFor, nameFor, onSeen
     if (!g) return;
     window.clearTimeout(g.timer);
     setHeld(false);
-    const dx = event.clientX - g.x;
-    const dy = event.clientY - g.y;
+    const dx = event.clientX / scale - g.x;
+    const dy = event.clientY / scale - g.y;
     if (dy > 90 && dy > Math.abs(dx)) { onSeen(accountId); onClose(); return; }
     if (Math.abs(dx) > 60) { goUser(userIndex + (dx < 0 ? 1 : -1)); return; }
     if (g.hold) return;
-    const box = event.currentTarget.getBoundingClientRect();
-    step(event.clientX - box.left < box.width / 3 ? -1 : 1);
+    const box = localRect(event.currentTarget, scale);
+    step(event.clientX / scale - box.left < box.width / 3 ? -1 : 1);
   }
   function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

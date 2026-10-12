@@ -7,6 +7,7 @@ import { filterHome, matches, pushRecent, suggestions, toggle, upNext } from '..
 import { accumulateSeek, dragProgress, headerOffset, pagerOffset, pagerStep, scrubTime, seekSide, seekTarget, settleHeader, snapMini } from '../model/gesture';
 import { Icon, LogoMark, type IconName } from './icons';
 import s from './youtube.module.css';
+import { localRect, useCloneScale } from '../../scale';
 
 type Tab = 'home' | 'shorts' | 'subs' | 'you';
 type Bell = 'all' | 'personalized' | 'none';
@@ -192,10 +193,11 @@ function SubscribeButton({ ctx, channelId, compactLabel }: { ctx: Ctx; channelId
 }
 
 function SheetFrame({ title, onClose, children, tall, footer }: { title?: string; onClose: () => void; children: ReactNode; tall?: boolean; footer?: ReactNode }) {
+  const scale = useCloneScale();
   const start = useRef<number | null>(null);
   const [offset, setOffset] = useState(0);
-  const down = (event: ReactPointerEvent<HTMLDivElement>) => { start.current = event.clientY; capture(event.currentTarget, event.pointerId); };
-  const move = (event: ReactPointerEvent<HTMLDivElement>) => { if (start.current !== null) setOffset(Math.max(0, event.clientY - start.current)); };
+  const down = (event: ReactPointerEvent<HTMLDivElement>) => { start.current = event.clientY / scale; capture(event.currentTarget, event.pointerId); };
+  const move = (event: ReactPointerEvent<HTMLDivElement>) => { if (start.current !== null) setOffset(Math.max(0, event.clientY / scale - start.current)); };
   const up = () => { if (offset > 90) onClose(); start.current = null; setOffset(0); };
   return <>
     <div className={s.backdrop} onClick={onClose} aria-hidden="true" />
@@ -280,6 +282,7 @@ type WatchProps = {
 };
 
 function WatchPanel({ ctx, video, mini, fullscreen, setFullscreen, suspended, setP, settle, travel, onClose }: WatchProps) {
+  const scale = useCloneScale();
   const channel = channelOf(video.channelId);
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -391,13 +394,13 @@ function WatchPanel({ ctx, video, mini, fullscreen, setFullscreen, suspended, se
 
   const headDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if ((event.target as Element).closest('button, [data-scrub]') || event.button > 0) return;
-    drag.current = { x: event.clientX, y: event.clientY, p0: mini ? 1 : 0, active: false, p: mini ? 1 : 0, lastP: mini ? 1 : 0, lastT: performance.now(), v: 0, dy: 0, id: event.pointerId };
+    drag.current = { x: event.clientX / scale, y: event.clientY / scale, p0: mini ? 1 : 0, active: false, p: mini ? 1 : 0, lastP: mini ? 1 : 0, lastT: performance.now(), v: 0, dy: 0, id: event.pointerId };
   };
   const headMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== event.pointerId) return;
-    const dy = event.clientY - d.y;
-    const dx = event.clientX - d.x;
+    const dy = event.clientY / scale - d.y;
+    const dx = event.clientX / scale - d.x;
     d.dy = dy;
     if (!d.active) {
       if (Math.abs(dy) < 8 || Math.abs(dy) < Math.abs(dx)) return;
@@ -418,8 +421,8 @@ function WatchPanel({ ctx, video, mini, fullscreen, setFullscreen, suspended, se
     if (!d || d.id !== event.pointerId) return;
     if (!d.active) {
       if (mini) { settle(0); return; }
-      const rect = event.currentTarget.getBoundingClientRect();
-      tap(event.clientX - rect.left, rect.width);
+      const rect = localRect(event.currentTarget, scale);
+      tap(event.clientX / scale - rect.left, rect.width);
       return;
     }
     if (fullscreen) { if (d.dy > 60) setFullscreen(false); return; }
@@ -431,16 +434,16 @@ function WatchPanel({ ctx, video, mini, fullscreen, setFullscreen, suspended, se
   const headCancel = () => { const d = drag.current; drag.current = null; if (d?.active) settle(d.p > 0.5 ? 1 : 0); };
 
   const scrubAt = (clientX: number) => {
-    const rect = trackRef.current?.getBoundingClientRect();
+    const rect = trackRef.current && localRect(trackRef.current, scale);
     return rect ? scrubTime(clientX, rect.left, rect.width, duration) : 0;
   };
   const scrubDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     event.stopPropagation();
     capture(event.currentTarget, event.pointerId);
-    setScrub(scrubAt(event.clientX));
+    setScrub(scrubAt(event.clientX / scale));
     setControls(true);
   };
-  const scrubMove = (event: ReactPointerEvent<HTMLDivElement>) => { if (scrub !== null) setScrub(scrubAt(event.clientX)); };
+  const scrubMove = (event: ReactPointerEvent<HTMLDivElement>) => { if (scrub !== null) setScrub(scrubAt(event.clientX / scale)); };
   const scrubUp = () => {
     if (scrub === null) return;
     if (videoRef.current) videoRef.current.currentTime = scrub;
@@ -637,6 +640,7 @@ function WatchPanel({ ctx, video, mini, fullscreen, setFullscreen, suspended, se
 /* ----------------------------------------------------------------- shorts */
 
 function ShortsPager({ ctx, items, index, setIndex, onBack, suspended }: { ctx: Ctx; items: Short[]; index: number; setIndex: (index: number) => void; onBack?: () => void; suspended: boolean }) {
+  const scale = useCloneScale();
   const [dy, setDy] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [flash, setFlash] = useState<'play' | 'pause' | null>(null);
@@ -686,14 +690,14 @@ function ShortsPager({ ctx, items, index, setIndex, onBack, suspended }: { ctx: 
 
   const down = (event: ReactPointerEvent<HTMLDivElement>) => {
     if ((event.target as Element).closest('button, a, [data-scrub]') || event.button > 0) return;
-    drag.current = { x: event.clientX, y: event.clientY, t: performance.now(), dy: 0, active: false, id: event.pointerId };
+    drag.current = { x: event.clientX / scale, y: event.clientY / scale, t: performance.now(), dy: 0, active: false, id: event.pointerId };
   };
   const move = (event: ReactPointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== event.pointerId) return;
-    d.dy = event.clientY - d.y;
+    d.dy = event.clientY / scale - d.y;
     if (!d.active) {
-      if (Math.abs(d.dy) < 8 || Math.abs(d.dy) < Math.abs(event.clientX - d.x)) return;
+      if (Math.abs(d.dy) < 8 || Math.abs(d.dy) < Math.abs(event.clientX / scale - d.x)) return;
       d.active = true;
       setDragging(true);
       capture(event.currentTarget, event.pointerId);
@@ -705,19 +709,19 @@ function ShortsPager({ ctx, items, index, setIndex, onBack, suspended }: { ctx: 
     drag.current = null;
     if (!d || d.id !== event.pointerId) return;
     if (d.active) {
-      const height = event.currentTarget.getBoundingClientRect().height;
+      const height = localRect(event.currentTarget, scale).height;
       const velocity = d.dy / Math.max(1, performance.now() - d.t);
       setIndex(pagerStep(index, items.length, d.dy, height, velocity));
       setDy(0);
       setDragging(false);
       return;
     }
-    const rect = event.currentTarget.getBoundingClientRect();
+    const rect = localRect(event.currentTarget, scale);
     const now = Date.now();
     if (now - lastTap.current < 300) {
       window.clearTimeout(singleTimer.current);
       lastTap.current = 0;
-      like(event.clientX - rect.left, event.clientY - rect.top);
+      like(event.clientX / scale - rect.left, event.clientY / scale - rect.top);
       return;
     }
     lastTap.current = now;
@@ -770,8 +774,8 @@ function ShortsPager({ ctx, items, index, setIndex, onBack, suspended }: { ctx: 
         </div>
         {active ? <div className={s.shortProgress} data-scrub="" onPointerDown={event => {
           const el = refs.current.get(item.id);
-          const rect = event.currentTarget.getBoundingClientRect();
-          if (el?.duration) el.currentTime = scrubTime(event.clientX, rect.left, rect.width, el.duration);
+          const rect = localRect(event.currentTarget, scale);
+          if (el?.duration) el.currentTime = scrubTime(event.clientX / scale, rect.left, rect.width, el.duration);
         }}><i><span style={{ width: `${progress * 100}%` }} /></i></div> : null}
       </section>;
     })}

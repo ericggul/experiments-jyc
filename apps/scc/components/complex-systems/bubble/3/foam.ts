@@ -141,6 +141,7 @@ uniform float mediaDrift;             // how fast the image turns (sphere) or sc
 uniform float filmOverMedia;          // how much the film at grazing angles hides what is behind it
 uniform highp sampler2D bubbleReveal; // per bubble: 1 while a goldfish touches it, 0 when none does, moving between over the media fade
 uniform float mediaReveal;            // 0: the picture is always there; 1: only as revealed by touch
+uniform float mediaSolid;             // 1: the bubble is its picture — an opaque, lit ball (이모지) — rather than a film over it
 out vec4 pixel;
 
 vec4 bubbleAt(float index) {
@@ -373,12 +374,26 @@ void main() {
 
   // What lies behind the film: this bubble's image, mapped by mode.
   vec3 picture = vec3(0.0);
+  // The bubble as a ball: the point of its front half under this pixel.
+  vec2 qc = q / max(1.0, length(q));
+  float z = sqrt(max(1.0 - dot(qc, qc), 0.0));
+  // How much this bubble is its picture (mediaSolid), and that ball's colour.
+  float solid = 0.0;
+  vec3 ballColour = vec3(0.0);
   if (mediaMode > 0.5) {
     int mi = int(a.w) - 1;
     vec4 m = texelFetch(bubbleMedia, ivec2(mi % ${ROW}, mi / ${ROW}), 0);
     float phase = m.w;
+    float rock = sin(time * 0.3 * (0.6 + 0.8 * phase) + phase * 6.2831853);
     vec2 uvm;
-    if (mediaMode < 1.5) {
+    if (mediaSolid > 0.5) {
+      // The bubble is the emoji: the face's circle is the bubble's disc, edge
+      // to edge. It only tilts in the picture plane, so the rim never leaves the
+      // face's outline (turning it in depth slid the face off one side).
+      float angle = mediaDrift * 0.2 * rock;
+      vec2 turned = mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * qc;
+      uvm = turned * (0.5 / mediaZoom) + 0.5;
+    } else if (mediaMode < 1.5) {
       // Flat: the image across the bubble's disc.
       uvm = q * (0.5 / mediaZoom) + 0.5;
     } else if (mediaMode < 2.5) {
@@ -391,9 +406,6 @@ void main() {
       // Sphere: the image wrapped round a ball, its visible half across the
       // bubble, compressed towards the rim, rocking slowly about its axis (never
       // past its own edge, so nothing mirrors or seams).
-      vec2 qc = q / max(1.0, length(q));
-      float z = sqrt(max(1.0 - dot(qc, qc), 0.0));
-      float rock = sin(time * 0.3 * (0.6 + 0.8 * phase) + phase * 6.2831853);
       float lon = atan(qc.x, z) + mediaDrift * 0.35 * rock;
       float lat = asin(clamp(qc.y, -1.0, 1.0));
       uvm = vec2(lon / 3.1415927, lat / 3.1415927) / mediaZoom + 0.5;
@@ -418,10 +430,19 @@ void main() {
     picture = mix(current, next, m.z);
     float luminance = dot(picture, vec3(0.299, 0.587, 0.114));
     picture = softClip(mix(vec3(luminance), picture, mediaSaturation) * mediaBrightness);
+    float shown = 1.0;
     if (mediaReveal > 0.0) {
       // Shown only on bubbles a goldfish is touching.
       float revealed = texelFetch(bubbleReveal, ivec2(mi % ${ROW}, mi / ${ROW}), 0).x;
-      picture *= mix(1.0, revealed, mediaReveal);
+      shown = mix(1.0, revealed, mediaReveal);
+    }
+    if (mediaSolid > 0.5) {
+      // Not behind the film: the bubble itself turns into the emoji (and back to film when hidden).
+      solid = shown;
+      ballColour = picture;
+      picture = vec3(0.0);
+    } else {
+      picture *= shown;
     }
   }
 
@@ -459,6 +480,14 @@ void main() {
   colour += picture * (1.0 - fresnel * filmOverMedia);
   // The films are clear: what lies behind shows through them.
   pixel = vec4(background * (1.0 - 0.12 * coverage) + colour * coverage * exposure, 1.0);
+  if (solid > 0.0) {
+    // An opaque ball, shown as drawn: no highlight, rim light or reflection
+    // (those belong to the film; user, 2026-10-12), only a crease where it is
+    // pressed against its neighbours.
+    vec3 lit = ballColour * (0.55 + 0.45 * smoothstep(0.0, 3.0, toEdge));
+    vec3 asBall = background * (1.0 - coverage) + lit * coverage * exposure;
+    pixel.rgb = mix(pixel.rgb, asBall, solid);
+  }
 }
 `;
 
@@ -517,6 +546,8 @@ export type Look = {
   filmOverMedia: number;
   /** 0: pictures always shown; 1: only where goldfish have touched (bubble/2: irrelevant, no media). */
   mediaReveal: number;
+  /** 1: each bubble is an opaque ball of its picture (이모지) rather than a film over it. */
+  mediaSolid: number;
 };
 
 export const LOOK_DEFAULTS: Look = {
@@ -545,6 +576,7 @@ export const LOOK_DEFAULTS: Look = {
   mediaDrift: 1,
   filmOverMedia: 0.6,
   mediaReveal: 0,
+  mediaSolid: 0,
 };
 
 export type FoamRenderer = {

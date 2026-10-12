@@ -11,8 +11,3 @@ export const presentations: { id: Presentation; label: string }[] = [
   { id: "overlay", label: "오버레이" },
   { id: "reveal", label: "호버 / 손가락 리빌" },
 ];
-
-/** A host page (e.g. `/mobiles/2`) frames `substitution/2/<clone>?embed` and sets its filter by message. */
-export const settingMessage = "substitution-command:setting";
-export const readyMessage = "substitution-command:ready";
-export const embedSource = (clone: string) => `/mobile/transform/substitution/2/${clone}?embed`;

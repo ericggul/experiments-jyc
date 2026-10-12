@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import type { Post } from '../model/data';
 import { Icon } from './glyph';
 import s from './instagram.module.css';
+import { useCloneScale } from '../../scale';
 
 type Props = {
   reels: Post[];
@@ -29,6 +30,7 @@ type Props = {
 const cycles = [0, 1, 2];
 
 export function Reels({ reels, start, section, onSection, liked, reposted, following, verified, onLike, onRepost, onFollow, onComments, onShare, onProfile, onCreate, avatarFor, nameFor, compactCount }: Props) {
+  const scale = useCloneScale();
   const slots = useMemo(() => cycles.flatMap(cycle => reels.map(reel => ({ key: `${reel.id}:${cycle}`, reel }))), [reels]);
   const [active, setActive] = useState(() => Math.max(0, slots.findIndex(slot => slot.reel.id === start)));
   const [muted, setMuted] = useState(true);
@@ -54,14 +56,14 @@ export function Reels({ reels, start, section, onSection, liked, reposted, follo
   function down(event: PointerEvent<HTMLDivElement>, key: string) {
     const previous = tap.current;
     const timer = window.setTimeout(() => { if (tap.current) { tap.current.hold = true; videos.current[key]?.pause(); } }, 260);
-    tap.current = { x: event.clientX, y: event.clientY, at: event.timeStamp, timer, hold: false, single: previous && event.timeStamp - previous.at < 300 ? previous.single : 0 };
+    tap.current = { x: event.clientX / scale, y: event.clientY / scale, at: event.timeStamp, timer, hold: false, single: previous && event.timeStamp - previous.at < 300 ? previous.single : 0 };
   }
   function up(event: PointerEvent<HTMLDivElement>, key: string, reel: Post) {
     const g = tap.current;
     if (!g) return;
     window.clearTimeout(g.timer);
     if (g.hold) { void videos.current[key]?.play().catch(() => undefined); tap.current = null; return; }
-    if (Math.abs(event.clientX - g.x) > 10 || Math.abs(event.clientY - g.y) > 10) { tap.current = null; return; }
+    if (Math.abs(event.clientX / scale - g.x) > 10 || Math.abs(event.clientY / scale - g.y) > 10) { tap.current = null; return; }
     if (g.single) {
       window.clearTimeout(g.single);
       g.single = 0;

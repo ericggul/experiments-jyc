@@ -7,6 +7,7 @@ import { loadCommonsBatch } from '../model/commons';
 import { feedStep } from '../model/feed-step';
 import { Icon, type IconName } from './icons';
 import s from './tiktok.module.css';
+import { localRect, useCloneScale } from '../../scale';
 
 // TikTok's own open-source typeface (OFL, Google Fonts), used by the 2026 app chrome.
 const tiktokSans = TikTok_Sans({ subsets: ['latin'], display: 'swap', preload: false });
@@ -48,6 +49,7 @@ function Frame({ src, className }: { src: string; className?: string }) {
 function formatTime(seconds: number) { const whole = Math.max(0, Math.floor(seconds)); return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`; }
 
 export default function TikTokMobile() {
+  const scale = useCloneScale();
   const [tab, setTab] = useState<Tab>('home');
   const [feed, setFeed] = useState<Feed>('For You');
   const [allClips, setAllClips] = useState<Clip[]>(seedClips);
@@ -225,7 +227,7 @@ export default function TikTokMobile() {
   }
   function feedPointerDown(event: ReactPointerEvent<HTMLElement>) {
     if (commentFor || pressMenu || settling.current || (event.target instanceof Element && event.target.closest('button,input,textarea,a'))) return;
-    gesture.current = { x: event.clientX, y: event.clientY, t: Date.now(), axis: null };
+    gesture.current = { x: event.clientX / scale, y: event.clientY / scale, t: Date.now(), axis: null };
     longPressed.current = false;
     event.currentTarget.setPointerCapture(event.pointerId);
     window.clearTimeout(pressTimer.current);
@@ -234,8 +236,8 @@ export default function TikTokMobile() {
   function feedPointerMove(event: ReactPointerEvent<HTMLElement>) {
     const start = gesture.current;
     if (!start) return;
-    const dx = event.clientX - start.x;
-    const dy = event.clientY - start.y;
+    const dx = event.clientX / scale - start.x;
+    const dy = event.clientY / scale - start.y;
     if (!start.axis && Math.hypot(dx, dy) > 8) { start.axis = Math.abs(dy) > Math.abs(dx) ? 'y' : 'x'; window.clearTimeout(pressTimer.current); }
     if (start.axis === 'y') setSlide({ offset: (dy < 0 ? nextClip : previousClip) ? dy : dy * 0.28, animate: false });
   }
@@ -244,7 +246,7 @@ export default function TikTokMobile() {
     const start = gesture.current;
     gesture.current = null;
     if (longPressed.current || !start) { longPressed.current = false; return; }
-    const dy = event.clientY - start.y;
+    const dy = event.clientY / scale - start.y;
     if (start.axis === 'y') {
       const height = feedRef.current?.clientHeight ?? 1;
       const velocity = dy / Math.max(1, Date.now() - start.t);
@@ -252,14 +254,14 @@ export default function TikTokMobile() {
       else setSlide({ offset: 0, animate: true });
       return;
     }
-    if (!start.axis) { const box = event.currentTarget.getBoundingClientRect(); tap(event.clientX - box.left, event.clientY - box.top); }
+    if (!start.axis) { const box = localRect(event.currentTarget, scale); tap(event.clientX / scale - box.left, event.clientY / scale - box.top); }
   }
   function feedPointerCancel() { window.clearTimeout(pressTimer.current); gesture.current = null; setSlide({ offset: 0, animate: true }); }
 
   function closeComments() { setCommentFor(null); setSheetDrag(null); sheetStart.current = null; }
-  function sheetPointerDown(event: ReactPointerEvent<HTMLElement>) { if (event.target instanceof Element && event.target.closest('button')) return; sheetStart.current = { y: event.clientY, t: Date.now() }; event.currentTarget.setPointerCapture(event.pointerId); setSheetDrag(0); }
-  function sheetPointerMove(event: ReactPointerEvent<HTMLElement>) { if (sheetStart.current) setSheetDrag(Math.max(0, event.clientY - sheetStart.current.y)); }
-  function sheetPointerUp(event: ReactPointerEvent<HTMLElement>) { const start = sheetStart.current; sheetStart.current = null; if (!start) return; const dy = event.clientY - start.y; if (dy > 110 || dy / Math.max(1, Date.now() - start.t) > 0.5) closeComments(); else setSheetDrag(null); }
+  function sheetPointerDown(event: ReactPointerEvent<HTMLElement>) { if (event.target instanceof Element && event.target.closest('button')) return; sheetStart.current = { y: event.clientY / scale, t: Date.now() }; event.currentTarget.setPointerCapture(event.pointerId); setSheetDrag(0); }
+  function sheetPointerMove(event: ReactPointerEvent<HTMLElement>) { if (sheetStart.current) setSheetDrag(Math.max(0, event.clientY / scale - sheetStart.current.y)); }
+  function sheetPointerUp(event: ReactPointerEvent<HTMLElement>) { const start = sheetStart.current; sheetStart.current = null; if (!start) return; const dy = event.clientY / scale - start.y; if (dy > 110 || dy / Math.max(1, Date.now() - start.t) > 0.5) closeComments(); else setSheetDrag(null); }
 
   function navigate(next: Tab) { setTab(next); setCreatorId(null); setDetail(false); setCommentFor(null); setPressMenu(false); setPaused(false); if (next === 'inbox') setSeenActivity(activity.length); }
   function openVideo(id: string) { setReturnTab(tab); setReturnCreatorId(creatorId); setActiveId(id); setProgress(0); setDetail(true); setTab('home'); setCreatorId(null); setPaused(false); }

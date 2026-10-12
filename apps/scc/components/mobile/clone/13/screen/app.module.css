@@ -11,14 +11,14 @@
   --pink: #f91880;
   --green: #00ba7c;
   --mask: rgba(91, 112, 131, 0.4);
-  min-height: 100dvh;
+  min-height: var(--clone-viewport-height, 100dvh);
   background: var(--bg);
   color: var(--text);
   color-scheme: dark;
   font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-.app { position: relative; width: min(100%, 480px); height: 100dvh; min-height: 480px; margin: 0 auto; background: var(--bg); overflow: hidden; overflow: clip; }
+.app { position: relative; width: min(100%, 480px); height: var(--clone-viewport-height, 100dvh); min-height: 480px; margin: 0 auto; background: var(--bg); overflow: hidden; overflow: clip; }
 :where(.app) * { box-sizing: border-box; }
 :where(.app) :where(h1, h2, p) { margin: 0; }
 :where(.app) button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; padding: 0; text-align: inherit; }
@@ -213,7 +213,7 @@
 .sendButton:disabled { opacity: 0.5; }
 
 /* ---------- grok ---------- */
-.grokEmpty { display: flex; flex-direction: column; align-items: center; padding: 18vh 24px 140px; gap: 10px; }
+.grokEmpty { display: flex; flex-direction: column; align-items: center; padding: calc(var(--clone-viewport-height, 100vh) * 0.18) 24px 140px; gap: 10px; }
 .grokMark svg { width: 44px; height: 44px; }
 .grokEmpty h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; }
 .grokChips { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 20px; }

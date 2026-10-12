@@ -21,6 +21,8 @@ The user found `/2` cells sized differently from the interface they replace, and
 
 Units smaller than 18×15 px are now drawn too. Their label is omitted below 12×9 px. Variant `/1` is unchanged.
 
+Scoped use (2026-10-11): `CommandRenderer`'s optional `scope` element limits reading, hiding and drawing to one host-page phone (`/mobiles/2`), which is marked `data-substitution-command-scope`. Without it the renderer behaves as before.
+
 ## Command interpretation
 
 The source grammar is the black-and-white billboard revelation in *They Live* (`OBEY`, `CONSUME`, and related imperatives), combined with the user's description of Luke Strickler's “information is awesome” reel. The exact reel sequence was not independently retrieved. These terms are an authored reading of each clone's affordances, not evidence of its maker's intent. `semantic.ts` owns the three editable vocabularies (12–13 words each), action-to-command mapping, and the prominent-media override for each clone.

@@ -34,12 +34,17 @@ function drawCover(context: CanvasRenderingContext2D, image: ImageBitmap, sx: nu
   context.drawImage(image, sx + (sw - width) / 2, sy + (sh - height) / 2, width, height, 0, 0, tile, tile);
 }
 
-function drawText(context: CanvasRenderingContext2D, text: string, style: KeywordStyle, tile: number) {
+function drawText(context: CanvasRenderingContext2D, text: string, hex: string | undefined, style: KeywordStyle, tile: number) {
   const font = KEYWORD_FONTS.find((candidate) => candidate.id === style.font) ?? KEYWORD_FONTS[0]!;
+  const opacity = Math.max(0, Math.min(1, style.opacity));
   context.fillStyle = "#000000";
   context.fillRect(0, 0, tile, tile);
   // White at the style's opacity on black: at 0.7 a pale grey, so a word sits among the photographs rather than shouting.
-  context.fillStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(1, style.opacity))})`;
+  // With 브랜드 (FOMO), 기술-버블's way instead: the brand tint gathering at the rim and the words in a pale
+  // version of the colour, as the marks are drawn; the opacity scales the words (0.7 is the marks' strength).
+  const rgb = style.brand && hex ? bubbleTint(context, hex, tile) : null;
+  const strength = Math.min(1, opacity / 0.7);
+  const fills = rgb ? [`rgba(${rgb}, ${0.9 * strength})`, `rgba(255, 255, 255, ${0.35 * strength})`] : [`rgba(255, 255, 255, ${opacity})`];
   context.textAlign = "center";
   context.textBaseline = "middle";
   const words = text.split(" ");
@@ -47,7 +52,10 @@ function drawText(context: CanvasRenderingContext2D, text: string, style: Keywor
     // At size 1 the word spans about half the tile (the sphere mapping magnifies the middle); short words stay within a sensible size.
     const size = Math.min(tile * 0.34, (tile * 0.5) / Math.max(1, text.length * 0.62)) * font.scale * style.size;
     context.font = `${font.weight} ${size}px ${font.family}`;
-    context.fillText(text, tile / 2, tile / 2 + size * 0.04);
+    for (const fill of fills) {
+      context.fillStyle = fill;
+      context.fillText(text, tile / 2, tile / 2 + size * 0.04);
+    }
     return;
   }
   // A phrase (풀네임): one word per line, each line shrunk until it fits the middle of the tile, the block centred.
@@ -61,18 +69,145 @@ function drawText(context: CanvasRenderingContext2D, text: string, style: Keywor
   }
   const lineHeight = size * 1.12;
   const top = tile / 2 - (lineHeight * (words.length - 1)) / 2;
-  words.forEach((word, index) => context.fillText(word, tile / 2, top + lineHeight * index + size * 0.04));
+  for (const fill of fills) {
+    context.fillStyle = fill;
+    words.forEach((word, index) => context.fillText(word, tile / 2, top + lineHeight * index + size * 0.04));
+  }
 }
 
-/** One colour emoji filling most of the tile on black, at full strength (the keyword style does not apply). */
+const EMOJI_FAMILY = `"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+const EMOJI_PROBE = 120;
+let emojiFace: { size: number; x: number; y: number } | null = null;
+
+/**
+ * The face circle every round emoji shares, measured from 🙂's drawn pixels at
+ * EMOJI_PROBE px (measureText reports the em box, about 12 % larger than the ink):
+ * its diameter and its centre's offset from the centred, middle-aligned origin.
+ */
+function measureEmojiFace() {
+  if (emojiFace) return emojiFace;
+  const side = EMOJI_PROBE * 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = side;
+  canvas.height = side;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  let face = { size: EMOJI_PROBE * 0.9, x: 0, y: 0 };
+  if (context) {
+    context.font = `${EMOJI_PROBE}px ${EMOJI_FAMILY}`;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText("🙂", side / 2, side / 2);
+    const alpha = context.getImageData(0, 0, side, side).data;
+    let left = side, right = -1, top = side, bottom = -1;
+    for (let y = 0; y < side; y += 1) {
+      for (let x = 0; x < side; x += 1) {
+        if (alpha[(y * side + x) * 4 + 3]! < 40) continue;
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        top = Math.min(top, y);
+        bottom = Math.max(bottom, y);
+      }
+    }
+    if (right > left && bottom > top) {
+      face = { size: Math.max(right - left + 1, bottom - top + 1), x: (left + right + 1) / 2 - side / 2, y: (top + bottom + 1) / 2 - side / 2 };
+    }
+  }
+  emojiFace = face;
+  return face;
+}
+
+/**
+ * One round emoji face filling the tile edge to edge on black (the keyword style does not apply):
+ * the bubble becomes this tile as a ball, so the face's outline is the ball's rim. A tongue or
+ * tear past the circle is cut at the tile's edge.
+ */
 function drawEmoji(context: CanvasRenderingContext2D, glyph: string, tile: number) {
+  const face = measureEmojiFace();
+  const scale = tile / face.size;
   context.fillStyle = "#000000";
   context.fillRect(0, 0, tile, tile);
   context.textAlign = "center";
   context.textBaseline = "middle";
-  const size = tile * 0.62;
-  context.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
-  context.fillText(glyph, tile / 2, tile / 2 + size * 0.06);
+  context.font = `${EMOJI_PROBE * scale}px ${EMOJI_FAMILY}`;
+  context.fillText(glyph, tile / 2 - face.x * scale, tile / 2 - face.y * scale);
+}
+
+/**
+ * A tech mark on a ball of its brand colour, filling the tile (the ball's rim is the tile's
+ * inscribed circle): the mark at about half the ball's width, white, or near-black on a pale
+ * brand colour; a near-black brand (OpenAI, Apple, Ethereum) turns to a white ball with a dark mark.
+ */
+function brandLuminance(hex: string) {
+  const value = Number.parseInt(hex, 16);
+  const channel = (shift: number) => {
+    const c = ((value >> shift) & 255) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(16) + 0.7152 * channel(8) + 0.0722 * channel(0);
+}
+
+function drawMark(context: CanvasRenderingContext2D, path: string, hex: string, tile: number) {
+  const luminance = brandLuminance(hex);
+  const dark = luminance < 0.03;
+  context.fillStyle = dark ? "#f2f2f2" : `#${hex}`;
+  context.fillRect(0, 0, tile, tile);
+  // The ball's own volume, drawn into it as the emoji faces carry theirs: paler towards the
+  // upper left, darker towards the rim. No highlight — light effects belong to the film.
+  const half = tile / 2;
+  const body = context.createRadialGradient(tile * 0.36, tile * 0.3, 0, tile * 0.36, tile * 0.3, tile * 0.75);
+  body.addColorStop(0, "rgba(255, 255, 255, 0.22)");
+  body.addColorStop(1, "rgba(255, 255, 255, 0)");
+  context.fillStyle = body;
+  context.fillRect(0, 0, tile, tile);
+  const rim = context.createRadialGradient(half, half, tile * 0.3, half, half, half);
+  rim.addColorStop(0, "rgba(0, 0, 0, 0)");
+  rim.addColorStop(1, "rgba(0, 0, 0, 0.3)");
+  context.fillStyle = rim;
+  context.fillRect(0, 0, tile, tile);
+  context.fillStyle = dark ? `#${hex}` : luminance > 0.5 ? "#141414" : "#ffffff";
+  const size = tile * 0.5;
+  context.save();
+  context.translate((tile - size) / 2, (tile - size) / 2);
+  context.scale(size / 24, size / 24);
+  context.fill(new Path2D(path));
+  context.restore();
+}
+
+/**
+ * 기술-버블: a tech mark as a soap bubble, for the film to lie over. The picture is added to
+ * the film, so black is clear: the middle stays nearly clear, the brand colour gathers towards
+ * the rim as a thick film's colour does, and the mark floats in the middle, paler than the
+ * colour (a near-black brand is a grey bubble with a pale mark).
+ */
+function drawMarkBubble(context: CanvasRenderingContext2D, path: string, hex: string, tile: number) {
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, tile, tile);
+  const rgb = bubbleTint(context, hex, tile);
+  const size = tile * 0.46;
+  context.save();
+  context.translate((tile - size) / 2, (tile - size) / 2);
+  context.scale(size / 24, size / 24);
+  context.fillStyle = `rgba(${rgb}, 0.9)`;
+  context.fill(new Path2D(path));
+  context.fillStyle = "rgba(255, 255, 255, 0.35)";
+  context.fill(new Path2D(path));
+  context.restore();
+}
+
+/** 기술-버블's tint over a black tile: the brand colour gathering towards the rim. Returns the colour as "r, g, b". */
+function bubbleTint(context: CanvasRenderingContext2D, hex: string, tile: number) {
+  const dark = brandLuminance(hex) < 0.03;
+  const value = Number.parseInt(dark ? "9a9a9a" : hex, 16);
+  const rgb = `${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}`;
+  const half = tile / 2;
+  const tint = context.createRadialGradient(half, half, 0, half, half, half);
+  tint.addColorStop(0, `rgba(${rgb}, 0.08)`);
+  tint.addColorStop(0.6, `rgba(${rgb}, 0.18)`);
+  tint.addColorStop(0.9, `rgba(${rgb}, 0.55)`);
+  tint.addColorStop(1, `rgba(${rgb}, 0.75)`);
+  context.fillStyle = tint;
+  context.fillRect(0, 0, tile, tile);
+  return rgb;
 }
 
 export type MediaLoad = { cancel(): void; done: Promise<void> };
@@ -105,9 +240,12 @@ export function loadMediaTiles(
     const item = items[index]!;
     if (!context) return;
     if (item.kind === "text") {
-      drawText(context, item.text, style, tile);
+      drawText(context, item.text, item.hex, style, tile);
     } else if (item.kind === "emoji") {
       drawEmoji(context, item.glyph, tile);
+    } else if (item.kind === "mark") {
+      if (item.bubble) drawMarkBubble(context, item.path, item.hex, tile);
+      else drawMark(context, item.path, item.hex, tile);
     } else {
       const image = await decode(item.url);
       if (cancelled) return;

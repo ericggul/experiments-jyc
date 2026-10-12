@@ -1,4 +1,5 @@
-html[data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *) {
+html[data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *),
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *) {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -13,7 +14,9 @@ html[data-mobile-substitution-command="replace"] :where(*):not([data-substitutio
 }
 
 html[data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *)::before,
-html[data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *)::after {
+html[data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *)::after,
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *)::before,
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-ui], [data-substitution-command-ui] *)::after {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -21,15 +24,18 @@ html[data-mobile-substitution-command="replace"] :where(*):not([data-substitutio
   visibility: hidden !important;
 }
 
-html[data-mobile-substitution-command="replace"] :where(img, picture, svg, video, canvas, iframe, input, select, textarea):not([data-substitution-command-ui], [data-substitution-command-ui] *) {
+html[data-mobile-substitution-command="replace"] :where(img, picture, svg, video, canvas, iframe, input, select, textarea):not([data-substitution-command-ui], [data-substitution-command-ui] *),
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(img, picture, svg, video, canvas, iframe, input, select, textarea):not([data-substitution-command-ui], [data-substitution-command-ui] *) {
   opacity: 0 !important;
 }
 
-html[data-mobile-substitution-command="replace"] :where(input, textarea):not([data-substitution-command-ui] *)::placeholder {
+html[data-mobile-substitution-command="replace"] :where(input, textarea):not([data-substitution-command-ui] *)::placeholder,
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(input, textarea):not([data-substitution-command-ui] *)::placeholder {
   color: transparent !important;
 }
 
-html[data-mobile-substitution-command="replace"] body :where(*):not([data-substitution-command-overlay], [data-substitution-command-ui], [data-substitution-command-ui] *) {
+html[data-mobile-substitution-command="replace"] body :where(*):not([data-substitution-command-overlay], [data-substitution-command-ui], [data-substitution-command-ui] *),
+[data-substitution-command-scope][data-mobile-substitution-command="replace"] :where(*):not([data-substitution-command-overlay], [data-substitution-command-ui], [data-substitution-command-ui] *) {
   border-radius: 0 !important;
 }
 
@@ -39,6 +45,18 @@ html[data-mobile-substitution-command] canvas[data-substitution-command-overlay]
   z-index: 2147483000 !important;
   width: 100vw !important;
   height: 100vh !important;
+  opacity: 1 !important;
+  outline: none !important;
+  pointer-events: none !important;
+}
+
+/* A host page's phone (`/mobiles/2`) holds its own canvas, covering that phone only. */
+[data-substitution-command-scope][data-mobile-substitution-command] > canvas[data-substitution-command-overlay] {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  width: 100% !important;
+  height: 100% !important;
   opacity: 1 !important;
   outline: none !important;
   pointer-events: none !important;

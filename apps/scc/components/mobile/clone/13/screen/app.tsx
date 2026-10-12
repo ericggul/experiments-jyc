@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- A bounded visual prototype with directly sourced Unsplash photos. */
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { people, seedPosts, trends, type Person, type Post } from '../model/data';
 import { compact, fullTime, shortTime, ageMinutes } from './format';
 import { Icon, Verified, XLogo, type IconName } from './icons';
@@ -55,6 +55,8 @@ function Name({ user, big = false }: { user: Person; big?: boolean }) {
 }
 
 export default function XMobile() {
+  // Several phones can share one page (`/mobiles/2`), so the composer's submit button finds its own form.
+  const composeId = useId();
  const [view, setView] = useState<View>({ kind:'home' });
  const [history, setHistory] = useState<View[]>([]);
  const [feed, setFeed] = useState<FeedTab>('for-you');
@@ -559,13 +561,13 @@ export default function XMobile() {
    <header className={s.composerHead}>
     <button type="button" className={s.cancel} onClick={() => setComposer(null)}>Cancel</button>
     <button type="button" className={s.drafts} onClick={() => setToast({ text:LOCAL })}>Drafts</button>
-    <button type="submit" form="x-compose" className={`${s.pill} ${s.pillBlue}`} disabled={!draft.trim() || remaining < 0}>{composer?.parentId ? 'Reply' : 'Post'}</button>
+    <button type="submit" form={composeId} className={`${s.pill} ${s.pillBlue}`} disabled={!draft.trim() || remaining < 0}>{composer?.parentId ? 'Reply' : 'Post'}</button>
    </header>
    {parentPost && <div className={s.replyContext}>
     <div className={s.gutter}><Avatar user={person(parentPost.authorId)}/></div>
     <div><Name user={person(parentPost.authorId)}/> <span className={s.muted}>@{person(parentPost.authorId).handle} · {shortTime(parentPost.time)}</span><p className={s.text}>{parentPost.text}</p><p className={s.replyingTo}>Replying to <span>@{person(parentPost.authorId).handle}</span></p></div>
    </div>}
-   <form id="x-compose" className={s.composeForm} onSubmit={submitPost}>
+   <form id={composeId} className={s.composeForm} onSubmit={submitPost}>
     <Avatar user={me}/>
     <div className={s.composeBody}>
      <textarea ref={draftRef} aria-label={composer?.parentId ? 'Post your reply' : 'Post text'} placeholder={composer?.parentId ? 'Post your reply' : composer?.quoteId ? 'Add a comment' : 'What’s happening?'} value={draft} onChange={e => setDraft(e.target.value)}/>

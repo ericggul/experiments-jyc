@@ -1,7 +1,7 @@
 /* Instagram iOS, 2026. Geometry in px equals pt on a 390 pt iPhone; values measured from the US App Store frames
    (2.351 px/pt) and the igen.fr 2026 profile capture, see docs/experiments/sns/mobile/11.md. */
-.outer{--ink:#0c1014;--muted:#6a717b;--line:#e3e6eb;--field:#f4f5f7;--button:#eff1f4;--blue:#4a5df9;--sent:#424fff;--like:#ff3040;min-height:100dvh;background:#efefef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-.app{position:relative;width:min(100%,430px);height:100dvh;margin:auto;background:#fff;overflow:hidden}
+.outer{--ink:#0c1014;--muted:#6a717b;--line:#e3e6eb;--field:#f4f5f7;--button:#eff1f4;--blue:#4a5df9;--sent:#424fff;--like:#ff3040;min-height:var(--clone-viewport-height,100dvh);background:#efefef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+.app{position:relative;width:min(100%,430px);height:var(--clone-viewport-height,100dvh);margin:auto;background:#fff;overflow:hidden}
 .app *{box-sizing:border-box}
 .app button,.app input,.app textarea{font:inherit;color:inherit}
 .app button{border:0;background:none;cursor:pointer;padding:0}

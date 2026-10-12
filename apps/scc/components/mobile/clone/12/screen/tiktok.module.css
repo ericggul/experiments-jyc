@@ -1,4 +1,4 @@
-.app{--nav:calc(50px + env(safe-area-inset-bottom,0px));--red:#fe2c55;--cyan:#25f4ee;--ink:#161823;--muted:#8a8b91;--line:#ececed;--fill:#f1f1f2;position:relative;width:100%;max-width:480px;height:100dvh;min-height:540px;margin:0 auto;background:#fff;color:var(--ink);font-family:"TikTok Sans",-apple-system,BlinkMacSystemFont,"SF Pro Text",Helvetica,Arial,sans-serif;overflow:hidden;isolation:isolate;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+.app{--nav:calc(50px + env(safe-area-inset-bottom,0px));--red:#fe2c55;--cyan:#25f4ee;--ink:#161823;--muted:#8a8b91;--line:#ececed;--fill:#f1f1f2;position:relative;width:100%;max-width:480px;height:var(--clone-viewport-height,100dvh);min-height:540px;margin:0 auto;background:#fff;color:var(--ink);font-family:"TikTok Sans",-apple-system,BlinkMacSystemFont,"SF Pro Text",Helvetica,Arial,sans-serif;overflow:hidden;isolation:isolate;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 .app *{box-sizing:border-box}
 .app :where(button,input,textarea){font:inherit;color:inherit}
 .app :where(button){cursor:pointer}

@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { commandGroups, embedSource, presentations, readyMessage, settingMessage, type CommandSetting } from "@/components/mobile/transform/substitution/2/setting";
+import { useEffect, useRef, useState, type ComponentType, type CSSProperties } from "react";
+import Instagram from "@/components/mobile/clone/11";
+import TikTok from "@/components/mobile/clone/12";
+import X from "@/components/mobile/clone/13";
+import YouTube from "@/components/mobile/clone/14";
+import { CloneScale } from "@/components/mobile/clone/scale";
+import CommandRenderer from "@/components/mobile/transform/substitution/2/renderer";
+import { commandGroups, presentations, type CommandSetting } from "@/components/mobile/transform/substitution/2/setting";
 import styles from "./mobiles.module.css";
 
 /** Native size of each phone; the clones lay out against this viewport. */
@@ -9,16 +15,50 @@ const PHONE_WIDTH = 390;
 const PHONE_HEIGHT = 844;
 const GAP_RANGE = [0, 40] as const;
 const MARGIN_RANGE = [0, 60] as const;
-const ROW_OPTIONS = [1, 2, 3] as const;
+const ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 type Rows = (typeof ROW_OPTIONS)[number];
 
-// Each phone is the sns/mobile clone inside substitution/2's embed frame; with the filter on 원본 it is the clone alone.
-const phones = [
-  { id: "instagram", src: embedSource("11"), title: "Instagram" },
-  { id: "tiktok", src: embedSource("12"), title: "TikTok" },
-  { id: "x", src: embedSource("13"), title: "X" },
-  { id: "youtube", src: embedSource("14"), title: "YouTube" },
-] as const;
+// Each phone is a mobile clone rendered in this page, with substitution/2's filter scoped to it; on 원본 it is the clone alone.
+const phones: { id: string; clone: string; Screen: ComponentType; title: string }[] = [
+  { id: "instagram", clone: "11", Screen: Instagram, title: "Instagram" },
+  { id: "tiktok", clone: "12", Screen: TikTok, title: "TikTok" },
+  { id: "x", clone: "13", Screen: X, title: "X" },
+  { id: "youtube", clone: "14", Screen: YouTube, title: "YouTube" },
+];
+
+/** One clone at its native 390 px phone width, scaled into its cell; its viewport units resolve to the phone, not the window. */
+function Phone({ clone, Screen, title, filter, scale, height, left, top }: {
+  clone: string;
+  Screen: ComponentType;
+  title: string;
+  filter: CommandSetting;
+  scale: number;
+  height: number;
+  left: number;
+  top: number;
+}) {
+  // The filter mounts once the phone element exists; it reads and draws inside that element only.
+  const [frame, setFrame] = useState<HTMLDivElement | null>(null);
+  const style = {
+    left,
+    top,
+    width: PHONE_WIDTH,
+    height,
+    transform: `scale(${scale})`,
+    "--clone-viewport-width": `${PHONE_WIDTH}px`,
+    "--clone-viewport-height": `${height}px`,
+  } as CSSProperties;
+  return (
+    <div ref={setFrame} className={styles.phone} style={style} role="group" aria-label={title} data-substitution-command-scope>
+      <CloneScale value={scale}>
+        <Screen />
+      </CloneScale>
+      {frame && filter.presentation !== "original" && (
+        <CommandRenderer clone={clone} group={filter.group} presentation={filter.presentation} scope={frame} />
+      )}
+    </div>
+  );
+}
 
 /** One row keeps the four phones; more rows fit as many phone-shaped columns as the screen holds. */
 function gridFor(rows: Rows, width: number, height: number, gap: number) {
@@ -32,28 +72,10 @@ export default function MobilesTwo() {
   const field = useRef<HTMLElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [rows, setRows] = useState<Rows>(1);
-  const [gap, setGap] = useState(4);
+  const [gap, setGap] = useState(0);
   const [margin, setMargin] = useState(0);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<CommandSetting>({ presentation: "original", group: "discipline" });
-  const filterRef = useRef(filter);
-
-  // substitution/2's filter, sent to every phone; a phone that loads later asks for it.
-  useEffect(() => {
-    filterRef.current = filter;
-    for (const frame of field.current?.querySelectorAll("iframe") ?? []) {
-      frame.contentWindow?.postMessage({ type: settingMessage, ...filter }, window.location.origin);
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin || event.data?.type !== readyMessage || !event.source) return;
-      (event.source as Window).postMessage({ type: settingMessage, ...filterRef.current }, window.location.origin);
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, []);
 
   useEffect(() => {
     const element = field.current;
@@ -75,26 +97,24 @@ export default function MobilesTwo() {
 
   return (
     <main ref={field} className={styles.field}>
-      {size.width > 0 && slots.map(({ slot, src, title }) => (
-        <iframe
+      {size.width > 0 && slots.map(({ slot, clone, Screen, title }) => (
+        <Phone
           key={`slot-${slot}`}
-          src={src}
+          clone={clone}
+          Screen={Screen}
           title={title}
-          className={styles.phone}
-          style={{
-            left: margin + (slot % grid.columns) * (cellWidth + gap),
-            top: margin + Math.floor(slot / grid.columns) * (cellHeight + gap),
-            width: PHONE_WIDTH,
-            height: cellHeight / scale,
-            transform: `scale(${scale})`,
-          }}
+          filter={filter}
+          scale={scale}
+          height={cellHeight / scale}
+          left={margin + (slot % grid.columns) * (cellWidth + gap)}
+          top={margin + Math.floor(slot / grid.columns) * (cellHeight + gap)}
         />
       ))}
       <div className={styles.control}>
         {open && (
           <div id="mobiles-two-layout" className={styles.panel} role="group" aria-label="레이아웃과 필터 옵션">
             <p className={styles.heading}>레이아웃</p>
-            <div className={styles.views}>
+            <div className={styles.layouts}>
               {ROW_OPTIONS.map((option) => (
                 <button key={option} type="button" aria-pressed={rows === option} onClick={() => setRows(option)}>
                   {option} × {gridFor(option, width, height, gap).columns}

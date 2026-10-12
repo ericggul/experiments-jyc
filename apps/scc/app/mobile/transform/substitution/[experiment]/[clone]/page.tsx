@@ -14,17 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ experimen
   return { title: `mobile / substitution / ${experiment} / ${clone}` };
 }
 
-export default async function SubstitutionClonePage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ experiment: string; clone: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+export default async function SubstitutionClonePage({ params }: { params: Promise<{ experiment: string; clone: string }> }) {
   const { experiment, clone } = await params;
   const Clone = clones[clone];
   const Experiment = substitutionExperiments[experiment];
   if (!Clone || !Experiment) notFound();
-  const embedded = (await searchParams).embed !== undefined;
-  return <><Clone /><Experiment clone={clone} embedded={embedded} /></>;
+  return <><Clone /><Experiment clone={clone} /></>;
 }
