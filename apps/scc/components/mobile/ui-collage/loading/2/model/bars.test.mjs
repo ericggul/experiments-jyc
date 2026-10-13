@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createLoads, resizeLoads, seekAlong, rowTop, rowsFor, segmentHitsRect, stepLoads } from "./bars.ts";
+import { createLoads, followLoads, followTime, resizeLoads, seekAlong, rowTop, rowsFor, segmentHitsRect, stepLoads } from "./bars.ts";
 
 const phone = { left: 16, top: 16, right: 374, bottom: 828 };
 
@@ -77,4 +77,30 @@ test("resizing keeps rows by index", () => {
   const resized = resizeLoads(loads, { ...phone, bottom: 700 });
   assert.ok(resized.rows.count < loads.rows.count);
   for (let row = 0; row < resized.rows.count; row += 1) assert.equal(resized.progress[row], loads.progress[row]);
+});
+
+test("the drawn bar glides to a seek and settles there without overshoot", () => {
+  const loads = createLoads(phone, 24, 11);
+  stepLoads(loads, 60);
+  for (let frame = 0; frame < 120; frame += 1) followLoads(loads, 1 / 60);
+  assert.equal(loads.shown[4], 1);
+  const { rows } = loads;
+  const middle = rowTop(rows, 4) + rows.thickness / 2;
+  seekAlong(loads, { x: rows.left + 0.3 * (rows.right - rows.left), y: middle }, { x: rows.left + 0.3 * (rows.right - rows.left), y: middle });
+  assert.equal(loads.shown[4], 1);
+  let previous = 1;
+  for (let frame = 0; frame < 60 * followTime * 4; frame += 1) {
+    followLoads(loads, 1 / 60);
+    assert.ok(loads.shown[4] <= previous + 1e-6 && loads.shown[4] >= loads.progress[4] - 1e-6);
+    previous = loads.shown[4];
+  }
+  assert.ok(Math.abs(loads.shown[4] - loads.progress[4]) < 0.01);
+  // The same distance takes the same time at 30 fps.
+  const other = createLoads(phone, 24, 11);
+  other.progress[0] = 1;
+  for (let frame = 0; frame < 6; frame += 1) followLoads(other, followTime / 6);
+  const at60 = createLoads(phone, 24, 11);
+  at60.progress[0] = 1;
+  for (let frame = 0; frame < 12; frame += 1) followLoads(at60, followTime / 12);
+  assert.ok(Math.abs(other.shown[0] - at60.shown[0]) < 0.03);
 });

@@ -6,6 +6,7 @@
 // re-fetches a photo it already has.
 
 import { KEYWORD_FONTS, type KeywordStyle, type MediaItem } from "./catalogue";
+import type { SymbolLayer } from "./tech-symbols";
 
 const MAX_CONCURRENT_DECODES = 4;
 
@@ -194,6 +195,46 @@ function drawMarkBubble(context: CanvasRenderingContext2D, path: string, hex: st
   context.restore();
 }
 
+/**
+ * 기술-상징: a technology's mark in 기술-버블's treatment. The layers are drawn in order into a
+ * mask (fills even-odd, strokes round-capped, cuts erase), which is then coloured as the marks
+ * are, so shapes that overlap never double the colour.
+ */
+let symbolMask: HTMLCanvasElement | null = null;
+function drawSymbolBubble(context: CanvasRenderingContext2D, layers: readonly SymbolLayer[], hex: string, tile: number) {
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, tile, tile);
+  const rgb = bubbleTint(context, hex, tile);
+  symbolMask ??= document.createElement("canvas");
+  if (symbolMask.width !== tile) symbolMask.width = symbolMask.height = tile;
+  const mask = symbolMask.getContext("2d");
+  if (!mask) return;
+  const size = tile * 0.5;
+  mask.clearRect(0, 0, tile, tile);
+  mask.save();
+  mask.translate((tile - size) / 2, (tile - size) / 2);
+  mask.scale(size / 24, size / 24);
+  mask.lineCap = "round";
+  mask.lineJoin = "round";
+  mask.fillStyle = mask.strokeStyle = "#ffffff";
+  for (const layer of layers) {
+    const path = new Path2D(layer.d);
+    mask.globalCompositeOperation = layer.mode === "cut" || layer.mode === "cutStroke" ? "destination-out" : "source-over";
+    mask.lineWidth = layer.width ?? 1;
+    if (layer.mode === "fill" || layer.mode === "cut") mask.fill(path, "evenodd");
+    else mask.stroke(path);
+  }
+  mask.restore();
+  mask.globalCompositeOperation = "source-in";
+  mask.fillStyle = `rgba(${rgb}, 0.9)`;
+  mask.fillRect(0, 0, tile, tile);
+  mask.globalCompositeOperation = "source-atop";
+  mask.fillStyle = "rgba(255, 255, 255, 0.35)";
+  mask.fillRect(0, 0, tile, tile);
+  mask.globalCompositeOperation = "source-over";
+  context.drawImage(symbolMask, 0, 0);
+}
+
 /** 기술-버블's tint over a black tile: the brand colour gathering towards the rim. Returns the colour as "r, g, b". */
 function bubbleTint(context: CanvasRenderingContext2D, hex: string, tile: number) {
   const dark = brandLuminance(hex) < 0.03;
@@ -246,6 +287,8 @@ export function loadMediaTiles(
     } else if (item.kind === "mark") {
       if (item.bubble) drawMarkBubble(context, item.path, item.hex, tile);
       else drawMark(context, item.path, item.hex, tile);
+    } else if (item.kind === "symbol") {
+      drawSymbolBubble(context, item.layers, item.hex, tile);
     } else {
       const image = await decode(item.url);
       if (cancelled) return;

@@ -47,6 +47,7 @@ import {
 import { LINK_VISIBILITY, viewTargets, VIEWS, type ViewId } from "./views";
 import { FISH_DEFAULTS, FISH_PALETTES, GoldfishSchool, MAX_FISH, type FishPaletteId, type FishParameters } from "./goldfish";
 import type { GoldfishScene } from "./goldfish-scene";
+import { SOUND_DEFAULTS, SOUNDSCAPES, TouchSound, type SoundParameters } from "./sound";
 
 /** Share of the field's area that all pages together cover; area = displayed rank × this. 0.4 (user, 2026-10-12; /2 keeps 0.3). */
 const AREA_BUDGET = 0.4;
@@ -94,6 +95,12 @@ const DEFAULT_FISH_PALETTE: FishPaletteId = "instagram";
  * 항상 by default since 2026-10-12 (user); 닿을 때만 was the default before.
  */
 const DEFAULT_ON_TOUCH = false;
+
+const SOUND_CONTROLS: readonly { key: Exclude<keyof SoundParameters, "scape">; label: string }[] = [
+  { key: "volume", label: "음량" },
+  { key: "space", label: "공간 (잔향 · 메아리)" },
+  { key: "grain", label: "부서짐 (끊기는 알갱이 · 되풀이되는 고함)" },
+];
 /** Two echo chambers from the start (user, 2026-10-11); bubble/2 starts with one web. */
 const DEFAULT_GROUPS = 2;
 
@@ -294,7 +301,7 @@ export default function RankedWebIteration() {
   /** A requested page count; the frame loop starts the web over with it. */
   const repopulateRef = useRef<number | null>(null);
   const [view, setView] = useState<ViewId>("network");
-  const [panel, setPanel] = useState<"network" | "visual" | "fish" | "media" | null>(null);
+  const [panel, setPanel] = useState<"network" | "visual" | "fish" | "media" | "sound" | null>(null);
   const [surface, setSurface] = useState<SurfaceId>(DEFAULT_SURFACE);
   const [keywordStyle, setKeywordStyle] = useState<KeywordStyle>(DEFAULT_KEYWORD_STYLE);
   const [mapping, setMapping] = useState<number>(DEFAULT_MAPPING);
@@ -321,6 +328,11 @@ export default function RankedWebIteration() {
   const [influence, setInfluence] = useState(DEFAULT_INFLUENCE);
   const influenceRef = useRef(DEFAULT_INFLUENCE);
   const fishCanvasRef = useRef<HTMLCanvasElement>(null);
+  /** 소리: off until the panel's button starts it (the browser needs a gesture). */
+  const [soundOn, setSoundOn] = useState(false);
+  const [sound, setSound] = useState<SoundParameters>(SOUND_DEFAULTS);
+  const soundRef = useRef<TouchSound | null>(null);
+  const soundOnRef = useRef(false);
   const [visual, setVisual] = useState<Visual>(VISUAL_DEFAULTS);
   const visualRef = useRef<Visual>(VISUAL_DEFAULTS);
   const rendererRef = useRef<FoamRenderer | null>(null);
@@ -338,6 +350,34 @@ export default function RankedWebIteration() {
   useEffect(() => {
     applySurfaceRef.current?.(surface, keywordStyle);
   }, [surface, keywordStyle]);
+  const soundParametersRef = useRef<SoundParameters>(SOUND_DEFAULTS);
+  useEffect(() => {
+    soundParametersRef.current = sound;
+    soundRef.current?.setParameters(sound);
+  }, [sound]);
+  useEffect(() => {
+    // A remount while 켬 (a hot reload) rebuilds the closed engine.
+    if (soundOnRef.current && !soundRef.current) {
+      soundRef.current = new TouchSound();
+      soundRef.current.setParameters(soundParametersRef.current);
+      void soundRef.current.resume();
+    }
+    return () => {
+      soundRef.current?.dispose();
+      soundRef.current = null;
+    };
+  }, []);
+  const toggleSound = useCallback((on: boolean) => {
+    setSoundOn(on);
+    soundOnRef.current = on;
+    if (on) {
+      soundRef.current ??= new TouchSound();
+      soundRef.current.setParameters(sound);
+      void soundRef.current.resume();
+    } else {
+      void soundRef.current?.suspend();
+    }
+  }, [sound]);
   useEffect(() => {
     fishCountRef.current = fishCount;
     fishRef.current = fish;
@@ -419,6 +459,8 @@ export default function RankedWebIteration() {
     let disposed = false;
     const attention = new Float64Array(MAX_PAGES);
     const revealField = new Float32Array(MAX_PAGES);
+    // Which pages a fish touched last frame: a page newly touched is a note (소리).
+    const touchedBefore = new Uint8Array(MAX_PAGES);
     const fishCanvas = fishCanvasRef.current;
     // Media: which image each page shows, and the images themselves.
     const mediaField = createMediaField(MAX_PAGES);
@@ -709,6 +751,24 @@ export default function RankedWebIteration() {
           const target = attention[page]! > 0 ? 1 : 0;
           const current = revealField[page]!;
           revealField[page] = current < target ? Math.min(target, current + step) : Math.max(target, current - step);
+        }
+        // 소리: the same onset as the reveal above — a page a fish has just begun to touch.
+        const player = soundOnRef.current ? soundRef.current : null;
+        let largest = 0;
+        if (player) for (let page = 0; page < drawnPages; page += 1) largest = Math.max(largest, shown[page]!);
+        let touchedCount = 0;
+        for (let page = 0; page < drawnPages; page += 1) {
+          const touched = attention[page]! > 0 ? 1 : 0;
+          touchedCount += touched;
+          if (player && touched && !touchedBefore[page]) {
+            player.touch({
+              page,
+              rank: largest > 0 ? shown[page]! / largest : 0,
+              x: points[page * 2]! / field.width,
+              y: points[page * 2 + 1]! / field.height,
+            });
+          }
+          touchedBefore[page] = touched;
         }
         const strength = influenceRef.current * ATTENTION_GAIN / Math.max(FISH_AUDIENCE, school.fish.length);
         if (strength > 0) for (let page = 0; page < drawnPages; page += 1) attend(web, page, attention[page]! * strength);
@@ -1435,6 +1495,50 @@ export default function RankedWebIteration() {
             </button>
           </div>
         )}
+        {panel === "sound" && (
+          <div id="bubble-three-sound" className={styles.panel} role="group" aria-label="소리">
+            <p className={styles.heading}>소리</p>
+            <p className={styles.note}>금붕어가 버블에 닿는 순간마다 · 페이지마다 제 음, 순위가 높을수록 낮고 무겁게</p>
+            <div className={styles.chips} role="group" aria-label="소리 켜기">
+              <button type="button" aria-pressed={!soundOn} onClick={() => toggleSound(false)}>
+                끔
+              </button>
+              <button type="button" aria-pressed={soundOn} onClick={() => toggleSound(true)}>
+                켬
+              </button>
+            </div>
+            <p className={styles.note}>소리결</p>
+            <div className={styles.chips} role="group" aria-label="소리결">
+              {SOUNDSCAPES.map((option) => (
+                <button key={option.id} type="button" aria-pressed={sound.scape === option.id} onClick={() => setSound((current) => ({ ...current, scape: option.id }))}>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {SOUND_CONTROLS.map((control) => (
+              <label key={control.key} className={styles.row}>
+                <span>
+                  {control.label} <output>{sound[control.key].toFixed(2)}</output>
+                </span>
+                <input
+                  aria-label={control.label}
+                  max="1"
+                  min="0"
+                  step="0.01"
+                  type="range"
+                  value={sound[control.key]}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    setSound((current) => ({ ...current, [control.key]: value }));
+                  }}
+                />
+              </label>
+            ))}
+            <button type="button" className={styles.reset} onClick={() => setSound(SOUND_DEFAULTS)}>
+              기본값으로
+            </button>
+          </div>
+        )}
         <div className={styles.triggers}>
           <button
             type="button"
@@ -1491,6 +1595,19 @@ export default function RankedWebIteration() {
               <rect x="3" y="4" width="14" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
               <path d="M3.5 14l4-4.5 3 3 2-2 4 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
               <circle cx="13" cy="7.5" r="1.2" fill="currentColor" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={styles.trigger}
+            aria-label="소리 옵션"
+            aria-expanded={panel === "sound"}
+            aria-controls="bubble-three-sound"
+            onClick={() => setPanel((current) => (current === "sound" ? null : "sound"))}
+          >
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+              <path d="M3.5 8h3l4-3.5v11l-4-3.5h-3z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              {soundOn && <path d="M13.5 7.5a3.5 3.5 0 0 1 0 5M15.5 5.5a6.3 6.3 0 0 1 0 9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />}
             </svg>
           </button>
         </div>

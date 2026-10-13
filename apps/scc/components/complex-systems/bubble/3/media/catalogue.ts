@@ -11,8 +11,9 @@ import catSources from "./sources/cat-sources.json";
 import politicianSources from "./sources/politician-sources.json";
 import { techPowerFaces } from "./sources/tech-power-faces.generated";
 import { TECH_MARKS } from "./tech-marks";
+import { TECH_SYMBOLS, type SymbolLayer } from "./tech-symbols";
 
-export type SurfaceId = "none" | "cat" | "politician" | "tech" | "techBubble" | "face" | "keyword" | "fullname" | "fomo" | "emoji" | "mix";
+export type SurfaceId = "none" | "cat" | "politician" | "tech" | "techBubble" | "techSymbol" | "face" | "keyword" | "fullname" | "fomo" | "emoji" | "mix";
 
 /** One layer of the media texture: a whole image, a tile of one, or a word. */
 export type MediaItem =
@@ -20,7 +21,8 @@ export type MediaItem =
   | { kind: "tile"; id: string; url: string; column: number; row: number; columns: number; rows: number }
   | { kind: "text"; id: string; text: string; hex?: string }
   | { kind: "emoji"; id: string; glyph: string }
-  | { kind: "mark"; id: string; path: string; hex: string; bubble?: boolean };
+  | { kind: "mark"; id: string; path: string; hex: string; bubble?: boolean }
+  | { kind: "symbol"; id: string; layers: readonly SymbolLayer[]; hex: string };
 
 export const SURFACES: readonly { id: SurfaceId; label: string }[] = [
   { id: "none", label: "없음" },
@@ -28,6 +30,7 @@ export const SURFACES: readonly { id: SurfaceId; label: string }[] = [
   { id: "politician", label: "정치인" },
   { id: "tech", label: "기술" },
   { id: "techBubble", label: "기술-버블" },
+  { id: "techSymbol", label: "기술-상징" },
   { id: "face", label: "테크 얼굴" },
   { id: "keyword", label: "키워드" },
   { id: "fullname", label: "풀네임" },
@@ -152,6 +155,10 @@ const sets: Record<Exclude<SurfaceId, "none" | "mix">, () => MediaItem[]> = {
   // brand towards its rim, the mark floating inside, all under the film; not in 섞음.
   techBubble: () =>
     TECH_MARKS.map((mark) => ({ kind: "mark", id: `tech-bubble-${mark.keyword}`, path: mark.path, hex: mark.hex, bubble: true })),
+  // 기술-상징 (user, 2026-10-12): the technologies themselves rather than companies — each
+  // as the mechanism that defines it, in 기술-버블's treatment; 기술-버블 stays as it was.
+  techSymbol: () =>
+    TECH_SYMBOLS.map((symbol, index) => ({ kind: "symbol", id: `tech-symbol-${index}`, layers: symbol.layers, hex: symbol.hex })),
   face: () => techPowerFaces.map((face) => ({ kind: "image", id: `face-${face.id}`, url: face.image })),
   keyword: () => TECH_KEYWORDS.map((keyword) => ({ kind: "text", id: `keyword-${keyword}`, text: keyword })),
   fullname: () => TECH_KEYWORD_NAMES.map((name, index) => ({ kind: "text", id: `fullname-${TECH_KEYWORDS[index]}`, text: name })),

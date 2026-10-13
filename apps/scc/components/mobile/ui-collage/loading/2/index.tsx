@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createLoads, resizeLoads, seekAlong, stepLoads, type Bounds, type Loads, type Point } from "./model/bars";
+import { createLoads, followLoads, resizeLoads, seekAlong, stepLoads, type Bounds, type Loads, type Point } from "./model/bars";
 import { createPainter, type Choice } from "./screen/painter";
 import styles from "./screen.module.css";
 
@@ -64,7 +64,7 @@ export default function MobileUiCollageLoadingTwo() {
     let time = 0;
 
     const draw = () => {
-      if (loads) painter.draw(loads.progress, time);
+      if (loads) painter.draw(loads.shown, time);
     };
 
     const tick = (now: number) => {
@@ -74,9 +74,10 @@ export default function MobileUiCollageLoadingTwo() {
       last = now;
       time += seconds;
       const loading = stepLoads(loads, seconds);
+      const moving = followLoads(loads, seconds);
       draw();
-      // Once every bar holds at 100% the stack is still (stripes and sweeps stop with it) until a finger restarts one.
-      if (loading) frame = window.requestAnimationFrame(tick);
+      // Once every bar holds at 100% and has caught up, the stack is still (stripes and sweeps stop with it) until a finger moves one.
+      if (loading || moving) frame = window.requestAnimationFrame(tick);
       else last = 0;
     };
 

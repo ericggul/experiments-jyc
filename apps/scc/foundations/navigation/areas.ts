@@ -71,6 +71,7 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "mobile/ui-collage",
   "mobile/ui-collage/loading",
   "mobile/ui-collage/sliders",
+  "mobile/ui-collage/volume",
   "mobile/gaze-tracking/2",
   "mobile/transform/pixelate",
   "mobile/transform/substitution",

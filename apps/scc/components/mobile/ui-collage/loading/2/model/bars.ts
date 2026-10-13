@@ -18,8 +18,12 @@ export type Rows = {
 
 export type Loads = {
   rows: Rows;
-  /** 0–1 per row. */
+  /** 0–1 per row: the load itself. A seek sets it at once. */
   progress: Float32Array;
+  /** 0–1 per row: what is drawn, a critically damped spring following `progress`. */
+  shown: Float32Array;
+  /** Per-second velocity of `shown`. */
+  velocity: Float32Array;
   /** Progress per second for the current burst. */
   rate: Float32Array;
   /** Seconds left in the current burst. */
@@ -82,6 +86,8 @@ export function createLoads(bounds: Bounds, thickness: number, seed = 1): Loads 
   const loads: Loads = {
     rows,
     progress: new Float32Array(rows.count),
+    shown: new Float32Array(rows.count),
+    velocity: new Float32Array(rows.count),
     rate: new Float32Array(rows.count),
     remaining: new Float32Array(rows.count),
     duration: new Float32Array(rows.count),
@@ -96,6 +102,8 @@ export function resizeLoads(previous: Loads, bounds: Bounds): Loads {
   const next = createLoads(bounds, previous.rows.thickness, Math.floor(previous.random() * 2 ** 32));
   const shared = Math.min(next.rows.count, previous.rows.count);
   next.progress.set(previous.progress.subarray(0, shared));
+  next.shown.set(previous.shown.subarray(0, shared));
+  next.velocity.set(previous.velocity.subarray(0, shared));
   next.rate.set(previous.rate.subarray(0, shared));
   next.remaining.set(previous.remaining.subarray(0, shared));
   next.duration.set(previous.duration.subarray(0, shared));
@@ -118,6 +126,36 @@ export function stepLoads(loads: Loads, seconds: number): boolean {
     if (loads.progress[row]! < 1) loading = true;
   }
   return loading;
+}
+
+/** Seconds the drawn bar takes to catch up with a seek (the spring's smoothing time). */
+export const followTime = 0.06;
+
+/**
+ * Moves each drawn value toward its load with a critically damped spring (Game Programming Gems 4's
+ * SmoothDamp): a seek glides there and settles without overshoot, and is frame-rate independent.
+ * Returns whether any drawn value is still moving.
+ */
+export function followLoads(loads: Loads, seconds: number): boolean {
+  const omega = 2 / followTime;
+  const x = omega * seconds;
+  const decay = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+  let moving = false;
+  for (let row = 0; row < loads.shown.length; row += 1) {
+    const target = loads.progress[row]!;
+    const change = loads.shown[row]! - target;
+    const velocity = loads.velocity[row]!;
+    if (Math.abs(change) < 1e-4 && Math.abs(velocity) < 1e-3) {
+      loads.shown[row] = target;
+      loads.velocity[row] = 0;
+      continue;
+    }
+    const pull = (velocity + omega * change) * seconds;
+    loads.velocity[row] = (velocity - omega * pull) * decay;
+    loads.shown[row] = Math.max(0, Math.min(1, target + (change + pull) * decay));
+    moving = true;
+  }
+  return moving;
 }
 
 /** Liang–Barsky: does the segment from → to touch the rectangle? A zero-length segment is a point test. */
