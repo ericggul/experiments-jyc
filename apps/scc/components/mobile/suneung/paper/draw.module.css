@@ -1,0 +1,25 @@
+.segment {
+  position: absolute;
+  height: 0;
+  border-top-style: solid;
+  border-top-color: #000;
+  transform-origin: 0 0;
+}
+
+.ellipse {
+  position: absolute;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #000;
+  border-radius: 50%;
+}
+
+.area {
+  position: absolute;
+}
+
+.label {
+  position: absolute;
+  line-height: 0;
+  white-space: pre;
+}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createRankedWeb, DEFAULT_PARAMETERS, MAX_PAGES, stepRankedWeb } from "../model.ts";
+import { createRankedWeb, DEFAULT_PARAMETERS, MAX_PAGES, stepRankedWeb } from "../web/model.ts";
 import { assignPage, beginChange, bornLayer, createMediaField, follow, MEDIA_DEFAULTS, otherLayer, resetField, stepMedia } from "./model.ts";
 
 function xorshift(seed: number) {

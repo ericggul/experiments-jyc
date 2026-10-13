@@ -1,0 +1,24 @@
+.root{position:relative;width:100%;height:100%;overflow:hidden;background:#fff;color:#000;font-family:var(--suneung-gothic),sans-serif;font-weight:400}
+.root *{box-sizing:border-box}
+.win{position:absolute;inset:.4px;border:1px solid #000}
+.strip{position:absolute;left:.5px;top:.5px;right:.5px;height:14.5px;background:#d8d8d8;border-bottom:1px solid #000}
+.c{position:absolute;transform:translate(-50%,-50%);white-space:pre;text-align:center;line-height:1}
+.l{position:absolute;transform:translateY(-50%);white-space:pre;line-height:1}
+.art{position:absolute;display:block;user-select:none}
+.btab{position:absolute;left:16px;top:3px;width:84.5px;height:12px;background:#fff;border:1px solid #000;border-bottom:0;border-radius:2px 2px 0 0}
+.icon{position:absolute;left:7px;top:6.5px;width:5px;height:4px;border:.8px solid #000;border-top-width:1.4px}
+.maxbox{position:absolute;left:266.5px;top:6px;width:4.5px;height:4.5px;border:.7px solid #000}
+.min{position:absolute;left:253px;top:8px;width:4.5px;height:.7px;background:#000}
+.nav{position:absolute;border:1px solid #000;border-bottom:0;border-radius:3px 3px 0 0;background:#fff;font-size:6px;display:flex;align-items:center;justify-content:center;line-height:1;white-space:pre}
+.navOn{font-weight:400;z-index:2}
+.panel{position:absolute;left:5.5px;top:43px;width:281.5px;height:139px;background:#c6c6c6;border:1px solid #000;border-radius:3px}
+.frameOut{position:absolute;left:35px;top:45.7px;width:249.5px;height:134.5px;background:#fff;border:1px solid #000;border-radius:3px;z-index:3}
+.frameIn{position:absolute;inset:1.4px;border:1px solid #000;border-radius:2px}
+.side{position:absolute;left:10.5px;width:25.5px;border:1px solid #000;border-radius:3px 0 0 3px;background:#fff;font-size:7.4px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.28;white-space:pre}
+.sideOn{z-index:4;width:27px;border-width:1.4px;font-size:7.8px}
+.box{position:absolute;border:1px solid #000;background:#fff;z-index:4}
+.head{position:absolute;left:0;top:0;right:0;height:14.5px;background:#dcdcdc;border-bottom:1px solid #000;font-size:8px;display:flex;align-items:center;justify-content:center;line-height:1}
+.over{z-index:5}
+.oval{position:absolute;left:168px;top:89.5px;width:27px;height:45.5px;border:1px solid #000;border-radius:50%;background:#e4e4e4;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7.4px;line-height:1.25;white-space:pre;z-index:5}
+.btn{position:absolute;background:#cdcdcd;border:1px solid #000;border-radius:3px;box-shadow:.8px .8px 0 #666;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;white-space:pre;z-index:5}
+.title{z-index:5}

@@ -12,6 +12,7 @@ export const sccAreas = [
   { key: "dimensions", href: "/dimensions" },
   { key: "desktop-collage", href: "/desktop-collage" },
   { key: "advertisement", href: "/advertisement" },
+  { key: "ar", href: "/ar" },
 ] as const;
 
 export type SccArea = (typeof sccAreas)[number]["key"];
@@ -74,10 +75,13 @@ export const sccFamilyIndexes: ReadonlySet<string> = new Set([
   "mobile/ui-collage/volume",
   "mobile/gaze-tracking/2",
   "mobile/transform/pixelate",
+  "mobile/transform/stretch",
   "mobile/transform/substitution",
   "mobile/transform/substitution/1",
   "mobile/transform/substitution/2",
+  "mobile/transform/substitution/3",
   "mobile/transform/language",
   "mobile/transform/language/1",
   "mobile/transform/decomposition",
+  "ar/chemical-decomposition",
 ]);

@@ -1,0 +1,35 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1.5px solid #333;
+  border-radius: 14px;
+  background: #e3e3e3;
+  font-family: var(--suneung-gothic), sans-serif;
+  color: #111;
+}
+.speaker { position: absolute; left: 127.5px; top: 6.5px; width: 34px; height: 4px; border-radius: 2px; background: #888; border: 0.6px solid #333; box-sizing: border-box; }
+.camera { position: absolute; left: 170px; top: 6.5px; width: 5.5px; height: 5.5px; border-radius: 50%; background: #666; border: 0.6px solid #333; box-sizing: border-box; }
+.screen { position: absolute; left: 4.5px; top: 14.5px; width: 281px; height: 333.5px; box-sizing: border-box; border: 1px solid #111; background: #fff; }
+.bar { position: absolute; left: 5.5px; top: 15.5px; width: 279px; height: 19px; background: #959595; }
+.barTitle { position: absolute; left: 39.5px; top: 0; line-height: 19px; font-size: 10.5px; font-weight: 700; color: #111; white-space: pre; }
+.back { position: absolute; left: 20px; top: 6.5px; width: 6px; height: 6px; border-left: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(45deg); }
+.lens { position: absolute; left: 236px; top: 4.5px; width: 7px; height: 7px; border: 1px solid #fff; border-radius: 50%; }
+.handle { position: absolute; left: 243px; top: 12.5px; width: 4px; height: 1px; background: #fff; transform: rotate(45deg); }
+.menu { position: absolute; left: 263.5px; width: 9px; height: 1px; background: #fff; }
+.m1 { top: 5px; }
+.m2 { top: 9.5px; }
+.m3 { top: 14px; }
+.panel { position: absolute; left: 9.5px; top: 51.5px; width: 273px; height: 294.5px; box-sizing: border-box; border: 1px solid #111; border-radius: 12px 12px 0 0; background: #fff; overflow: hidden; }
+.panelHead { position: absolute; left: 0; top: 0; width: 100%; height: 21px; background: #dcdcdc; border-bottom: 1px solid #111; box-sizing: border-box; }
+.line { position: absolute; white-space: pre; transform: translateY(-50%); line-height: 1; }
+.lib { font-size: 10px; font-weight: 700; }
+.head { font-size: 10.5px; font-weight: 700; }
+.note { font-size: 8px; }
+.title { font-size: 12px; font-weight: 700; transform: translate(-50%, -50%); }
+.h { font-size: 10.5px; font-weight: 500; }
+.body { font-size: 9.5px; }
+.sub { font-size: 8px; }
+.button { position: absolute; left: 40.5px; top: 320.5px; width: 211.5px; height: 20px; box-sizing: border-box; border: 1px solid #333; border-radius: 6px; background: #dcdcdc; display: flex; align-items: center; justify-content: center; font-size: 9.5px; white-space: pre; }

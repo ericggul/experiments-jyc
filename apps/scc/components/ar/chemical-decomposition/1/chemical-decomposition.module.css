@@ -1,0 +1,209 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.video,
+.field {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.video {
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.video[data-view="decomposed"] { opacity: 0; }
+
+/* Dims the camera under white lettering; a CSS filter on live video costs iOS a GPU pass per frame. */
+.dim {
+  position: absolute;
+  inset: 0;
+  background: #00000080;
+  pointer-events: none;
+}
+
+.field {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.prompt,
+.status {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.prompt {
+  top: 50%;
+  width: min(320px, calc(100vw - 32px));
+  transform: translate(-50%, -50%);
+}
+
+.prompt p {
+  margin: 0 0 18px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.prompt button {
+  min-height: 48px;
+  padding: 10px 22px;
+  border: 1px solid currentColor;
+  border-radius: 0;
+  background: #000;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.prompt button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.status {
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* What the tapped region is made of. */
+.reading {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 10;
+  width: min(250px, calc(100vw - 32px - 50px));
+  padding: 10px 12px 12px;
+  border-radius: 13px;
+  background: #fff;
+  color: #171717;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.reading h2 {
+  margin: 0 0 8px;
+  font: 600 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.reading h2 span {
+  font-weight: 400;
+  opacity: 0.62;
+}
+
+.reading ol {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reading li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.reading li span:last-child {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.62;
+}
+
+.reading sub,
+.reading sup {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
+/* road-signs/direction/4's bottom-right option control, as in bubble/3. */
+.control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  color: #171717;
+  font: 13px Arial, Helvetica, sans-serif;
+}
+
+.control * { box-sizing: border-box; }
+.control, .control * { -webkit-text-fill-color: currentColor !important; }
+
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #171717;
+  color: #fff;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.trigger[aria-expanded="true"] {
+  background: #fff;
+  color: #171717;
+}
+
+.panel {
+  width: min(260px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.heading {
+  margin: 0 2px 2px;
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.chips button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 7px;
+  padding: 5px 9px;
+  background: #f1f1f1;
+  color: #171717;
+  font: 600 12px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.chips button[aria-pressed="true"] { background: #171717; color: #fff; }

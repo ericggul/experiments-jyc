@@ -15,9 +15,12 @@ export const mobileExperiments = [
   { key: "arithmetic/calculator", label: "사칙연산 /calculator", href: "/mobile/arithmetic/calculator" },
   { key: "arithmetic/1", label: "사칙연산 /1", href: "/mobile/arithmetic/1" },
   { key: "arithmetic/fractal", label: "사칙연산 /fractal", href: "/mobile/arithmetic/fractal" },
+  { key: "suneung/default", label: "수능 국어", href: "/mobile/suneung/default" },
+  { key: "suneung/math", label: "수능 수학", href: "/mobile/suneung/math" },
   { key: "face-trace/1", label: "face-trace/1", href: "/mobile/face-trace/1" },
   { key: "gaze-tracking", label: "gaze-tracking", href: "/mobile/gaze-tracking" },
   { key: "transform/pixelate", label: "transform/pixelate", href: "/mobile/transform/pixelate" },
+  { key: "transform/stretch", label: "transform/stretch", href: "/mobile/transform/stretch" },
   { key: "transform/substitution", label: "transform/substitution", href: "/mobile/transform/substitution" },
   ...Array.from({ length: 14 }, (_, index) => ({
     key: `clone/${index + 1}`,

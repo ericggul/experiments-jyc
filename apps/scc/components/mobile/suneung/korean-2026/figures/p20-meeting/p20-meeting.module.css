@@ -1,0 +1,419 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+  font-family: var(--suneung-gothic), sans-serif;
+}
+
+.root > * {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.screen {
+  left: 0.5px;
+  top: 0.5px;
+  width: 270.8px;
+  height: 97.5px;
+  border: 0.6px solid #000;
+}
+
+.title {
+  left: 5.5px;
+  top: 3.2px;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-size: 8.8px;
+  line-height: 11px;
+  white-space: pre;
+}
+
+.panel {
+  background: #e4e4e4;
+  border: 0.7px solid #333;
+}
+
+.panelTop {
+  left: 19.7px;
+  top: 19.7px;
+  width: 148.8px;
+  height: 25px;
+  border-radius: 3px 3px 0 0;
+  border-bottom: none;
+}
+
+.panelBody {
+  left: 50.6px;
+  top: 44.5px;
+  width: 117.9px;
+  height: 33.6px;
+  border-radius: 0 0 3px 0;
+  border-top: none;
+}
+
+.panelCover {
+  left: 19.7px;
+  top: 44.5px;
+  width: 31px;
+  height: 34px;
+  background: #fff;
+}
+
+.info {
+  left: 23px;
+  top: 22.9px;
+  display: flex;
+  flex-direction: column;
+  font-size: 8.3px;
+  line-height: 8.8px;
+  white-space: pre;
+}
+
+.tab {
+  left: 22.2px;
+  width: 28.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.6px solid #555;
+  border-radius: 0 0 0 2px;
+  background: #fff;
+  font-size: 6.4px;
+  white-space: pre;
+}
+
+.roomId {
+  left: 59.5px;
+  top: 22px;
+  font-size: 8.5px;
+  line-height: 11px;
+  white-space: pre;
+}
+
+.pwBox,
+.linkBox {
+  left: 54.7px;
+  width: 87.5px;
+  border: 1.2px solid #000;
+  background: #e4e4e4;
+}
+
+.pwBox {
+  top: 35px;
+  height: 13.9px;
+}
+
+.linkBox {
+  top: 54.3px;
+  height: 20.9px;
+}
+
+.pwText {
+  left: 59.5px;
+  top: 36.4px;
+  font-size: 9px;
+  line-height: 11px;
+  white-space: pre;
+}
+
+.linkTitle {
+  left: 59.5px;
+  top: 55.5px;
+  font-size: 8.5px;
+  line-height: 10px;
+  white-space: pre;
+}
+
+.url {
+  left: 59.5px;
+  top: 66.6px;
+  font-family: var(--suneung-myeongjo), serif;
+  font-size: 5.8px;
+  line-height: 6px;
+  white-space: pre;
+}
+
+.members {
+  left: 176.5px;
+  top: 2.9px;
+  width: 91.2px;
+  height: 79.1px;
+  border: 1.8px solid #000;
+  background: #c8c8c8;
+}
+
+.members > * {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.membersHead {
+  left: 1.9px;
+  top: 0.8px;
+  width: 83.9px;
+  height: 11.7px;
+  border: 0.7px solid #000;
+  border-radius: 2px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  white-space: pre;
+}
+
+.member {
+  left: 1.9px;
+  width: 83.9px;
+  border: 0.7px solid #000;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.member > * {
+  position: absolute;
+}
+
+.memberDivider {
+  left: 49.7px;
+  top: 0;
+  bottom: 0;
+  width: 0.7px;
+  background: #000;
+}
+
+.status {
+  left: 26px;
+  top: 0.5px;
+  width: 22px;
+  font-size: 7px;
+  line-height: 8px;
+  text-align: center;
+  white-space: pre;
+}
+
+.name {
+  left: 50.4px;
+  right: 0;
+  top: 5px;
+  font-size: 8.4px;
+  line-height: 9px;
+  text-align: center;
+  white-space: pre;
+}
+
+.face {
+  position: absolute;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.toolbar {
+  left: 0.5px;
+  top: 83.6px;
+  width: 270.8px;
+  height: 14.4px;
+  background: #808080;
+  border: 0.6px solid #000;
+}
+
+.tool {
+  top: 83.6px;
+  height: 14.4px;
+}
+
+.toolLabel,
+.toolText {
+  position: absolute;
+  color: #fff;
+  font-size: 8px;
+  line-height: 10px;
+  white-space: pre;
+}
+
+.toolLabel {
+  top: 2.2px;
+}
+
+.toolText {
+  top: 85.9px;
+}
+
+.sep {
+  top: 85.2px;
+  width: 0.5px;
+  height: 11px;
+  background: #ddd;
+}
+
+.micBody {
+  position: absolute;
+  left: 0.8px;
+  top: 1.4px;
+  width: 3.6px;
+  height: 6.3px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.micArc {
+  position: absolute;
+  left: -0.2px;
+  top: 4px;
+  width: 5.6px;
+  height: 5px;
+  border: 0.8px solid #fff;
+  border-top: none;
+  border-radius: 0 0 3px 3px;
+}
+
+.micStem {
+  position: absolute;
+  left: 2.4px;
+  top: 9px;
+  width: 0.7px;
+  height: 2.3px;
+  background: #fff;
+}
+
+.camBody {
+  left: 62.3px;
+  top: 87.5px;
+  width: 10.4px;
+  height: 7px;
+  border-radius: 1.5px;
+  background: #fff;
+}
+
+.camLens {
+  left: 72.2px;
+  top: 88px;
+  width: 0;
+  height: 0;
+  border-right: 3px solid #fff;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+.shareBox {
+  left: 108.7px;
+  top: 83.2px;
+  width: 54.7px;
+  height: 15.3px;
+  border: 1.5px solid #000;
+}
+
+.shareIcon {
+  left: 112.7px;
+  top: 86.3px;
+  width: 10.6px;
+  height: 8.4px;
+  border-radius: 1.2px;
+  background: #fff;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gear {
+  left: 175.5px;
+  top: 85.7px;
+  color: #fff;
+  font-size: 10.5px;
+  line-height: 10px;
+}
+
+.door {
+  left: 226.5px;
+  top: 85.6px;
+  width: 6.2px;
+  height: 9.4px;
+  border: 0.9px solid #fff;
+  background: #bbb;
+  transform: skewY(-6deg);
+}
+
+.leaderV,
+.leaderH {
+  background: #000;
+}
+
+.leaderV {
+  width: 1.2px;
+}
+
+.leaderH {
+  height: 1.2px;
+  margin-top: -0.6px;
+}
+
+.circle {
+  width: 10.8px;
+  height: 10.8px;
+  margin-top: -5.4px;
+  border: 0.9px solid #000;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6.8px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.dialog {
+  left: 1.5px;
+  top: 114.5px;
+  width: 266px;
+  height: 28.5px;
+  border: 1.5px solid #000;
+}
+
+.dialogText {
+  left: 0;
+  width: 268px;
+  top: 115.6px;
+  text-align: center;
+  font-size: 8.6px;
+  line-height: 11px;
+  white-space: pre;
+}
+
+.button {
+  top: 128.1px;
+  width: 43.2px;
+  height: 12.7px;
+  border: 0.8px solid #444;
+  border-radius: 2.5px;
+  background: linear-gradient(#fff, #bdbdbd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: pre;
+}
+
+.cursor {
+  left: 94.5px;
+  top: 131.3px;
+  width: 13.4px;
+  height: 14.2px;
+  background: #000;
+  clip-path: polygon(0 0, 96% 36%, 56% 50%, 100% 100%, 76% 100%, 34% 60%, 0 78%);
+}
+
+.cursorFill {
+  position: absolute;
+  inset: 0;
+  margin: 1px;
+  background: #fff;
+  clip-path: polygon(0 0, 96% 36%, 56% 50%, 100% 100%, 76% 100%, 34% 60%, 0 78%);
+}

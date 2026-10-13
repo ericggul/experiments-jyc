@@ -41,6 +41,7 @@ history when their subject affects the task, not for every code change.
 
 - [SNS mobile surfaces 1–13](../apps/scc/docs/experiments/sns/mobile/README.md): mobile services and Instagram, TikTok and X replicas.
 
+- [Chemical decomposition](../apps/scc/docs/experiments/ar/chemical-decomposition/README.md): on-device AR that letters the camera view with the chemical formulas of what each thing is made of, `ar/chemical-decomposition/1`.
 - [Splice](../apps/scc/docs/experiments/standalone/splice/README.md): two-deck audio collage practice; a separate instrument for the later native application collage direction.
 
 - [advertisement/tv](../apps/scc/docs/experiments/advertisement/README.md): TV-ad clones; `archive/korean-1` and `archive/american-1` are recorded failures.

@@ -1,0 +1,19 @@
+/* The option panel follows bubble/3's: a heading, a faint label over each group, grey chips that turn black when chosen,
+   slider rows that show their value, and a reset at the foot. */
+.control{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483001;display:grid;justify-items:end;gap:8px;font:13px Arial,Helvetica,sans-serif;color:#171717}
+.control *{box-sizing:border-box}
+.trigger{width:42px;height:42px;display:grid;place-items:center;border:0;border-radius:50%;padding:0;background:#171717;color:#fff;box-shadow:0 3px 16px #0003;cursor:pointer}
+.trigger[aria-expanded="true"]{background:#fff;color:#171717}
+.panel{width:min(260px,calc(100vw - 32px));display:grid;gap:6px;padding:10px;border-radius:13px;background:#fff;color:#171717;box-shadow:0 4px 28px #0004}
+.heading{margin:0 2px 2px;font-weight:600}
+.note{margin:0 2px 4px;font-size:12px;opacity:.62;word-break:keep-all}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.chips button{min-height:30px;border:0;border-radius:7px;padding:5px 9px;background:#f1f1f1;color:#171717;font:600 12px Arial,Helvetica,sans-serif;cursor:pointer}
+.chips button[aria-pressed="true"]{background:#171717;color:#fff}
+.row{display:grid;gap:2px;padding:4px 2px}
+.row span{display:flex;justify-content:space-between;gap:8px;font-size:12px}
+.row output{opacity:.62;font-variant-numeric:tabular-nums}
+.row input{width:100%;margin:0;accent-color:#171717;cursor:ew-resize}
+.reset{min-height:34px;border:0;border-radius:7px;padding:6px 10px;background:#f1f1f1;color:#171717;font:600 13px Arial,Helvetica,sans-serif;cursor:pointer}
+.control button:focus-visible,.row input:focus-visible{outline:2px solid #1469d8;outline-offset:2px}
+@media(max-width:640px){.control{bottom:calc(88px + env(safe-area-inset-bottom))}}

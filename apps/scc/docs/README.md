@@ -11,6 +11,8 @@ Navigation: `/`, area indexes (`/complex-systems`, `/dashboard`, `/standalone`, 
 
 - [advertisement/tv](experiments/advertisement/README.md): TV-ad clones; first attempts `archive/korean-1` (LINA Life) and `archive/american-1` (Ozempic) failed as flat vector illustration.
 
+- [ar/chemical-decomposition/1](experiments/ar/chemical-decomposition/README.md): the phone camera's view parsed on the device (SegFormer ADE20K + D-FINE COCO + MobileCLIP material choice) and lettered with the mass-weighted chemical formulas of what each thing is made of.
+
 - [splice/1](experiments/standalone/splice/README.md): a local two-deck audio instrument for practicing collage, with [notes on the later native application work](experiments/standalone/splice/concept.md).
 
 

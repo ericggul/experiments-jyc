@@ -1,0 +1,268 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  color: #111;
+  font-family: var(--suneung-myeongjo), serif;
+  font-size: 10.6px;
+}
+
+.frame {
+  position: absolute;
+  left: 1.5px;
+  right: 1.5px;
+  top: 1.5px;
+  bottom: -20px;
+  border: 0.8px solid #444;
+  border-radius: 6px;
+}
+
+.badge {
+  position: absolute;
+  left: 10.5px;
+  top: 6px;
+  width: 35px;
+  height: 15px;
+  border-radius: 3px;
+  background: #111;
+  color: #fff;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  line-height: 15px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.badgeTail {
+  position: absolute;
+  left: 17.5px;
+  top: 21px;
+  border-left: 0 solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 6px solid #111;
+}
+
+.search {
+  position: absolute;
+  left: 168px;
+  top: 7.5px;
+  width: 78px;
+  height: 15.5px;
+  box-sizing: border-box;
+  border: 0.5px solid #666;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-size: 8.5px;
+  line-height: 14.5px;
+  text-align: center;
+  letter-spacing: -0.2px;
+}
+
+.lens {
+  position: absolute;
+  left: 252px;
+  top: 9.5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid #777;
+}
+
+.handle {
+  position: absolute;
+  left: 259px;
+  top: 19px;
+  width: 7px;
+  height: 2px;
+  border-radius: 1px;
+  background: #777;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.menuBar {
+  position: absolute;
+  left: 272px;
+  width: 10.5px;
+  height: 1px;
+  background: #777;
+}
+
+.menu1 { top: 11.5px; }
+.menu2 { top: 16px; }
+.menu3 { top: 20px; }
+
+.rule {
+  position: absolute;
+  left: 10.5px;
+  right: 10px;
+  top: 29.5px;
+  height: 1px;
+  background: #555;
+}
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 37px;
+  text-align: center;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 500;
+  font-size: 11.6px;
+  line-height: 18px;
+  letter-spacing: -0.5px;
+}
+
+.meta {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  top: 59.5px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  line-height: 15px;
+  letter-spacing: -0.3px;
+}
+
+.line {
+  position: absolute;
+  left: 11px;
+  width: 271px;
+  height: 14px;
+  line-height: 14px;
+  white-space: nowrap;
+  letter-spacing: -0.75px;
+}
+
+.indent {
+  padding-left: 9px;
+  box-sizing: border-box;
+}
+
+.justify {
+  letter-spacing: -1px;
+  text-align: justify;
+  text-align-last: justify;
+}
+
+.ul {
+  text-decoration: underline;
+  text-decoration-thickness: 0.6px;
+  text-underline-offset: 2.2px;
+}
+
+.card {
+  position: absolute;
+  top: 135px;
+  height: 48px;
+  box-sizing: border-box;
+  border: 0.5px dashed #777;
+}
+
+.cardText {
+  left: 40.75px;
+  width: 121.5px;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-size: 8px;
+  letter-spacing: -0.3px;
+}
+
+.cardLine1,
+.cardLine2 {
+  position: absolute;
+  white-space: nowrap;
+}
+
+.cardLine1 { left: 11px; top: 11px; }
+.cardLine2 { left: 4px; top: 22.5px; }
+
+.cardVideo {
+  left: 165px;
+  width: 87px;
+}
+
+.thumb {
+  position: absolute;
+  left: 9.5px;
+  top: 1.5px;
+  width: 66.5px;
+  height: 36.75px;
+  box-sizing: border-box;
+  border: 1px solid #333;
+  overflow: hidden;
+}
+
+.thumbTitle {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: #777;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.play {
+  position: absolute;
+  left: 25.5px;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #111;
+}
+
+.playTri {
+  position: absolute;
+  left: 30px;
+  top: 11.5px;
+  border-left: 5px solid #fff;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+}
+
+.controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5.5px;
+  background: #222;
+}
+
+.progress {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 0.5px;
+  height: 0.5px;
+  background: #bbb;
+}
+
+.url {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 9px;
+  letter-spacing: -0.2px;
+}
+
+.raccoon {
+  position: absolute;
+  left: 184.5px;
+  top: 390px;
+  width: 46px;
+  height: 38.25px;
+}

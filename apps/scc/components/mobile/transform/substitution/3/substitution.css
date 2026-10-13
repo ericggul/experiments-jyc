@@ -1,0 +1,219 @@
+/*
+ * While substitution/3 is on, the clone keeps every box exactly where it is but paints nothing of its own:
+ * no fills, borders, shadows, glyphs, images or icon strokes. The cells written into backgrounds by `collect.ts` are all that shows.
+ * Nothing here changes layout. An element marked raw shows its original paint for the instant it is read; colour transitions
+ * are dropped so that this never animates.
+ */
+html[data-substitution-pixel],
+html[data-substitution-pixel] body {
+  background: #fff !important;
+}
+
+html[data-substitution-pixel="dark"],
+html[data-substitution-pixel="dark"] body {
+  background: #000 !important;
+}
+
+html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+  text-decoration-color: transparent !important;
+  outline-color: transparent !important;
+  caret-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition-property: transform, translate, scale, rotate, opacity, top, right, bottom, left, inset, width, height, min-height, max-height, margin, padding, clip-path, visibility !important;
+}
+
+html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::before,
+html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::after {
+  visibility: hidden !important;
+}
+
+html[data-substitution-pixel] body :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder {
+  color: transparent !important;
+}
+
+/* The picture or frame moves out of its own box; the box and its background cell stay. */
+html[data-substitution-pixel] body :where(img, video):not([data-substitution-pixel-ui] *) {
+  object-position: -100000px 0 !important;
+  filter: none !important;
+}
+
+html[data-substitution-pixel] body :where(svg):not([data-substitution-pixel-ui] *) {
+  filter: none !important;
+}
+
+html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-pixel-ui] *) {
+  visibility: hidden !important;
+}
+
+/*
+ * Each cell is a set of custom properties on its element (see `cellProperties`). They are registered as non-inherited,
+ * so writing them restyles that element alone, never its subtree.
+ */
+@property --substitution-pixel-fill { syntax: "*"; inherits: false; }
+@property --substitution-pixel-frame { syntax: "*"; inherits: false; }
+@property --substitution-pixel-image { syntax: "*"; inherits: false; }
+@property --substitution-pixel-position { syntax: "*"; inherits: false; }
+@property --substitution-pixel-size { syntax: "*"; inherits: false; }
+@property --substitution-pixel-origin { syntax: "*"; inherits: false; }
+@property --substitution-pixel-attachment { syntax: "*"; inherits: false; }
+@property --substitution-pixel-border-top { syntax: "*"; inherits: false; }
+@property --substitution-pixel-border-right { syntax: "*"; inherits: false; }
+@property --substitution-pixel-border-bottom { syntax: "*"; inherits: false; }
+@property --substitution-pixel-border-left { syntax: "*"; inherits: false; }
+
+html[data-substitution-pixel] body [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
+  background-color: var(--substitution-pixel-fill, transparent) !important;
+  background-image: var(--substitution-pixel-image, none) !important;
+  background-position: var(--substitution-pixel-position, 0 0) !important;
+  background-size: var(--substitution-pixel-size, auto) !important;
+  background-repeat: no-repeat !important;
+  background-origin: var(--substitution-pixel-origin, border-box) !important;
+  background-clip: border-box !important;
+  background-attachment: var(--substitution-pixel-attachment, scroll) !important;
+  box-shadow: var(--substitution-pixel-frame, none) !important;
+  border-top-color: var(--substitution-pixel-border-top, transparent) !important;
+  border-right-color: var(--substitution-pixel-border-right, transparent) !important;
+  border-bottom-color: var(--substitution-pixel-border-bottom, transparent) !important;
+  border-left-color: var(--substitution-pixel-border-left, transparent) !important;
+}
+
+/* The option panel follows bubble/3's: a heading, a faint label over each group, grey chips that turn black when chosen,
+   slider rows that show their value, and a reset at the foot. */
+.substitution-pixel-control {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483001;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  font: 13px Arial, Helvetica, sans-serif;
+  color: #171717;
+}
+
+.substitution-pixel-control,
+.substitution-pixel-control * {
+  box-sizing: border-box;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.substitution-pixel-trigger {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #171717;
+  color: #fff;
+  box-shadow: 0 3px 16px #0003;
+  cursor: pointer;
+}
+
+.substitution-pixel-trigger[aria-expanded="true"] {
+  background: #fff;
+  color: #171717;
+}
+
+.substitution-pixel-panel {
+  width: min(260px, calc(100vw - 32px));
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 28px #0004;
+}
+
+.substitution-pixel-heading {
+  margin: 0 2px 2px;
+  font-weight: 600;
+}
+
+.substitution-pixel-note {
+  margin: 0 2px 4px;
+  font-size: 12px;
+  opacity: 0.62;
+  word-break: keep-all;
+}
+
+.substitution-pixel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.substitution-pixel-chips button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 7px;
+  padding: 5px 9px;
+  background: #f1f1f1;
+  color: #171717;
+  font: 600 12px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.substitution-pixel-chips button[aria-pressed="true"] {
+  background: #171717;
+  color: #fff;
+}
+
+.substitution-pixel-slider {
+  display: grid;
+  gap: 2px;
+  padding: 4px 2px;
+}
+
+.substitution-pixel-slider span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.substitution-pixel-slider output {
+  opacity: 0.62;
+  font-variant-numeric: tabular-nums;
+}
+
+.substitution-pixel-slider input {
+  width: 100%;
+  margin: 0;
+  accent-color: #171717;
+  cursor: ew-resize;
+}
+
+.substitution-pixel-reset {
+  min-height: 34px;
+  border: 0;
+  border-radius: 7px;
+  padding: 6px 10px;
+  background: #f1f1f1;
+  color: #171717;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.substitution-pixel-control button:focus-visible,
+.substitution-pixel-slider input:focus-visible {
+  outline: 2px solid #1469d8;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .substitution-pixel-control {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}

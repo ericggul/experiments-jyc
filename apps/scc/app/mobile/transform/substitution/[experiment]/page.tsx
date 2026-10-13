@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SccNavigation from "@/foundations/navigation";
 import { getCloneNavigationItems } from "@/foundations/navigation/experiments";
-import { substitutionExperiments } from "@/components/mobile/transform/substitution/experiments";
+import { substitutionClones, substitutionExperiments } from "@/components/mobile/transform/substitution/experiments";
 
 export function generateStaticParams() {
   return Object.keys(substitutionExperiments).map((experiment) => ({ experiment }));
@@ -19,7 +19,7 @@ export default async function SubstitutionExperimentPage({ params }: { params: P
   const key = `mobile/transform/substitution/${experiment}`;
   return (
     <SccNavigation
-      experiments={getCloneNavigationItems(key)}
+      experiments={getCloneNavigationItems(key, substitutionClones[experiment])}
       scope={key}
       scopeKey={key}
     />

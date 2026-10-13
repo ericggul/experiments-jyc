@@ -263,15 +263,20 @@ export const sccExperiments: readonly SccExperiment[] = [
   { key: "mobile/arithmetic/calculator", area: "mobile", family: "mobile/arithmetic", date: "2026-10-09", phrase: "iOS Calculator whose ÷ × − + are Instagram's like, comment, repost and share" },
   { key: "mobile/arithmetic/1", area: "mobile", family: "mobile/arithmetic", date: "2026-10-09", phrase: "Taps and finger-skating trails place the four SNS actions at random" },
   { key: "mobile/arithmetic/fractal", area: "mobile", family: "mobile/arithmetic", date: "2026-10-09", phrase: "Each SNS action traced edge by edge by smaller copies of itself, four to switch between" },
+  { key: "mobile/suneung/default", area: "mobile", family: "mobile/suneung", date: "2026-10-13", phrase: "The 2026 수능 국어 홀수형 booklet, all twenty pages rebuilt in DOM from the KICE PDF" },
+  { key: "mobile/suneung/math", area: "mobile", family: "mobile/suneung", date: "2026-10-13", phrase: "The 2026 수능 수학 홀수형 booklet in DOM, HWP equations set as live Latin Modern text" },
   { key: "mobile/face-trace/1", area: "mobile", family: "mobile/face-trace", date: "2026-09-30", phrase: "Live eyes and mouth inside a liquid lattice of themselves" },
   { key: "mobile/gaze-tracking/1", area: "mobile", family: "mobile/gaze-tracking", date: "2026-09-24", phrase: "Two dots following the left and right iris positions" },
   { key: "mobile/gaze-tracking/2", area: "mobile", family: "mobile/gaze-tracking", date: "2026-09-25", phrase: "Gaze-driven circles, liquid or mesh distortion over the clones" },
   { key: "mobile/transform/pixelate", area: "mobile", family: "mobile/transform/pixelate", date: "2026-09-24", phrase: "Adjustable viewport pixelation over any of the clones" },
   { key: "mobile/transform/substitution/1", area: "mobile", family: "mobile/transform/substitution", date: "2026-09-25", phrase: "Clones swapped for object outlines or representative colors" },
   { key: "mobile/transform/substitution/2", area: "mobile", family: "mobile/transform/substitution", date: "2026-09-25", phrase: "Clone targets replaced by uppercase command words" },
+  { key: "mobile/transform/substitution/3", area: "mobile", family: "mobile/transform/substitution", date: "2026-10-13", phrase: "Instagram, TikTok, X and YouTube with every text run, icon, image and box replaced in place by a command word filling it" },
   { key: "mobile/transform/language/1", area: "mobile", family: "mobile/transform/language", date: "2026-10-03", phrase: "Every interface label drifting through 40 literal translations by Markov chain" },
+  { key: "ar/chemical-decomposition/1", area: "ar", family: "ar/chemical-decomposition", date: "2026-10-13", phrase: "The camera's view written over with the chemical formulas of what each thing is made of" },
   { key: "mobile/transform/decomposition", area: "mobile", family: "mobile/transform/decomposition", date: "2026-10-03", phrase: "Interface taken apart into atoms, each sorted beside its kind, still clickable" },
   { key: "mobile/transform/finger-decomposition", area: "mobile", family: "mobile/transform/finger-decomposition", date: "2026-10-07", phrase: "Interface as a liquid sheet in WebGL: a finger carries the element it holds, the rest flows around it" },
+  { key: "mobile/transform/stretch", area: "mobile", family: "mobile/transform/stretch", date: "2026-10-13", phrase: "Every photograph stretched in height from x0.3 to x12 while width stays, the feed reflowing around it" },
 ];
 
 function toNavigationItem(experiment: SccExperiment): SccNavigationItem {
@@ -318,13 +323,13 @@ export function getSccNavigationItems(
   return [...items, ...aliases];
 }
 
-/** Clone pickers inside a mobile transform: one row per `sns/mobile` surface. */
-export function getCloneNavigationItems(parentKey: string) {
+/** Clone pickers inside a mobile transform: one row per `sns/mobile` surface, or only the given clone numbers. */
+export function getCloneNavigationItems(parentKey: string, clones?: readonly string[]) {
   const parent = sccExperiments.find((experiment) => experiment.key === parentKey);
   if (!parent) return [];
 
   return sccExperiments
-    .filter((experiment) => experiment.family === "sns/mobile")
+    .filter((experiment) => experiment.family === "sns/mobile" && (!clones || clones.includes(experiment.key.split("/").at(-1)!)))
     .map<SccNavigationItem>((clone) => {
       const key = `${parentKey}/${clone.key.split("/").at(-1)}`;
       return {

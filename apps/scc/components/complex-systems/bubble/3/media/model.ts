@@ -15,7 +15,7 @@
 //
 // Positions and rendering are not here; the field is indexed by page.
 
-import type { RankedWeb } from "../model.ts";
+import type { RankedWeb } from "../web/model.ts";
 
 export type MediaMode = "fixed" | "churn" | "trend";
 

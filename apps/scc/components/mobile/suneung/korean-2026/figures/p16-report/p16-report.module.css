@@ -1,0 +1,96 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #000;
+  font-family: var(--suneung-myeongjo), serif;
+}
+
+.heading {
+  position: absolute;
+  left: 3px;
+  font-size: 11.5px;
+  line-height: 14px;
+  white-space: pre;
+}
+
+.caption,
+.label {
+  position: absolute;
+  font-family: var(--suneung-gothic), sans-serif;
+  font-size: 7.8px;
+  line-height: 11px;
+  white-space: pre;
+}
+
+.line {
+  position: absolute;
+  height: 12px;
+  font-size: 9.7px;
+  line-height: 12px;
+  white-space: pre;
+}
+
+.axisV,
+.axisH {
+  position: absolute;
+  background: #000;
+}
+
+.axisV {
+  width: 0.75px;
+}
+
+.axisH {
+  height: 0.75px;
+}
+
+.arrowUp,
+.arrowRight {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+}
+
+.arrowUp {
+  left: -1.6px;
+  top: -3px;
+  border-bottom: 4px solid #000;
+  border-top: 0;
+}
+
+.arrowRight {
+  right: -3px;
+  top: -1.6px;
+  border-left: 4px solid #000;
+  border-right: 0;
+}
+
+.trend {
+  position: absolute;
+  height: 0;
+  border-top: 1.2px solid #000;
+  transform-origin: 0 0;
+}
+
+.legend {
+  position: absolute;
+  box-sizing: border-box;
+  border: 0.6px solid #000;
+  background: #fff;
+}
+
+.bar,
+.barGray {
+  position: absolute;
+  box-sizing: border-box;
+  width: 11.75px;
+  border: 0.6px solid #000;
+  background: #fff;
+}
+
+.barGray {
+  background: #b3b3b3;
+}

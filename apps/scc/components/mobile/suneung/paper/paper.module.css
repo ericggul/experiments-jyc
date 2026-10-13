@@ -1,0 +1,150 @@
+.paper {
+  --k: 1;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  background: #fff;
+  color: #000;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+.paper[data-fitted="false"] .sheet {
+  visibility: hidden;
+}
+
+/* One page per screen: the sheet is scaled to fit inside the viewport and
+   each scroll step snaps to the next page. */
+.slot {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.sheet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 842px;
+  height: 1191px;
+  transform: translate(-50%, -50%) scale(var(--k));
+}
+
+.line {
+  position: absolute;
+  white-space: pre;
+  line-height: 1;
+}
+
+.glyphs {
+  position: relative;
+  display: block;
+  width: max-content;
+  transform-origin: 0 0;
+}
+
+.baseline {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+.run {
+  position: relative;
+  display: inline-block;
+}
+
+/* Box and underline sit at the original distances from the baseline; the fit
+   pass writes --mark-top and --mark-height for each marked run. */
+.boxed::after,
+.underlined::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: -0.09em;
+  width: calc(var(--mark-width, 100%) + 0.18em);
+  top: var(--mark-top, 0);
+  height: var(--mark-height, 1em);
+}
+
+.boxed::after {
+  border: 0.36px solid #000;
+}
+
+.underlined::after {
+  left: 0;
+  width: var(--mark-width, 100%);
+  border-bottom: 0.36px solid #000;
+}
+
+/* 옛한글 jamo fall through to the old-Hangul face, which composes them. */
+.m {
+  font-family: var(--suneung-myeongjo), var(--suneung-old-hangul), serif;
+  font-weight: 400;
+}
+
+.mb {
+  font-family: var(--suneung-myeongjo), var(--suneung-old-hangul), serif;
+  font-weight: 800;
+}
+
+.g,
+.d {
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 400;
+}
+
+.gb {
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 500;
+}
+
+.gh {
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 700;
+}
+
+.gx,
+.gt {
+  font-family: var(--suneung-gothic), sans-serif;
+  font-weight: 900;
+}
+
+.e,
+.ei {
+  font-family: var(--suneung-equation), var(--suneung-equation-symbols), serif;
+  font-weight: 400;
+}
+
+.ei {
+  font-style: italic;
+}
+
+.rule {
+  position: absolute;
+  background: #000;
+}
+
+.box {
+  position: absolute;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: #000;
+}
+
+.fill {
+  position: absolute;
+}
+
+.figure {
+  position: absolute;
+  overflow: hidden;
+}
+
+.fitText {
+  display: inline-block;
+  white-space: pre;
+}
