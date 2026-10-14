@@ -8,6 +8,8 @@ export type ClockOptions = {
   start: number;
   /** Start frozen (`?paused=1`), used for frame capture. */
   paused: boolean;
+  /** Playback rate; 1 is real time. Grids give each screen its own. */
+  rate?: number;
 };
 
 /** Looping playback clock for a spot: scene stepping on ←/→, 0.1 s steps on , / ., pause on space. */
@@ -16,6 +18,7 @@ export function useSpotClock(duration: number, scenes: readonly SceneMark[], opt
   const [paused, setPaused] = useState(options.paused);
   const timeRef = useRef(options.start);
   const pausedRef = useRef(options.paused);
+  const rate = options.rate ?? 1;
 
   const seek = useCallback(
     (next: number) => {
@@ -37,14 +40,14 @@ export function useSpotClock(duration: number, scenes: readonly SceneMark[], opt
       const delta = Math.min(0.1, (now - last) / 1000);
       last = now;
       if (!pausedRef.current) {
-        timeRef.current = loopTime(timeRef.current + delta, duration);
+        timeRef.current = loopTime(timeRef.current + delta * rate, duration);
         setTime(timeRef.current);
       }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [duration]);
+  }, [duration, rate]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

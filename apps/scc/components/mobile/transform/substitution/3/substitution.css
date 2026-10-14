@@ -5,16 +5,19 @@
  * are dropped so that this never animates.
  */
 html[data-substitution-pixel],
-html[data-substitution-pixel] body {
+html[data-substitution-pixel] body,
+[data-substitution-pixel-scope][data-substitution-pixel] {
   background: #fff !important;
 }
 
 html[data-substitution-pixel="dark"],
-html[data-substitution-pixel="dark"] body {
+html[data-substitution-pixel="dark"] body,
+[data-substitution-pixel-scope][data-substitution-pixel="dark"] {
   background: #000 !important;
 }
 
-html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]) {
+html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]),
+[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]) {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -30,25 +33,31 @@ html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [
 }
 
 html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::before,
-html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::after {
+[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui] *)::before,
+html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::after,
+[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui] *)::after {
   visibility: hidden !important;
 }
 
-html[data-substitution-pixel] body :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder {
+html[data-substitution-pixel] body :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder,
+[data-substitution-pixel-scope][data-substitution-pixel] :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder {
   color: transparent !important;
 }
 
 /* The picture or frame moves out of its own box; the box and its background cell stay. */
-html[data-substitution-pixel] body :where(img, video):not([data-substitution-pixel-ui] *) {
+html[data-substitution-pixel] body :where(img, video):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope][data-substitution-pixel] :where(img, video):not([data-substitution-pixel-ui] *) {
   object-position: -100000px 0 !important;
   filter: none !important;
 }
 
-html[data-substitution-pixel] body :where(svg):not([data-substitution-pixel-ui] *) {
+html[data-substitution-pixel] body :where(svg):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope][data-substitution-pixel] :where(svg):not([data-substitution-pixel-ui] *) {
   filter: none !important;
 }
 
-html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-pixel-ui] *) {
+html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope][data-substitution-pixel] :where(svg *, canvas):not([data-substitution-pixel-ui] *) {
   visibility: hidden !important;
 }
 
@@ -68,7 +77,8 @@ html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-
 @property --substitution-pixel-border-bottom { syntax: "*"; inherits: false; }
 @property --substitution-pixel-border-left { syntax: "*"; inherits: false; }
 
-html[data-substitution-pixel] body [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
+html[data-substitution-pixel] body [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]),
+[data-substitution-pixel-scope][data-substitution-pixel] [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
   background-color: var(--substitution-pixel-fill, transparent) !important;
   background-image: var(--substitution-pixel-image, none) !important;
   background-position: var(--substitution-pixel-position, 0 0) !important;

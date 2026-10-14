@@ -1,4 +1,4 @@
-export { BroadcastFrame, FRAME_HEIGHT, FRAME_WIDTH } from "./stage";
+export { BroadcastFrame, FRAME_HEIGHT, FRAME_WIDTH, useFrameSize, type FrameSize } from "./stage";
 export { Plate, type CameraMove } from "./plate";
 export { SceneNavigator } from "./scene-navigator";
 export { formatTime, loopTime, sceneIndexAt, stepAt, type SceneMark } from "./timeline";
@@ -14,6 +14,8 @@ export type CaptureOptions = {
   plates: boolean;
   /** Pin the frame at 1:1 from the top-left (`fixed=1`) so captures map pixel for pixel. */
   fixed: boolean;
+  /** Playback rate; grids set this per screen, the query string does not. */
+  rate?: number;
 };
 
 export function parseCaptureOptions(params: Record<string, string | string[] | undefined>): CaptureOptions {

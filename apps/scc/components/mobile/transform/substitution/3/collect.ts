@@ -98,9 +98,10 @@ export function refreshFacts(root: Element, cache: WeakMap<Element, Facts>, chan
   for (const element of stale) element.removeAttribute(RAW);
 }
 
-export function collect(root: Element, clone: string, group: CommandGroup, cache: WeakMap<Element, Facts>, look: Look) {
+/** `screenArea` is the area of the clone's own screen in its CSS pixels; a scoped phone passes its box, a page the window. */
+export function collect(root: Element, clone: string, group: CommandGroup, cache: WeakMap<Element, Facts>, look: Look, screenArea?: number) {
   const stroke = palette(look).stroke;
-  const viewportArea = window.innerWidth * window.innerHeight;
+  const viewportArea = screenArea ?? window.innerWidth * window.innerHeight;
   // Only what is on screen or within a screen of it is written; scrolling writes the rest before it arrives.
   const near = (element: Element) => nearRect(element.getBoundingClientRect());
   const paints = new Map<Element, Paint>();

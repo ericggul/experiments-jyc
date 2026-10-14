@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType, type CSSProperties } from "react";
 import Instagram from "@/components/mobile/clone/11";
 import TikTok from "@/components/mobile/clone/12";
 import X from "@/components/mobile/clone/13";
 import YouTube from "@/components/mobile/clone/14";
 import { CloneScale } from "@/components/mobile/clone/scale";
-import CommandRenderer from "@/components/mobile/transform/substitution/2/renderer";
-import { commandGroups, presentations, type CommandSetting } from "@/components/mobile/transform/substitution/2/setting";
+import { BORDER_MAX, fonts, type Look } from "@/components/mobile/transform/substitution/3/cell-image";
+import PixelRenderer from "@/components/mobile/transform/substitution/3/renderer";
+import { commandGroups, type CommandGroup } from "@/components/mobile/transform/substitution/3/semantic";
 import styles from "./mobiles.module.css";
 
 /** Native size of each phone; the clones lay out against this viewport. */
@@ -17,8 +18,21 @@ const GAP_RANGE = [0, 40] as const;
 const MARGIN_RANGE = [0, 60] as const;
 const ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 type Rows = (typeof ROW_OPTIONS)[number];
+const DEFAULT_ROWS: Rows = 3;
 
-// Each phone is a mobile clone rendered in this page, with substitution/2's filter scoped to it; on 원본 it is the clone alone.
+/** The ground of the phones: all white, all black, or alternating like a checkerboard across the grid. */
+type Ground = "light" | "dark" | "checker";
+const grounds: { id: Ground; label: string }[] = [
+  { id: "light", label: "흰 바탕" },
+  { id: "dark", label: "검은 바탕" },
+  { id: "checker", label: "체크무늬" },
+];
+
+/** substitution/3's filter as applied to every phone: off (원본) or on, with its vocabulary and look; the ground is chosen per phone. */
+type Filter = { replaced: boolean; group: CommandGroup; look: Omit<Look, "dark">; ground: Ground };
+const FILTER_DEFAULT: Filter = { replaced: false, group: "discipline", look: { font: "grotesque", border: 1 }, ground: "light" };
+
+// Each phone is a mobile clone rendered in this page, with substitution/3's filter scoped to it; on 원본 it is the clone alone.
 const phones: { id: string; clone: string; Screen: ComponentType; title: string }[] = [
   { id: "instagram", clone: "11", Screen: Instagram, title: "Instagram" },
   { id: "tiktok", clone: "12", Screen: TikTok, title: "TikTok" },
@@ -27,11 +41,12 @@ const phones: { id: string; clone: string; Screen: ComponentType; title: string 
 ];
 
 /** One clone at its native 390 px phone width, scaled into its cell; its viewport units resolve to the phone, not the window. */
-function Phone({ clone, Screen, title, filter, scale, height, left, top }: {
+function Phone({ clone, Screen, title, filter, dark, scale, height, left, top }: {
   clone: string;
   Screen: ComponentType;
   title: string;
-  filter: CommandSetting;
+  filter: Filter;
+  dark: boolean;
   scale: number;
   height: number;
   left: number;
@@ -39,6 +54,8 @@ function Phone({ clone, Screen, title, filter, scale, height, left, top }: {
 }) {
   // The filter mounts once the phone element exists; it reads and draws inside that element only.
   const [frame, setFrame] = useState<HTMLDivElement | null>(null);
+  // The look object is kept stable per font, border and ground, so the renderer rewrites only when one of them changes.
+  const look = useMemo<Look>(() => ({ ...filter.look, dark }), [filter.look, dark]);
   const style = {
     left,
     top,
@@ -49,13 +66,11 @@ function Phone({ clone, Screen, title, filter, scale, height, left, top }: {
     "--clone-viewport-height": `${height}px`,
   } as CSSProperties;
   return (
-    <div ref={setFrame} className={styles.phone} style={style} role="group" aria-label={title} data-substitution-command-scope>
+    <div ref={setFrame} className={styles.phone} style={style} role="group" aria-label={title} data-substitution-pixel-scope>
       <CloneScale value={scale}>
         <Screen />
       </CloneScale>
-      {frame && filter.presentation !== "original" && (
-        <CommandRenderer clone={clone} group={filter.group} presentation={filter.presentation} scope={frame} />
-      )}
+      {frame && filter.replaced && <PixelRenderer clone={clone} group={filter.group} look={look} scope={frame} />}
     </div>
   );
 }
@@ -71,11 +86,13 @@ function gridFor(rows: Rows, width: number, height: number, gap: number) {
 export default function MobilesTwo() {
   const field = useRef<HTMLElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const [rows, setRows] = useState<Rows>(1);
+  const [rows, setRows] = useState<Rows>(DEFAULT_ROWS);
   const [gap, setGap] = useState(0);
   const [margin, setMargin] = useState(0);
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<CommandSetting>({ presentation: "original", group: "discipline" });
+  const [filter, setFilter] = useState<Filter>(FILTER_DEFAULT);
+  const update = (next: Partial<Filter>) => setFilter((current) => ({ ...current, ...next }));
+  const updateLook = (next: Partial<Filter["look"]>) => setFilter((current) => ({ ...current, look: { ...current.look, ...next } }));
 
   useEffect(() => {
     const element = field.current;
@@ -94,6 +111,9 @@ export default function MobilesTwo() {
   const scale = cellWidth / PHONE_WIDTH;
   // Slots are the grid positions; slot n always shows the same service, so a resized grid keeps its pages.
   const slots = Array.from({ length: grid.rows * grid.columns }, (_, index) => ({ slot: index, ...phones[index % phones.length] }));
+  // A checkerboard alternates by grid position, so neighbours on either side and above and below differ.
+  const darkAt = (slot: number) => filter.ground === "dark" ||
+    (filter.ground === "checker" && ((slot % grid.columns) + Math.floor(slot / grid.columns)) % 2 === 1);
 
   return (
     <main ref={field} className={styles.field}>
@@ -104,6 +124,7 @@ export default function MobilesTwo() {
           Screen={Screen}
           title={title}
           filter={filter}
+          dark={darkAt(slot)}
           scale={scale}
           height={cellHeight / scale}
           left={margin + (slot % grid.columns) * (cellWidth + gap)}
@@ -145,25 +166,53 @@ export default function MobilesTwo() {
                 onChange={(event) => setMargin(Number(event.target.value))}
               />
             </label>
-            <p className={styles.heading}>필터</p>
-            <div className={styles.choices} role="group" aria-label="표시 방식">
-              <button type="button" aria-pressed={filter.presentation === "original"} onClick={() => setFilter({ ...filter, presentation: "original" })}>원본</button>
-              {presentations.map(({ id, label }) => (
-                <button key={id} type="button" aria-pressed={filter.presentation === id} onClick={() => setFilter({ ...filter, presentation: id })}>{label}</button>
+            <p className={styles.heading}>치환</p>
+            <p className={styles.note}>화면</p>
+            <div className={styles.chips} role="group" aria-label="화면">
+              <button type="button" aria-pressed={!filter.replaced} onClick={() => update({ replaced: false })}>원본</button>
+              <button type="button" aria-pressed={filter.replaced} onClick={() => update({ replaced: true })}>치환</button>
+            </div>
+            <p className={styles.note}>명령어</p>
+            <div className={styles.chips} role="group" aria-label="명령어">
+              {commandGroups.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={filter.group === id} onClick={() => update({ group: id, replaced: true })}>{label}</button>
               ))}
             </div>
-            <div className={styles.views} role="group" aria-label="명령 그룹">
-              {commandGroups.map(({ id, label }) => (
+            <p className={styles.note}>글꼴</p>
+            <div className={styles.chips} role="group" aria-label="글꼴">
+              {fonts.map(({ id, label, name, family, weight }) => (
                 <button
                   key={id}
                   type="button"
-                  aria-pressed={filter.presentation !== "original" && filter.group === id}
-                  onClick={() => setFilter({ presentation: filter.presentation === "original" ? "replace" : filter.presentation, group: id })}
+                  aria-pressed={filter.look.font === id}
+                  aria-label={label}
+                  style={{ fontFamily: family, fontWeight: weight }}
+                  onClick={() => updateLook({ font: id })}
                 >
-                  {label}
+                  {/* Each face is named in itself, as in substitution/3. */}
+                  {name}
                 </button>
               ))}
             </div>
+            <p className={styles.note}>바탕</p>
+            <div className={styles.chips} role="group" aria-label="바탕">
+              {grounds.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={filter.ground === id} onClick={() => update({ ground: id })}>{label}</button>
+              ))}
+            </div>
+            <label className={styles.row}>
+              <span>테두리 <output>{filter.look.border === 0 ? "없음" : `${filter.look.border.toFixed(1)} px`}</output></span>
+              <input
+                aria-label="테두리 굵기: 0이면 없음, 1이면 가는 선, 오른쪽으로 갈수록 굵게"
+                max={BORDER_MAX}
+                min="0"
+                step="0.05"
+                type="range"
+                value={filter.look.border}
+                onChange={(event) => updateLook({ border: Number(event.target.value) })}
+              />
+            </label>
+            <button type="button" className={styles.reset} onClick={() => setFilter(FILTER_DEFAULT)}>기본값으로</button>
           </div>
         )}
         <button

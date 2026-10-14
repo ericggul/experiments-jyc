@@ -22,7 +22,7 @@ The user found `/2` cells sized differently from the interface they replace, and
 
 Units smaller than 18×15 px are now drawn too. Their label is omitted below 12×9 px. Variant `/1` is unchanged.
 
-Scoped use (2026-10-11): `CommandRenderer`'s optional `scope` element limits reading, hiding and drawing to one host-page phone (`/mobiles/2`), which is marked `data-substitution-command-scope`. Without it the renderer behaves as before.
+Scoped use (2026-10-11): `CommandRenderer`'s optional `scope` element limits reading, hiding and drawing to one host-page phone, which is marked `data-substitution-command-scope`. Without it the renderer behaves as before. Since 2026-10-14 `/mobiles/2` uses `/3`'s `PixelRenderer` instead, whose `scope` works the same way (`data-substitution-pixel-scope`; the phone's box counts as the screen, and scoped phones take turns re-reading, one per frame).
 
 ## Command interpretation
 
