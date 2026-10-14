@@ -62,6 +62,8 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
       refreshFacts(body, facts, changed);
       const paints = collect(body, clone, group, facts, lookRef.current, host ? host.offsetWidth * host.offsetHeight : undefined);
 
+      // The clone is hidden only now, in the same frame its cells are written, so a scoped phone never shows a blank ground.
+      root.setAttribute(ROOT, lookRef.current.dark ? "dark" : "replace");
       const next = new Map<Element, Record<string, string>>();
       for (const [element, paint] of paints) {
         if (!paint.fill && !paint.frame && !paint.borders.length && !paint.layers.length) continue;
@@ -121,7 +123,6 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
       if (relevant) schedule();
     });
 
-    root.setAttribute(ROOT, lookRef.current.dark ? "dark" : "replace");
     if (host) schedule();
     else read();
     rewrite.current = () => read();

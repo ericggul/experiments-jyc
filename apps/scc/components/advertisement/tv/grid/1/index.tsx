@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import AnalysisSpot from "@/components/advertisement/tv/korean/5";
-import { DURATION } from "@/components/advertisement/tv/korean/5/scenes";
+import { COPIES, type CopyId } from "./copy";
+import { PALETTES } from "./palette";
+import type { Chrome } from "./radar";
+import { DURATION } from "./scenes";
+import AnalysisSpot from "./spot";
 import { FRAME_HEIGHT, FRAME_WIDTH, type CaptureOptions } from "@/components/advertisement/tv/player";
 import styles from "./grid.module.css";
 
@@ -11,6 +14,24 @@ const MARGIN_RANGE = [0, 60] as const;
 const ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 type Rows = (typeof ROW_OPTIONS)[number];
 const RATE_RANGE = [0.6, 1.5] as const;
+// Wall-wide playback multiplier on top of each screen's own rate.
+const SPEED_RANGE = [1, 20] as const;
+type Speed = number;
+// Which words the screens speak: one language for the wall, or each screen its own.
+const LANGUAGES = [
+  { id: "ko", label: "한국어" },
+  { id: "en", label: "English" },
+  { id: "mixed", label: "섞어서" },
+] as const;
+type Language = (typeof LANGUAGES)[number]["id"];
+// Which palette the screens use: one for the wall, or each screen its own.
+type Colour = string | "mixed";
+// Layout minimalism: the broadcast layout, the ad without its chrome, or the chart alone.
+const CHROMES: readonly { id: Chrome; label: string }[] = [
+  { id: "full", label: "전체" },
+  { id: "bare", label: "바 없음" },
+  { id: "chart", label: "차트만" },
+];
 
 /** Deterministic unit value per slot and salt, so a re-laid grid keeps each screen's timing. */
 function noise(slot: number, salt: number) {
@@ -18,13 +39,23 @@ function noise(slot: number, salt: number) {
   return x - Math.floor(x);
 }
 
-// Each screen is korean/5 on its own clock: some run in real time from the top, the rest
+// Each screen is the spot on its own clock: some run in real time from the top, the rest
 // start anywhere in the spot at their own speed, so the wall drifts in and out of sync.
-function captureFor(slot: number): CaptureOptions {
+function copyFor(slot: number, language: Language): CopyId {
+  if (language !== "mixed") return language;
+  return noise(slot, 4) < 0.5 ? "ko" : "en";
+}
+
+function paletteFor(slot: number, colour: Colour) {
+  const index = colour === "mixed" ? Math.floor(noise(slot, 5) * PALETTES.length) : PALETTES.findIndex((p) => p.id === colour);
+  return PALETTES[Math.max(0, index)];
+}
+
+function captureFor(slot: number, speed: Speed): CaptureOptions {
   const synced = noise(slot, 1) < 0.35;
   return {
     start: synced ? 0 : noise(slot, 2) * DURATION,
-    rate: synced ? 1 : RATE_RANGE[0] + noise(slot, 3) * (RATE_RANGE[1] - RATE_RANGE[0]),
+    rate: (synced ? 1 : RATE_RANGE[0] + noise(slot, 3) * (RATE_RANGE[1] - RATE_RANGE[0])) * speed,
     paused: false,
     nav: false,
     plates: true,
@@ -32,11 +63,11 @@ function captureFor(slot: number): CaptureOptions {
   };
 }
 
-/** One TV: korean/5's fixed broadcast viewport, contained to its cell and fitted by width, so the spot lays itself out to the cell's height. */
-function Television({ slot, width, height, left, top }: { slot: number; width: number; height: number; left: number; top: number }) {
+/** One TV: the spot's fixed broadcast viewport, contained to its cell and fitted by width, so the spot lays itself out to the cell's height. */
+function Television({ slot, language, colour, speed, chrome, width, height, left, top }: { slot: number; language: Language; colour: Colour; speed: Speed; chrome: Chrome; width: number; height: number; left: number; top: number }) {
   return (
-    <div className={styles.television} style={{ left, top, width, height }} role="group" aria-label="korean/5">
-      <AnalysisSpot capture={captureFor(slot)} fit="width" />
+    <div className={styles.television} style={{ left, top, width, height }} role="group" aria-label="보장분석 광고">
+      <AnalysisSpot capture={captureFor(slot, speed)} fit="width" copy={COPIES[copyFor(slot, language)]} chrome={chrome} palette={paletteFor(slot, colour)} />
     </div>
   );
 }
@@ -55,6 +86,10 @@ export default function TvGridOne() {
   const [gap, setGap] = useState(0);
   const [margin, setMargin] = useState(0);
   const [open, setOpen] = useState(false);
+  const [language, setLanguage] = useState<Language>("ko");
+  const [speed, setSpeed] = useState<Speed>(1);
+  const [chrome, setChrome] = useState<Chrome>("full");
+  const [colour, setColour] = useState<Colour>(PALETTES[0].id);
 
   useEffect(() => {
     const element = field.current;
@@ -77,6 +112,10 @@ export default function TvGridOne() {
         <Television
           key={`slot-${slot}`}
           slot={slot}
+          language={language}
+          colour={colour}
+          speed={speed}
+          chrome={chrome}
           width={cellWidth}
           height={cellHeight}
           left={margin + (slot % grid.columns) * (cellWidth + gap)}
@@ -85,7 +124,44 @@ export default function TvGridOne() {
       ))}
       <div className={styles.control}>
         {open && (
-          <div id="tv-grid-one-layout" className={styles.panel} role="group" aria-label="레이아웃 옵션">
+          <div id="tv-grid-one-layout" className={styles.panel} role="group" aria-label="레이아웃과 언어 옵션">
+            <p className={styles.heading}>언어</p>
+            <div className={styles.layouts} role="group" aria-label="언어">
+              {LANGUAGES.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={language === id} onClick={() => setLanguage(id)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className={styles.heading}>색</p>
+            <div className={styles.layouts} role="group" aria-label="색 팔레트">
+              {PALETTES.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={colour === id} onClick={() => setColour(id)}>
+                  {label}
+                </button>
+              ))}
+              <button type="button" aria-pressed={colour === "mixed"} onClick={() => setColour("mixed")}>섞어서</button>
+            </div>
+            <p className={styles.heading}>레이아웃 미니멀리즘</p>
+            <div className={styles.layouts} role="group" aria-label="레이아웃 미니멀리즘">
+              {CHROMES.map(({ id, label }) => (
+                <button key={id} type="button" aria-pressed={chrome === id} onClick={() => setChrome(id)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <label className={styles.row}>
+              <span>속도 <output>×{speed}</output></span>
+              <input
+                aria-label="재생 속도"
+                max={SPEED_RANGE[1]}
+                min={SPEED_RANGE[0]}
+                step="1"
+                type="range"
+                value={speed}
+                onChange={(event) => setSpeed(Number(event.target.value))}
+              />
+            </label>
             <p className={styles.heading}>레이아웃</p>
             <div className={styles.layouts}>
               {ROW_OPTIONS.map((option) => (
@@ -123,7 +199,7 @@ export default function TvGridOne() {
         <button
           type="button"
           className={styles.trigger}
-          aria-label="레이아웃 옵션"
+          aria-label="레이아웃과 언어 옵션"
           aria-expanded={open}
           aria-controls="tv-grid-one-layout"
           onClick={() => setOpen((value) => !value)}

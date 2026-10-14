@@ -1,4 +1,7 @@
-export const gridTvExperiments = [{ slug: "1", label: "grid/1" }] as const;
+export const gridTvExperiments = [
+  { slug: "1", label: "grid/1" },
+  { slug: "2", label: "grid/2" },
+] as const;
 
 export type GridTvExperimentSlug = (typeof gridTvExperiments)[number]["slug"];
 
