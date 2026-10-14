@@ -29,11 +29,15 @@ const grounds: { id: Ground; label: string }[] = [
   { id: "checker", label: "체크무늬" },
 ];
 
-/** What each phone shows: the clone, its substitution, or the two in turns, each phone switching with its neighbours. */
-type Screen = "original" | "replaced" | "auto";
+/**
+ * What each phone shows: the clone, its substitution, the clone with only its content substituted (/3's 콘텐츠 reach),
+ * or the clone and its substitution in turns, each phone switching with its neighbours.
+ */
+type Screen = "original" | "replaced" | "content" | "auto";
 const screens: { id: Screen; label: string }[] = [
   { id: "original", label: "원본" },
   { id: "replaced", label: "치환" },
+  { id: "content", label: "콘텐츠만" },
   { id: "auto", label: "자율 전환" },
 ];
 /**
@@ -52,7 +56,7 @@ const AUTO = {
   minDwell: 1200,
 };
 
-/** Whether each phone is used by a hand of its own (`autopilot.ts`): scrolling, paging and tapping at its own pace. */
+/** Whether each phone is used by a hand of its own (`autopilot.ts`): scrolling, paging and tapping at its own pace. Off by default. */
 type Hand = "auto" | "still";
 const hands: { id: Hand; label: string }[] = [
   { id: "auto", label: "자율" },
@@ -61,7 +65,8 @@ const hands: { id: Hand; label: string }[] = [
 
 /** substitution/3's filter as applied to every phone, with its vocabulary and look; the ground is chosen per phone. */
 type Filter = { screen: Screen; group: CommandGroup; look: Omit<Look, "dark">; ground: Ground; hand: Hand };
-const FILTER_DEFAULT: Filter = { screen: "original", group: "discipline", look: { font: "grotesque", border: 1 }, ground: "light", hand: "auto" };
+const FILTER_DEFAULT: Filter = { screen: "original", group: "discipline", look: { font: "grotesque", border: 5, ink: "mono" }, ground: "light", hand: "still" };
+const DEFAULT_GAP = 5;
 
 // Each phone is a mobile clone rendered in this page, with substitution/3's filter scoped to it; on 원본 it is the clone alone.
 const phones: { id: string; clone: string; Screen: ComponentType; title: string }[] = [
@@ -109,7 +114,7 @@ function Phone({ clone, Screen, title, filter, replaced, dark, scale, height, le
       <CloneScale value={scale}>
         <Screen />
       </CloneScale>
-      {frame && replaced && <PixelRenderer clone={clone} group={filter.group} look={look} scope={frame} />}
+      {frame && replaced && <PixelRenderer clone={clone} group={filter.group} look={look} scope={frame} reach={filter.screen === "content" ? "content" : "all"} />}
     </div>
   );
 }
@@ -126,7 +131,7 @@ export default function MobilesTwo() {
   const field = useRef<HTMLElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [rows, setRows] = useState<Rows>(DEFAULT_ROWS);
-  const [gap, setGap] = useState(0);
+  const [gap, setGap] = useState(DEFAULT_GAP);
   const [margin, setMargin] = useState(0);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>(FILTER_DEFAULT);
@@ -206,7 +211,8 @@ export default function MobilesTwo() {
   }, [filter.screen]);
 
   return (
-    <main ref={field} className={styles.field}>
+    // The field between phones is their bezel: black, or white when the phones stand on a black ground.
+    <main ref={field} className={styles.field} style={{ background: filter.ground === "dark" ? "#fff" : "#000" }}>
       {size.width > 0 && slots.map(({ slot, clone, Screen, title }) => (
         <Phone
           key={`slot-${slot}`}
@@ -214,7 +220,7 @@ export default function MobilesTwo() {
           Screen={Screen}
           title={title}
           filter={filter}
-          replaced={filter.screen === "replaced" || (filter.screen === "auto" && Boolean(flipped[slot]))}
+          replaced={filter.screen === "replaced" || filter.screen === "content" || (filter.screen === "auto" && Boolean(flipped[slot]))}
           dark={darkAt(slot)}
           scale={scale}
           height={cellHeight / scale}
@@ -291,6 +297,12 @@ export default function MobilesTwo() {
                   {name}
                 </button>
               ))}
+            </div>
+            <p className={styles.note}>글자색</p>
+            <div className={styles.chips} role="group" aria-label="글자색">
+              <button type="button" aria-pressed={!filter.look.ink || filter.look.ink === "mono"} onClick={() => updateLook({ ink: "mono" })}>먹</button>
+              <button type="button" aria-pressed={filter.look.ink === "colour"} onClick={() => updateLook({ ink: "colour" })}>대표색</button>
+              <button type="button" aria-pressed={filter.look.ink === "random"} onClick={() => updateLook({ ink: "random" })}>랜덤</button>
             </div>
             <p className={styles.note}>바탕</p>
             <div className={styles.chips} role="group" aria-label="바탕">

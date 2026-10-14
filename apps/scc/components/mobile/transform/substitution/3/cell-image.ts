@@ -18,8 +18,21 @@ export const fonts = [
 
 export type FontId = (typeof fonts)[number]["id"];
 
-/** How every cell is drawn: typeface, frame weight (0 none, 1 hairline, up to 6 heavy; below 1 the hairline fades), and dark ground. */
-export type Look = { font: FontId; border: number; dark: boolean };
+/**
+ * What colour the letters take: the ink of the ground (black on white, white on black), each part's own representative colour,
+ * or a random hue per part at full saturation and half lightness.
+ */
+export type Ink = "mono" | "colour" | "random";
+
+/**
+ * How every cell is drawn: typeface, frame weight (0 none, 1 hairline, up to 6 heavy; below 1 the hairline fades), dark ground,
+ * ink, and `edge`, a frame in the ink along the screen's own edge (a phone's bezel, as the gap between phones gives `/mobiles/2`).
+ * `ink` and `edge` are optional (mono, none), so a look made before they existed reads the same.
+ */
+export type Look = { font: FontId; border: number; dark: boolean; ink?: Ink; edge?: number };
+
+/** The widest outer frame (바깥 테두리), in px of the screen's own edge. */
+export const EDGE_MAX = 12;
 
 export const BORDER_MAX = 6;
 
@@ -45,14 +58,17 @@ export type CellImage = {
   insetX: number;
   insetY: number;
   look: Look;
+  /** The part's own colour for its letters (대표색); without it the letters take the ground's ink. */
+  colour?: string | null;
 };
 
 const round = (value: number) => Math.round(value * 100) / 100;
 
-export function cellSvg({ width, height, word, framed, insetX, insetY, look }: CellImage) {
+export function cellSvg({ width, height, word, framed, insetX, insetY, look, colour }: CellImage) {
   const w = round(width);
   const h = round(height);
-  const { ink, paper, frame, stroke } = palette(look);
+  const { ink: mono, paper, frame, stroke } = palette(look);
+  const ink = colour || mono;
   const font = fonts.find((face) => face.id === look.font) ?? fonts[0];
   let body = "";
   if (framed) {
@@ -75,7 +91,7 @@ const urls = new Map<string, string>();
 /** The image as a CSS `url()`; `#` and quotes must be escaped inside a data URI. Repeated cells reuse the same string. */
 export function cellUrl(image: CellImage) {
   const { look } = image;
-  const key = `${round(image.width)}|${round(image.height)}|${image.word}|${image.framed}|${round(image.insetX)}|${round(image.insetY)}|${look.font}|${look.border}|${look.dark}`;
+  const key = `${round(image.width)}|${round(image.height)}|${image.word}|${image.framed}|${round(image.insetX)}|${round(image.insetY)}|${look.font}|${look.border}|${look.dark}|${image.colour ?? ""}`;
   let url = urls.get(key);
   if (!url) {
     if (urls.size > 4000) urls.clear();

@@ -4,9 +4,9 @@
  * Nothing here changes layout. An element marked raw shows its original paint for the instant it is read; colour transitions
  * are dropped so that this never animates.
  */
-html[data-substitution-pixel],
-html[data-substitution-pixel] body,
-[data-substitution-pixel-scope][data-substitution-pixel] {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]),
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body,
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) {
   background: #fff !important;
 }
 
@@ -16,8 +16,63 @@ html[data-substitution-pixel="dark"] body,
   background: #000 !important;
 }
 
-html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]),
-[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]) {
+/* The outer frame: a band of ink along the screen's edge, over everything but the option panel, written as nothing in the clone. */
+html[data-substitution-pixel]::after,
+[data-substitution-pixel-scope][data-substitution-pixel]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 var(--substitution-pixel-edge, 0px) #000;
+}
+
+[data-substitution-pixel-scope][data-substitution-pixel]::after {
+  position: absolute;
+}
+
+html:is([data-substitution-pixel="dark"], [data-substitution-pixel="content-dark"])::after,
+[data-substitution-pixel-scope]:is([data-substitution-pixel="dark"], [data-substitution-pixel="content-dark"])::after {
+  box-shadow: inset 0 0 0 var(--substitution-pixel-edge, 0px) #fff;
+}
+
+/*
+ * The 콘텐츠 reach: the page keeps its own paint, and only the cells are hidden under theirs: a replaced block's letters
+ * (and those of the inline parts inside it), and the picture or frame of a replaced image or video.
+ */
+html[data-substitution-pixel^="content"] [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]),
+[data-substitution-pixel-scope][data-substitution-pixel^="content"] [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
+  background-color: var(--substitution-pixel-fill, transparent) !important;
+  background-image: var(--substitution-pixel-image, none) !important;
+  background-position: var(--substitution-pixel-position, 0 0) !important;
+  background-size: var(--substitution-pixel-size, auto) !important;
+  background-repeat: no-repeat !important;
+  background-origin: var(--substitution-pixel-origin, border-box) !important;
+  background-clip: border-box !important;
+  background-attachment: var(--substitution-pixel-attachment, scroll) !important;
+  box-shadow: var(--substitution-pixel-frame, none) !important;
+  transition-property: transform, translate, scale, rotate, opacity, top, right, bottom, left, inset, width, height, min-height, max-height, margin, padding, clip-path, visibility !important;
+}
+
+html[data-substitution-pixel^="content"] [data-substitution-pixel-text]:not([data-substitution-pixel-raw]),
+html[data-substitution-pixel^="content"] [data-substitution-pixel-text]:not([data-substitution-pixel-raw]) :where(*):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope][data-substitution-pixel^="content"] [data-substitution-pixel-text]:not([data-substitution-pixel-raw]),
+[data-substitution-pixel-scope][data-substitution-pixel^="content"] [data-substitution-pixel-text]:not([data-substitution-pixel-raw]) :where(*):not([data-substitution-pixel-ui] *) {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+  text-decoration-color: transparent !important;
+  caret-color: transparent !important;
+}
+
+html[data-substitution-pixel^="content"] :where(img, video)[data-substitution-pixel-cell]:not([data-substitution-pixel-raw]),
+[data-substitution-pixel-scope][data-substitution-pixel^="content"] :where(img, video)[data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
+  object-position: -100000px 0 !important;
+  filter: none !important;
+}
+
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]),
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(*):not([data-substitution-pixel-ui], [data-substitution-pixel-ui] *, [data-substitution-pixel-raw]) {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -32,32 +87,32 @@ html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui], [
   transition-property: transform, translate, scale, rotate, opacity, top, right, bottom, left, inset, width, height, min-height, max-height, margin, padding, clip-path, visibility !important;
 }
 
-html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::before,
-[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui] *)::before,
-html[data-substitution-pixel] body :where(*):not([data-substitution-pixel-ui] *)::after,
-[data-substitution-pixel-scope][data-substitution-pixel] :where(*):not([data-substitution-pixel-ui] *)::after {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(*):not([data-substitution-pixel-ui] *)::before,
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(*):not([data-substitution-pixel-ui] *)::before,
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(*):not([data-substitution-pixel-ui] *)::after,
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(*):not([data-substitution-pixel-ui] *)::after {
   visibility: hidden !important;
 }
 
-html[data-substitution-pixel] body :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder,
-[data-substitution-pixel-scope][data-substitution-pixel] :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder,
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(input, textarea):not([data-substitution-pixel-ui] *)::placeholder {
   color: transparent !important;
 }
 
 /* The picture or frame moves out of its own box; the box and its background cell stay. */
-html[data-substitution-pixel] body :where(img, video):not([data-substitution-pixel-ui] *),
-[data-substitution-pixel-scope][data-substitution-pixel] :where(img, video):not([data-substitution-pixel-ui] *) {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(img, video):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(img, video):not([data-substitution-pixel-ui] *) {
   object-position: -100000px 0 !important;
   filter: none !important;
 }
 
-html[data-substitution-pixel] body :where(svg):not([data-substitution-pixel-ui] *),
-[data-substitution-pixel-scope][data-substitution-pixel] :where(svg):not([data-substitution-pixel-ui] *) {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(svg):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(svg):not([data-substitution-pixel-ui] *) {
   filter: none !important;
 }
 
-html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-pixel-ui] *),
-[data-substitution-pixel-scope][data-substitution-pixel] :where(svg *, canvas):not([data-substitution-pixel-ui] *) {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body :where(svg *, canvas):not([data-substitution-pixel-ui] *),
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) :where(svg *, canvas):not([data-substitution-pixel-ui] *) {
   visibility: hidden !important;
 }
 
@@ -77,8 +132,8 @@ html[data-substitution-pixel] body :where(svg *, canvas):not([data-substitution-
 @property --substitution-pixel-border-bottom { syntax: "*"; inherits: false; }
 @property --substitution-pixel-border-left { syntax: "*"; inherits: false; }
 
-html[data-substitution-pixel] body [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]),
-[data-substitution-pixel-scope][data-substitution-pixel] [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
+html:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) body [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]),
+[data-substitution-pixel-scope]:is([data-substitution-pixel="replace"], [data-substitution-pixel="dark"]) [data-substitution-pixel-cell][data-substitution-pixel-cell]:not([data-substitution-pixel-raw]) {
   background-color: var(--substitution-pixel-fill, transparent) !important;
   background-image: var(--substitution-pixel-image, none) !important;
   background-position: var(--substitution-pixel-position, 0 0) !important;

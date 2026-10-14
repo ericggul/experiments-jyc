@@ -1,6 +1,7 @@
 import { cellUrl, palette, roundedInset, type Look } from "./cell-image";
+import { representativeColour } from "./representative";
 import { wordFor, type CommandGroup } from "./semantic";
-import { splitTokens, textRole } from "./tokens";
+import { splitTokens, textRole, type TextRole } from "./tokens";
 
 /**
  * Reads the clone into cells and writes each cell into the CSS background of the element that already occupies that place.
@@ -20,10 +21,17 @@ const graphic = new Set(["svg", "IMG", "VIDEO", "CANVAS", "IFRAME", "INPUT", "TE
 
 type Layer = { url: string; x: number; y: number; w: number; h: number } | { url: string; whole: true };
 /** `borders` lists the sides the original draws a border on; they are drawn black where they are, so a divider stays one line. */
-export type Paint = { fill: boolean; frame: boolean; borders: string[]; layers: Layer[]; local: boolean };
+export type Paint = { fill: boolean; frame: boolean; borders: string[]; layers: Layer[]; local: boolean; text: boolean };
+/** Marks a block whose text is replaced while the rest of the page stays (the 콘텐츠 reach); its letters are hidden. */
+export const TEXT = "data-substitution-pixel-text";
+/** How much of the page is replaced: all of it, or the main content alone (body text, titles and the pictures and video of posts). */
+export type Reach = "all" | "content";
 
-/** What the hiding sheet overrides and a cell depends on: the original fill, background image, borders and shadow. */
-export type Facts = { alpha: number; image: "none" | "photo" | "gradient"; borders: string[]; shadow: boolean };
+/**
+ * What the hiding sheet overrides and a cell depends on: the original fill, background image, borders and shadow, and the
+ * colours a part is represented by (as substitution/1 reads them): the box's own fill, its text colour, an icon's stroke or fill.
+ */
+export type Facts = { alpha: number; image: "none" | "photo" | "gradient"; borders: string[]; shadow: boolean; fill: string | null; colour: string | null };
 
 type TextEntry = { node: Text; control: Element | null; heading: boolean };
 type Context = { faded: boolean; carrier: Element | null; control: Element | null; heading: boolean };
@@ -36,9 +44,15 @@ const alphaOf = (color: string) => {
   return parts.length > 3 ? parseFloat(parts[3]) * (parts[3].endsWith("%") ? 0.01 : 1) : 1;
 };
 
-function readFacts(style: CSSStyleDeclaration): Facts {
+/** A colour that shows: not transparent, and not a fully transparent rgba. */
+const visibleColour = (value: string) => (value && value !== "none" && alphaOf(value) > 0 ? value : null);
+
+function readFacts(element: Element, style: CSSStyleDeclaration): Facts {
   const image = style.backgroundImage;
+  const svg = element.tagName === "svg";
   return {
+    fill: visibleColour(style.backgroundColor),
+    colour: svg ? visibleColour(style.stroke) ?? visibleColour(style.fill) ?? visibleColour(style.color) : visibleColour(style.color),
     alpha: alphaOf(style.backgroundColor),
     // A photograph given as a CSS background (a thumbnail div) is a part; a gradient or an SVG drawing is only a fill.
     image: image === "none" ? "none" : /url\(/.test(image) && !/\.svg|image\/svg/.test(image) ? "photo" : "gradient",
@@ -86,21 +100,53 @@ export function refreshFacts(root: Element, cache: WeakMap<Element, Facts>, chan
   const walk = (element: Element, dirty: boolean) => {
     if (skipped.has(element.tagName) || element.hasAttribute(UI)) return;
     dirty ||= changed.has(element);
-    if (graphic.has(element.tagName) || remote(element)) return;
+    if (remote(element)) return;
     if (dirty || !cache.has(element)) stale.push(element);
+    // An icon's colour is read on the svg itself; its drawing is not entered.
+    if (graphic.has(element.tagName)) return;
     for (const child of Array.from(element.children)) walk(child, dirty);
   };
   walk(root, false);
   changed.clear();
   if (!stale.length) return;
-  for (const element of stale) element.setAttribute(RAW, "");
-  for (const element of stale) cache.set(element, readFacts(window.getComputedStyle(element)));
-  for (const element of stale) element.removeAttribute(RAW);
+  // Ancestors are un-hidden too, so an inherited colour (`currentColor`, a text colour set on the row) reads as the original.
+  const raw = new Set<Element>();
+  for (const element of stale) for (let node: Element | null = element; node && node !== root.parentElement && !raw.has(node); node = node.parentElement) raw.add(node);
+  for (const element of raw) element.setAttribute(RAW, "");
+  for (const element of stale) cache.set(element, readFacts(element, window.getComputedStyle(element)));
+  for (const element of raw) element.removeAttribute(RAW);
 }
 
 /** `screenArea` is the area of the clone's own screen in its CSS pixels; a scoped phone passes its box, a page the window. */
-export function collect(root: Element, clone: string, group: CommandGroup, cache: WeakMap<Element, Facts>, look: Look, screenArea?: number) {
+/** Each element's own hue for 랜덤, drawn once and kept, so a re-read never changes a part's colour. */
+const hues = new WeakMap<Element, number>();
+const hueOf = (element: Element) => {
+  let hue = hues.get(element);
+  if (hue === undefined) hues.set(element, (hue = Math.random() * 360));
+  return hue;
+};
+/** A text part's hue: its block's hue turned by the golden angle per token, so the parts of one line differ from one another. */
+const tokenHue = (element: Element, index: number) => (hueOf(element) + index * 137.508) % 360;
+const hsl = (hue: number) => `hsl(${Math.round(hue)} 100% 50%)`;
+
+export function collect(root: Element, clone: string, group: CommandGroup, cache: WeakMap<Element, Facts>, look: Look, screenArea?: number, onColour: () => void = () => {}, reach: Reach = "all") {
   const stroke = palette(look).stroke;
+  const contentOnly = reach === "content";
+  const coloured = look.ink === "colour";
+  const random = look.ink === "random";
+  /** A picture's or frame's mean colour, sampled once per source; an image not yet loaded reports back through `onColour`. */
+  const pictureColour = (element: Element) => coloured && (element instanceof HTMLImageElement || element instanceof HTMLVideoElement)
+    ? representativeColour(element, onColour) ?? "#b8b8b8"
+    : null;
+  /** A box's representative colour: its own fill, else its text colour (an svg's stroke or fill), else that of its only child. */
+  const boxColour = (element: Element): string | null => {
+    if (!coloured) return null;
+    const facts = cache.get(element);
+    if (facts?.fill) return facts.fill;
+    if (facts?.colour && (element.tagName === "svg" || Array.from(element.childNodes).some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()))) return facts.colour;
+    if (element.children.length === 1) return element.children[0].tagName === "svg" ? cache.get(element.children[0])?.colour ?? null : boxColour(element.children[0]);
+    return facts?.colour ?? null;
+  };
   const viewportArea = screenArea ?? window.innerWidth * window.innerHeight;
   // Only what is on screen or within a screen of it is written; scrolling writes the rest before it arrives.
   const near = (element: Element) => nearRect(element.getBoundingClientRect());
@@ -109,12 +155,13 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
   const styleOf = (element: Element) => window.getComputedStyle(element);
   const paintOf = (element: Element) => {
     let paint = paints.get(element);
-    if (!paint) paints.set(element, (paint = { fill: false, frame: false, borders: [], layers: [], local: false }));
+    if (!paint) paints.set(element, (paint = { fill: false, frame: false, borders: [], layers: [], local: false, text: false }));
     return paint;
   };
 
   /** An element cell: the word fills the box, kept clear of rounded corners (its own, or a same-sized clipping parent's). */
-  const elementCell = (element: Element, style: CSSStyleDeclaration, word: string) => {
+  const elementCell = (element: Element, style: CSSStyleDeclaration, word: string, colour: string | null = null) => {
+    if (random) colour = hsl(hueOf(element));
     const { width, height } = boxSize(element);
     if (width < 1 || height < 1 || !near(element)) return;
     let radius = radiusOf(style, width);
@@ -132,7 +179,7 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
     paint.frame = true;
     // Letters stay clear of the CSS frame drawn inside the box.
     const clear = Math.max(2, stroke + 1, inset);
-    paint.layers.push({ url: cellUrl({ width, height, word, framed: false, insetX: clear, insetY: clear, look }), whole: true });
+    paint.layers.push({ url: cellUrl({ width, height, word, framed: false, insetX: clear, insetY: clear, look, colour }), whole: true });
   };
 
   const visit = (element: Element, context: Context): number => {
@@ -150,20 +197,21 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
       const { width, height } = boxSize(element);
       if (width < 1 || height < 1) return 0;
       if (tag === "svg") {
-        elementCell(element, style, wordFor("icon", control, clone, group));
+        if (!contentOnly) elementCell(element, style, wordFor("icon", control, clone, group), coloured ? cache.get(element)?.colour ?? null : null);
       } else {
         // A small square picture rounded into a circle, by itself or by the box clipping it, is someone's face.
         const parent = element.parentElement;
         const round = width <= 120 && Math.abs(width - height) < 2 && (radiusOf(style, width) >= width * 0.4 ||
           Boolean(parent && radiusOf(styleOf(parent), boxSize(parent).width) >= width * 0.4));
-        elementCell(element, style, wordFor(tag === "IMG" && round ? "avatar" : "media", control, clone, group));
+        // In the 콘텐츠 reach a face stays a face; the pictures and video of posts are the content.
+        if (!contentOnly || !(tag === "IMG" && round)) elementCell(element, style, wordFor(tag === "IMG" && round ? "avatar" : "media", control, clone, group), pictureColour(element));
       }
       return 1;
     }
     if (tag === "CANVAS" || tag === "IFRAME") return 0;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
       if (!shown || ["hidden", "checkbox", "radio", "range"].includes((element as HTMLInputElement).type)) return 0;
-      elementCell(element, style, wordFor("field", control, clone, group));
+      if (!contentOnly) elementCell(element, style, wordFor("field", control, clone, group), boxColour(element));
       return 1;
     }
 
@@ -188,9 +236,11 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
     // The element's own box: a photograph background is a part itself; an opaque fill hides what passes under it, as in the
     // original; borders stay where they are; a shadowed or small translucent box is outlined.
     if (facts.image === "photo") {
-      elementCell(element, style, wordFor("media", control, clone, group));
+      elementCell(element, style, wordFor("media", control, clone, group), boxColour(element));
       return atoms + 1;
     }
+    // Boxes, fills, frames and empty parts are the page's own; in the 콘텐츠 reach they stay as they are.
+    if (contentOnly) return atoms;
     const edged = facts.borders.length > 0 || facts.shadow;
     // Light-mode chips are a 5 % tint of black; anything fainter is not a visible box.
     if (facts.alpha < 0.03 && facts.image === "none" && !edged) return atoms;
@@ -208,7 +258,7 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
     // An empty box (a progress bar, a placeholder, a badge without text) is a part of its own.
     if (atoms === 0 && !ground && height >= 10 && width >= 16) {
       paint.fill = true;
-      elementCell(element, style, wordFor("icon", control, clone, group));
+      elementCell(element, style, wordFor("icon", control, clone, group), boxColour(element));
     }
     return atoms;
   };
@@ -231,6 +281,9 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
     const offsetX = scrolls ? carrier.scrollLeft - carrier.clientLeft : 0;
     const offsetY = scrolls ? carrier.scrollTop - carrier.clientTop : 0;
 
+    // Runs first: adjacent nodes joined, each run's tokens given their roles.
+    type Run = { entries: TextEntry[]; full: string; tokens: { start: number; end: number; role: TextRole }[]; control: Element | null; ownColour: string | null };
+    const runs: Run[] = [];
     let index = 0;
     while (index < entries.length) {
       const run = [entries[index]];
@@ -242,8 +295,26 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
         run.push(candidate);
       }
       index += run.length;
-
       const full = run.map((entry) => entry.node.data).join("");
+      const bold = parseInt(styleOf(run[0].node.parentElement!).fontWeight, 10) >= 600;
+      const { control, heading } = run[0];
+      runs.push({
+        entries: run,
+        full,
+        tokens: splitTokens(full).map((token) => ({ start: token.start, end: token.end, role: textRole(token.text, { bold, heading, interactive: Boolean(control) }) })),
+        control,
+        // A text part takes the colour its letters had, or in 랜덤 a hue of its own.
+        ownColour: coloured ? cache.get(run[0].node.parentElement!)?.colour ?? null : null,
+      });
+    }
+    // In the 콘텐츠 reach only a block that carries body text or a title is replaced, and then whole, so no line is half read.
+    if (contentOnly) {
+      if (!runs.some((run) => run.tokens.some((token) => token.role === "copy" || token.role === "title"))) continue;
+      paint.text = true;
+    }
+
+    let tokenIndex = 0;
+    for (const { entries: run, tokens, control, ownColour } of runs) {
       const locate = (offset: number) => {
         for (const entry of run) {
           if (offset <= entry.node.data.length) return { node: entry.node, offset };
@@ -252,15 +323,14 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
         const last = run[run.length - 1].node;
         return { node: last, offset: last.data.length };
       };
-      const bold = parseInt(styleOf(run[0].node.parentElement!).fontWeight, 10) >= 600;
-      const { control, heading } = run[0];
 
-      for (const token of splitTokens(full)) {
+      for (const token of tokens) {
         const start = locate(token.start);
         const end = locate(token.end);
         range.setStart(start.node, start.offset);
         range.setEnd(end.node, end.offset);
-        const word = wordFor(textRole(token.text, { bold, heading, interactive: Boolean(control) }), control, clone, group);
+        const word = wordFor(token.role, control, clone, group);
+        const colour = random ? hsl(tokenHue(carrier, tokenIndex++)) : ownColour;
         // One cell per line the part occupies: glyph boxes on the same line are joined.
         const lines: { left: number; top: number; right: number; bottom: number }[] = [];
         for (const rect of Array.from(range.getClientRects())) {
@@ -290,7 +360,7 @@ export function collect(root: Element, clone: string, group: CommandGroup, cache
             if (w < 1 || h < 1) continue;
           }
           const inset = stroke + (h >= 12 ? 0.5 : 0) || 0.5;
-          paint.layers.unshift({ url: cellUrl({ width: w, height: h, word, framed: true, insetX: inset + 0.5, insetY: inset, look }), x, y, w, h });
+          paint.layers.unshift({ url: cellUrl({ width: w, height: h, word, framed: true, insetX: inset + 0.5, insetY: inset, look, colour }), x, y, w, h });
         }
       }
     }

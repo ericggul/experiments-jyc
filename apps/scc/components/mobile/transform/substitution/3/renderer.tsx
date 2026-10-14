@@ -2,11 +2,17 @@
 
 import { useLayoutEffect, useRef } from "react";
 import type { Look } from "./cell-image";
-import { CELL, RAW, UI, cellProperties, collect, refreshFacts, type Facts } from "./collect";
+import { CELL, RAW, TEXT, UI, cellProperties, collect, refreshFacts, type Facts, type Reach } from "./collect";
 import type { CommandGroup } from "./semantic";
 import "./substitution.css";
 
 const ROOT = "data-substitution-pixel";
+const EDGE = "--substitution-pixel-edge";
+/** The root's state for a look and reach: which sheet hides what (everything, or content cells alone), the ground, and the outer frame. */
+const mark = (root: Element, look: Look, reach: Reach) => {
+  root.setAttribute(ROOT, `${reach === "content" ? "content-" : ""}${look.dark ? "dark" : "replace"}`);
+  (root as HTMLElement).style.setProperty(EDGE, `${look.edge ?? 0}px`);
+};
 const SCROLL_INTERVAL = 100;
 /** Input types `collect.ts` gives no cell. */
 const uncelled = new Set(["hidden", "checkbox", "radio", "range"]);
@@ -23,7 +29,7 @@ let readFrame = -1;
  * Without `scope` the filter reads and hides the whole page. With it, it reads one element (a phone a host page such as
  * `/mobiles/2` draws, marked `data-substitution-pixel-scope`), whose own box counts as the screen.
  */
-export default function PixelRenderer({ clone, group, look, scope }: { clone: string; group: CommandGroup; look: Look; scope?: HTMLElement }) {
+export default function PixelRenderer({ clone, group, look, scope, reach = "all" }: { clone: string; group: CommandGroup; look: Look; scope?: HTMLElement; reach?: Reach }) {
   // Typeface, frame and theme only change how cells are written; they reuse everything already read from the page.
   const lookRef = useRef(look);
   const rewrite = useRef<(() => void) | null>(null);
@@ -32,10 +38,10 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
   useLayoutEffect(() => {
     lookRef.current = look;
     if (rewrite.current) {
-      rootRef.current?.setAttribute(ROOT, look.dark ? "dark" : "replace");
+      if (rootRef.current) mark(rootRef.current, look, reach);
       rewrite.current();
     }
-  }, [look]);
+  }, [look, reach]);
 
   useLayoutEffect(() => {
     const host = scope ?? null;
@@ -60,10 +66,10 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
       frame = 0;
       lastRead = performance.now();
       refreshFacts(body, facts, changed);
-      const paints = collect(body, clone, group, facts, lookRef.current, host ? host.offsetWidth * host.offsetHeight : undefined);
+      const paints = collect(body, clone, group, facts, lookRef.current, host ? host.offsetWidth * host.offsetHeight : undefined, schedule, reach);
 
       // The clone is hidden only now, in the same frame its cells are written, so a scoped phone never shows a blank ground.
-      root.setAttribute(ROOT, lookRef.current.dark ? "dark" : "replace");
+      mark(root, lookRef.current, reach);
       const next = new Map<Element, Record<string, string>>();
       for (const [element, paint] of paints) {
         if (!paint.fill && !paint.frame && !paint.borders.length && !paint.layers.length) continue;
@@ -72,12 +78,15 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
         const style = (element as HTMLElement).style;
         for (const name in properties) if (before?.[name] !== properties[name]) style.setProperty(name, properties[name]);
         if (!before) element.setAttribute(CELL, "");
+        if (paint.text) element.setAttribute(TEXT, "");
+        else if (before) element.removeAttribute(TEXT);
         next.set(element, properties);
       }
       for (const [element, properties] of written) {
         if (next.has(element)) continue;
         for (const name in properties) (element as HTMLElement).style.removeProperty(name);
         element.removeAttribute(CELL);
+        element.removeAttribute(TEXT);
       }
       written.clear();
       for (const [element, properties] of next) written.set(element, properties);
@@ -109,7 +118,7 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
         if (ours(mutation.target)) continue;
         if (mutation.type === "attributes") {
           const target = mutation.target as Element;
-          if (mutation.attributeName === CELL || mutation.attributeName === RAW) continue;
+          if (mutation.attributeName === CELL || mutation.attributeName === RAW || mutation.attributeName === TEXT) continue;
           // A range, hidden, checkbox or radio input has no cell and holds no text: its value, name or style changing (a
           // playing video's scrubber, several times a second) changes nothing that is read.
           if (target instanceof HTMLInputElement && uncelled.has(target.type)) continue;
@@ -155,12 +164,14 @@ export default function PixelRenderer({ clone, group, look, scope }: { clone: st
       for (const [element, properties] of written) {
         for (const name in properties) (element as HTMLElement).style.removeProperty(name);
         element.removeAttribute(CELL);
+        element.removeAttribute(TEXT);
       }
       root.removeAttribute(ROOT);
+      (root as HTMLElement).style.removeProperty(EDGE);
       rewrite.current = null;
       rootRef.current = null;
     };
-  }, [clone, group, scope]);
+  }, [clone, group, scope, reach]);
 
   return null;
 }

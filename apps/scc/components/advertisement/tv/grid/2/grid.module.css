@@ -2,14 +2,14 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: #000;
+  background: #fff;
 }
 
-/* A containing block for the spot's fixed viewport: the broadcast frame fits this cell instead of the window. */
-.television {
+/* One graph box in graph pixels, scaled into its cell; the chart and labels are positioned inside it. */
+.graph {
   position: absolute;
-  overflow: clip;
-  contain: strict;
+  overflow: visible;
+  transform-origin: 0 0;
 }
 
 /* mobiles/2's bottom-right option control. */
@@ -48,6 +48,9 @@
 
 .panel {
   width: min(260px, calc(100vw - 32px));
+  max-height: calc(100vh - 90px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: grid;
   gap: 6px;
   padding: 10px;
